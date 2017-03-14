@@ -11,11 +11,18 @@ namespace Core
     {
         private AudioRecord _aur = null;
         private AudioTrack _aut= null;
+
         private byte[] _audioBuffer = null;
+
         private bool _isRecording = false;
         private bool _endRecording = false;
+
         public Action<bool> RecordingStateChanged;
+
         private static string _filepath = "/data/data/SoniControlV0.SoniControlV0/files/recording.mp4";
+
+        private int sampleRate = 44100;
+
 
         public bool IsRecording
         {
@@ -45,10 +52,10 @@ namespace Core
             _endRecording = false;
             FireRecordingStateChanged();
 
-            _audioBuffer = new byte[1000000];
+            _audioBuffer = new byte[100000];
             _aur = new AudioRecord(
                 AudioSource.Mic, 
-                12000, 
+                10000, 
                 ChannelIn.Stereo, 
                 Android.Media.Encoding.Pcm16bit, 
                 _audioBuffer.Length
@@ -63,6 +70,7 @@ namespace Core
         {
             using (var filestream = new FileStream(_filepath, System.IO.FileMode.Create, System.IO.FileAccess.Write))
             {
+                StopAfterSeconds();
                 while (true)
                 {
                     if (_endRecording)
@@ -91,6 +99,12 @@ namespace Core
             _isRecording = false;
             FireRecordingStateChanged();
             Console.Out.WriteLine("END");
+        }
+
+        public async void StopAfterSeconds()
+        {
+            await Task.Delay(2000);
+            _endRecording = true;
         }
 
         public async Task StartPlayBackAsync()
@@ -124,7 +138,7 @@ namespace Core
         {
             _aut = new AudioTrack(
                 Android.Media.Stream.Music,
-                12000,
+                10000,
                 ChannelOut.Stereo,
                 Android.Media.Encoding.Pcm16bit,
                 _audioBuffer.Length,

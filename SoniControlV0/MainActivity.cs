@@ -27,16 +27,16 @@ namespace SoniControlV0
             AndroidAudio aa = new Core.AndroidAudio();
 
 
-            startButton.Click += delegate
+            startButton.Click += async delegate
             {
                 startButton.Enabled = false;
                 stopButton.Enabled = true;
                 playButton.Enabled = false;
                 haltButton.Enabled = false;
                 statusText.Text = "Starting Recording";
-                aa.StartAsyncRecording();
+                await aa.StartAsyncRecording();
                 //aa.RecordingStateChanged()
-                statusText.Text = "Recording";
+                statusText.Text = "Recorded";
             };
 
             stopButton.Click += delegate
@@ -57,6 +57,11 @@ namespace SoniControlV0
                 haltButton.Enabled = true;
 
                 await aa.StartPlayBackAsync();
+
+                startButton.Enabled = true;
+                stopButton.Enabled = false;
+                playButton.Enabled = true;
+                haltButton.Enabled = false;
             };
 
             stopButton.Click += async delegate
