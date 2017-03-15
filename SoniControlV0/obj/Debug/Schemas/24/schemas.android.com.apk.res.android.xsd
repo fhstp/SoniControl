@@ -2,7 +2,7 @@
 <xs:schema xmlns:android="http://schemas.android.com/apk/res/android" attributeFormDefault="qualified" targetNamespace="http://schemas.android.com/apk/res/android" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:annotation>
     <xs:documentation>v24</xs:documentation>
-    <xs:documentation>14.03.2017 22:57:06</xs:documentation>
+    <xs:documentation>15.03.2017 20:56:21</xs:documentation>
   </xs:annotation>
   <xs:attribute name="accessibilityLiveRegion">
     <xs:annotation>
@@ -16876,8 +16876,9 @@
           <xs:restriction base="xs:string">
             <xs:enumeration value="@+id/" />
             <xs:enumeration value="@+id/videoView1" />
-            <xs:enumeration value="@id/HaltRecording" />
+            <xs:enumeration value="@id/AnalyzeRecording" />
             <xs:enumeration value="@id/PlayRecording" />
+            <xs:enumeration value="@id/plotView1" />
             <xs:enumeration value="@id/RecordStatus" />
             <xs:enumeration value="@id/StartRecording" />
             <xs:enumeration value="@id/StopRecording" />

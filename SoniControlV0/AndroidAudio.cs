@@ -1,10 +1,12 @@
 using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Android.Media;
 using Android.Media.Audiofx;
+using Java.Lang;
+using SoniControlV0;
+using Thread = System.Threading.Thread;
 
 namespace Core
 {
@@ -130,9 +132,18 @@ namespace Core
                 AudioTrackMode.Stream
             );
 
-            vis = new Visualizer(_aut.AudioSessionId);
+            
             _aut.Play();
+
+            vis = new Visualizer(_aut.AudioSessionId);
+            vis.SetCaptureSize(Visualizer.GetCaptureSizeRange()[0]);
             await _aut.WriteAsync(_audioBuffer, 0, runs*_buffersize);
+            
+            vis.SetEnabled(true);
+            vis.SetDataCaptureListener(new IVisualizerFFT(), Visualizer.MaxCaptureRate, false, true);
+
+
+
         }
     }
 }

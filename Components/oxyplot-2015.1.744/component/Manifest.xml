@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<component format="1" id="oxyplot" is-shell="true">
+  <name>OxyPlot</name>
+  <publisher>OxyPlot.org</publisher>
+  <publisher-url>http://oxyplot.org</publisher-url>
+  <src-url>https://github.com/oxyplot/oxyplot</src-url>
+  <version>2015.1.744</version>
+  <summary>A cross-platform plotting library for .NET</summary>
+  <packages>
+    <package id="OxyPlot.Core" version="2015.1.744-alpha" framework="ios-unified" />
+    <package id="OxyPlot.Mobile" version="2015.1.744-alpha" framework="ios-unified" />
+    <package id="OxyPlot.Core" version="2015.1.744-alpha" framework="winphone-8.1" />
+    <package id="OxyPlot.Mobile" version="2015.1.744-alpha" framework="winphone-8.1" />
+    <package id="OxyPlot.Core" version="2015.1.744-alpha" framework="winphone-8.0" />
+    <package id="OxyPlot.Mobile" version="2015.1.744-alpha" framework="winphone-8.0" />
+    <package id="OxyPlot.Core" version="2015.1.744-alpha" framework="ios" />
+    <package id="OxyPlot.Mobile" version="2015.1.744-alpha" framework="ios" />
+    <package id="OxyPlot.Core" version="2015.1.744-alpha" framework="android" />
+    <package id="OxyPlot.Mobile" version="2015.1.744-alpha" framework="android" />
+  </packages>
+  <screenshots>
+    <img src="screenshots/Screenshot.png" title="Screenshot" />
+  </screenshots>
+  <samples>
+    <sample id="OxyPlotSample.iOS">
+      <name>iOS Unified Sample</name>
+      <summary>iOS Unified Sample</summary>
+    </sample>
+    <sample id="OxyPlotSample.Android">
+      <name>Android Sample</name>
+      <summary>Android Sample</summary>
+    </sample>
+    <sample id="OxyPlotSample.WindowsPhone">
+      <name>Windows Phone Sample</name>
+      <summary>Windows Phone Sample</summary>
+    </sample>
+  </samples>
+</component>

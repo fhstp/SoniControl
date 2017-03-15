@@ -25,12 +25,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/PlayRecording" />
     <Button
-        android:text="Halt Recording"
+        android:text="Analyze"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/HaltRecording" />
-    <View
+        android:id="@+id/AnalyzeRecording" />
+    <OxyPlot.Xamarin.Android.PlotView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/AudioView" />
+        android:id="@+id/plotView1" />
 </LinearLayout>

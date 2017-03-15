@@ -81,5 +81,15 @@ D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Runtime.
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.ServiceModel.Internals.dll.mdb
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Xml.dll.mdb
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Xml.Linq.dll.mdb
+D:\Repository\SoniControl\SoniControlV0\bin\Debug\SoniControlV0.dll.config
+D:\Repository\SoniControl\SoniControlV0\bin\Debug\OxyPlot.dll
+D:\Repository\SoniControl\SoniControlV0\bin\Debug\OxyPlot.Xamarin.Android.dll
+D:\Repository\SoniControl\SoniControlV0\bin\Debug\OxyPlot.pdb
+D:\Repository\SoniControl\SoniControlV0\bin\Debug\OxyPlot.xml
+D:\Repository\SoniControl\SoniControlV0\bin\Debug\OxyPlot.Xamarin.Android.xml
+D:\Repository\SoniControl\SoniControlV0\bin\Debug\OxyPlot.dll.mdb
+D:\Repository\SoniControl\SoniControlV0\bin\Debug\System.Net.dll.mdb
+D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\OxyPlot.dll.mdb
+D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Net.dll.mdb
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\SoniControlV0.dll.mdb
 D:\Repository\SoniControl\SoniControlV0\bin\Debug\SoniControlV0.dll.mdb

@@ -60,11 +60,8 @@ namespace SoniControlV0
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f050005
-			public const int AudioView = 2131034117;
-			
 			// aapt resource value: 0x7f050004
-			public const int HaltRecording = 2131034116;
+			public const int AnalyzeRecording = 2131034116;
 			
 			// aapt resource value: 0x7f050003
 			public const int PlayRecording = 2131034115;
@@ -77,6 +74,9 @@ namespace SoniControlV0
 			
 			// aapt resource value: 0x7f050002
 			public const int StopRecording = 2131034114;
+			
+			// aapt resource value: 0x7f050005
+			public const int plotView1 = 2131034117;
 			
 			static Id()
 			{

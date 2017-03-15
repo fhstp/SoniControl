@@ -7,6 +7,8 @@ D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Core.dll
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.dll
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Xml.dll
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Xml.Linq.dll
+D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\OxyPlot.dll
+D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\OxyPlot.Xamarin.Android.dll
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Threading.dll
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Runtime.dll
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.ComponentModel.Composition.dll
@@ -22,3 +24,4 @@ D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\Mono.CSharp.dll
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Net.Http.dll
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Runtime.Serialization.dll
 D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.ServiceModel.Internals.dll
+D:\Repository\SoniControl\SoniControlV0\obj\Debug\android\assets\System.Net.dll
