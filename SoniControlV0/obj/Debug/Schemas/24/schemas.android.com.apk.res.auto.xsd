@@ -2,6 +2,6 @@
 <xs:schema xmlns:app="http://schemas.android.com/apk/res-auto" attributeFormDefault="qualified" targetNamespace="http://schemas.android.com/apk/res-auto" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:annotation>
     <xs:documentation>v24</xs:documentation>
-    <xs:documentation>13.03.2017 21:10:03</xs:documentation>
+    <xs:documentation>14.03.2017 22:57:06</xs:documentation>
   </xs:annotation>
 </xs:schema>

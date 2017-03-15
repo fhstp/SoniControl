@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Android.Media;
+using Android.Media.Audiofx;
 
 namespace Core
 {
@@ -12,7 +13,7 @@ namespace Core
         private AudioRecord _aur = null;
         private AudioTrack _aut= null;
 
-        private byte[] _audioBuffer = null;
+        private short[] _audioBuffer = null;
 
         private bool _isRecording = false;
         private bool _endRecording = false;
@@ -21,8 +22,11 @@ namespace Core
 
         private static string _filepath = "/data/data/SoniControlV0.SoniControlV0/files/recording.mp4";
 
-        private int sampleRate = 44100;
-
+        private int _sampleRate = 44100;
+        private Encoding _encoding = Android.Media.Encoding.Pcm16bit;
+        private int _buffersize;
+        private int runs;
+        public Visualizer vis;
 
         public bool IsRecording
         {
@@ -52,56 +56,44 @@ namespace Core
             _endRecording = false;
             FireRecordingStateChanged();
 
-            _audioBuffer = new byte[100000];
-            _aur = new AudioRecord(
-                AudioSource.Mic, 
-                10000, 
-                ChannelIn.Stereo, 
-                Android.Media.Encoding.Pcm16bit, 
-                _audioBuffer.Length
-            );
+            _buffersize = AudioRecord.GetMinBufferSize(_sampleRate, ChannelIn.Mono, _encoding);
+            _audioBuffer = new short[500000];
 
+            _aur = new AudioRecord(
+                AudioSource.Mic,
+                _sampleRate, 
+                ChannelIn.Mono, 
+                _encoding, 
+                _buffersize
+            );
+            
             _aur.StartRecording();
             await ReadAudioTask();
-            
         }
 
         async Task ReadAudioTask()
         {
-            using (var filestream = new FileStream(_filepath, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+            runs = 0;
+            StopAfterSeconds();
+
+            do
             {
-                StopAfterSeconds();
-                while (true)
-                {
-                    if (_endRecording)
-                    {
-                        _endRecording = false;
-                        break;
-                    }
+                int readBytes = await _aur.ReadAsync(_audioBuffer, runs * _buffersize, _buffersize);
+                runs++;
 
-                    try
-                    {
-                        int readBytes = await _aur.ReadAsync(_audioBuffer, 0, _audioBuffer.Length);
-                        Console.Out.WriteLine(""+readBytes);
-                        await filestream.WriteAsync(_audioBuffer, 0, readBytes);
-                    }
-                    catch (Exception eo)
-                    {
-                        Console.Out.WriteLine(eo.Message);
-                    }
-                }
-
-                filestream.Close();
-            }
+            } while (_endRecording == false && runs * _buffersize < _audioBuffer.Length - _buffersize);
 
             _aur.Stop();
-            _aur.Release();
             _isRecording = false;
+            _aur.Release();
             FireRecordingStateChanged();
+
             Console.Out.WriteLine("END");
+            Console.Out.WriteLine(_buffersize);
+            Console.Out.WriteLine(runs);
         }
 
-        public async void StopAfterSeconds()
+        public async Task StopAfterSeconds()
         {
             await Task.Delay(2000);
             _endRecording = true;
@@ -124,13 +116,6 @@ namespace Core
 
         public async Task PlayBackTask()
         {
-            FileStream fileStream = new FileStream(_filepath, FileMode.Open, FileAccess.Read);
-            BinaryReader binaryReader = new BinaryReader(fileStream);
-            long totalBytes = new System.IO.FileInfo(_filepath).Length;
-            _audioBuffer = binaryReader.ReadBytes((Int32)totalBytes);
-            fileStream.Close();
-            fileStream.Dispose();
-            binaryReader.Close();
             await PlayAudioTrackTask();
         }
 
@@ -138,18 +123,16 @@ namespace Core
         {
             _aut = new AudioTrack(
                 Android.Media.Stream.Music,
-                10000,
-                ChannelOut.Stereo,
-                Android.Media.Encoding.Pcm16bit,
-                _audioBuffer.Length,
+                _sampleRate,
+                ChannelOut.Mono,
+                _encoding,
+                _buffersize,
                 AudioTrackMode.Stream
             );
 
+            vis = new Visualizer(_aut.AudioSessionId);
             _aut.Play();
-            await _aut.WriteAsync(_audioBuffer, 0, _audioBuffer.Length);
-
+            await _aut.WriteAsync(_audioBuffer, 0, runs*_buffersize);
         }
-
-
     }
 }

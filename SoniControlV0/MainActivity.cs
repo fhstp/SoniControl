@@ -26,7 +26,10 @@ namespace SoniControlV0
             Button haltButton = FindViewById<Button>(Resource.Id.HaltRecording);
             AndroidAudio aa = new Core.AndroidAudio();
 
-
+            startButton.Enabled = true;
+            stopButton.Enabled = false;
+            playButton.Enabled = false;
+            haltButton.Enabled = false;
             startButton.Click += async delegate
             {
                 startButton.Enabled = false;
@@ -37,13 +40,17 @@ namespace SoniControlV0
                 await aa.StartAsyncRecording();
                 //aa.RecordingStateChanged()
                 statusText.Text = "Recorded";
+                startButton.Enabled = true;
+                stopButton.Enabled = false;
+                playButton.Enabled = true;
+                haltButton.Enabled = false;
             };
 
             stopButton.Click += delegate
             {
                 startButton.Enabled = true;
                 stopButton.Enabled = false;
-                playButton.Enabled = false;
+                playButton.Enabled = true;
                 haltButton.Enabled = false;
                 statusText.Text = "Stopped Recording";
                 aa.StopAsyncRecording();
