@@ -79,43 +79,37 @@ namespace SoniControlV0
             PlotView view = FindViewById<PlotView>(Resource.Id.plotView1);
 
 
-            alButton.Click += delegate
+            alButton.Click += async delegate
             {
-                //byte[] raw = new byte[1000];
-                //aa.vis.GetFft(raw);
-                view.Model = CreatePlotModel();
+                var plotModel = new PlotModel() { Title = "AudioData" };
+                plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
+                plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Maximum = 100000.0, Minimum = -1.0 });
 
-                
+                int[] data = await aa.AnalyzeAudio();
+
+
+                var series1 = new LineSeries
+                {
+                    MarkerType = MarkerType.Circle,
+                    MarkerSize = 1,
+                    MarkerStroke = OxyColors.White
+                };
+                var x = 0;
+                foreach (var d in data)
+                {
+                    series1.Points.Add(new DataPoint(x, d));
+                    x++;
+                }
+
+                plotModel.Series.Add(series1);
+                view.Model = plotModel;
+
+
             };
 
 
         }
 
-        private PlotModel CreatePlotModel()
-        {
-            var plotModel = new PlotModel() {Title = "TestPlot"};
-            plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom});
-            plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Maximum = 10, Minimum = 0});
-
-            var series1 = new LineSeries
-            {
-                MarkerType = MarkerType.Circle,
-                MarkerSize = 4,
-                MarkerStroke = OxyColors.White
-            };
-
-            series1.Points.Add(new DataPoint(0.0, 6.0));
-            series1.Points.Add(new DataPoint(1.4, 2.1));
-            series1.Points.Add(new DataPoint(2.0, 4.2));
-            series1.Points.Add(new DataPoint(3.3, 2.3));
-            series1.Points.Add(new DataPoint(4.7, 7.4));
-            series1.Points.Add(new DataPoint(6.0, 6.2));
-            series1.Points.Add(new DataPoint(8.9, 8.9));
-
-            plotModel.Series.Add(series1);
-
-            return plotModel;
-        }
 
     }
 }

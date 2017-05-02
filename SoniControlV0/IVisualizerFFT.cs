@@ -24,7 +24,6 @@ namespace SoniControlV0
         public void OnFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate)
         {
             throw new NotImplementedException();
-            Console.Out.WriteLine("READ FFT");
         }
 
         public void OnWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate)

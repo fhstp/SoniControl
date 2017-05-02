@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);ANDROID_1;ANDROID_2;ANDROID_3;ANDROID_4;ANDROID_5;ANDROID_6;ANDROID_7;ANDROID_8;ANDROID_9;ANDROID_10;ANDROID_11;ANDROID_12;ANDROID_13;ANDROID_14;ANDROID_15;ANDROID_16;ANDROID_17;ANDROID_18;ANDROID_19</DefineConstants>
+  </PropertyGroup>
+  <!-- Classes -->
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)\Java.Interop.__TypeRegistrations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Exception.DimensionMismatchException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Exception.MathArithmeticException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Exception.MathIllegalArgumentException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Exception.MathIllegalNumberException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Exception.Util.ArgUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Exception.Util.ExceptionContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Exception.Util.IExceptionContextProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Exception.Util.ILocalizable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Exception.Util.LocalizedFormats.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Util.FastMath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Apache.Commons.Math3.Util.Precision.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dct.BenchmarkDoubleDCT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dct.BenchmarkFloatDCT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dct.DoubleDCT_1D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dct.DoubleDCT_2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dct.DoubleDCT_3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dct.FloatDCT_1D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dct.FloatDCT_2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dct.FloatDCT_3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dht.BenchmarkDoubleDHT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dht.BenchmarkFloatDHT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dht.DoubleDHT_1D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dht.DoubleDHT_2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dht.DoubleDHT_3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dht.FloatDHT_1D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dht.FloatDHT_2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dht.FloatDHT_3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dst.BenchmarkDoubleDST.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dst.BenchmarkFloatDST.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dst.DoubleDST_1D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dst.DoubleDST_2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dst.DoubleDST_3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dst.FloatDST_1D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dst.FloatDST_2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Dst.FloatDST_3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.BenchmarkDoubleFFT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.BenchmarkFloatFFT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.DoubleFFT_1D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.DoubleFFT_2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.DoubleFFT_3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.FloatFFT_1D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.FloatFFT_2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.FloatFFT_3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.RealFFTUtils_2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Fft.RealFFTUtils_3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Utils.CommonUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Org.Jtransforms.Utils.IOUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.ByteLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.ComplexDoubleLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.ComplexFloatLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.ConcurrencyUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.DoubleLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.FloatLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.IntLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.LargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.LargeArrayType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.LargeArrayUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.LogicLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.LongLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.MemoryCounter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.ObjectLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.ShortLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.StringLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\PL.Edu.Icm.Jlargearrays.UnsignedByteLargeArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\__NamespaceMapping__.cs" />
+  </ItemGroup>
+  <!-- Enums -->
+  <ItemGroup />
+</Project>

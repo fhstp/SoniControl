@@ -1,0 +1,1 @@
+Main.axml;res/main.xml

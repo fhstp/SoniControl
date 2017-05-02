@@ -1,11 +1,12 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-
 using Android.Media;
 using Android.Media.Audiofx;
 using Java.Lang;
 using SoniControlV0;
+using SoundAnalysis;
 using Thread = System.Threading.Thread;
 
 namespace Core
@@ -93,6 +94,7 @@ namespace Core
             Console.Out.WriteLine("END");
             Console.Out.WriteLine(_buffersize);
             Console.Out.WriteLine(runs);
+            
         }
 
         public async Task StopAfterSeconds()
@@ -135,15 +137,50 @@ namespace Core
             
             _aut.Play();
 
-            vis = new Visualizer(_aut.AudioSessionId);
-            vis.SetCaptureSize(Visualizer.GetCaptureSizeRange()[0]);
+            //vis = new Visualizer(_aut.AudioSessionId);
+            //vis.SetCaptureSize(Visualizer.GetCaptureSizeRange()[0]);
             await _aut.WriteAsync(_audioBuffer, 0, runs*_buffersize);
             
-            vis.SetEnabled(true);
-            vis.SetDataCaptureListener(new IVisualizerFFT(), Visualizer.MaxCaptureRate, false, true);
+            //vis.SetEnabled(true);
+            //vis.SetDataCaptureListener(new IVisualizerFFT(), Visualizer.MaxCaptureRate, false, true);
 
 
 
+        }
+
+        public async Task ShowAudio()
+        {
+            
+        }
+
+        public async Task<int[]> AnalyzeAudio()
+        {
+            short[] pre = _audioBuffer.Take(runs * _buffersize).ToArray();
+            double[] data = Array.ConvertAll(pre, x => (double) x);
+            double[] spectr = FftAlgorithm.Calculate(data);
+
+            int usefullMinSpectr = System.Math.Max(0,
+                (int)(14000 * spectr.Length / _sampleRate));
+            int usefullMaxSpectr = System.Math.Min(spectr.Length,
+                (int)(21000 * spectr.Length / _sampleRate) + 1);
+
+            // find peaks in the FFT frequency bins 
+            const int PeaksCount = 50;
+            int[] peakIndices;
+            peakIndices = FftAlgorithm.FindPeaks(spectr, usefullMinSpectr, usefullMaxSpectr - usefullMinSpectr,
+                PeaksCount);
+
+            if (Array.IndexOf(peakIndices, usefullMinSpectr) >= 0)
+            {
+                // lowest usefull frequency bin shows active
+                // looks like is no detectable sound, return 0
+                Console.Out.WriteLine("Nothing");
+                return new int[0];
+            }
+            Console.Out.WriteLine("Something");
+
+            return peakIndices;
+            //return spectr.Take(spectr.Length/2+1).ToArray();
         }
     }
 }
