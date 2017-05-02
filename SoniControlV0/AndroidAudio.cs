@@ -11,6 +11,9 @@ using Thread = System.Threading.Thread;
 
 namespace Core
 {
+    public delegate void NewFFTData(object sender, double[] data);
+
+
     public class AndroidAudio
     {
         private AudioRecord _aur = null;
@@ -29,7 +32,13 @@ namespace Core
         private Encoding _encoding = Android.Media.Encoding.Pcm16bit;
         private int _buffersize;
         private int runs;
-        public Visualizer vis;
+
+        public event NewFFTData NewFFTDataAvailable;
+
+        protected virtual void OnNewFFTDataAvailable(double[] data)
+        {
+            NewFFTDataAvailable?.Invoke(this, data);
+        }
 
         public bool IsRecording
         {
@@ -82,6 +91,17 @@ namespace Core
             do
             {
                 int readBytes = await _aur.ReadAsync(_audioBuffer, runs * _buffersize, _buffersize);
+
+                //short[] pre = BufferCopy(_audioBuffer, _buffersize, runs * _buffersize);
+                //double[] data = Array.ConvertAll(pre, x => (double)x);
+                //double[] spectr = FftAlgorithm.Calculate(data);
+                double[] spectr = FftAlgorithm.Calculate(
+                                    Array.ConvertAll(
+                                        BufferCopy(_audioBuffer, _buffersize, runs * _buffersize), 
+                                        x => (double)x
+                                    )
+                                );
+                OnNewFFTDataAvailable(spectr);
                 runs++;
 
             } while (_endRecording == false && runs * _buffersize < _audioBuffer.Length - _buffersize);
@@ -133,18 +153,10 @@ namespace Core
                 _buffersize,
                 AudioTrackMode.Stream
             );
-
             
             _aut.Play();
 
-            //vis = new Visualizer(_aut.AudioSessionId);
-            //vis.SetCaptureSize(Visualizer.GetCaptureSizeRange()[0]);
             await _aut.WriteAsync(_audioBuffer, 0, runs*_buffersize);
-            
-            //vis.SetEnabled(true);
-            //vis.SetDataCaptureListener(new IVisualizerFFT(), Visualizer.MaxCaptureRate, false, true);
-
-
 
         }
 
@@ -153,12 +165,27 @@ namespace Core
             
         }
 
-        public async Task<int[]> AnalyzeAudio()
+        public short[] BufferCopy(short[] from, int count, int index)
         {
-            short[] pre = _audioBuffer.Take(runs * _buffersize).ToArray();
-            double[] data = Array.ConvertAll(pre, x => (double) x);
-            double[] spectr = FftAlgorithm.Calculate(data);
+            const int SHORT_SIZE = 2;
+            short[] to = new short[count];
 
+            Buffer.BlockCopy(from, index * SHORT_SIZE, to, 0, count* SHORT_SIZE);
+
+            return to;
+        }
+
+        public async Task<double[]> AnalyzeAudio()
+        {
+            double[] spectr = FftAlgorithm.Calculate(
+                                    Array.ConvertAll(
+                                        BufferCopy(_audioBuffer, runs * _buffersize, 0),
+                                        x => (double)x
+                                    )
+                                );
+
+            return spectr;
+            /*
             int usefullMinSpectr = System.Math.Max(0,
                 (int)(14000 * spectr.Length / _sampleRate));
             int usefullMaxSpectr = System.Math.Min(spectr.Length,
@@ -180,7 +207,7 @@ namespace Core
             Console.Out.WriteLine("Something");
 
             return peakIndices;
-            //return spectr.Take(spectr.Length/2+1).ToArray();
+            //return spectr.Take(spectr.Length/2+1).ToArray();*/
         }
     }
 }

@@ -17,6 +17,13 @@ namespace SoniControlV0
     [Activity(Label = "SoniControl V0", MainLauncher = true, Icon = "@drawable/icon")]
     public class MainActivity : Activity
     {
+        private LineSeries spectro = new LineSeries
+        {
+            MarkerType = MarkerType.Circle,
+            MarkerSize = 1,
+            MarkerStroke = OxyColors.White
+        };
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -42,8 +49,11 @@ namespace SoniControlV0
                 playButton.Enabled = false;
                 alButton.Enabled = false;
                 statusText.Text = "Starting Recording";
+
+                //aa.NewFFTDataAvailable += new NewFFTData(AddFFTDataToSeries);
                 await aa.StartAsyncRecording();
-                //aa.RecordingStateChanged()
+                //aa.NewFFTDataAvailable -= new NewFFTData(AddFFTDataToSeries);
+
                 statusText.Text = "Recorded";
                 startButton.Enabled = true;
                 stopButton.Enabled = false;
@@ -76,38 +86,54 @@ namespace SoniControlV0
                 alButton.Enabled = true;
             };
 
-            PlotView view = FindViewById<PlotView>(Resource.Id.plotView1);
-
+            PlotView view = GetPlotView();
+            var plotModel = new PlotModel() { Title = "AudioData" };
+            plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
+            plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Maximum = 100000.0, Minimum = -1.0 });
+            plotModel.Series.Add(spectro);
+            view.Model = plotModel;
 
             alButton.Click += async delegate
             {
-                var plotModel = new PlotModel() { Title = "AudioData" };
-                plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom });
-                plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Maximum = 100000.0, Minimum = -1.0 });
+                Console.Out.WriteLine("start");
 
-                int[] data = await aa.AnalyzeAudio();
+                double[] data = await aa.AnalyzeAudio();
+                Console.Out.WriteLine("stop");
 
 
-                var series1 = new LineSeries
+                spectro = new LineSeries
                 {
                     MarkerType = MarkerType.Circle,
                     MarkerSize = 1,
                     MarkerStroke = OxyColors.White
                 };
-                var x = 0;
-                foreach (var d in data)
+
+                for (int i = 0; i < data.Length; i++)
                 {
-                    series1.Points.Add(new DataPoint(x, d));
-                    x++;
+                    spectro.Points.Add(new DataPoint(i, data[i]));
                 }
 
-                plotModel.Series.Add(series1);
-                view.Model = plotModel;
-
-
+                GetPlotView().InvalidatePlot();
             };
 
 
+        }
+
+        private PlotView GetPlotView()
+        {
+            return FindViewById<PlotView>(Resource.Id.plotView1);
+        }
+
+        private void AddFFTDataToSeries(object sender, double[] data)
+        {
+            int start = spectro.Points.Count;
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                spectro.Points.Add(new DataPoint(start + i, data[i]));
+            }
+            //GetPlotView().InvalidatePlot();
+            Console.Out.WriteLine(data.Length);
         }
 
 
