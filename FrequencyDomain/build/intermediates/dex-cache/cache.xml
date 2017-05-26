@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="C:\Users\peter\Desktop\SuperpoweredSDK\Examples_Android\FrequencyDomain\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ddd26b3cdb72e2e82eb74066af536a1513f31c60">
+        <dex dex="C:\Users\peter\Desktop\SuperpoweredSDK\Examples_Android\FrequencyDomain\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_26fdba8b640d2c7afc6b4a1751f1a0c7db5a9f29\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\peter\Desktop\SuperpoweredSDK\Examples_Android\FrequencyDomain\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="caff8e51a24901cfc9cd7e1cf83d84f4cb0c103b">
+        <dex dex="C:\Users\peter\Desktop\SuperpoweredSDK\Examples_Android\FrequencyDomain\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_b5dfa5b8001292b9382c17b645a237614f8b0122\classes.dex" />
+    </item>
+
+</items>
