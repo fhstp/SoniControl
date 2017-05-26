@@ -110,4 +110,15 @@
         android:layout_alignTop="@+id/textView4"
         android:text="TextView" />
 
+
+    <com.jjoe64.graphview.GraphView
+        android:layout_width="match_parent"
+        android:layout_height="100dip"
+        android:id="@+id/graphF"
+        android:layout_below="@+id/SetCutF" />
+    <com.jjoe64.graphview.GraphView
+        android:layout_width="match_parent"
+        android:layout_height="100dip"
+        android:id="@+id/graphT"
+        android:layout_below="@+id/graphF" />
 </RelativeLayout>

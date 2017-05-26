@@ -1,7 +1,4 @@
-#Fri May 26 17:30:55 CEST 2017
-base.0=C\:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Examples_Android\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run_b5dfa5b8001292b9382c17b645a237614f8b0122
-renamed.1=classes.dex
-renamed.0=classes2.dex
-file.1=C\:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Examples_Android\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run-bootstrap_26fdba8b640d2c7afc6b4a1751f1a0c7db5a9f29\\classes.dex
-base.1=C\:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Examples_Android\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run-bootstrap_26fdba8b640d2c7afc6b4a1751f1a0c7db5a9f29
-file.0=C\:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Examples_Android\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run_b5dfa5b8001292b9382c17b645a237614f8b0122\\classes.dex
+#Fri May 26 20:38:32 CEST 2017
+base.0=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
+renamed.0=classes.dex
+file.0=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex

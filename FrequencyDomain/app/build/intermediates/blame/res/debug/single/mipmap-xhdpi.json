@@ -2,5 +2,9 @@
     {
         "merged": "C:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Examples_Android\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi\\ic_launcher.png",
         "source": "C:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Examples_Android\\FrequencyDomain\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi\\ic_launcher.png",
+        "source": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher.png"
     }
 ]

@@ -59,14 +59,14 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
         frequencyDomain->advance();
         fifoOutputLastSample += stepSize;
     };
-
-    spfilter->setResonantParameters(cutFrequency, 0.2f);
     spfilter->process(fifoOutput, fifoOutput, fifoCapacity);
+    spfilter->setResonantParameters(cutFrequency, -110.0f);
+
     spfilter->enable(true);
 
     rmsT = 0.0f;
     for (int i = 0; i < fifoCapacity; ++i) {
-        //if(*(fifoOutput+i) >= 0.0f)
+        if(*(fifoOutput+i) >= 0.0f)
             rmsT += (*(fifoOutput+i) * *(fifoOutput+i));
     }
     rmsT *= 1.0f/ ((float)fifoCapacity);
@@ -115,7 +115,7 @@ extern "C" JNIEXPORT float Java_com_superpowered_frequencydomain_MainActivity_Ge
     return  rmsT;
 }
 
-extern "C" JNIEXPORT float Java_com_superpowered_frequencydomain_MainActivity_SetNewCutFrequency(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint cutF){
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_MainActivity_SetNewCutFrequency(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint cutF){
     cutFrequency = cutF;
     cutBin = cutFrequency / binSizeinHz;
 }

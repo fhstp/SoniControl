@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/peter/Desktop/SuperpoweredSDK/Examples_Android/FrequencyDomain/app/src/main/jni
+# Install script for directory: C:/Repository/SoniControlFH/FrequencyDomain/app/src/main/jni
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/peter/Desktop/SuperpoweredSDK/Examples_Android/FrequencyDomain/app/.externalNativeBuild/cmake/release/x86_64/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Repository/SoniControlFH/FrequencyDomain/app/.externalNativeBuild/cmake/release/x86_64/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
