@@ -239,7 +239,10 @@ bool SuperpoweredExample::process(short int *output, unsigned int numberOfSample
     double msElapsedSinceLastBeatA = playerA->msElapsedSinceLastBeat; // When playerB needs it, playerA has already stepped this value, so save it now.
 
     bool silence = !playerA->process(stereoBuffer, false, numberOfSamples, volA, masterBpm, playerB->msElapsedSinceLastBeat);
-    if (playerB->process(stereoBuffer, !silence, numberOfSamples, volB, masterBpm, msElapsedSinceLastBeatA)) silence = false;
+    if (playerB->process(stereoBuffer, !silence, numberOfSamples, volB, masterBpm, msElapsedSinceLastBeatA)){
+        silence = false;
+        SuperpoweredVolumeAdd(stereoBuffer,stereoBuffer,1.0f,ampliValue,numberOfSamples);
+    }
 
     //roll->bpm = flanger->bpm = (float)masterBpm; // Syncing fx is one line.
 
