@@ -22,12 +22,15 @@ public:
 	~SuperpoweredExample();
 
 	bool process(short int *output, unsigned int numberOfSamples);
-	void onPlayPause(bool play);
+	void onPlayPause(bool play, bool buttonPressed);
 	void onCutOffFader(int value);
 
     void onAmplitudeFader(int value);
     /*void onPulseFader(int value);
     void onPauseFader(int value);*/
+
+
+	void fadeChange(bool value);
 
 	void onFxSelect(int value);
 	void onFxOff();

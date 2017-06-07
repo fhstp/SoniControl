@@ -8,6 +8,8 @@
 #include <SuperpoweredSimple.h>
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_AndroidConfiguration.h>
+#include <sys/time.h>
+
 
 #define FFT_LOG_SIZE 11 // 2^11 = 2048
 #include <SuperpoweredFrequencyDomain.h>
@@ -21,6 +23,17 @@ static int fifoOutputFirstSample, fifoOutputLastSample, stepSize, fifoCapacity;
 static size_t magValue;
 static float ampliValue, pauValue;
 static double pulValue;
+
+
+bool fadeValue;
+unsigned int numberOfSamplesPlay;
+
+unsigned sizeOfBuffer;
+
+
+
+
+FILE *testFile;
 
 
 static void playerEventCallbackA(void *clientData, SuperpoweredAdvancedAudioPlayerEvent event, void * __unused value) {
@@ -48,12 +61,17 @@ static bool audioProcessing(void *clientdata, short int *audioIO, int numberOfSa
 SuperpoweredExample::SuperpoweredExample(unsigned int samplerate, unsigned int buffersize, const char *path, int fileAoffset, int fileAlength, int fileBoffset, int fileBlength) : activeFx(0), crossValue(0.0f), volB(0.0f), volA(1.0f * headroom) {
     stereoBuffer = (float *)memalign(16, (buffersize + 16) * sizeof(float) * 2);
 
+
+
     playerA = new SuperpoweredAdvancedAudioPlayer(&playerA , playerEventCallbackA, samplerate, 0);
     playerA->open(path, fileAoffset, fileAlength);
     playerB = new SuperpoweredAdvancedAudioPlayer(&playerB, playerEventCallbackB, samplerate, 0);
     playerB->open(path, fileBoffset, fileBlength);
 
     playerA->syncMode = playerB->syncMode = SuperpoweredAdvancedAudioPlayerSyncMode_TempoAndBeat;
+
+    /*volA = 0.0f;
+    volB = 0.0f;*/
 
     //roll = new SuperpoweredRoll(samplerate);
     //filterLow = new SuperpoweredFilter(SuperpoweredFilter_Resonant_Lowpass, samplerate);
@@ -71,6 +89,7 @@ SuperpoweredExample::SuperpoweredExample(unsigned int samplerate, unsigned int b
 
     whiteNoise = new SuperpoweredWhoosh(samplerate);
     whiteNoise->setFrequency(22000.0f);
+
 }
 
 SuperpoweredExample::~SuperpoweredExample() {
@@ -88,11 +107,25 @@ SuperpoweredExample::~SuperpoweredExample() {
 }
 
 
-void SuperpoweredExample::onPlayPause(bool play) {
+void SuperpoweredExample::onPlayPause(bool play, bool buttonPressed) {
     if (!play) {
+        if(testFile) {
+            if(!buttonPressed) {
+                if (testFile != NULL) {
+                    fclose(testFile);
+                    testFile = NULL;
+                }
+            }
+        }
+        //SuperpoweredChangeVolume(stereoBuffer,stereoBuffer,1.0f,0.0f,numberOfSamplesPlay);
         playerA->pause();
         playerB->pause();
     } else {
+        //SuperpoweredChangeVolume(stereoBuffer,stereoBuffer,0.0f,1.0f,numberOfSamplesPlay);
+        if(buttonPressed) {
+            sizeOfBuffer = NULL;
+            testFile = fopen("/storage/emulated/0/DCIM/superpowered.pcm", "w+");
+        }
         bool masterIsA = (crossValue <= 0.5f);
         playerA->play(!masterIsA);
         playerB->play(masterIsA);
@@ -157,6 +190,7 @@ void SuperpoweredExample::onFxValue() {
         case 1:
             crossValue = 0.9f;
             volA = 0.0f;
+            //volB = 0.0f;
             volB = 1.0f * headroom;
             whiteNoise->enable(true);
 
@@ -178,6 +212,7 @@ void SuperpoweredExample::onFxValue() {
         default:
             crossValue = 0.1f;
             volA = 1.0f * headroom;
+            //volA = 0.0f;
             volB = 0.0f;
             whiteNoise->enable(false);
 
@@ -233,7 +268,15 @@ void SuperpoweredExample::onFxValue() {
     };
 }
 
+void SuperpoweredExample::fadeChange(bool valueTrue) {
+    fadeValue = valueTrue;
+
+
+}
+
+
 bool SuperpoweredExample::process(short int *output, unsigned int numberOfSamples) {
+    //numberOfSamplesPlay = numberOfSamples;
     bool masterIsA = (crossValue <= 0.5f);
     double masterBpm = masterIsA ? playerA->currentBpm : playerB->currentBpm;
     double msElapsedSinceLastBeatA = playerA->msElapsedSinceLastBeat; // When playerB needs it, playerA has already stepped this value, so save it now.
@@ -241,7 +284,8 @@ bool SuperpoweredExample::process(short int *output, unsigned int numberOfSample
     bool silence = !playerA->process(stereoBuffer, false, numberOfSamples, volA, masterBpm, playerB->msElapsedSinceLastBeat);
     if (playerB->process(stereoBuffer, !silence, numberOfSamples, volB, masterBpm, msElapsedSinceLastBeatA)){
         silence = false;
-        SuperpoweredVolumeAdd(stereoBuffer,stereoBuffer,1.0f,ampliValue,numberOfSamples);
+        SuperpoweredVolume(stereoBuffer, stereoBuffer, 0.0f, ampliValue, numberOfSamples);
+        //SuperpoweredVolumeAdd(stereoBuffer,stereoBuffer,0.0f,ampliValue,numberOfSamples);
     }
 
     //roll->bpm = flanger->bpm = (float)masterBpm; // Syncing fx is one line.
@@ -249,7 +293,8 @@ bool SuperpoweredExample::process(short int *output, unsigned int numberOfSample
     //if (roll->process(silence ? NULL : stereoBuffer, stereoBuffer, numberOfSamples) && silence) silence = false;
     if (!silence && !masterIsA) {
         whiteNoise->process(stereoBuffer, stereoBuffer, numberOfSamples);
-        SuperpoweredVolumeAdd(stereoBuffer,stereoBuffer,1.0f,ampliValue,numberOfSamples);
+        SuperpoweredVolume(stereoBuffer, stereoBuffer, 0.0f, ampliValue, numberOfSamples);
+        //SuperpoweredVolumeAdd(stereoBuffer,stereoBuffer,0.0f,ampliValue,numberOfSamples);
     }
     if (!silence) {
 
@@ -307,11 +352,14 @@ bool SuperpoweredExample::process(short int *output, unsigned int numberOfSample
 
     };
 
-
-
-
     // The stereoBuffer is ready now, let's put the finished audio into the requested buffers.
-    if (!silence) SuperpoweredFloatToShortInt(stereoBuffer, output, numberOfSamples);
+    if (!silence){
+        sizeOfBuffer = sizeOfBuffer + sizeof(stereoBuffer);
+        if(testFile) {
+            fwrite(stereoBuffer, 1, sizeOfBuffer, testFile);
+        }
+        SuperpoweredFloatToShortInt(stereoBuffer, output, numberOfSamples);
+    }
     return !silence;
 }
 
@@ -346,8 +394,8 @@ extern "C" JNIEXPORT void Java_com_superpowered_spoofer_MainActivity_Superpowere
     //new SuperpoweredAndroidAudioIO(samplerate, buffersize, true, true, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, buffersize * 2); // Start audio input/output.
 }
 
-extern "C" JNIEXPORT void Java_com_superpowered_spoofer_MainActivity_onPlayPause(JNIEnv * __unused javaEnvironment, jobject __unused obj, jboolean play) {
-	example->onPlayPause(play);
+extern "C" JNIEXPORT void Java_com_superpowered_spoofer_MainActivity_onPlayPause(JNIEnv * __unused javaEnvironment, jobject __unused obj, jboolean play, jboolean buttonPressed) {
+	example->onPlayPause(play, buttonPressed);
 }
 
 extern "C" JNIEXPORT void Java_com_superpowered_spoofer_MainActivity_onCutOffFader(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint value) {
@@ -372,6 +420,10 @@ extern "C" JNIEXPORT void Java_com_superpowered_spoofer_MainActivity_onAmplitude
 extern "C" JNIEXPORT void Java_com_superpowered_spoofer_MainActivity_onPulseFader(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint value) {
     example->onPulseFader(value);
 }
-extern "C" JNIEXPORT void Java_com_superpowered_cspoofer_MainActivity_onPauseFader(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint value) {
+extern "C" JNIEXPORT void Java_com_superpowered_spoofer_MainActivity_onPauseFader(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint value) {
     example->onPauseFader(value);
 }*/
+
+extern "C" JNIEXPORT void Java_com_superpowered_spoofer_MainActivity_fadeChange(JNIEnv * __unused javaEnvironment, jobject __unused obj, jboolean value) {
+    example->fadeChange(value);
+}
