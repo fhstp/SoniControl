@@ -2,6 +2,8 @@ package com.superpowered.spoofer;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,7 +22,9 @@ import android.widget.Button;
 import android.view.View;
 import android.widget.TextView;
 
-
+import java.io.*;
+import java.nio.*;
+import android.media.*;
 
 import android.os.SystemClock;
 import android.widget.Chronometer;
@@ -51,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
     int x=0;
 
 
+    Uri path;
+    MediaPlayer _player = null;
+    boolean isReadyForInternPlayer = false;
+
+    Context helpContext;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +87,13 @@ public class MainActivity extends AppCompatActivity {
         pulseValue.setText("10 ms");
         //TextView pauseValue = (TextView)findViewById(R.id.txtPauseValue);
         //pauseValue.setText("0 ms");
+
+
+
+        helpContext = this;
+
+
+
 
         // Files under res/raw are not zipped, just copied into the APK. Get the offset and length to know where our files are located.
         //AssetFileDescriptor fd0 = getResources().openRawResourceFd(R.raw.lycka), fd1 = getResources().openRawResourceFd(R.raw.nuyorica);
@@ -202,17 +219,40 @@ public class MainActivity extends AppCompatActivity {
                         if(playing) {
                             after = SystemClock.elapsedRealtime();
 
-                            if ((after - start) >= valueOfPulses) {
+                            if (isReadyForInternPlayer){
+                                playTest = !playTest;
+                                startStopPlayer(playTest);
+                            }
+
+                            if ((after - start) >= valueOfPulses && !isReadyForInternPlayer) {
                                 playTest = !playTest;
                                 //fadeChange(true);
                                 onPlayPause(playTest, false);
 
+
+                                path = Uri.parse("android.resource://com.superpowered.spoofer/raw/");
+                                File f1 = new File("/storage/emulated/0/DCIM/superpowered.pcm"); // The location of your PCM file
+                                //File f2 = new File("android.resource://com.superpowered.spoofer/raw/superpowered.wav");
+                                //File f2 = new File("android.resource://"+getPackageName() + "/superpowered.wav");
+                                File f2 = new File("/storage/emulated/0/DCIM/superpowered.wav"); // The location where you want your WAV file
+                                try {
+                                    rawToWave(f1, f2);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                Uri newPath = Uri.parse(f2.getAbsolutePath());
+                                //_player = MediaPlayer.create(this, R.raw.superpowered);
+                                //_player = MediaPlayer.create(getApplicationContext(), newPath);
+                                _player = MediaPlayer.create(helpContext, newPath);
+                                _player.setLooping(true);
+                                isReadyForInternPlayer = true;
 
                                 //fadeChange(0.0f);
                                         //fadeChange(0.7f);
 
 
                             }
+
                             start = 0;
 
                             }
@@ -243,9 +283,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void stopPulsing(){
         try {
-            onPlayPause(false, false);
+            //onPlayPause(false, false);
+            startStopPlayer(false);
+
+
+
+
+
             start = 0;
             onFxOff();
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -264,6 +311,14 @@ public class MainActivity extends AppCompatActivity {
         Button b = (Button) findViewById(R.id.PlayPause);
         if (b != null) b.setText(playing ? "PAUSE" : "PLAY");
 
+        SeekBar sp = (SeekBar)findViewById(R.id.pulseFader);
+        SeekBar sb = (SeekBar)findViewById(R.id.bpHighFader);
+        SeekBar sa = (SeekBar)findViewById(R.id.ampFader);
+
+
+
+
+
         Button e = (Button)findViewById(R.id.spamPlay);
         if(playing && e!= null){
             e.setEnabled(false);
@@ -277,10 +332,21 @@ public class MainActivity extends AppCompatActivity {
                 playTest = true;
                 onPulsing();
 
+                if(sp!= null && sb!= null && sa!= null){
+                    sp.setEnabled(false);
+                    sb.setEnabled(false);
+                    sa.setEnabled(false);
+                }
             }
             if(!playing){
                 shouldPulse = false;
                 stopPulsing();
+
+                if(sp!= null && sb!= null && sa!= null){
+                    sp.setEnabled(true);
+                    sb.setEnabled(true);
+                    sa.setEnabled(true);
+                }
             }
 
 
@@ -336,7 +402,6 @@ public class MainActivity extends AppCompatActivity {
     //hier wav code
 
     private void rawToWave(final File rawFile, final File waveFile) throws IOException {
-
         byte[] rawData = new byte[(int) rawFile.length()];
         DataInputStream input = null;
         try {
@@ -361,6 +426,7 @@ public class MainActivity extends AppCompatActivity {
             writeShort(output, (short) 1); // audio format (1 = PCM)
             writeShort(output, (short) 1); // number of channels
             writeInt(output, 44100); // sample rate
+            final int RECORDER_SAMPLERATE = 44100;
             writeInt(output, RECORDER_SAMPLERATE * 2); // byte rate
             writeShort(output, (short) 2); // block align
             writeShort(output, (short) 16); // bits per sample
@@ -426,10 +492,17 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    //hier Javaplayer
 
-
-
-
+    private void startStopPlayer(boolean startStop){
+        if (startStop) {
+            _player.start();
+        }
+        if (!startStop){
+            _player.pause();
+            //_player.release();
+        }
+    }
 
 
 

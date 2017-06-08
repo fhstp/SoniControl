@@ -359,6 +359,10 @@ bool SuperpoweredExample::process(short int *output, unsigned int numberOfSample
             fwrite(stereoBuffer, 1, sizeOfBuffer, testFile);
         }
         SuperpoweredFloatToShortInt(stereoBuffer, output, numberOfSamples);
+        /*sizeOfBuffer = sizeOfBuffer + sizeof(stereoBuffer);
+        if(testFile) {
+            fwrite(stereoBuffer, 1, sizeOfBuffer, testFile);
+        }*/
     }
     return !silence;
 }
