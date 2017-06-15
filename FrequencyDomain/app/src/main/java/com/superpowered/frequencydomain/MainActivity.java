@@ -1,6 +1,10 @@
 package com.superpowered.frequencydomain;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Build;
@@ -8,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.*;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -44,6 +49,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Title");
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+        Notification notification = mBuilder.build();
+        notification.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+
+        NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mNotifyMgr.notify(0, notification);
 
         graphF = (GraphView) findViewById(R.id.graphF);
         graphT = (GraphView) findViewById(R.id.graphT);
