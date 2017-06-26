@@ -8,6 +8,12 @@ android { // main settings for your application
     compileSdkVersion = 23
     buildToolsVersion = '25.0.0'
 
+    buildTypes {
+        debug {
+            debuggable true
+        }
+    }
+
     defaultConfig {
         applicationId "com.superpowered.frequencydomain"
         minSdkVersion 16 // more than 95% of all active Android devices

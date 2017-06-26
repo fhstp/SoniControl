@@ -1,0 +1,31 @@
+
+{
+	"buildFiles" : 
+	[
+		"C:/Repository/SoniControlFH/Spoofer/Spoofer/app/src/main/jni/CMakeLists.txt"
+	],
+	"cleanCommands" : 
+	[
+		"C:\\Users\\peter\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Repository\\SoniControlFH\\Spoofer\\Spoofer\\app\\.externalNativeBuild\\cmake\\release\\x86_64 --target clean"
+	],
+	"libraries" : 
+	{
+		"SuperpoweredExample-Release-x86_64" : 
+		{
+			"abi" : "x86_64",
+			"artifactName" : "SuperpoweredExample",
+			"buildCommand" : "C:\\Users\\peter\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Repository\\SoniControlFH\\Spoofer\\Spoofer\\app\\.externalNativeBuild\\cmake\\release\\x86_64 --target SuperpoweredExample",
+			"buildType" : "release",
+			"output" : "C:/Repository/SoniControlFH/Spoofer/Spoofer/app/build/intermediates/cmake/release/obj/x86_64/libSuperpoweredExample.so",
+			"toolchain" : "2505926865"
+		}
+	},
+	"toolchains" : 
+	{
+		"2505926865" : 
+		{
+			"cCompilerExecutable" : "C:/Users/peter/AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "C:/Users/peter/AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}

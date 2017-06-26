@@ -1,11 +1,11 @@
 [
     {
-        "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_action_bar_title_item.xml",
-        "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\layout\\abc_action_bar_title_item.xml"
-    },
-    {
         "merged": "C:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Examples_Android\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\layout\\notification_media_cancel_action.xml",
         "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\layout\\notification_media_cancel_action.xml"
+    },
+    {
+        "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_action_bar_title_item.xml",
+        "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\layout\\abc_action_bar_title_item.xml"
     },
     {
         "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_search_view.xml",
@@ -40,12 +40,12 @@
         "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\layout\\notification_template_lines.xml"
     },
     {
-        "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_list_menu_item_checkbox.xml",
-        "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\layout\\abc_list_menu_item_checkbox.xml"
-    },
-    {
         "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_list_menu_item_icon.xml",
         "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\layout\\abc_list_menu_item_icon.xml"
+    },
+    {
+        "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_list_menu_item_checkbox.xml",
+        "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\layout\\abc_list_menu_item_checkbox.xml"
     },
     {
         "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\layout\\abc_list_menu_item_layout.xml",

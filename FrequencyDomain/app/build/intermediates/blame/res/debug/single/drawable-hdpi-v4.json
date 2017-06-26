@@ -28,12 +28,12 @@
         "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\drawable-hdpi-v4\\abc_btn_switch_to_on_mtrl_00001.9.png"
     },
     {
-        "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\abc_list_longpressed_holo.9.png",
-        "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\drawable-hdpi-v4\\abc_list_longpressed_holo.9.png"
-    },
-    {
         "merged": "C:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Examples_Android\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\abc_scrubber_control_to_pressed_mtrl_005.png",
         "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\drawable-hdpi-v4\\abc_scrubber_control_to_pressed_mtrl_005.png"
+    },
+    {
+        "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\abc_list_longpressed_holo.9.png",
+        "source": "C:\\Users\\peter\\.android\\build-cache\\201bd94a30bcd9830f9e6253741ec24754fd44a6\\output\\res\\drawable-hdpi-v4\\abc_list_longpressed_holo.9.png"
     },
     {
         "merged": "C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4\\abc_ic_star_black_16dp.png",

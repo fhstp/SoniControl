@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     Handler handler = new Handler();
-    int handlerRefreshMs = 20;
+    int handlerRefreshMs = 10;
 
     TextView rmsf;
     TextView rmst;
@@ -121,11 +121,11 @@ public class MainActivity extends AppCompatActivity {
         String samplerateString = null, buffersizeString = null;
         if (Build.VERSION.SDK_INT >= 17) {
             AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-            samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
-            buffersizeString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
+            //samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+            //buffersizeString = audioManager.getProperty("1920");
         }
         if (samplerateString == null) samplerateString = "44100";
-        if (buffersizeString == null) buffersizeString = "512";
+        if (buffersizeString == null) buffersizeString = "441";
 
         buffer.setText(buffersizeString);
         sampleRate.setText(samplerateString);
@@ -145,19 +145,26 @@ public class MainActivity extends AppCompatActivity {
             // Do something here on the main thread
             float fReading = GetRmsfReading();
             float tReading = GetRmstReading();
+            float meanReading = GetAvgRMSReading();
+            int[] detections = GetDetectionArray();
+
+            int detector=0;
+            for(int i:detections)
+                detector+=i;
+
             rmsf.setText(""+fReading);
-            rmst.setText(""+tReading);
+            rmst.setText(""+detector + " " + meanReading);
 
             rmsfSeries.appendData(new DataPoint(runningX, fReading), false, maxRunningX);
-            rmstSeries.appendData(new DataPoint(runningX, tReading), false, maxRunningX);
+            rmstSeries.appendData(new DataPoint(runningX, detector), false, maxRunningX);
 
             rmsfFIFO[runningX%maxFIFO] = fReading;
             rmsfFIFO[runningX%maxFIFO] = fReading;
 
             if(runningX>=maxFIFO)
             {
-                rmsfTresh.appendData(new DataPoint(runningX, Mean(rmsfFIFO)), false, maxRunningX);
-                rmstTresh.appendData(new DataPoint(runningX, Mean(rmstFIFO)), false, maxRunningX);
+                rmsfTresh.appendData(new DataPoint(runningX, meanReading), false, maxRunningX);
+                //rmstTresh.appendData(new DataPoint(runningX, meanReading), false, maxRunningX);
             }
 
             if(runningX>=maxRunningX)
@@ -206,5 +213,7 @@ public class MainActivity extends AppCompatActivity {
     private native void FrequencyDomain(int samplerate, int buffersize);
     private native float GetRmsfReading();
     private native float GetRmstReading();
+    private native float GetAvgRMSReading();
     private native void SetNewCutFrequency(int f);
+    private native int[] GetDetectionArray();
 }
