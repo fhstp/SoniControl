@@ -15,7 +15,7 @@ import android.os.Bundle;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import java.util.Random;
-
+import android.app.AlertDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -23,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     int fs = 44100;
     int winLen;
-    float cutoffFreqDown = 18000;
-    float cutoffFreqUp = 20000;
+    float cutoffFreqDown = 0;
+    float cutoffFreqUp = 22050;
     int freqRes;
 
     Random randomGen = new Random();
@@ -69,7 +69,16 @@ public class MainActivity extends AppCompatActivity {
         btnStart = (Button) findViewById(R.id.btnStart);
         btnStop.setEnabled(false);
 
+        final SeekBar cutoffUpFader = (SeekBar)findViewById(R.id.cutoffUpFader);
+        cutoffUpFader.setProgress((int)(cutoffFreqUp-1));
+        final SeekBar cutoffDownFader = (SeekBar)findViewById(R.id.cutoffFader);
+
         isFirstPlay = true;
+
+        final AlertDialog.Builder wrongSliderPosition = new AlertDialog.Builder(MainActivity.this);
+        wrongSliderPosition.setCancelable(true);
+        wrongSliderPosition.setMessage("The Cutoffdownfreuqency is higher than the Cutoffupfrequency! Please change the frequencies!");
+
 
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -82,12 +91,18 @@ public class MainActivity extends AppCompatActivity {
                             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                             0);
                 }
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(true);
-                playingGlobal = true;
-                playingHandler = false;
-                isFirstPlay = true;
-                onPulsing();
+
+                if(cutoffFreqDown>=cutoffFreqUp){
+                    AlertDialog wrongFrequency = wrongSliderPosition.create();
+                    wrongFrequency.show();
+                }else {
+                    btnStart.setEnabled(false);
+                    btnStop.setEnabled(true);
+                    playingGlobal = true;
+                    playingHandler = false;
+                    isFirstPlay = true;
+                    onPulsing();
+                }
             }
         });
 
@@ -151,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        final SeekBar cutoffDownFader = (SeekBar)findViewById(R.id.cutoffFader);
+
         if (cutoffDownFader != null) cutoffDownFader.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -174,13 +189,14 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        final SeekBar cutoffUpFader = (SeekBar)findViewById(R.id.cutoffUpFader);
+
         if (cutoffUpFader != null) cutoffUpFader.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                cutoffFreqUp = (float)(progress*38*5.8026315);
                 TextView cutoffValue = (TextView)findViewById(R.id.textView7);
-                cutoffValue.setText("CutoffUp: " + String.valueOf((int)(progress*38*5.8026315)));
+                cutoffFreqUp = (float) (progress * 38 * 5.8026315);
+                cutoffValue.setText("CutoffUp: " + String.valueOf((int) (progress * 38 * 5.8026315)));
+
                 if(playingGlobal) {
                     btnStop.setEnabled(false);
                     btnStart.setEnabled(true);
