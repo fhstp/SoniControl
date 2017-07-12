@@ -24,6 +24,17 @@
             android:layout_marginTop="40dp" />
 
         <SeekBar
+            android:id="@+id/cutoffUpFader"
+            android:layout_width="346dp"
+            android:layout_height="21dp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="138dp"
+            android:layout_marginTop="19dp"
+            android:layout_below="@+id/textView6"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true" />
+
+        <SeekBar
         android:id="@+id/pulseFader"
         android:layout_width="346dp"
         android:layout_height="21dp"
@@ -58,6 +69,18 @@
             android:layout_below="@+id/textView5"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/cutoffUpFader"
+            android:text="CutoffUp"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="152dp"
+            tools:layout_editor_absoluteY="177dp" />
 
         <TextView
             android:id="@+id/textView6"

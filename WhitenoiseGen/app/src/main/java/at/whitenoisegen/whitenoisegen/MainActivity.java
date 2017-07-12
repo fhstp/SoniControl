@@ -23,14 +23,16 @@ public class MainActivity extends AppCompatActivity {
 
     int fs = 44100;
     int winLen;
-    float cutoffFreq = 18000;
+    float cutoffFreqDown = 18000;
+    float cutoffFreqUp = 20000;
     int freqRes;
 
     Random randomGen = new Random();
 
     int winLenSamples;
 
-    int cutoffFreqIdx;
+    int cutoffFreqDownIdx;
+    int cutoffFreqUpIdx;
 
     double max = 0;
 
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         if (pulseFader != null) pulseFader.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                winLen = (progress*30);
+                winLen = (progress*10);
                 spoofValue = progress;
                 TextView pulseValue = (TextView)findViewById(R.id.textView4);
                 pulseValue.setText(String.valueOf(progress*10));
@@ -149,12 +151,35 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        final SeekBar cutoffFader = (SeekBar)findViewById(R.id.cutoffFader);
-        if (cutoffFader != null) cutoffFader.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        final SeekBar cutoffDownFader = (SeekBar)findViewById(R.id.cutoffFader);
+        if (cutoffDownFader != null) cutoffDownFader.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                cutoffFreq = (float)(progress*38*5.8026315);
+                cutoffFreqDown = (float)(progress*38*5.8026315);
                 TextView cutoffValue = (TextView)findViewById(R.id.textView6);
+                cutoffValue.setText("Cutoff: " + String.valueOf((int)(progress*38*5.8026315)));
+                if(playingGlobal) {
+                    btnStop.setEnabled(false);
+                    btnStart.setEnabled(true);
+                    playingGlobal = false;
+                    playingHandler = false;
+                    start = 0;
+                    stopWhitenoise();
+                }
+                noiseGenerated = false;
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        final SeekBar cutoffUpFader = (SeekBar)findViewById(R.id.cutoffUpFader);
+        if (cutoffUpFader != null) cutoffUpFader.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                cutoffFreqUp = (float)(progress*38*5.8026315);
+                TextView cutoffValue = (TextView)findViewById(R.id.textView7);
                 cutoffValue.setText("Cutoff: " + String.valueOf((int)(progress*38*5.8026315)));
                 if(playingGlobal) {
                     btnStop.setEnabled(false);
@@ -223,7 +248,8 @@ public class MainActivity extends AppCompatActivity {
         if (winLen==0){winLen= 10;}
         freqRes = (fs/2)/(winLen*(fs/1000));
 
-        cutoffFreqIdx = Math.round(cutoffFreq/(fs/2)*(winLen*fs/1000)+1);
+        cutoffFreqDownIdx = Math.round(cutoffFreqDown /(fs/2)*(winLen*fs/1000)+1);
+        cutoffFreqUpIdx = Math.round(cutoffFreqUp /(fs/2)*(winLen*fs/1000)+1);
         winLenSamples = winLen*fs/1000;
 
         if(winLenSamples%2 == 1){
@@ -233,11 +259,11 @@ public class MainActivity extends AppCompatActivity {
         TextView txtWinLenSamples = (TextView)findViewById(R.id.textViewReal);
         txtWinLenSamples.setText("WinLenSamples: " + String.valueOf(winLenSamples));
         TextView txtcutoffFreqIdx = (TextView)findViewById(R.id.textView);
-        txtcutoffFreqIdx.setText("CutoffFreqIdx: " + String.valueOf(cutoffFreqIdx));
+        txtcutoffFreqIdx.setText("CutoffFreqIdx: " + String.valueOf(cutoffFreqDownIdx));
         TextView txtcutoffFreq = (TextView)findViewById(R.id.textView2);
-        txtcutoffFreq.setText("CutoffFreq: " + String.valueOf(cutoffFreq));
+        txtcutoffFreq.setText("CutoffFreqDown: " + String.valueOf(cutoffFreqDown));
         TextView txtfs = (TextView)findViewById(R.id.textView3);
-        txtfs.setText("FS: " + String.valueOf(fs));
+        txtfs.setText("CutoffFreqUpIdx: " + String.valueOf(cutoffFreqUpIdx));
 
         double[] signal = new double[winLenSamples];
 
@@ -298,12 +324,17 @@ public class MainActivity extends AppCompatActivity {
 
         mFFT.realForwardFull(complexSignal);
 
-        for(int j=0;j<=cutoffFreqIdx;j++){
+        for(int j = 0; j<= cutoffFreqDownIdx; j++){
             complexSignal[j]= 0.0f;
         }
 
         int helpWinLenSamples = winLenSamples*2;
-        for(int j=(helpWinLenSamples-cutoffFreqIdx);j<helpWinLenSamples;j++){
+        for(int j = (helpWinLenSamples- cutoffFreqDownIdx); j<helpWinLenSamples; j++){
+            complexSignal[j]= 0.0f;
+        }
+
+        int helpUpSamples = winLenSamples-cutoffFreqUpIdx;
+        for(int j = winLenSamples-helpUpSamples; j<= winLenSamples+helpUpSamples; j++){
             complexSignal[j]= 0.0f;
         }
 
