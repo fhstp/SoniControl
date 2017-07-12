@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 cutoffFreqDown = (float)(progress*38*5.8026315);
                 TextView cutoffValue = (TextView)findViewById(R.id.textView6);
-                cutoffValue.setText("Cutoff: " + String.valueOf((int)(progress*38*5.8026315)));
+                cutoffValue.setText("CutoffDown: " + String.valueOf((int)(progress*38*5.8026315)));
                 if(playingGlobal) {
                     btnStop.setEnabled(false);
                     btnStart.setEnabled(true);
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 cutoffFreqUp = (float)(progress*38*5.8026315);
                 TextView cutoffValue = (TextView)findViewById(R.id.textView7);
-                cutoffValue.setText("Cutoff: " + String.valueOf((int)(progress*38*5.8026315)));
+                cutoffValue.setText("CutoffUp: " + String.valueOf((int)(progress*38*5.8026315)));
                 if(playingGlobal) {
                     btnStop.setEnabled(false);
                     btnStart.setEnabled(true);
