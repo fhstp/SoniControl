@@ -1,0 +1,151 @@
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent" tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="224dp"
+        android:layout_height="57dp"
+        android:text="Start"
+        tools:layout_editor_absoluteX="80dp"
+        tools:layout_editor_absoluteY="57dp" />
+
+        <Button
+            android:id="@+id/btnStop"
+            android:layout_width="224dp"
+            android:layout_height="57dp"
+            android:text="Stop"
+            tools:layout_editor_absoluteX="80dp"
+            tools:layout_editor_absoluteY="57dp"
+            android:layout_below="@+id/textViewReal"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="40dp" />
+
+        <SeekBar
+        android:id="@+id/pulseFader"
+        android:layout_width="346dp"
+        android:layout_height="21dp"
+        android:layout_below="@+id/btnStart"
+        tools:layout_editor_absoluteY="138dp"
+        tools:layout_editor_absoluteX="16dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+        <SeekBar
+            android:id="@+id/volumeFader"
+            android:layout_width="346dp"
+            android:layout_height="21dp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="138dp"
+            android:layout_marginTop="26dp"
+            android:layout_below="@+id/btnStop"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <SeekBar
+            android:id="@+id/cutoffFader"
+            android:layout_width="346dp"
+            android:layout_height="21dp"
+            android:layout_marginTop="21dp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="138dp"
+            android:layout_below="@+id/textView5"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/cutoffFader"
+            android:text="Cutoff"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="152dp"
+            tools:layout_editor_absoluteY="177dp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/pulseFader"
+            android:layout_marginTop="11dp"
+            android:text="Length"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="152dp"
+            tools:layout_editor_absoluteY="177dp" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/volumeFader"
+            android:text="Volume"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="152dp"
+            tools:layout_editor_absoluteY="177dp" />
+
+        <TextView
+        android:id="@+id/textViewReal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Power2 Value"
+        android:textAppearance="@android:style/TextAppearance.Material"
+        android:textSize="18sp"
+        tools:layout_editor_absoluteX="152dp"
+        tools:layout_editor_absoluteY="177dp"
+        android:layout_below="@+id/textView3"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView2"
+            android:text="Power2 Value"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="152dp"
+            tools:layout_editor_absoluteY="177dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView"
+            android:text="Power2 Value"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="152dp"
+            tools:layout_editor_absoluteY="177dp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView4"
+            android:text="Power2 Value"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteX="152dp"
+            tools:layout_editor_absoluteY="177dp" />
+    </RelativeLayout>
+

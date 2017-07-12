@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="D:\repositories\sonicontrol\Spoofer\Spoofer\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
+        <dex dex="D:\repositories\sonicontrol\Spoofer\Spoofer\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_55ed80c3956821e212796b5985bff9feca5520ea\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="2fd5ec5c9227fb60feba378cada427b7193c8fd8">
+        <dex dex="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_d3afb8d08012d7fe03bc6b4e42480b1c21f87aca\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="D:\repositories\sonicontrol\Spoofer\Spoofer\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="296ad7066d51624a9e65cee0c2347f2fe3668d18">
+        <dex dex="D:\repositories\sonicontrol\Spoofer\Spoofer\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_bb3a1728df1dbf8107ece7d885eb21407fd847dd\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Otakusarea\.android\build-cache\7973f0235cd2f43a227ca78b9b8463c1b395c76a\output\jars\libs\internal_impl-23.4.0.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ea3c07504d2c8f4b13aa17c45c1b68ed9c1c3674">
+        <dex dex="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\transforms\dex\debug\folders\1000\10\internal_impl-23.4.0_b732615fd04dde71b5465860ad2860de27e92e70\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="c82741bc129dd5f99f11a4ab8666ae24262053b6">
+        <dex dex="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_052f758a6f0ff7b0d839b1310fe3e0aed145cd87\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Otakusarea\.android\build-cache\6ebbcf4b76f9051c58935dd01883ad44b6b9cf89\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="c2c594cace5d83a3227b2b6e658ecbfd586d3ed9">
+        <dex dex="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_cc5508f9bb4537225f6c94521f50758cff9b1cc3\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Otakusarea\.android\build-cache\b2302abeddcef39a7afdd21e1cef3b3949f97b30\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="548f06de403a9409f00554b3ee12a9fdea0e236c">
+        <dex dex="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_812b2559a57bdd000caee75ce4a0f1336fda74eb\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Otakusarea\.android\build-cache\457d8fe49e8c0e4c6e26f696e643e3c5cb6ee55c\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="de4db3785756bfb0915a9f59a9b3f2fea7407be4">
+        <dex dex="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_4d2324177b02b410499626351702ba2bfe09ad51\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Otakusarea\.android\build-cache\7973f0235cd2f43a227ca78b9b8463c1b395c76a\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="67bd36ee9340ec7c254108936ad16b24bed160cc">
+        <dex dex="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_ea115a9e78f29c6319e28064e90aeb48c76b5850\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="D:\Programme\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.4.0\support-annotations-23.4.0.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="ffbe55fdb2bb456b1485831706a9eac3300bb6b8">
+        <dex dex="D:\dokumente\fh\Praktikum_fh\tests\SuperpoweredSDK\SuperpoweredSDK\Examples_Android\CrossExample\app\build\intermediates\transforms\dex\debug\folders\1000\10\support-annotations-23.4.0_52221fc8b230c00cd177b6fd7cb12eaf4b7879af\classes.dex" />
+    </item>
+
+</items>
