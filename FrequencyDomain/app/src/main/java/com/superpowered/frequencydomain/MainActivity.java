@@ -108,14 +108,7 @@ public class MainActivity extends AppCompatActivity {
         TextView buffer = (TextView)findViewById(R.id.textBuffer);
         TextView sampleRate = (TextView)findViewById(R.id.textSampleRate);
 
-        Button clickButton = (Button) findViewById(R.id.SetCutF);
-        final EditText inputFreq = (EditText) findViewById(R.id.inputCutF);
-        clickButton.setOnClickListener( new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SetNewCutFrequency(Integer.parseInt(inputFreq.getText().toString()));
-            }
-        });
+
 
         // Get the device's sample rate and buffer size to enable low-latency Android audio output, if available.
         String samplerateString = null, buffersizeString = null;
@@ -139,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
         handler.post(runnableCode);
     }
 
+
+
     private Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
@@ -151,6 +146,12 @@ public class MainActivity extends AppCompatActivity {
             int detector=0;
             for(int i:detections)
                 detector+=i;
+
+            if( detector > detections.length/2)
+                detector = 1;
+            else
+                detector = 0;
+
 
             rmsf.setText(""+fReading);
             rmst.setText(""+detector + " " + meanReading);
@@ -196,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -214,6 +217,6 @@ public class MainActivity extends AppCompatActivity {
     private native float GetRmsfReading();
     private native float GetRmstReading();
     private native float GetAvgRMSReading();
-    private native void SetNewCutFrequency(int f);
     private native int[] GetDetectionArray();
+
 }

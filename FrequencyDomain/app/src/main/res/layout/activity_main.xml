@@ -61,33 +61,16 @@
         android:layout_toRightOf="@+id/textView2"
         android:text="0" />
 
-    <Button
-        android:id="@+id/SetCutF"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView3"
-        android:layout_marginTop="26dp"
-        android:layout_toEndOf="@+id/textView2"
-        android:layout_toRightOf="@+id/textView2"
-        android:text="Update Cut" />
 
-    <EditText
-        android:id="@+id/inputCutF"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="5"
-        android:inputType="number"
-        android:layout_alignTop="@+id/textView3"
-        android:layout_alignLeft="@+id/SetCutF"
-        android:layout_alignStart="@+id/SetCutF" />
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/inputCutF"
+        android:layout_alignBottom="@+id/textView3"
         android:layout_alignLeft="@+id/textView3"
         android:layout_alignStart="@+id/textView3"
+        android:layout_marginBottom="-30dp"
         android:text="RMST:" />
 
     <TextView
@@ -115,7 +98,7 @@
         android:layout_width="match_parent"
         android:layout_height="100dip"
         android:id="@+id/graphF"
-        android:layout_below="@+id/SetCutF" />
+        android:layout_below="@+id/textRmst" />
     <com.jjoe64.graphview.GraphView
         android:layout_width="match_parent"
         android:layout_height="100dip"

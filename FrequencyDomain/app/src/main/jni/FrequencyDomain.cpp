@@ -37,7 +37,13 @@ static int rmsSizeInS = 30; //How many Seconds should be holded for AVG RMS, use
 static int rmsSize; //the size of the array rmsHolder
 static int rmsIndex; //the index of the array rmsHolder
 static bool rmsAvgAvailable = false; //is true when there is enough data available (3/4)
+static int rmsType=0; //0=Sum, 1=STD DEV, 2=NTIMES, 3=Manual
+static int rmsCustom = 20;
 
+
+static float extremeCutOff = 10.0; //reading 10 times more than the avg are not read
+static float extremeCutMinimum = 10.0; //reading under 10 are always read
+static float extremeCutBase = 0.02; //AVG is atleast this size
 #define FFT_LOG_SIZE 11 // 2^11 = 2048 - minimum viable size
 
 static int advanceSampleArray()
@@ -56,19 +62,38 @@ static int advanceRMSArray()
         return rmsIndex=0;
 }
 
-static float GetAvgRMS()
+static float GetAvgRMS(int rmstype)
 {
     if(!rmsAvgAvailable)
         return -1.0f;
 
-    float sum = 0.0f;
-    int i;
-    for (i=0; i < rmsSize; ++i) {
-        if(*(rmsHolder+i) < 0.0f) //breaks for loop only in the beginning, when rmsHolder is not fully populated
-            break;
-        sum+=*(rmsHolder+i);
+    if(rmstype == 0) {
+        float sum = 0.0f;
+        int i;
+        for (i = 0; i < rmsSize; ++i) {
+            sum += *(rmsHolder + i);
+        }
+        return sum / i > extremeCutBase ? sum / i  : extremeCutBase;
     }
-    return sum/i;
+    if(rmstype == 1)
+    {
+        float variance = 0.0f;
+        float mean = GetAvgRMS(0);
+
+        int i=0;
+        for (i = 0; i < rmsSize; ++i) {
+            variance += powf((*(rmsHolder + i) - mean),2.0);
+        }
+        return sqrtf(variance/(i)) > extremeCutBase ? sqrtf(variance/(i)) : extremeCutBase;
+    }
+
+    if(rmstype == 2) {
+        return GetAvgRMS(0)*rmsCustom;
+    }
+
+    if(rmstype == 3) {
+        return rmsCustom;
+    }
 }
 
 static void saveSample(float *samples, int numberOfSamples)
@@ -102,21 +127,25 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
     // In the frequency domain we are working with 1024 magnitudes and phases for every channel (left, right), if the fft size is 2048.
     while (frequencyDomain->timeDomainToFrequencyDomain(magnitudeLeft, magnitudeRight, phaseLeft, phaseRight)) {
 
-        rmsF = 0.0f; // 1/n * SUMn[Xn]
+        float rmsFi = 0.0f; // 1/n * SUMn[Xn]
         for (int i = (int) cutBin; i < powf(2.0,(float)FFT_LOG_SIZE-1); i++) { //half the size
             if(*(magnitudeLeft+i) >= 0.0f) //if bin above 0
-            rmsF += (*(magnitudeLeft+i) * *(magnitudeLeft+i)); //square them and sum them over
+                rmsFi += (*(magnitudeLeft+i) * *(magnitudeLeft+i)); //square them and sum them over
         }
-        rmsF *= 1.0f/ (powf(2.0,(float)FFT_LOG_SIZE-1) - cutBin); //multiply with the number of the elements
-        rmsF = sqrtf(rmsF); //get the root
+        rmsFi *= 1.0f/ (powf(2.0,(float)FFT_LOG_SIZE-1) - cutBin); //multiply with the number of the elements
+        rmsFi = sqrtf(rmsFi); //get the root
 
+        //if(rmsFi > extremeCutMinimum && rmsFi > GetAvgRMS(rmsType) * extremeCutOff )
+          //  continue;
+
+        rmsF = rmsFi;
         *(rmsHolder+rmsIndex) = rmsF; //save rms, first in, last out circle
         advanceRMSArray();
 
         //as soon as there is avg svailable, check if above treshold
         if(rmsAvgAvailable)
         {
-            if(rmsF>= GetAvgRMS())
+            if(rmsF>= GetAvgRMS(rmsType))
                 *(detectionArray+detectionIndex) = 1;
             else
                 *(detectionArray+detectionIndex) = 0;
@@ -137,6 +166,43 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 }
 
 
+static void createNewRmsBuffer()
+{
+    float* container = (float*)malloc(rmsSize * sizeof(rmsHolder));
+    int oldsize = rmsSize;
+    memcpy(container, rmsHolder, rmsSize * sizeof(float));
+
+    rmsSize = (int)bufferSeconds * rmsSizeInS;
+    rmsIndex = rmsIndex>=rmsSize?0:rmsIndex;
+    rmsHolder = (float*)malloc(rmsSize * sizeof(rmsHolder));
+
+    memcpy(rmsHolder, container, rmsSize>oldsize?oldsize * sizeof(float):rmsSize * sizeof(float));
+
+    free(container);
+}
+
+static void createNewDetectionBuffers()
+{
+    int bufferSizeInMs = (int) ceil((1000.0f / bufferSeconds));
+    float *lastSamplesArrayContainer = (float*)malloc(detectionSize * bufferSize * sizeof(lastSamplesArray));;
+    int *detectionArrayContainer = (int*)malloc(detectionSize * sizeof(detectionArray));
+    int oldsize = detectionSize;
+
+    memcpy(lastSamplesArrayContainer, lastSamplesArray, detectionSize * bufferSize * sizeof(lastSamplesArray));
+    memcpy(detectionArrayContainer, detectionArray, detectionSize * sizeof(detectionArray));
+
+    detectionSize = (int) ceil(saveLastMilliseconds/bufferSizeInMs) + 1;
+    detectionIndex = detectionIndex>=detectionSize?0:detectionIndex;
+
+    lastSamplesArray = (float*)malloc(detectionSize * bufferSize * sizeof(lastSamplesArray));
+    detectionArray = (int*)malloc(detectionSize * sizeof(detectionArray));
+
+    memcpy(lastSamplesArray, lastSamplesArrayContainer, detectionSize>oldsize? oldsize * bufferSize * sizeof(lastSamplesArray) : detectionSize * bufferSize * sizeof(lastSamplesArray));
+    memcpy(detectionArray, detectionArrayContainer, detectionSize>oldsize? oldsize * sizeof(detectionArray) : detectionSize * sizeof(detectionArray));
+
+    free(lastSamplesArrayContainer);
+    free(detectionArrayContainer);
+}
 
 extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_MainActivity_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint samplerate, jint buffersize) {
     frequencyDomain = new SuperpoweredFrequencyDomain(FFT_LOG_SIZE); // This will do the main "magic".
@@ -181,14 +247,55 @@ extern "C" JNIEXPORT float Java_com_superpowered_frequencydomain_MainActivity_Ge
 
 extern "C" JNIEXPORT float Java_com_superpowered_frequencydomain_MainActivity_GetAvgRMSReading(JNIEnv * __unused javaEnvironment, jobject __unused obj){
     if(rmsAvgAvailable)
-        return GetAvgRMS();
+        return GetAvgRMS(rmsType);
     else
         return -1.0f;
 }
 
-extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_MainActivity_SetNewCutFrequency(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint cutF){
+extern "C" JNIEXPORT float Java_com_superpowered_frequencydomain_MainActivity_GetRmstBinary(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+    if(rmsT > ceil(detectionSize/2))
+        return 1;
+    else
+        return 0;
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewCutFrequency(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint cutF){
     cutFrequency = cutF;
     cutBin = cutFrequency / binSizeinHz;
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewBufferSize(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint buffer){
+
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewRmsCustomVar(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint ntimes){
+    rmsCustom = ntimes;
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewExtremeMinimum(JNIEnv * __unused javaEnvironment, jobject __unused obj, jfloat min){
+    extremeCutMinimum = min;
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewExtremeCut(JNIEnv * __unused javaEnvironment, jobject __unused obj, jfloat cut){
+    extremeCutOff = cut;
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewExtremeBase(JNIEnv * __unused javaEnvironment, jobject __unused obj, jfloat base){
+    extremeCutBase = base;
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewDetectionTime(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint lastms){
+    saveLastMilliseconds = lastms;
+    createNewDetectionBuffers();
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewRmsBuffer(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint lasts){
+    rmsSizeInS = lasts;
+    createNewRmsBuffer();
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewAverageRmsType(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint type){
+    rmsType = type;
 }
 
 extern "C" JNIEXPORT jintArray Java_com_superpowered_frequencydomain_MainActivity_GetDetectionArray(JNIEnv *javaEnvironment, jobject __unused obj) {
