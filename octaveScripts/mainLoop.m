@@ -14,16 +14,16 @@ for idxFile = 1%:nFiles
  
   disp([folder filesep d(idxFile).name]);
   y=mean(y,2); %tansform to mono
-  n_smpl=numel(y); %Anzahl der Einzelwerte von y
+  n_smpl=numel(y); %Number of single values of y
 
     sizeBuffer=200; %ms Windowsize (200 necessary for nearby)!
-    sizeBuffer_smpl = round(fs/1000*sizeBuffer); %Anzahl Windowsamples
+    sizeBuffer_smpl = round(fs/1000*sizeBuffer); %Number of Windowsamples
     buffer = zeros(1,sizeBuffer_smpl);
     frequencyResolution = fs/2 / floor(sizeBuffer_smpl / 2);
     frequencies = 0:frequencyResolution:fs/2;
 
 
-    rmsBufferSize = 20; %Anzahl der im Buffer gesammelten RMS, unit = number of buffers
+    rmsBufferSize = 20; %Number of collected RMS values in the buffer, unit = number of buffers
     rmsBuffer = zeros(1,rmsBufferSize);
 
     medianBufferSize = 15;
@@ -31,7 +31,7 @@ for idxFile = 1%:nFiles
 
     bufferHistory = zeros(sizeBuffer_smpl,medianBufferSize);
 
-    [b,a] = butter(20,18000/(fs./2),'high'); %Hochpassfilter
+    [b,a] = butter(20,18000/(fs./2),'high'); %Highpassfilter
 
 
     %Specification of different transmission technologies:
@@ -53,19 +53,19 @@ for idxFile = 1%:nFiles
     specs.prontoly.spacing = 4000; %ms %spacing between two words
     
   
-  %detNumber = 30; %Anzahl der Detections nacheinander um den Detektor auszulösen
+  %detNumber = 30; %Number of Detections for triggering the detector
   windowStartIdx = 1:sizeBuffer_smpl:n_smpl-sizeBuffer_smpl;
-  globalDetectionBuffer = zeros(1, numel(windowStartIdx))-1; %Erstellung einer Matrix nur mit 0er für die Anzahl der Durchläufe
-  globalDetectionNearby = zeros(1, numel(windowStartIdx))-1; %Erstellung einer Matrix nur mit 0er für die Anzahl der Durchläufe
+  globalDetectionBuffer = zeros(1, numel(windowStartIdx))-1; %Creation of matrix with 0 only
+  globalDetectionNearby = zeros(1, numel(windowStartIdx))-1; %Creation of matrix with 0 only
   
   counter = 1;
   i = 0; %running index for rmsBuffer
   j = 0; %running index for bufferHistory
   for idx=1:sizeBuffer_smpl:n_smpl-sizeBuffer_smpl
     
-    buffer = y(idx:idx+sizeBuffer_smpl-1); %Aktueller frame/aktuelles Fenster ist die stelle von y vom aktuellen index bis zum aktuellen index plus die Fenstergröße minus 1 = immer die Fenstergröße
-    bufferHiPass = filter(b,a,buffer); %Aktueller frame durch den Hochpassfilter gefiltert
-    rms = sqrt(mean((bufferHiPass.^2))); %rms vom aktuellen frame
+    buffer = y(idx:idx+sizeBuffer_smpl-1); %Current frame/current window is the point of y with the current index to the current index plus the windowsize minus 1 = always windowsize
+    bufferHiPass = filter(b,a,buffer); %Current frame filtered through the highpassfilter
+    rms = sqrt(mean((bufferHiPass.^2))); %RMS of the current frame
     
     if counter > rmsBufferSize %start detection when rmsBufferSize is full
       bufferHistory(:,mod(j,medianBufferSize)+1) = buffer;
@@ -77,7 +77,6 @@ for idxFile = 1%:nFiles
       detection = 0;
       if rms>threshold
         detection = 1;
-        %detections(counter)=1; %Wenn an der aktuellen Counterstelle der rms größer als der Schwellwert ist wird detections auf 1 gestellt
       end
       
       medianBuffer(mod(j,medianBufferSize)+1) = detection;
@@ -113,7 +112,7 @@ for idxFile = 1%:nFiles
       
     end
     
-    counter = counter +1; %Counter um 1 hoch pro Schleifendurchgang
+    counter = counter +1; %Counter plus 1 at every loop
     rmsBuffer(mod(i,rmsBufferSize)+1) = rms;
     i = i+1;
   end
