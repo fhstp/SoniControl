@@ -87,6 +87,10 @@ public class MainActivity extends AppCompatActivity {
     String signalType;
     String signalTechnology;
 
+    int playertime;
+    int pulselength;
+    int playstatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -439,12 +443,13 @@ public class MainActivity extends AppCompatActivity {
                             0);
                 }
 
+
 /*
-                if(cutoffFreqDown>=cutoffFreqUp){
+                if(txtUpFreqBand1.getText()==""||){
                     AlertDialog wrongFrequency = wrongSliderPosition.create();
                     wrongFrequency.show();
                 }else {*/
-                if(whiteNoiseBands!=null) {
+                if(whiteNoiseBands!=null && signalType.equals("custom")) {
                     if (bandsChanged()) {
                         noiseGenerated = false;
                     }
@@ -485,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
         if (pulseFader != null) pulseFader.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                winLen = (progress*10);
+                winLen = (progress*40);
                 spoofValue = progress;
                 TextView pulseValue = (TextView)findViewById(R.id.textView4);
                 pulseValue.setText(String.valueOf(progress*10));
@@ -584,11 +589,8 @@ public class MainActivity extends AppCompatActivity {
             generateWhitenoise();
         }
 
-        if (start == 0) {
-            start = SystemClock.elapsedRealtime(); //storing the time
-            after = SystemClock.elapsedRealtime(); //storing the time
-
-            if (isFirstPlay) { //if it is the first play after starting the spoofer
+        if (isFirstPlay) {
+            //if it is the first play after starting the spoofer
                 playingHandler = !playingHandler; //switch helpvariable for playing
                 if(spoofValue == 100){ //Check if continuous spoofing is active (=Slider on value 100)
                     startStop(true); //starting it not depending on the playingHandler variable
@@ -596,17 +598,22 @@ public class MainActivity extends AppCompatActivity {
                     startStop(playingHandler); //starting it depending on the playingHandler boolean
                 }
                 isFirstPlay = false; //set the first play to false
-            }
 
             onPulsing(); //execute the method again
         } else { //if start isn't 0 anymore
-
+            /*if(spoofValue == 100){
+                pulselength = playertime;
+            }else if(playingHandler && spoofValue<100){
+                pulselength = playertime;
+            }else{
+                pulselength = playertime/3;
+            }pulselength = winLen;*/
             pulsingHandler.postDelayed(new Runnable() {
                 public void run() { //Handler for delaying the next play/stop
                     if (playingGlobal) {
-                        after = SystemClock.elapsedRealtime(); //get the latest time
+                        //after = SystemClock.elapsedRealtime(); //get the latest time
 
-                        if ((after - start) >= winLen / 3) { //if the difference between the start and the delayed after-value is over windowLength/3
+                        //if ((after - start) >= winLen) { //if the difference between the start and the delayed after-value is over windowLength/3
                             playingHandler = !playingHandler; //switch helpvariable for playing
                             if(spoofValue == 100){ //Check if continuous spoofing active
                                 startStop(false); //stop the spoofer only for starting it again immediately
@@ -614,14 +621,14 @@ public class MainActivity extends AppCompatActivity {
                             }else {
                                 startStop(playingHandler); //starting it depending on the playingHandler boolean
                             }
-                        }
+                        //}
 
                         start = 0; //set start to 0 for a new basic value
                         onPulsing(); //execute the method again
                     }
 
                 }
-            }, winLen / 3); //delay time is windowLength/3
+            }, playertime*(long)(0.9)); //delay time is windowLength/3
         }
     }
 
@@ -700,21 +707,21 @@ public class MainActivity extends AppCompatActivity {
                     noiseCounter++; //counter plus one for every real value
                 }
             }
-            /*
-            int fadeSamples = Math.round(helpNoise.length/3);
+
+            int fadeSamples = Math.round(helpNoise.length/2);
             //int fadeSamples = 1000;
             for(int i = 0; i < fadeSamples; i++){
                 helpNoise[i] = (helpNoise[i]*((double)i/(double)fadeSamples));
 
-            }*/
+            }
             /*
             for(int i = fadeSamples; i >= 0; i--) {
                 helpNoise[helpNoise.length-(fadeSamples-i)-1] = (helpNoise[helpNoise.length-(fadeSamples-i)-1] * ((double)i / (double) fadeSamples));
             }*/
-            /*
+
             for(int i = 0; i < fadeSamples; i++) {
                 helpNoise[helpNoise.length-(fadeSamples-(fadeSamples-i))-1] = (helpNoise[helpNoise.length-(fadeSamples-(fadeSamples-i))-1] * ((double)i / (double) fadeSamples));
-            }*/
+            }
             /*
             for(int i = 0; i < fadeSamples*2; i++) {
                 helpNoise[helpNoise.length-((fadeSamples*2)-((fadeSamples*2)-i))-1] = (helpNoise[helpNoise.length-((fadeSamples*2)-((fadeSamples*2)-i))-1] * ((double)i / (double) (fadeSamples*2)));
@@ -722,7 +729,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             //hier multiplizieren und schauen ob über 1 oder unter -1, dann runtercroppen, dann auf short
-
+/*
         for (int i = 0; i < winLenSamples; i++) {
             helpNoise[i] = (helpNoise[i]); //scale the double values up to short by multiplying with 32767
                 if(helpNoise[i] > 1){
@@ -732,11 +739,24 @@ public class MainActivity extends AppCompatActivity {
                     helpNoise[i] = -1;
                 }
         }
+*/          playertime = (winLen+182);
+            double[] noClickNoise = new double[(winLenSamples+8000)];
 
-            whiteNoise = new short[winLenSamples]; //short array for the whitenoise
+            for(int i = 0; i<(winLenSamples+8000); i++){
+                if(i<4000){
+                    noClickNoise[i] = 0.0;
+                }else if(i>=4000 && i<winLenSamples) {
+                    noClickNoise[i] = helpNoise[i];
+                }else{
+                    noClickNoise[i] = 0.0;
+                }
 
-            for (int i = 0; i < winLenSamples; i++) {
-                whiteNoise[i] = (short) (helpNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
+            }
+
+            whiteNoise = new short[winLenSamples+8000]; //short array for the whitenoise
+
+            for (int i = 0; i < winLenSamples+8000; i++) {
+                whiteNoise[i] = (short) (noClickNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
                 /*if(whiteNoise[i] > 32767){
                     whiteNoise[i] = 32767;
                 }
@@ -1016,7 +1036,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             test = new int[0][0]; //if the scanning of the file goes wrong, an array with zero/zero will be initialized
         }
-
 
         return test; //the array with the frequencybands will be returned
     }
