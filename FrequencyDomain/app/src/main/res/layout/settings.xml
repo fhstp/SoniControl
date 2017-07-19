@@ -76,54 +76,34 @@
         android:layout_toEndOf="@+id/SetDetectionWindow" />
 
     <Button
-        android:id="@+id/SetExtremeCut"
+        android:id="@+id/SetBufferSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
-        android:text="Extreme CutOff (AVG*N)"
-        android:layout_below="@+id/SetRMSWindow"
-        android:layout_alignLeft="@+id/SetDetectionWindow"
-        android:layout_alignStart="@+id/SetDetectionWindow" />
+        android:text="Set Buffersize"
+        android:layout_centerVertical="true"
+        android:layout_alignRight="@+id/SetRMSWindow"
+        android:layout_alignEnd="@+id/SetRMSWindow" />
 
     <EditText
-        android:id="@+id/inputSetExtremeCut"
+        android:id="@+id/inputSetBufferSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="5"
-        android:text="10.0"
+        android:text="441"
         android:inputType="number"
-        android:layout_alignBottom="@+id/SetExtremeCut"
+        android:layout_alignBottom="@+id/SetBufferSize"
         android:layout_alignLeft="@+id/inputSetRMSWindow"
         android:layout_alignStart="@+id/inputSetRMSWindow" />
 
-    <Button
-        android:id="@+id/SetExtremeMinimum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
-        android:text="Extreme Minimum (AMP)"
-        android:layout_below="@+id/SetExtremeCut"
-        android:layout_alignLeft="@+id/SetExtremeCut"
-        android:layout_alignStart="@+id/SetExtremeCut" />
 
-    <EditText
-        android:id="@+id/inputSetExtremeMinimum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="5"
-        android:text="10.0"
-        android:inputType="number"
-        android:layout_alignBottom="@+id/SetExtremeMinimum"
-        android:layout_alignLeft="@+id/inputSetRMSWindow"
-        android:layout_alignStart="@+id/inputSetRMSWindow" />
 
     <Button
         android:id="@+id/SetNewExtremeBase"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:text="Extreme Bases (AMP)"
-        android:layout_below="@+id/SetExtremeMinimum"
+        android:text="Minimum AVG (AMP)"
+        android:layout_below="@+id/SetBufferSize"
         android:layout_alignLeft="@+id/SetCutF"
         android:layout_alignStart="@+id/SetCutF" />
 
@@ -145,10 +125,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/radioAvgType"
-        android:layout_below="@+id/SetNewExtremeBase"
+        android:layout_above="@+id/inputMeanNtimes"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="11dp">
+        android:layout_alignParentStart="true">
         <RadioButton
             android:id="@+id/radioButtonMean"
             android:layout_width="wrap_content"
@@ -160,13 +139,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="22dp"
-            android:text="1:Variance" />
+            android:text="1:Mean+1SDEV" />
         <RadioButton
             android:id="@+id/radioButtonTimes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="22dp"
-            android:text="2:Mean*X" />
+            android:text="2:Median" />
         <RadioButton
             android:id="@+id/radioButtonX"
             android:layout_width="wrap_content"
@@ -190,7 +169,7 @@
         android:id="@+id/SetNewAVGType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="S"
+        android:text="Set Type"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

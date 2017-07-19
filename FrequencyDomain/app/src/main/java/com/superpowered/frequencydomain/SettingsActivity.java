@@ -47,23 +47,16 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        Button extremecutButton = (Button) findViewById(R.id.SetExtremeCut);
-        final EditText inputExtremeCut = (EditText) findViewById(R.id.inputSetExtremeCut);
-        extremecutButton.setOnClickListener(new OnClickListener() {
+        Button buffersizeButton = (Button) findViewById(R.id.SetBufferSize);
+        final EditText inputbuffersize = (EditText) findViewById(R.id.inputSetBufferSize);
+        buffersizeButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SetNewExtremeCut(Float.parseFloat(inputExtremeCut.getText().toString()));
+                SetNewBufferSize(Integer.parseInt(inputbuffersize.getText().toString()));
             }
         });
 
-        Button extremeMinButton = (Button) findViewById(R.id.SetExtremeMinimum);
-        final EditText inputExtremeMin = (EditText) findViewById(R.id.inputSetExtremeMinimum);
-        extremeMinButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SetNewExtremeMinimum(Float.parseFloat(inputExtremeMin.getText().toString()));
-            }
-        });
+
 
         Button extremeBaseButton = (Button) findViewById(R.id.SetNewExtremeBase);
         final EditText inputExtremeBase = (EditText) findViewById(R.id.inputSetNewExtremeBase);

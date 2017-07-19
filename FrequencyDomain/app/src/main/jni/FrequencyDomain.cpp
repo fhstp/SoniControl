@@ -1,13 +1,16 @@
 #include <jni.h>
 #include <stdlib.h>
 #include <SuperpoweredFrequencyDomain.h>
-#include <SuperpoweredFilter.h>
 #include <AndroidIO/SuperpoweredAndroidAudioIO.h>
 #include <SuperpoweredSimple.h>
 #include <SuperpoweredCPU.h>
 #include <SLES/OpenSLES.h>
 #include <cmath>
 #include <stdio.h>
+#include <algorithm>
+#include <functional>
+#include <vector>
+#include <stdlib.h>
 #include <math.h>
 #include <SLES/OpenSLES_AndroidConfiguration.h>
 
@@ -62,6 +65,12 @@ static int advanceRMSArray()
         return rmsIndex=0;
 }
 
+static float GetMedian(float *daArray, int iSize) {
+    std::vector<float> vec (daArray, daArray+iSize);
+    std::nth_element(vec.begin(), vec.begin()+ (iSize/2), vec.end());
+    return vec[(iSize/2)];
+}
+
 static float GetAvgRMS(int rmstype)
 {
     if(!rmsAvgAvailable)
@@ -84,17 +93,21 @@ static float GetAvgRMS(int rmstype)
         for (i = 0; i < rmsSize; ++i) {
             variance += powf((*(rmsHolder + i) - mean),2.0);
         }
-        return sqrtf(variance/(i)) > extremeCutBase ? sqrtf(variance/(i)) : extremeCutBase;
+        return sqrtf(variance/(i)) + mean > extremeCutBase ? sqrtf(variance/(i)) + mean: extremeCutBase;
     }
 
     if(rmstype == 2) {
-        return GetAvgRMS(0)*rmsCustom;
+        float median = GetMedian(rmsHolder, rmsSize);
+
+        return median > extremeCutBase ? median: extremeCutBase;
     }
 
     if(rmstype == 3) {
         return rmsCustom;
     }
 }
+
+
 
 static void saveSample(float *samples, int numberOfSamples)
 {
@@ -128,17 +141,32 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
     while (frequencyDomain->timeDomainToFrequencyDomain(magnitudeLeft, magnitudeRight, phaseLeft, phaseRight)) {
 
         float rmsFi = 0.0f; // 1/n * SUMn[Xn]
+        float rmsFmean = 0.0f;
+        float rmsDev = 0.0f;
+        int rmsCounts = 0;
+
         for (int i = (int) cutBin; i < powf(2.0,(float)FFT_LOG_SIZE-1); i++) { //half the size
             if(*(magnitudeLeft+i) >= 0.0f) //if bin above 0
-                rmsFi += (*(magnitudeLeft+i) * *(magnitudeLeft+i)); //square them and sum them over
+                rmsFmean += *(magnitudeLeft+i); //sum
         }
-        rmsFi *= 1.0f/ (powf(2.0,(float)FFT_LOG_SIZE-1) - cutBin); //multiply with the number of the elements
+        rmsFmean = rmsFmean/ (powf(2.0,(float)FFT_LOG_SIZE-1) - cutBin); //mean
+
+        for (int i = (int) cutBin; i < powf(2.0,(float)FFT_LOG_SIZE-1); i++) { //half the size
+            if (*(magnitudeLeft + i) >= 0.0f) //if bin above 0
+                rmsDev += powf((*(magnitudeLeft + i) - rmsFmean), 2.0);
+        }
+        rmsDev = sqrtf(rmsDev/(powf(2.0,(float)FFT_LOG_SIZE-1) - cutBin));
+
+        for (int i = (int) cutBin; i < powf(2.0,(float)FFT_LOG_SIZE-1); i++) { //half the size
+            if(*(magnitudeLeft+i) >= rmsFmean+rmsDev) { //if bin above Mean
+                rmsFi += (*(magnitudeLeft + i) * *(magnitudeLeft + i)); //square them and sum them over
+                rmsCounts++;
+            }
+        }
+        rmsFi *= 1.0f/ rmsCounts; //multiply with the number of the elements
         rmsFi = sqrtf(rmsFi); //get the root
 
-        //if(rmsFi > extremeCutMinimum && rmsFi > GetAvgRMS(rmsType) * extremeCutOff )
-          //  continue;
-
-        rmsF = rmsFi;
+        rmsF = logf(1.0f + rmsFi);
         *(rmsHolder+rmsIndex) = rmsF; //save rms, first in, last out circle
         advanceRMSArray();
 
