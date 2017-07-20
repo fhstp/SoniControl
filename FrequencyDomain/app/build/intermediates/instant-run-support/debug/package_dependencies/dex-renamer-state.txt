@@ -1,0 +1,19 @@
+#Fri May 26 17:41:15 CEST 2017
+renamed.5=classes5.dex
+renamed.4=classes.dex
+renamed.3=classes6.dex
+renamed.2=classes2.dex
+renamed.1=classes3.dex
+renamed.0=classes4.dex
+base.5=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\internal_impl-23.4.0_572dbf66ad9265b2f67bc33777d1ab84cb76076f
+base.4=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_248e1a9d66d366e8762777b9b0cb3dece3fb4bc3
+base.3=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\support-annotations-23.4.0_7194965f4da3992f25c349ce2b8ce47b8db66754
+base.2=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_b888ae182dfbf7569a0bf531dad725574de758b7
+base.1=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_c2e4b94bca8f56c1280caf71c7d1b98269cf52b3
+base.0=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_caed14bf95eef8ec38bd60bc8b6d72519bde53ff
+file.5=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\internal_impl-23.4.0_572dbf66ad9265b2f67bc33777d1ab84cb76076f\\classes.dex
+file.4=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_248e1a9d66d366e8762777b9b0cb3dece3fb4bc3\\classes.dex
+file.3=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\support-annotations-23.4.0_7194965f4da3992f25c349ce2b8ce47b8db66754\\classes.dex
+file.2=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_b888ae182dfbf7569a0bf531dad725574de758b7\\classes.dex
+file.1=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_c2e4b94bca8f56c1280caf71c7d1b98269cf52b3\\classes.dex
+file.0=C\:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10\\classes_caed14bf95eef8ec38bd60bc8b6d72519bde53ff\\classes.dex

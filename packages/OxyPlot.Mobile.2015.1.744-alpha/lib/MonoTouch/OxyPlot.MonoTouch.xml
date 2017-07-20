@@ -1,0 +1,570 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OxyPlot.MonoTouch</name>
+    </assembly>
+    <members>
+        <member name="T:OxyPlot.MonoTouch.PanZoomGestureRecognizer">
+            <summary>
+            Recognizes drag/pinch multi-touch gestures and translates them into pan/zoom information.
+            </summary>
+        </member>
+        <member name="F:OxyPlot.MonoTouch.PanZoomGestureRecognizer.activeTouches">
+            <summary>
+            Up to 2 touches being currently tracked in a pan/zoom.
+            </summary>
+        </member>
+        <member name="F:OxyPlot.MonoTouch.PanZoomGestureRecognizer.startingDistance">
+            <summary>
+            Distance between touch points when the second touch point begins. Used to determine
+            whether the touch points cross along a given axis during the zoom gesture.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PanZoomGestureRecognizer.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:OxyPlot.MonoTouch.PanZoomGestureRecognizer"/> class.
+            </summary>
+            <remarks>
+            To add methods that will be invoked upon recognition, you can use the AddTarget method.
+            </remarks>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PanZoomGestureRecognizer.TouchesBegan(MonoTouch.Foundation.NSSet,MonoTouch.UIKit.UIEvent)">
+            <summary>
+            Called when a touch gesture begins.
+            </summary>
+            <param name="touches">The touches.</param>
+            <param name="evt">The event arguments.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PanZoomGestureRecognizer.TouchesMoved(MonoTouch.Foundation.NSSet,MonoTouch.UIKit.UIEvent)">
+            <summary>
+            Called when a touch gesture is moving.
+            </summary>
+            <param name="touches">The touches.</param>
+            <param name="evt">The event arguments.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PanZoomGestureRecognizer.TouchesEnded(MonoTouch.Foundation.NSSet,MonoTouch.UIKit.UIEvent)">
+            <summary>
+            Called when a touch gesture ends.
+            </summary>
+            <param name="touches">The touches.</param>
+            <param name="evt">The event arguments.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PanZoomGestureRecognizer.TouchesCancelled(MonoTouch.Foundation.NSSet,MonoTouch.UIKit.UIEvent)">
+            <summary>
+            Called when a touch gesture is cancelled.
+            </summary>
+            <param name="touches">The touches.</param>
+            <param name="evt">The event arguments.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PanZoomGestureRecognizer.DidDirectionChange(System.Double,System.Double)">
+            <summary>
+            Determines whether the direction has changed.
+            </summary>
+            <param name="current">The current value.</param>
+            <param name="original">The original value.</param>
+            <returns><c>true</c> if the direction changed.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PanZoomGestureRecognizer.CalculateScaleFactor(System.Double,System.Double)">
+            <summary>
+            Calculates the scale factor.
+            </summary>
+            <param name="distance">The distance.</param>
+            <param name="previousDistance">The previous distance.</param>
+            <returns>The scale factor.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PanZoomGestureRecognizer.CalculateStartingDistance">
+            <summary>
+            Calculates the starting distance.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PanZoomGestureRecognizer.PreventCross(OxyPlot.ScreenVector)">
+            <summary>
+            Applies the "prevent fingers crossing" to the specified vector.
+            </summary>
+            <param name="currentDistance">The current distance.</param>
+            <returns>A vector where the "prevent fingers crossing" is applied.</returns>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PanZoomGestureRecognizer.KeepAspectRatioWhenPinching">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:OxyPlot.MonoTouch.PanZoomGestureRecognizer"/> keeps the aspect ratio when pinching.
+            </summary>
+            <value><c>true</c> if keep aspect ratio when pinching; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PanZoomGestureRecognizer.ZoomThreshold">
+            <summary>
+            Gets or sets how far apart touch points must be on a certain axis to enable scaling that axis.
+            (only applies if KeepAspectRatioWhenPinching is <c>false</c>)
+            </summary>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PanZoomGestureRecognizer.AllowPinchPastZero">
+            <summary>
+            Gets or sets a value indicating whether a zoom-out gesture can turn into a zoom-in gesture if the fingers cross. 
+            If <c>true</c>, and <see cref="P:OxyPlot.MonoTouch.PanZoomGestureRecognizer.KeepAspectRatioWhenPinching"/> is <c>false</c>, a zoom-out gesture
+            can turn into a zoom-in gesture if the fingers cross. Setting to <c>false</c> will
+            instead simply stop the zoom at that point.
+            </summary>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PanZoomGestureRecognizer.TouchEventArgs">
+            <summary>
+            Gets or sets the current calculated pan/zoom changes.
+            </summary>
+            <value>
+            The touch event arguments.
+            </value>
+        </member>
+        <member name="T:OxyPlot.MonoTouch.MonoTouchRenderContext">
+            <summary>
+            Implements a <see cref="T:OxyPlot.IRenderContext"/> for MonoTouch CoreGraphics.
+            </summary>
+        </member>
+        <member name="F:OxyPlot.MonoTouch.MonoTouchRenderContext.imagesInUse">
+            <summary>
+            The images in use.
+            </summary>
+        </member>
+        <member name="F:OxyPlot.MonoTouch.MonoTouchRenderContext.fonts">
+            <summary>
+            The fonts cache.
+            </summary>
+        </member>
+        <member name="F:OxyPlot.MonoTouch.MonoTouchRenderContext.imageCache">
+            <summary>
+            The image cache.
+            </summary>
+        </member>
+        <member name="F:OxyPlot.MonoTouch.MonoTouchRenderContext.gctx">
+            <summary>
+            The graphics context.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.#ctor(MonoTouch.CoreGraphics.CGContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:OxyPlot.MonoTouch.MonoTouchRenderContext"/> class.
+            </summary>
+            <param name="context">The context.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.DrawEllipse(OxyPlot.OxyRect,OxyPlot.OxyColor,OxyPlot.OxyColor,System.Double)">
+            <summary>
+            Draws an ellipse.
+            </summary>
+            <param name="rect">The rectangle.</param>
+            <param name="fill">The fill color.</param>
+            <param name="stroke">The stroke color.</param>
+            <param name="thickness">The thickness.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.DrawImage(OxyPlot.OxyImage,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Boolean)">
+            <summary>
+            Draws the specified portion of the specified <see cref="T:OxyPlot.OxyImage"/> at the specified location and with the specified size.
+            </summary>
+            <param name="source">The source.</param>
+            <param name="srcX">The x-coordinate of the upper-left corner of the portion of the source image to draw.</param>
+            <param name="srcY">The y-coordinate of the upper-left corner of the portion of the source image to draw.</param>
+            <param name="srcWidth">Width of the portion of the source image to draw.</param>
+            <param name="srcHeight">Height of the portion of the source image to draw.</param>
+            <param name="destX">The x-coordinate of the upper-left corner of drawn image.</param>
+            <param name="destY">The y-coordinate of the upper-left corner of drawn image.</param>
+            <param name="destWidth">The width of the drawn image.</param>
+            <param name="destHeight">The height of the drawn image.</param>
+            <param name="opacity">The opacity.</param>
+            <param name="interpolate">Interpolate if set to <c>true</c>.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.CleanUp">
+            <summary>
+            Cleans up resources not in use.
+            </summary>
+            <remarks>This method is called at the end of each rendering.</remarks>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.SetClip(OxyPlot.OxyRect)">
+            <summary>
+            Sets the clip rectangle.
+            </summary>
+            <param name="rect">The clip rectangle.</param>
+            <returns>True if the clip rectangle was set.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.ResetClip">
+            <summary>
+            Resets the clip rectangle.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.DrawLine(System.Collections.Generic.IList{OxyPlot.ScreenPoint},OxyPlot.OxyColor,System.Double,System.Double[],OxyPlot.LineJoin,System.Boolean)">
+            <summary>
+            Draws a polyline.
+            </summary>
+            <param name="points">The points.</param>
+            <param name="stroke">The stroke color.</param>
+            <param name="thickness">The stroke thickness.</param>
+            <param name="dashArray">The dash array.</param>
+            <param name="lineJoin">The line join type.</param>
+            <param name="aliased">if set to <c>true</c> the shape will be aliased.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.DrawPolygon(System.Collections.Generic.IList{OxyPlot.ScreenPoint},OxyPlot.OxyColor,OxyPlot.OxyColor,System.Double,System.Double[],OxyPlot.LineJoin,System.Boolean)">
+            <summary>
+            Draws a polygon. The polygon can have stroke and/or fill.
+            </summary>
+            <param name="points">The points.</param>
+            <param name="fill">The fill color.</param>
+            <param name="stroke">The stroke color.</param>
+            <param name="thickness">The stroke thickness.</param>
+            <param name="dashArray">The dash array.</param>
+            <param name="lineJoin">The line join type.</param>
+            <param name="aliased">If set to <c>true</c> the shape will be aliased.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.DrawRectangle(OxyPlot.OxyRect,OxyPlot.OxyColor,OxyPlot.OxyColor,System.Double)">
+            <summary>
+            Draws a rectangle.
+            </summary>
+            <param name="rect">The rectangle.</param>
+            <param name="fill">The fill color.</param>
+            <param name="stroke">The stroke color.</param>
+            <param name="thickness">The stroke thickness.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.DrawText(OxyPlot.ScreenPoint,System.String,OxyPlot.OxyColor,System.String,System.Double,System.Double,System.Double,OxyPlot.HorizontalAlignment,OxyPlot.VerticalAlignment,System.Nullable{OxyPlot.OxySize})">
+            <summary>
+            Draws the text.
+            </summary>
+            <param name="p">The position of the text.</param>
+            <param name="text">The text.</param>
+            <param name="fill">The fill color.</param>
+            <param name="fontFamily">The font family.</param>
+            <param name="fontSize">Size of the font.</param>
+            <param name="fontWeight">The font weight.</param>
+            <param name="rotate">The rotation angle.</param>
+            <param name="halign">The horizontal alignment.</param>
+            <param name="valign">The vertical alignment.</param>
+            <param name="maxSize">The maximum size of the text.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.MeasureText(System.String,System.String,System.Double,System.Double)">
+            <summary>
+            Measures the text.
+            </summary>
+            <param name="text">The text.</param>
+            <param name="fontFamily">The font family.</param>
+            <param name="fontSize">Size of the font.</param>
+            <param name="fontWeight">The font weight.</param>
+            <returns>
+            The size of the text.
+            </returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.Dispose">
+            <summary>
+            Releases all resource used by the <see cref="T:OxyPlot.MonoTouch.MonoTouchRenderContext"/> object.
+            </summary>
+            <remarks>Call <see cref="M:OxyPlot.MonoTouch.MonoTouchRenderContext.Dispose"/> when you are finished using the
+            <see cref="T:OxyPlot.MonoTouch.MonoTouchRenderContext"/>. The <see cref="M:OxyPlot.MonoTouch.MonoTouchRenderContext.Dispose"/> method leaves the
+            <see cref="T:OxyPlot.MonoTouch.MonoTouchRenderContext"/> in an unusable state. After calling
+            <see cref="M:OxyPlot.MonoTouch.MonoTouchRenderContext.Dispose"/>, you must release all references to the
+            <see cref="T:OxyPlot.MonoTouch.MonoTouchRenderContext"/> so the garbage collector can reclaim the memory that
+            the <see cref="T:OxyPlot.MonoTouch.MonoTouchRenderContext"/> was occupying.</remarks>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.GetActualFontName(System.String,System.Double)">
+            <summary>
+            Gets the actual font for iOS.
+            </summary>
+            <param name="fontFamily">The font family.</param> 
+            <param name="fontWeight">The font weight.</param> 
+            <returns>The actual font name.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.GetFontMetrics(MonoTouch.CoreText.CTFont,System.Single@,System.Single@)">
+            <summary>
+            Gets font metrics for the specified font.
+            </summary>
+            <param name="font">The font.</param>
+            <param name="defaultLineHeight">Default line height.</param>
+            <param name="delta">The vertical delta.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.GetCachedFont(System.String,System.Double)">
+            <summary>
+            Gets the specified from cache.
+            </summary>
+            <returns>The font.</returns>
+            <param name="fontName">Font name.</param>
+            <param name="fontSize">Font size.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.SetAlias(System.Boolean)">
+            <summary>
+            Sets the alias state.
+            </summary>
+            <param name="alias">alias if set to <c>true</c>.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.SetFill(OxyPlot.OxyColor)">
+            <summary>
+            Sets the fill color.
+            </summary>
+            <param name="c">The color.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.SetStroke(OxyPlot.OxyColor,System.Double,System.Double[],OxyPlot.LineJoin)">
+            <summary>
+            Sets the stroke style.
+            </summary>
+            <param name="c">The stroke color.</param>
+            <param name="thickness">The stroke thickness.</param>
+            <param name="dashArray">The dash array.</param>
+            <param name="lineJoin">The line join.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.MonoTouchRenderContext.GetImage(OxyPlot.OxyImage)">
+            <summary>
+            Gets the image from cache or converts the specified <paramref name="source"/> <see cref="T:OxyPlot.OxyImage"/>.
+            </summary>
+            <param name="source">The source.</param>
+            <returns>The image.</returns>
+        </member>
+        <member name="T:OxyPlot.MonoTouch.PlotView">
+            <summary>
+            Provides a view that can show a <see cref="T:OxyPlot.PlotModel"/>. 
+            </summary>
+        </member>
+        <member name="F:OxyPlot.MonoTouch.PlotView.model">
+            <summary>
+            The current plot model.
+            </summary>
+        </member>
+        <member name="F:OxyPlot.MonoTouch.PlotView.defaultController">
+            <summary>
+            The default plot controller.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:OxyPlot.MonoTouch.PlotView"/> class.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.#ctor(System.Drawing.RectangleF)">
+            <summary>
+            Initializes a new instance of the <see cref="T:OxyPlot.MonoTouch.PlotView"/> class.
+            </summary>
+            <param name="frame">The initial frame.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.#ctor(MonoTouch.Foundation.NSCoder)">
+            <summary>
+            Initializes a new instance of the <see cref="T:OxyPlot.MonoTouch.PlotView"/> class.
+            </summary>
+            <param name="coder">Coder.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.UseNewLayout">
+            <summary>
+            Uses the new layout.
+            </summary>
+            <returns><c>true</c>, if new layout was used, <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.Initialize">
+            <summary>
+            Initialize the view.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.HideTracker">
+            <summary>
+            Hides the tracker.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.HideZoomRectangle">
+            <summary>
+            Hides the zoom rectangle.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.InvalidatePlot(System.Boolean)">
+            <summary>
+            Invalidates the plot (not blocking the UI thread)
+            </summary>
+            <param name="updateData">If set to <c>true</c> update data.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.SetCursorType(OxyPlot.CursorType)">
+            <summary>
+            Sets the cursor type.
+            </summary>
+            <param name="cursorType">The cursor type.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.ShowTracker(OxyPlot.TrackerHitResult)">
+            <summary>
+            Shows the tracker.
+            </summary>
+            <param name="trackerHitResult">The tracker data.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.ShowZoomRectangle(OxyPlot.OxyRect)">
+            <summary>
+            Shows the zoom rectangle.
+            </summary>
+            <param name="rectangle">The rectangle.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.SetClipboardText(System.String)">
+            <summary>
+            Stores text on the clipboard.
+            </summary>
+            <param name="text">The text.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.Draw(System.Drawing.RectangleF)">
+            <summary>
+            Draws the content of the view.
+            </summary>
+            <param name="rect">The rectangle to draw.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.PlotView.MotionBegan(MonoTouch.UIKit.UIEventSubtype,MonoTouch.UIKit.UIEvent)">
+            <summary>
+            Method invoked when a motion (a shake) has started.
+            </summary>
+            <param name="motion">The motion subtype.</param>
+            <param name="evt">The event arguments.</param>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.Model">
+            <summary>
+            Gets or sets the <see cref="T:OxyPlot.PlotModel"/> to show in the view. 
+            </summary>
+            <value>The <see cref="T:OxyPlot.PlotModel"/>.</value>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.Controller">
+            <summary>
+            Gets or sets the <see cref="T:OxyPlot.IPlotController"/> that handles input events.
+            </summary>
+            <value>The <see cref="T:OxyPlot.IPlotController"/>.</value>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.OxyPlot#IView#ActualModel">
+            <summary>
+            Gets the actual model in the view.
+            </summary>
+            <value>
+            The actual model.
+            </value>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.ActualModel">
+            <summary>
+            Gets the actual <see cref="T:OxyPlot.PlotModel"/> to show.
+            </summary>
+            <value>The actual model.</value>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.OxyPlot#IView#ActualController">
+            <summary>
+            Gets the actual controller.
+            </summary>
+            <value>
+            The actual <see cref="T:OxyPlot.IController"/>.
+            </value>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.ClientArea">
+            <summary>
+            Gets the coordinates of the client area of the view.
+            </summary>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.ActualController">
+            <summary>
+            Gets the actual <see cref="T:OxyPlot.IPlotController"/>.
+            </summary>
+            <value>The actual plot controller.</value>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.KeepAspectRatioWhenPinching">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:OxyPlot.MonoTouch.PlotView"/> keeps the aspect ratio when pinching.
+            </summary>
+            <value><c>true</c> if keep aspect ratio when pinching; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.ZoomThreshold">
+            <summary>
+            How far apart touch points must be on a certain axis to enable scaling that axis.
+            (only applies if KeepAspectRatioWhenPinching == false)
+            </summary>
+        </member>
+        <member name="P:OxyPlot.MonoTouch.PlotView.AllowPinchPastZero">
+            <summary>
+            If <c>true</c>, and KeepAspectRatioWhenPinching is <c>false</c>, a zoom-out gesture
+            can turn into a zoom-in gesture if the fingers cross. Setting to <c>false</c> will
+            instead simply stop the zoom at that point.
+            </summary>
+        </member>
+        <member name="T:OxyPlot.MonoTouch.ExportExtensions">
+            <summary>
+            Provides extension methods related to export.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ExportExtensions.ToPng(MonoTouch.UIKit.UIView,System.Drawing.RectangleF)">
+            <summary>
+            Stores the specified <see cref="T:MonoTouch.UIKit.UIView"/> to a PNG file.
+            </summary>
+            <returns>The PNG data.</returns>
+            <param name="view">The view to export.</param>
+            <param name="rect">The rectangle to export.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ExportExtensions.GetImage(MonoTouch.UIKit.UIView,System.Drawing.RectangleF)">
+            <summary>
+            Gets the image for the specified <see cref="T:MonoTouch.UIKit.UIView"/> .
+            </summary>
+            <returns>The image.</returns>
+            <param name="view">The view.</param>
+            <param name="rect">The rectangle.</param>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ExportExtensions.ToPdf(MonoTouch.UIKit.UIView,System.Drawing.RectangleF)">
+            <summary>
+            Exports the specified <see cref="T:MonoTouch.UIKit.UIView"/> to a PDF file.
+            </summary>
+            <returns>The PDF data.</returns>
+            <param name="view">The view to export.</param>
+            <param name="rect">The rectangle to export.</param>
+        </member>
+        <member name="T:OxyPlot.MonoTouch.ConverterExtensions">
+            <summary>
+            Provides extension methods that converts between MonoTouch and OxyPlot types.
+            </summary>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ConverterExtensions.ToScreenPoint(System.Drawing.PointF)">
+            <summary>
+            Converts a <see cref="T:System.Drawing.PointF"/> to a <see cref="T:OxyPlot.ScreenPoint"/>.
+            </summary>
+            <param name="p">The point to convert.</param>
+            <returns>The converted point.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ConverterExtensions.ToTouchEventArgs(MonoTouch.UIKit.UITouch,MonoTouch.UIKit.UIView)">
+            <summary>
+            Converts <see cref="T:MonoTouch.UIKit.UITouch"/> event arguments to <see cref="T:OxyPlot.OxyTouchEventArgs"/>.
+            </summary>
+            <param name="touch">The touch event arguments.</param>
+            <param name="view">The view.</param>
+            <returns>The converted arguments.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ConverterExtensions.ToCGColor(OxyPlot.OxyColor)">
+            <summary>
+            Converts a <see cref="T:OxyPlot.OxyColor"/> to a <see cref="T:MonoTouch.CoreGraphics.CGColor"/>.
+            </summary>
+            <param name="c">The color to convert.</param>
+            <returns>The converted color.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ConverterExtensions.ToUIColor(OxyPlot.OxyColor)">
+            <summary>
+            Converts a <see cref="T:OxyPlot.OxyColor"/> to a <see cref="T:MonoTouch.UIKit.UIColor"/>.
+            </summary>
+            <param name="c">The color to convert.</param>
+            <returns>The converted color.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ConverterExtensions.Convert(OxyPlot.LineJoin)">
+            <summary>
+            Converts a <see cref="T:OxyPlot.LineJoin"/> to a <see cref="T:MonoTouch.CoreGraphics.CGLineCap"/>.
+            </summary>
+            <param name="lineJoin">The line join.</param>
+            <returns>The converted join.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ConverterExtensions.Convert(OxyPlot.ScreenPoint)">
+            <summary>
+            Converts a <see cref="T:OxyPlot.ScreenPoint"/> to a <see cref="T:System.Drawing.PointF"/>.
+            </summary>
+            <param name="p">The point to convert.</param>
+            <returns>The converted point.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ConverterExtensions.ConvertAliased(OxyPlot.ScreenPoint)">
+            <summary>
+            Converts a <see cref="T:OxyPlot.ScreenPoint"/> to a pixel center aligned <see cref="T:System.Drawing.PointF"/>.
+            </summary>
+            <param name="p">The point to convert.</param>
+            <returns>The converted point.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ConverterExtensions.ConvertAliased(OxyPlot.OxyRect)">
+            <summary>
+            Converts a <see cref="T:OxyPlot.OxyRect"/> to a pixel center aligned <see cref="T:System.Drawing.RectangleF"/>.
+            </summary>
+            <param name="rect">The rectangle to convert.</param>
+            <returns>The converted rectangle.</returns>
+        </member>
+        <member name="M:OxyPlot.MonoTouch.ConverterExtensions.Convert(OxyPlot.OxyRect)">
+            <summary>
+            Converts a <see cref="T:OxyPlot.OxyRect"/> to a <see cref="T:System.Drawing.RectangleF"/>.
+            </summary>
+            <param name="rect">The rectangle to convert.</param>
+            <returns>The converted rectangle.</returns>
+        </member>
+    </members>
+</doc>

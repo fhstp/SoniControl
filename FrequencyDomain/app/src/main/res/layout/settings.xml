@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false">
+
+    <Button
+        android:id="@+id/SetCutF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Cut Frequency (Hz)"
+        android:layout_marginRight="13dp"
+        android:layout_marginEnd="13dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/SetDetectionWindow"
+        android:layout_alignEnd="@+id/SetDetectionWindow" />
+
+    <EditText
+        android:id="@+id/inputCutF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="5"
+        android:text="18000"
+        android:inputType="number"
+        android:layout_marginRight="47dp"
+        android:layout_marginEnd="47dp"
+        android:layout_above="@+id/SetDetectionWindow"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/SetDetectionWindow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:text="Detection WIndow (ms)"
+        android:layout_below="@+id/SetCutF"
+        android:layout_toLeftOf="@+id/inputCutF"
+        android:layout_toStartOf="@+id/inputCutF"
+        android:layout_marginRight="11dp"
+        android:layout_marginEnd="11dp" />
+
+    <EditText
+        android:id="@+id/inputSetDetectionWindow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="5"
+        android:text="500"
+        android:inputType="number"
+        android:layout_alignBottom="@+id/SetDetectionWindow"
+        android:layout_toRightOf="@+id/SetDetectionWindow"
+        android:layout_toEndOf="@+id/SetDetectionWindow" />
+
+    <Button
+        android:id="@+id/SetRMSWindow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="RMS WIndow (S)"
+        android:layout_below="@+id/SetDetectionWindow"
+        android:layout_alignRight="@+id/SetDetectionWindow"
+        android:layout_alignEnd="@+id/SetDetectionWindow"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp" />
+
+    <EditText
+        android:id="@+id/inputSetRMSWindow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="5"
+        android:text="30"
+        android:inputType="number"
+        android:layout_alignBottom="@+id/SetRMSWindow"
+        android:layout_toRightOf="@+id/SetDetectionWindow"
+        android:layout_toEndOf="@+id/SetDetectionWindow" />
+
+    <Button
+        android:id="@+id/SetBufferSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set Buffersize"
+        android:layout_centerVertical="true"
+        android:layout_alignRight="@+id/SetRMSWindow"
+        android:layout_alignEnd="@+id/SetRMSWindow" />
+
+    <EditText
+        android:id="@+id/inputSetBufferSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="5"
+        android:text="441"
+        android:inputType="number"
+        android:layout_alignBottom="@+id/SetBufferSize"
+        android:layout_alignLeft="@+id/inputSetRMSWindow"
+        android:layout_alignStart="@+id/inputSetRMSWindow" />
+
+
+
+    <Button
+        android:id="@+id/SetNewExtremeBase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="Minimum AVG (AMP)"
+        android:layout_below="@+id/SetBufferSize"
+        android:layout_alignLeft="@+id/SetCutF"
+        android:layout_alignStart="@+id/SetCutF" />
+
+    <EditText
+        android:id="@+id/inputSetNewExtremeBase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="5"
+        android:text="0.02"
+        android:inputType="number"
+        android:layout_alignBottom="@+id/SetNewExtremeBase"
+        android:layout_alignLeft="@+id/inputSetRMSWindow"
+        android:layout_alignStart="@+id/inputSetRMSWindow" />
+
+
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/radioAvgType"
+        android:layout_above="@+id/inputMeanNtimes"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <RadioButton
+            android:id="@+id/radioButtonMean"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="22dp"
+            android:text="0:Mean" />
+        <RadioButton
+            android:id="@+id/radioButtonVariance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="22dp"
+            android:text="1:Mean+1SDEV" />
+        <RadioButton
+            android:id="@+id/radioButtonTimes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="22dp"
+            android:text="2:Median" />
+        <RadioButton
+            android:id="@+id/radioButtonX"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="22dp"
+            android:text="3:X" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/inputMeanNtimes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="2"
+        android:text="20"
+        android:inputType="number"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/SetRMSWindow"
+        android:layout_toEndOf="@+id/SetRMSWindow" />
+
+    <Button
+        android:id="@+id/SetNewAVGType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set Type"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp" />
+
+</RelativeLayout>

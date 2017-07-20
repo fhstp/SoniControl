@@ -1,0 +1,47 @@
+
+{
+	"buildFiles" : 
+	[
+		"C:/Repository/SoniControlFH/FrequencyDomain/app/src/main/jni/CMakeLists.txt"
+	],
+	"cleanCommands" : 
+	[
+		"C:\\Users\\peter\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\.externalNativeBuild\\cmake\\debug\\x86_64 --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"SuperpoweredExample-Debug-x86_64" : 
+		{
+			"abi" : "x86_64",
+			"artifactName" : "SuperpoweredExample",
+			"buildCommand" : "C:\\Users\\peter\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.3155560\\bin\\cmake.exe --build C:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\.externalNativeBuild\\cmake\\debug\\x86_64 --target SuperpoweredExample",
+			"buildType" : "debug",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=x86_64-none-linux-android --gcc-toolchain=C:/Users/peter/AppData/Local/Android/sdk/ndk-bundle/toolchains/x86_64-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/peter/AppData/Local/Android/sdk/ndk-bundle/platforms/android-21/arch-x86_64  -DSuperpoweredExample_EXPORTS -IC:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\src\\main\\jni\\src\\main\\jni -IC:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Superpowered -isystem C:\\Users\\peter\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\peter\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\x86_64\\include -isystem C:\\Users\\peter\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -fsigned-char -IC:/Users/peter/Desktop/SuperpoweredSDK/Superpowered -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Repository/SoniControlFH/FrequencyDomain/app/src/main/jni/FrequencyDomain.cpp",
+					"workingDirectory" : "C:/Repository/SoniControlFH/FrequencyDomain/app/.externalNativeBuild/cmake/debug/x86_64"
+				},
+				
+				{
+					"flags" : "  --target=x86_64-none-linux-android --gcc-toolchain=C:/Users/peter/AppData/Local/Android/sdk/ndk-bundle/toolchains/x86_64-4.9/prebuilt/windows-x86_64 --sysroot=C:/Users/peter/AppData/Local/Android/sdk/ndk-bundle/platforms/android-21/arch-x86_64  -DSuperpoweredExample_EXPORTS -IC:\\Repository\\SoniControlFH\\FrequencyDomain\\app\\src\\main\\jni\\src\\main\\jni -IC:\\Users\\peter\\Desktop\\SuperpoweredSDK\\Superpowered -isystem C:\\Users\\peter\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include -isystem C:\\Users\\peter\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\libs\\x86_64\\include -isystem C:\\Users\\peter\\AppData\\Local\\Android\\sdk\\ndk-bundle\\sources\\cxx-stl\\gnu-libstdc++\\4.9\\include\\backward  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security  -fsigned-char -IC:/Users/peter/Desktop/SuperpoweredSDK/Superpowered -O0 -fno-limit-debug-info -O0 -fno-limit-debug-info  -fPIC    -c ",
+					"src" : "C:/Users/peter/Desktop/SuperpoweredSDK/Superpowered/AndroidIO/SuperpoweredAndroidAudioIO.cpp",
+					"workingDirectory" : "C:/Repository/SoniControlFH/FrequencyDomain/app/.externalNativeBuild/cmake/debug/x86_64"
+				}
+			],
+			"output" : "C:/Repository/SoniControlFH/FrequencyDomain/app/build/intermediates/cmake/debug/obj/x86_64/libSuperpoweredExample.so",
+			"toolchain" : "2505926865"
+		}
+	},
+	"toolchains" : 
+	{
+		"2505926865" : 
+		{
+			"cCompilerExecutable" : "C:/Users/peter/AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe",
+			"cppCompilerExecutable" : "C:/Users/peter/AppData/Local/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+		}
+	}
+}

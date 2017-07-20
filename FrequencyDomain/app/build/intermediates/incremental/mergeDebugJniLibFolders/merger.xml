@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="C:\Repository\SoniControlFH\FrequencyDomain\app\src\main\jni"><file name="CMakeLists.txt" path="C:\Repository\SoniControlFH\FrequencyDomain\app\src\main\jni\CMakeLists.txt"/><file name="FrequencyDomain.cpp" path="C:\Repository\SoniControlFH\FrequencyDomain\app\src\main\jni\FrequencyDomain.cpp"/></source></dataSet><dataSet config="debug"><source path="C:\Repository\SoniControlFH\FrequencyDomain\app\src\debug\jniLibs"/></dataSet></merger>
