@@ -1,0 +1,3 @@
+D:/repositories/sonicontrol/Spoofer/Spoofer/app/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/SuperpoweredExample.dir
+D:/repositories/sonicontrol/Spoofer/Spoofer/app/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/edit_cache.dir
+D:/repositories/sonicontrol/Spoofer/Spoofer/app/.externalNativeBuild/cmake/release/x86_64/CMakeFiles/rebuild_cache.dir
