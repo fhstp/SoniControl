@@ -167,7 +167,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
         }
         rmsFi *= 1.0f/ rmsCounts; //multiply with inverse of the number of the elements
         rmsFi = sqrtf(rmsFi); //get the root
-
+        rmsF = rmsFi;
         //rmsF = logf(1.0f + rmsFi);
         *(rmsHolder+rmsIndex) = rmsF; //save rms, first in, last out circle
         advanceRMSArray();
