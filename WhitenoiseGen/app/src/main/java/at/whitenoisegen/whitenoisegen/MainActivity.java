@@ -490,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
         if (pulseFader != null) pulseFader.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                winLen = (progress*40);
+                winLen = (progress*80);
                 spoofValue = progress;
                 TextView pulseValue = (TextView)findViewById(R.id.textView4);
                 pulseValue.setText(String.valueOf(progress*10));
@@ -595,7 +595,8 @@ public class MainActivity extends AppCompatActivity {
                 if(spoofValue == 100){ //Check if continuous spoofing is active (=Slider on value 100)
                     startStop(true); //starting it not depending on the playingHandler variable
                 }else {
-                    startStop(playingHandler); //starting it depending on the playingHandler boolean
+                    startStop(playingHandler);
+                    playingHandler = !playingHandler;//starting it depending on the playingHandler boolean
                 }
                 isFirstPlay = false; //set the first play to false
 
@@ -613,13 +614,16 @@ public class MainActivity extends AppCompatActivity {
                     if (playingGlobal) {
                         //after = SystemClock.elapsedRealtime(); //get the latest time
 
-                        //if ((after - start) >= winLen) { //if the difference between the start and the delayed after-value is over windowLength/3
-                            playingHandler = !playingHandler; //switch helpvariable for playing
+                        //if ((after - start) >= winLen) { //if the difference between the start and the delayed after-value is over windowLength/2
+                             //switch helpvariable for playing
                             if(spoofValue == 100){ //Check if continuous spoofing active
                                 startStop(false); //stop the spoofer only for starting it again immediately
                                 startStop(true); //starting it not depending on the playingHandler variable
                             }else {
-                                startStop(playingHandler); //starting it depending on the playingHandler boolean
+                                startStop(playingHandler);
+                                playingHandler = !playingHandler;
+                                startStop(playingHandler);
+                                playingHandler = !playingHandler;//starting it depending on the playingHandler boolean
                             }
                         //}
 
@@ -628,7 +632,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
-            }, playertime*(long)(0.9)); //delay time is windowLength/3
+            }, playertime); //delay time is windowLength/2
         }
     }
 
@@ -708,10 +712,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            int fadeSamples = Math.round(helpNoise.length/2);
+
+            int fadeSamples = Math.round(helpNoise.length / 3);
             //int fadeSamples = 1000;
-            for(int i = 0; i < fadeSamples; i++){
-                helpNoise[i] = (helpNoise[i]*((double)i/(double)fadeSamples));
+            for (int i = 0; i < fadeSamples; i++) {
+                helpNoise[i] = (helpNoise[i] * ((double) i / (double) fadeSamples));
 
             }
             /*
@@ -719,12 +724,13 @@ public class MainActivity extends AppCompatActivity {
                 helpNoise[helpNoise.length-(fadeSamples-i)-1] = (helpNoise[helpNoise.length-(fadeSamples-i)-1] * ((double)i / (double) fadeSamples));
             }*/
 
-            for(int i = 0; i < fadeSamples; i++) {
-                helpNoise[helpNoise.length-(fadeSamples-(fadeSamples-i))-1] = (helpNoise[helpNoise.length-(fadeSamples-(fadeSamples-i))-1] * ((double)i / (double) fadeSamples));
+            for (int i = 0; i < fadeSamples; i++) {
+                helpNoise[helpNoise.length - (fadeSamples - (fadeSamples - i)) - 1] = (helpNoise[helpNoise.length - (fadeSamples - (fadeSamples - i)) - 1] * ((double) i / (double) fadeSamples));
             }
+
             /*
-            for(int i = 0; i < fadeSamples*2; i++) {
-                helpNoise[helpNoise.length-((fadeSamples*2)-((fadeSamples*2)-i))-1] = (helpNoise[helpNoise.length-((fadeSamples*2)-((fadeSamples*2)-i))-1] * ((double)i / (double) (fadeSamples*2)));
+            for (int i = 0; i < fadeSamples * 2; i++) {
+                helpNoise[helpNoise.length - ((fadeSamples * 2) - ((fadeSamples * 2) - i)) - 1] = (helpNoise[helpNoise.length - ((fadeSamples * 2) - ((fadeSamples * 2) - i)) - 1] * ((double) i / (double) (fadeSamples * 2)));
             }*/
 
 
@@ -739,24 +745,14 @@ public class MainActivity extends AppCompatActivity {
                     helpNoise[i] = -1;
                 }
         }
-*/          playertime = (winLen+182);
-            double[] noClickNoise = new double[(winLenSamples+8000)];
+*/          playertime = (winLen);
 
-            for(int i = 0; i<(winLenSamples+8000); i++){
-                if(i<4000){
-                    noClickNoise[i] = 0.0;
-                }else if(i>=4000 && i<winLenSamples) {
-                    noClickNoise[i] = helpNoise[i];
-                }else{
-                    noClickNoise[i] = 0.0;
-                }
 
-            }
+            whiteNoise = new short[winLenSamples]; //short array for the whitenoise
+            //short[] hopeNoise = new short[winLenSamples];
 
-            whiteNoise = new short[winLenSamples+8000]; //short array for the whitenoise
-
-            for (int i = 0; i < winLenSamples+8000; i++) {
-                whiteNoise[i] = (short) (noClickNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
+            for (int i = 0; i < winLenSamples/*+35000*/; i++) {
+                whiteNoise[i] = (short) (helpNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
                 /*if(whiteNoise[i] > 32767){
                     whiteNoise[i] = 32767;
                 }
@@ -765,7 +761,22 @@ public class MainActivity extends AppCompatActivity {
                 }*/
             }
 
+        //double[] noClickNoise = new double[(winLenSamples+60000)];
+/*
+        int wn = 0;
+        for(int i = 0; i<(winLenSamples+60000); i++){
+            if(i<30000){
+                whiteNoise[i] = 0;
+            }
+            if(i>=30000 && i<winLenSamples+30000) {
+                whiteNoise[i] = hopeNoise[wn];
+                wn++;
+            }else{
+                whiteNoise[i] = 0;
+            }
 
+        }
+*/
 
             generatePlayer(); //create the audiotrack player
             //changeWhiteNoiseVolume(); //changing the volume level of the player
