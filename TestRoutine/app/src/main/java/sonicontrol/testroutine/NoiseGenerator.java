@@ -120,7 +120,7 @@ public class NoiseGenerator {
         }
 
 
-        int fadeSamples = Math.round(helpNoise.length / 2); //value for the length of the fade in/fade out
+        int fadeSamples = Math.round(helpNoise.length / 10); //value for the length of the fade in/fade out
         //int fadeSamples = 500;
         for (int i = 0; i < fadeSamples; i++) { //fade in
             helpNoise[i] = (helpNoise[i] * ((double) i / (double) fadeSamples));
@@ -140,7 +140,7 @@ public class NoiseGenerator {
                 helpNoise[i] = -1; //chang it to -1
             }
         }
-
+/*
         double[] noClickNoise = new double[(winLenSamples+(winLenSamples/65))]; //create new array with the length of windowSamples + buffer for zeroes => Fade out help
 
         for(int i = 0; i<(winLenSamples+(winLenSamples/65)); i++){
@@ -150,13 +150,13 @@ public class NoiseGenerator {
                 noClickNoise[i] = 0; //for everything above 0 as new value
             }
         }
+*/
+        playertime = (winLen/*+((winLenSamples/65)*1000/fs)*/); //time for the pulsing spoofer => windowLength + Length of the added 0-buffer
 
-        playertime = (winLen+((winLenSamples/65)*1000/fs)); //time for the pulsing spoofer => windowLength + Length of the added 0-buffer
+        whiteNoise = new short[winLenSamples/*+(winLenSamples/65)*/]; //short array for the whitenoise
 
-        whiteNoise = new short[winLenSamples+(winLenSamples/65)]; //short array for the whitenoise
-
-        for (int i = 0; i < winLenSamples+(winLenSamples/65); i++) {
-            whiteNoise[i] = (short) (noClickNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
+        for (int i = 0; i < winLenSamples/*+(winLenSamples/65)*/; i++) {
+            whiteNoise[i] = (short) (helpNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
         }
 
         AudioTrack generatedNoisePlayer;
@@ -265,8 +265,8 @@ public class NoiseGenerator {
 
     private AudioTrack generatePlayer(){
         winLenSamples = winLen*fs/1000; //calculating the windowLengthSamples
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,fs, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,(winLenSamples+(winLenSamples/65))*2,AudioTrack.MODE_STATIC); //creating the audiotrack player with winLenSamples*2 as the buffersize because the constructor wants bytes
-        audioTrack.write(whiteNoise, 0, (winLenSamples+(winLenSamples/65))); //put the whiteNoise shortarray into the player, buffersize winLenSamples are Shorts here
+        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,fs, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,(winLenSamples/*+(winLenSamples/65)*/)*2,AudioTrack.MODE_STATIC); //creating the audiotrack player with winLenSamples*2 as the buffersize because the constructor wants bytes
+        audioTrack.write(whiteNoise, 0, (winLenSamples/*+(winLenSamples/65)*/)); //put the whiteNoise shortarray into the player, buffersize winLenSamples are Shorts here
         return audioTrack;
     }
 

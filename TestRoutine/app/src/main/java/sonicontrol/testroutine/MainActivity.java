@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     Scan detector;
     Location locationFinder;
+    JSONManager jsonMan = new JSONManager(this);
 
     AlertDialog alert;
     TextView txtSignalType;
@@ -100,19 +101,18 @@ public class MainActivity extends AppCompatActivity {
         initSpoofingStatusNotification(); //initialize the spoofing-status notification
 
 
-
         txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
         if(!detector.checkIfJsonFileIsAvailable()){ //check if a JSON File is already there in the storage
-            locationFinder.createJsonFile(); //create a JSON file
+            jsonMan.createJsonFile(); //create a JSON file
         }
-        if(!locationFinder.checkIfSavefolderIsAvailable()){ //check if a folder for the audio files is already there in the storage
-            locationFinder.createSaveFolder(); //create a folder for the audio files
+        if(!jsonMan.checkIfSavefolderIsAvailable()){ //check if a folder for the audio files is already there in the storage
+            jsonMan.createSaveFolder(); //create a folder for the audio files
         }
 
         Button btnAlertStore = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
         btnAlertStore.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                locationFinder.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,0); //adding the found signal in the JSON file
+                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,0); //adding the found signal in the JSON file
                 detector.startScanning(); //start scanning again
                 alert.cancel(); //cancel the alert dialog
                 txtSignalType.setText(""); //can be deleted it's only for debugging
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                locationFinder.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,1); //adding the found signal in the JSON file
+                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,1); //adding the found signal in the JSON file
                 locationFinder.tryGettingMicAccessForBlockingMethod(); //try to get the microphone access for choosing the blocking method
                 alert.cancel(); //cancel the alert dialog
                 cancelDetectionNotification(); //cancel the detection notification
