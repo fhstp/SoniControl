@@ -1,2 +1,0 @@
-android.app.Application
-SoniControlV0.SoniControlV0
