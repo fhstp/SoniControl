@@ -1,6 +1,7 @@
 package sonicontrol.testroutine;
 
 
+import android.app.Application;
 import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -31,6 +32,7 @@ public class Location {
 
     private double[] detectedSignalPosition = new double[2];
     private double[] positionLatest = new double[2];
+    private String addressLine;
     ArrayList<String[]> data = new ArrayList<String[]>();
 
     private String fileUrl;
@@ -67,6 +69,8 @@ public class Location {
         positionLatest[0] = longitude; //save the longitude in the positionLatest variable
         positionLatest[1] = latitude; //save the latitude in the positionLatest variable
 
+        addressLine = locationData.getAddressLine(main);
+
         return positionLatest;
     }
 
@@ -93,11 +97,11 @@ public class Location {
                 Log.v("Longitude", array[0]);
                 Log.v("Latitude", array[1]);
                 Log.v("Technology", array[2]);
-                Log.v("ShouldSpoof", array[3]);
+                Log.v("ShouldSpoof", array[4]);
 
-                fileUrl = array[4]; //get file from json and save in fileUrl variable
+                fileUrl = array[6]; //get file from json and save in fileUrl variable
 
-                if(Integer.valueOf(array[3]) == 1){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
+                if(Integer.valueOf(array[4]) == 1){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
                     shouldBeSpoofed = true;
                 }else{
                     shouldBeSpoofed = false;
@@ -125,6 +129,10 @@ public class Location {
 
     public double[] getDetectedDBEntry(){
         return detectedSignalPosition;
+    }
+
+    public String getDetectedDBEntryAddres(){
+        return addressLine;
     }
 
     public void setPositionForContinuousSpoofing(double[] positionLatest){

@@ -13,17 +13,27 @@
             android:singleLine="true"
             android:title="Location Radius (metre)" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
+            android:key="cbprefLocationTracking"
+            android:title="Use Location" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="cbprefLocationTracking"
             android:key="cbprefGpsUse"
             android:title="Use GPS" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
+            android:dependency="cbprefLocationTracking"
             android:key="cbprefNetworkUse"
             android:title="Use Network Connection" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="cbprefMicBlock"
             android:title="Use Microphone for Blocking" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbprefJsonSave"
+            android:title="Save Data in JSON File" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Expert - Spoofer">
         <EditTextPreference

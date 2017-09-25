@@ -59,6 +59,7 @@ public class JSONManager {
             String tech = ""; //technology
             String lastDet = ""; //last Detection
             String spoof = ""; //spoofinStatus
+            String address = ""; //addressLine
             String url = ""; //fileUrl
             for (int i = 0; i < jArray.length(); i++) { //go through the array
                 lon = jArray.getJSONObject(i).getString("long"); //save longitude
@@ -66,11 +67,12 @@ public class JSONManager {
                 tech = jArray.getJSONObject(i).getString("technology"); //save technology
                 lastDet = jArray.getJSONObject(i).getString("last_detection"); //save spoofingStatus
                 spoof = jArray.getJSONObject(i).getString("spoof"); //save spoofingStatus
+                address = jArray.getJSONObject(i).getString("address"); //save spoofingStatus
                 url = jArray.getJSONObject(i).getString("URL"); //save fileUrl
                 Log.v("Longitude", lon);
                 Log.v("Latitude", lat);
                 Log.v("Technology", tech);
-                data.add(new String[] { lon, lat, tech, spoof, lastDet, url }); //add every data of one array-index in the data-list
+                data.add(new String[] { lon, lat, tech, lastDet, spoof, address, url }); //add every data of one array-index in the data-list
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,7 +80,7 @@ public class JSONManager {
         return data;
     }
 
-    public void addJsonObject(double[] position, String technology, int spoof){
+    public void addJsonObject(double[] position, String technology, int spoof, String address){
         File jsonFile = new File(main.getExternalFilesDir(null), "soni.json"); //get json file from external storage
         FileInputStream inputStream = null;
         try{
@@ -112,6 +114,7 @@ public class JSONManager {
             addArray.put("technology", technology); //add the technology to the new object
             addArray.put("last_detection", returnDateString()); //add the last_detection to the new object
             addArray.put("spoof", spoof); //add the spoofing status to the new object
+            addArray.put("address", address); //add the addressline of the found signal
             detector = Scan.getInstance(); //get an instance of the scan
             String fileUrl = detector.getDetectedFileUrl(); //get the url from the scan
             addArray.put("URL", fileUrl); //add the url to the new object

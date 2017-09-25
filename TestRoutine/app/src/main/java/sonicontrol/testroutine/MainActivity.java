@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
     AudioTrack sigPlayer;
 
+    boolean saveJsonFile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,17 +104,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
-        if(!detector.checkIfJsonFileIsAvailable()){ //check if a JSON File is already there in the storage
-            jsonMan.createJsonFile(); //create a JSON file
-        }
-        if(!jsonMan.checkIfSavefolderIsAvailable()){ //check if a folder for the audio files is already there in the storage
-            jsonMan.createSaveFolder(); //create a folder for the audio files
-        }
 
         Button btnAlertStore = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
         btnAlertStore.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,0); //adding the found signal in the JSON file
+                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                 detector.startScanning(); //start scanning again
                 alert.cancel(); //cancel the alert dialog
                 txtSignalType.setText(""); //can be deleted it's only for debugging
@@ -137,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,1); //adding the found signal in the JSON file
+                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                 locationFinder.tryGettingMicAccessForBlockingMethod(); //try to get the microphone access for choosing the blocking method
                 alert.cancel(); //cancel the alert dialog
                 cancelDetectionNotification(); //cancel the detection notification
@@ -167,6 +163,19 @@ public class MainActivity extends AppCompatActivity {
 
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+
+                SharedPreferences sharedPref = getSettingsObject(); //get the settings
+                saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
+
+                if(saveJsonFile) {
+                    if (!detector.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
+                        jsonMan.createJsonFile(); //create a JSON file
+                    }
+                    if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
+                        jsonMan.createSaveFolder(); //create a folder for the audio files
+                    }
+                }
+
                 //Request permission fot the audio recording
                 int status = ActivityCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.RECORD_AUDIO);
