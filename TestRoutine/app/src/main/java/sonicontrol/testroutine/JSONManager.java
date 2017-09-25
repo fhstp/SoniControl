@@ -57,18 +57,20 @@ public class JSONManager {
             String lon = ""; //longitude
             String lat = ""; //latidude
             String tech = ""; //technology
+            String lastDet = ""; //last Detection
             String spoof = ""; //spoofinStatus
             String url = ""; //fileUrl
             for (int i = 0; i < jArray.length(); i++) { //go through the array
                 lon = jArray.getJSONObject(i).getString("long"); //save longitude
                 lat = jArray.getJSONObject(i).getString("lat"); //save latitude
                 tech = jArray.getJSONObject(i).getString("technology"); //save technology
+                lastDet = jArray.getJSONObject(i).getString("last_detection"); //save spoofingStatus
                 spoof = jArray.getJSONObject(i).getString("spoof"); //save spoofingStatus
                 url = jArray.getJSONObject(i).getString("URL"); //save fileUrl
                 Log.v("Longitude", lon);
                 Log.v("Latitude", lat);
                 Log.v("Technology", tech);
-                data.add(new String[] { lon, lat, tech, spoof, url }); //add every data of one array-index in the data-list
+                data.add(new String[] { lon, lat, tech, spoof, lastDet, url }); //add every data of one array-index in the data-list
             }
         } catch (Exception e) {
             e.printStackTrace();
