@@ -67,13 +67,26 @@ public class MicCapture {
                     recorder = null; //set the recorder to null
                     waitTime = 0; //set the waittime for the next capture to 0
                     i = 0;
-                    positionLatest = locFinder.getLocation(); //get the latest position
-                    positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
-                    distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
                     SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-                    locationRadius = Integer.valueOf(sharedPref.getString("etprefLocationRadius", "30")); //get the settings for the locationdistance
-                    if(distance<locationRadius){ //if in distance
-                        locFinder.tryGettingMicAccessForBlockingMethod(); //start the blocking again with trying to get microphone access
+                    boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                    boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
+                    boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+                    if(!locationTrackGps&&!locationTrackNet){
+                        locationTrack = false;
+                    }
+                    if(locationTrack) {
+                        positionLatest = locFinder.getLocation(); //get the latest position
+                        positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
+                        distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
+                        //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+                        locationRadius = Integer.valueOf(sharedPref.getString("etprefLocationRadius", "30")); //get the settings for the locationdistance
+                        if (distance < locationRadius) { //if in distance
+                            locFinder.tryGettingMicAccessForBlockingMethod(); //start the blocking again with trying to get microphone access
+                        } else {
+                            main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
+                            main.activateScanningStatusNotification(); //activate the scanning status notification
+                            detector.startScanning(); //start scanning again
+                        }
                     }else{
                         main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
                         main.activateScanningStatusNotification(); //activate the scanning status notification

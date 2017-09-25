@@ -108,7 +108,17 @@ public class MainActivity extends AppCompatActivity {
         Button btnAlertStore = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
         btnAlertStore.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                SharedPreferences sharedPref = getSettingsObject(); //get the settings
+                saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
+                boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
+                boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+                if(!locationTrackGps&&!locationTrackNet){
+                    locationTrack = false;
+                }
+                if(saveJsonFile || locationTrack) {
+                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType, 0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                }
                 detector.startScanning(); //start scanning again
                 alert.cancel(); //cancel the alert dialog
                 txtSignalType.setText(""); //can be deleted it's only for debugging
@@ -133,7 +143,17 @@ public class MainActivity extends AppCompatActivity {
         Button btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(),sigType,1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                SharedPreferences sharedPref = getSettingsObject(); //get the settings
+                saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
+                boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
+                boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+                if(!locationTrackGps&&!locationTrackNet){
+                    locationTrack = false;
+                }
+                if(saveJsonFile&&locationTrack) {
+                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType, 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                }
                 locationFinder.tryGettingMicAccessForBlockingMethod(); //try to get the microphone access for choosing the blocking method
                 alert.cancel(); //cancel the alert dialog
                 cancelDetectionNotification(); //cancel the detection notification

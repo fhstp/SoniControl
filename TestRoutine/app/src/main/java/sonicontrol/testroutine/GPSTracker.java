@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.content.SharedPreferences;
 
 import java.io.IOException;
 import java.util.List;
@@ -57,13 +58,18 @@ public class GPSTracker extends Service implements LocationListener {
 
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
+            SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+            boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+            boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
+            boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
 
-            if (isGPSEnabled) {
+            if (isGPSEnabled && locationTrackGps) {
                 this.isGPSTrackingEnabled = true;
                 Log.d(TAG, "Application use GPS Service");
                 provider_info = LocationManager.GPS_PROVIDER;
-            } else if (isNetworkEnabled) {
-                this.isGPSTrackingEnabled = true;
+            } else if (isNetworkEnabled && locationTrackNet) {
+                //this.isGPSTrackingEnabled = true;
+                this.isNetworkEnabled = true;
                 Log.d(TAG, "Application use Network State to get GPS coordinates");
                 provider_info = LocationManager.NETWORK_PROVIDER;
             }
