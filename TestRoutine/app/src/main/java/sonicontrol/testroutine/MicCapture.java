@@ -8,6 +8,8 @@ import android.media.MediaRecorder;
 import android.os.Handler;
 import android.util.Log;
 
+import java.util.Calendar;
+
 public class MicCapture {
 
     static MicCapture instance;
@@ -25,6 +27,9 @@ public class MicCapture {
     private Location locFinder;
     private Scan detector;
     private int locationRadius;
+    private long startTime = 0;
+    private long stopTime;
+
 
 
     private MicCapture(){
@@ -44,9 +49,13 @@ public class MicCapture {
     public void startCapturing(){
         locFinder = Location.getInstanceLoc(); //get a location instance
         detector = Scan.getInstance(); //get a detector instance
+        if(startTime==0) {
+            startTime = Calendar.getInstance().getTimeInMillis(); //get the starttime
+        }
         captHandler.postDelayed(captRun = new Runnable() {
             public void run() {
-                waitTime = 8000; //time for capturing /has to be adjusted
+                SharedPreferences sharedPref = main.getSettingsObject();
+                waitTime = Integer.valueOf(sharedPref.getString("etprefPulseDuration", "1000")); //time for capturing /has to be adjusted
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); //set the handler thread to background
 
                 if(recorder == null) {
@@ -57,17 +66,24 @@ public class MicCapture {
 
                     recorder.startRecording(); //start the recorder
                 }
-                i++;
-                if(i<2){ //has to be adjusted
+                //i++;
+                stopTime = Calendar.getInstance().getTimeInMillis();
+                Log.d("StartTime", String.valueOf(startTime));
+                Log.d("StopTime",String.valueOf(stopTime));
+                Long logLong = (stopTime-startTime)/1000; //get the difference of the start- and stoptime
+                String logTime = String.valueOf(logLong);
+                Log.d("HowLongBlocked",logTime);
+                int blockingTime = Integer.valueOf(sharedPref.getString("etprefSpoofDuration", "1")); //get the spoofingtime in minutes
+                if(logLong<(blockingTime*60)/*i<2*/){ //has to be adjusted
                     startCapturing(); //start the capture again
                 }else{
                     Log.d("Capture", "I captured the microphonesignal!");
+                    startTime = 0;
                     recorder.stop(); //stop the recording
                     recorder.release(); //release the recorder resources
                     recorder = null; //set the recorder to null
                     waitTime = 0; //set the waittime for the next capture to 0
                     i = 0;
-                    SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                     boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
                     boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);

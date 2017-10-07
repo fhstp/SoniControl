@@ -185,6 +185,7 @@ public class Location {
             } else {
                 Log.d("MicAcc", "I have MicAccess");
                 micCap = MicCapture.getInstance(); //get an instance of the microphone capture
+                micCap.init(main);
                 micCap.startCapturing(); //start capturing
             }
         }else{
