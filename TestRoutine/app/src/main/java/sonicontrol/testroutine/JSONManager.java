@@ -159,6 +159,11 @@ public class JSONManager {
         }
     }
 
+    public void deleteJsonFile(){
+            File file = new File(main.getExternalFilesDir(null), "soni.json");
+            boolean deleted = file.delete();
+    }
+
     public boolean checkIfSavefolderIsAvailable(){
         File file = new File(main.getExternalFilesDir(null) +"/detected-files"); //get the folder for the audio files
         if(file.isDirectory()){ //if directory is available

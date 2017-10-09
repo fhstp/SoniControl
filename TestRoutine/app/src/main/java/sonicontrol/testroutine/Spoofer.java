@@ -34,6 +34,8 @@ public class Spoofer {
     private long startTime;
     private long stopTime;
 
+    private int signalType;
+
     private Spoofer(){
     }
 
@@ -44,11 +46,12 @@ public class Spoofer {
         return instance;
     }
 
-    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler){  //initialize the Scan with a main object
+    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, int sigType){  //initialize the Scan with a main object
         this.main = main;
         this.genNoise = new NoiseGenerator(main);
         this.playingGlobal = playingGlobal;
         this.playingHandler = playingHandler;
+        this.signalType = sigType;
     }
 
     public void startSpoofing(){
@@ -82,7 +85,7 @@ public class Spoofer {
                     playtime = Integer.valueOf(main.getSettingsObject().getString("etprefPauseDuration", "1000")); //get the pause value from the settings
                 }
                 if (!noiseGenerated) { //if no whitenoise is available generate a new one
-                    genNoise.generateWhitenoise(8); //generate noise
+                    genNoise.generateWhitenoise(signalType); //generate noise
                     audioTrack = genNoise.getGeneratedPlayer(); //get the generated player
                     noiseGenerated = true; //noise and player are generated so its true
                     startTime = Calendar.getInstance().getTimeInMillis(); //get the starttime

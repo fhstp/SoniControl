@@ -64,6 +64,7 @@ public class Scan {
                 randomNumber = randomNumGenerator.nextInt(20);
                 Log.d("Scanner_Random", Integer.toString(randomNumber));
                 if(randomNumber==4){
+                    locFinder.saveSignalTypeForLater(4);
                     SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                     boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
@@ -111,6 +112,7 @@ public class Scan {
                         }
                     }
                 }else if(randomNumber==8){
+                    locFinder.saveSignalTypeForLater(8);
                     SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                     boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
@@ -159,6 +161,7 @@ public class Scan {
                         }
                     }
                 }else if(randomNumber==2){
+                    locFinder.saveSignalTypeForLater(2);
                     SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                     boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);

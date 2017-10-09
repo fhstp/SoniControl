@@ -55,7 +55,7 @@ public class MicCapture {
         captHandler.postDelayed(captRun = new Runnable() {
             public void run() {
                 SharedPreferences sharedPref = main.getSettingsObject();
-                waitTime = Integer.valueOf(sharedPref.getString("etprefPulseDuration", "1000")); //time for capturing /has to be adjusted
+                waitTime = Integer.valueOf(sharedPref.getString("etprefPulseDuration", "1000")); //time for capturing
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO); //set the handler thread to background
 
                 if(recorder == null) {
@@ -74,7 +74,7 @@ public class MicCapture {
                 String logTime = String.valueOf(logLong);
                 Log.d("HowLongBlocked",logTime);
                 int blockingTime = Integer.valueOf(sharedPref.getString("etprefSpoofDuration", "1")); //get the spoofingtime in minutes
-                if(logLong<(blockingTime*60)/*i<2*/){ //has to be adjusted
+                if(logLong<(blockingTime*60)/*i<2*/){
                     startCapturing(); //start the capture again
                 }else{
                     Log.d("Capture", "I captured the microphonesignal!");

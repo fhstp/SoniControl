@@ -43,6 +43,7 @@ public class Location {
 
     int locationRadius;
     boolean micBlockPref;
+    int signalType;
 
     private Location(){
     }
@@ -168,8 +169,8 @@ public class Location {
     }
 
 
-    public void tryGettingMicAccessForBlockingMethod(){
-
+    public String tryGettingMicAccessForBlockingMethod(){
+        String usedBlockingMethod = null;
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
         micBlockPref = sharedPref.getBoolean("cbprefMicBlock", true);
        //micBlockPref = Boolean.valueOf(sharedPref.getString("cbprefMicBlock", true)); //save the radius of the location in metres
@@ -179,24 +180,26 @@ public class Location {
                 boolean playingGlobal = true; //the global play status is now true after the start
                 boolean playingHandler = true; //helpboolean for switching the playstatus in the puslinghandler
                 spoof = Spoofer.getInstance(); //get an instance of the spoofer
-                spoof.init(main, playingGlobal, playingHandler); //initialize the spoofer
+                spoof.init(main, playingGlobal, playingHandler, signalType); //initialize the spoofer
                 spoof.startSpoofing(); //start spoofing
-
+                usedBlockingMethod = "Spoofer";
             } else {
                 Log.d("MicAcc", "I have MicAccess");
                 micCap = MicCapture.getInstance(); //get an instance of the microphone capture
                 micCap.init(main);
                 micCap.startCapturing(); //start capturing
+                usedBlockingMethod = "Microphone";
             }
         }else{
             Log.d("MicAcc", "I don't have MicAccess");
             boolean playingGlobal = true; //the global play status is now true after the start
             boolean playingHandler = true; //helpboolean for switching the playstatus in the puslinghandler
             spoof = Spoofer.getInstance(); //get an instance of the spoofer
-            spoof.init(main, playingGlobal, playingHandler); //initialize the spoofer
+            spoof.init(main, playingGlobal, playingHandler, signalType); //initialize the spoofer
             spoof.startSpoofing(); //start spoofing
+            usedBlockingMethod = "Spoofer";
         }
-
+        return usedBlockingMethod;
     }
 
 
@@ -277,5 +280,9 @@ public class Location {
         AudioTrack sigPlayer = new AudioTrack(AudioManager.STREAM_MUSIC,14700, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,noiseByteArray.length,AudioTrack.MODE_STATIC); //create a new player with the byte array
         sigPlayer.write(noiseByteArray, 0, noiseByteArray.length); //write the byte array into the player
         return sigPlayer;
+    }
+
+    public void saveSignalTypeForLater(int sigType){
+        this.signalType = sigType;
     }
 }

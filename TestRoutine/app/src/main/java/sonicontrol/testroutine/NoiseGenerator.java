@@ -16,6 +16,7 @@ import java.util.Random;
 public class NoiseGenerator {
 
     private int signalTech;
+    private String techForFile;
 
     private int fs = 44100;
     private int winLen;
@@ -35,9 +36,9 @@ public class NoiseGenerator {
     private boolean noiseGenerated = false;
     private AudioTrack audioTrack = null;
     private MainActivity main;
-    AudioTrack generatedWhitenoisePlayer;
+    private AudioTrack generatedWhitenoisePlayer;
 
-    double bandWidth; //the bandwith for every specified frequencyband
+    private double bandWidth; //the bandwith for every specified frequencyband
 
     public NoiseGenerator(MainActivity main){
         this.main = main;
@@ -46,21 +47,36 @@ public class NoiseGenerator {
     public void generateWhitenoise(final int signalType){
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
         signalTech = signalType; //get the technology
-        generatedWhitenoisePlayer = whiteNoise(); //get the generated whitenoise for spoofing
         if(signalTech ==4){
+            techForFile = "nearby";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Google Nearby");
-        }else if(signalType==8){
+        }else if(signalTech==8){
+            techForFile = "lisnr";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Lisnr");
-        }else if(signalType==2){
+        }else if(signalTech==2){
+            techForFile = "prontoly";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Prontoly");
+        }else if(signalTech==12){
+            techForFile = "signal360";
+            Log.d("Generator", "I generated a whitenoisesignal to spoof Signal 360");
+        }else if(signalTech==14){
+            techForFile = "shopkick";
+            Log.d("Generator", "I generated a whitenoisesignal to spoof Shopkick");
+        }else if(signalTech==16){
+            techForFile = "silverpush";
+            Log.d("Generator", "I generated a whitenoisesignal to spoof Silverpush");
+        }else if(signalTech==18){
+            techForFile = "unknown";
+            Log.d("Generator", "I generated a whitenoisesignal to spoof unknown");
         }
+        Log.d("ControlType",techForFile);
+        generatedWhitenoisePlayer = whiteNoise(); //get the generated whitenoise for spoofing
     }
 
     public AudioTrack whiteNoise(){
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
         winLen = Integer.valueOf(sharedPref.getString("etprefPulseDuration", "1000")); //read the windowLength from the settings
-        bandWidth = Float.valueOf(sharedPref.getString("etprefBandwidth", "1")); //read the bandwidth from the settings
-        whiteNoiseBands = importSpecificSignal("lisnr"); //import the frequencies /has to be changed to the detected technology
+        whiteNoiseBands = importSpecificSignal(techForFile); //import the frequencies /has to be changed to the detected technology
 
         if (winLen==0){winLen= 80;} //if the windowLength is still 0 after the start, set to 80
         winLenSamples = winLen*fs/1000; //windowSamples according to the windowLength
@@ -217,7 +233,8 @@ public class NoiseGenerator {
     private double[][] importSpecificSignal(String signalTechnology) {
 
         double[][] test; //helparray for storing the frequencybands of the technologies
-
+        SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+        bandWidth = Integer.valueOf(sharedPref.getString("etprefBandwidth", "1"));
 
         BufferedReader reader = null;
         try {
@@ -239,9 +256,15 @@ public class NoiseGenerator {
             if(signalTechnology.equals("prontoly")) {
                 reader = new BufferedReader(new InputStreamReader(main.getAssets().open("prontoly-frequencies.txt"), "UTF-8"));
             }
+            if(signalTechnology.equals("unknown")){
+                reader = new BufferedReader(new InputStreamReader(main.getAssets().open("unknown-frequencies.txt"), "UTF-8"));
+                bandWidth = 2250;
+            }
 
             String[] mLine = new String[0];
             mLine = reader.readLine().split(",");
+
+
             test = new double[mLine.length][2]; //initialize the array with half of the frequencies => each band has two frequencies
             for(int j = 0; j<mLine.length; j++) {
                 test[j][0] = (Integer.parseInt(mLine[j])-(bandWidth/2)); //lower frequencyparts of one band are stored in the first place of each arrayrow

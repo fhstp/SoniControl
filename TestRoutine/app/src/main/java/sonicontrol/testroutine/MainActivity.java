@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     AudioTrack sigPlayer;
 
     boolean saveJsonFile;
+    String usedBlockingMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnAlertStore = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
         btnAlertStore.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                stopAutomaticBlockingMethodOnAction();
                 SharedPreferences sharedPref = getSettingsObject(); //get the settings
                 saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
                 boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!locationTrackGps&&!locationTrackNet){
                     locationTrack = false;
                 }
-                if(saveJsonFile || locationTrack) {
+                if(saveJsonFile && locationTrack) {
                     jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType, 0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                 }
                 detector.startScanning(); //start scanning again
@@ -131,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnAlertDismiss = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
         btnAlertDismiss.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                stopAutomaticBlockingMethodOnAction();
                 detector.startScanning(); //start scanning again
                 alert.cancel(); //cancel the alert dialog
                 txtSignalType.setText(""); //can be deleted it's only for debugging
@@ -143,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                stopAutomaticBlockingMethodOnAction();
                 SharedPreferences sharedPref = getSettingsObject(); //get the settings
                 saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
                 boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
@@ -183,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
 
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-
                 SharedPreferences sharedPref = getSettingsObject(); //get the settings
                 saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
 
@@ -290,8 +293,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void activateAlert(String signalType){
+        usedBlockingMethod = locationFinder.tryGettingMicAccessForBlockingMethod();
         alert.show(); //open the alert
         sigType = signalType; //set the technology variable to the latest detected one
+    }
+
+    private void stopAutomaticBlockingMethodOnAction(){
+        if(usedBlockingMethod.equals("Spoofer")){
+            Spoofer spoofBlock = Spoofer.getInstance();
+            spoofBlock.stopSpoofingComplete();
+        }else if(usedBlockingMethod.equals("Microphone")){
+            MicCapture micBlock = MicCapture.getInstance();
+            micBlock.stopMicCapturingComplete();
+        }
     }
 
     public void initDetectionNotification(){
@@ -466,6 +480,15 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){ //override the onResume method for setting a variable for checking the background-status
         super.onResume();
         isInBackground = false;
+
+        SharedPreferences sharedPref = getSettingsObject(); //get the settings
+        saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
+
+        if(!saveJsonFile) {
+            if (detector.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
+                jsonMan.deleteJsonFile();
+            }
+        }
     }
 
     @Override
