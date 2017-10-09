@@ -69,5 +69,47 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Expert - Detector">
 
+        <EditTextPreference
+            android:defaultValue="50"
+            android:key="etprefBufferSize"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Buffersize (ms)" />
+        <EditTextPreference
+            android:defaultValue="10"
+            android:key="etprefBackgroundBufferSize"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Background Buffersize (sec)" />
+        <EditTextPreference
+            android:defaultValue="1"
+            android:key="etprefMedianBufferSize"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Median Buffersize (sec)" />
+        <EditTextPreference
+            android:defaultValue="16800"
+            android:key="etprefCutoffFrequency"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Cutoff Frequency" />
+        <EditTextPreference
+            android:defaultValue="0,5"
+            android:key="etprefDecisionThreshold"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Decision Threshold" />
+        <EditTextPreference
+            android:defaultValue="3,5"
+            android:key="etprefDecisionThresholdNearby"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Decision Threshold Nearby" />
+        <EditTextPreference
+            android:defaultValue="0,05"
+            android:key="etprefDecisionThresholdNearbyAc"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Decision Threshold Nearby AC" />
     </PreferenceCategory>
 </PreferenceScreen>
