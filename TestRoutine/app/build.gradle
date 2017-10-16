@@ -38,4 +38,5 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     //compile 'pl.edu.icm:JLargeArrays:1.6'
+    compile files('libs/JTransforms-3.1-with-dependencies.jar')
 }
