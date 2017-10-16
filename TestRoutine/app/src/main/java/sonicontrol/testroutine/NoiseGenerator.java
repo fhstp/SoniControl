@@ -75,7 +75,7 @@ public class NoiseGenerator {
 
     public AudioTrack whiteNoise(){
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-        winLen = Integer.valueOf(sharedPref.getString("etprefPulseDuration", "1000")); //read the windowLength from the settings
+        winLen = Integer.valueOf(sharedPref.getString("etprefPulseDuration", "1000")); //read the windowLength from the settings - NOTE: This setting will not be updated dynamically once the signal is created. Next update when new Signal is created.
         whiteNoiseBands = importSpecificSignal(techForFile); //import the frequencies /has to be changed to the detected technology
 
         if (winLen==0){winLen= 80;} //if the windowLength is still 0 after the start, set to 80

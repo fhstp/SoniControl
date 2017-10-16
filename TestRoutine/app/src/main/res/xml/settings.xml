@@ -14,16 +14,10 @@
             android:title="Location Radius (metre)" />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="cbprefLocationTracking"
-            android:title="Use Location" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:dependency="cbprefLocationTracking"
             android:key="cbprefGpsUse"
             android:title="Use GPS" />
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="cbprefLocationTracking"
             android:key="cbprefNetworkUse"
             android:title="Use Network Connection" />
         <CheckBoxPreference

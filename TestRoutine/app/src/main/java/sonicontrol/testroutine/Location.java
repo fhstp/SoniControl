@@ -114,7 +114,7 @@ public class Location {
             Log.d("Location", "I am a new Signal");
             detectedSignalPosition = position; //save the new signal as the detected Position
             main.cancelScanningStatusNotification(); //cancel the scanning status notification
-            main.activateOnHoldStatusNotification(); //activate the onHold status notification
+            main.activateDetectionAlertStatusNotification(); //activate the onHold status notification
             if(main.getBackgroundStatus()) { //if the app is in the background
                 main.activateDetectionNotification(); //activate the detection notification
             }
@@ -150,6 +150,20 @@ public class Location {
             }
             main.cancelScanningStatusNotification(); //cancel the scanning status notification
             main.activateSpoofingStatusNotification(); //activate the spoofing status notification
+
+            boolean locationTrack = main.checkJsonAndLocationPermissions()[1];
+            boolean saveJsonFile = main.checkJsonAndLocationPermissions()[0];
+
+            if(saveJsonFile&&locationTrack) {
+                jsonMan.addJsonObject(getDetectedDBEntry(), signalTech, 1, getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+            }
+            if(saveJsonFile&&!locationTrack){
+                double[] noLocation = new double[2];
+                noLocation[0] = 0;
+                noLocation[1] = 0;
+                jsonMan.addJsonObject(noLocation, signalTech, 1, "Not available!");
+            }
+
             tryGettingMicAccessForBlockingMethod(); //try get the microphone access for choosing the blocking method
         }else { //if it should not be spoofed
             Log.d("Location", "I shouldn't be spoofed");

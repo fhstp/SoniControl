@@ -3,6 +3,7 @@ package sonicontrol.testroutine;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.media.AudioTrack;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
@@ -48,12 +49,15 @@ public class MainActivity extends AppCompatActivity {
 
     NotificationCompat.Builder spoofingStatusBuilder;
     int spoofingStatusNotificationId;
+    NotificationCompat.Builder detectionAlertStatusBuilder;
+    int detectionAlertStatusNotificationId;
     NotificationCompat.Builder onHoldStatusBuilder;
     int onHoldStatusNotificationId;
     NotificationCompat.Builder scanningStatusBuilder;
     int scanningStatusNotificationId;
 
     Notification notificationDetection;
+    Notification notificationDetectionAlertStatus;
     Notification notificationSpoofingStatus;
     Notification notificationOnHoldStatus;
     Notification notificationScanningStatus;
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean detectionNotitificationFirstBuilded = false;
     private boolean spoofingStatusNotitificationFirstBuilded = false;
+    private boolean detectionAlertStatusNotitificationFirstBuilded = false;
     private boolean onHoldStatusNotitificationFirstBuilded = false;
     private boolean scanningStatusNotitificationFirstBuilded = false;
 
@@ -71,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
 
     boolean saveJsonFile;
     String usedBlockingMethod;
+
+    protected LocationManager locationManager;
+    boolean isGPSEnabled = false;
+    boolean isNetworkEnabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         alert = openScanner.create(); //create the AlertDialog
 
         initDetectionNotification(); //initialize the detection notification
+        initDetectionAlertStatusNotification();
         initScanningStatusNotification(); //initialize the scanning-status notification
         initOnHoldStatusNotification(); //initialize the onHold-status notification
         initSpoofingStatusNotification(); //initialize the spoofing-status notification
@@ -110,22 +120,38 @@ public class MainActivity extends AppCompatActivity {
         btnAlertStore.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 stopAutomaticBlockingMethodOnAction();
-                SharedPreferences sharedPref = getSettingsObject(); //get the settings
+                /*SharedPreferences sharedPref = getSettingsObject(); //get the settings
                 saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
-                boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+
+                locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+                boolean locationTrack = false;
+                //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                 boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
                 boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
-                if(!locationTrackGps&&!locationTrackNet){
-                    locationTrack = false;
-                }
+                if((locationTrackGps&&isGPSEnabled)||(locationTrackNet&&isNetworkEnabled)){
+                    locationTrack = true;
+                }*/
+
+                saveJsonFile = checkJsonAndLocationPermissions()[0];
+                boolean locationTrack = checkJsonAndLocationPermissions()[1];
+
                 if(saveJsonFile && locationTrack) {
                     jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType, 0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                }
+                if(saveJsonFile&&!locationTrack){
+                    double[] noLocation = new double[2];
+                    noLocation[0] = 0;
+                    noLocation[1] = 0;
+                    jsonMan.addJsonObject(noLocation, sigType, 0, "Not available!");
                 }
                 detector.startScanning(); //start scanning again
                 alert.cancel(); //cancel the alert dialog
                 txtSignalType.setText(""); //can be deleted it's only for debugging
                 cancelDetectionNotification(); //cancel the detection notification
-                cancelOnHoldStatusNotification(); //canceling the onHold notification
+                cancelDetectionAlertStatusNotification(); //canceling the onHold notification
                 activateScanningStatusNotification(); //activates the notification for the scanning process
             }
         });
@@ -138,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 alert.cancel(); //cancel the alert dialog
                 txtSignalType.setText(""); //can be deleted it's only for debugging
                 cancelDetectionNotification(); //cancel the detection notification
-                cancelOnHoldStatusNotification(); //canceling the onHold notification
+                cancelDetectionAlertStatusNotification(); //canceling the onHold notification
                 activateScanningStatusNotification(); //activates the notification for the scanning process
             }
         });
@@ -147,21 +173,38 @@ public class MainActivity extends AppCompatActivity {
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 stopAutomaticBlockingMethodOnAction();
-                SharedPreferences sharedPref = getSettingsObject(); //get the settings
+                /*SharedPreferences sharedPref = getSettingsObject(); //get the settings
                 saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
-                boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+
+
+                locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+                isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+
+                boolean locationTrack = false;
+                //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                 boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
                 boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
-                if(!locationTrackGps&&!locationTrackNet){
-                    locationTrack = false;
-                }
+                if((locationTrackGps&&isGPSEnabled)||(locationTrackNet&&isNetworkEnabled)){
+                    locationTrack = true;
+                }*/
+                saveJsonFile = checkJsonAndLocationPermissions()[0];
+                boolean locationTrack = checkJsonAndLocationPermissions()[1];
+
                 if(saveJsonFile&&locationTrack) {
                     jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType, 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                }
+                if(saveJsonFile&&!locationTrack){
+                    double[] noLocation = new double[2];
+                    noLocation[0] = 0;
+                    noLocation[1] = 0;
+                    jsonMan.addJsonObject(noLocation, sigType, 1, "Not available!");
                 }
                 locationFinder.tryGettingMicAccessForBlockingMethod(); //try to get the microphone access for choosing the blocking method
                 alert.cancel(); //cancel the alert dialog
                 cancelDetectionNotification(); //cancel the detection notification
-                cancelOnHoldStatusNotification(); //canceling the onHold notification
+                cancelDetectionAlertStatusNotification(); //canceling the onHold notification
                 activateSpoofingStatusNotification(); //activates the notification for the spoofing process
             }
         });
@@ -258,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
                 mNotificationManager.cancelAll(); //cancel all active notifications
                 activateOnHoldStatusNotification(); //activate only the onHold-status notification again
                 detector.resetHandler(); //reset the handler of the scanning handler
+                alert.cancel();
                 Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
                 spoof.stopSpoofingComplete(); //stop the whole spoofing process
                 MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
@@ -391,6 +435,46 @@ public class MainActivity extends AppCompatActivity {
         mNotificationManager.cancel(spoofingStatusNotificationId); //Cancel the notification with the help of the id
     }
 
+    public void initDetectionAlertStatusNotification(){
+        detectionAlertStatusBuilder = //create a builder for the detection notification
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_info_outline_white_48dp) //adding the icon
+                        .setContentTitle("Detection") //adding the title
+                        .setContentText("I detected a signal!") //adding the text
+                        .setOngoing(true); //it's canceled when tapped on it
+
+        Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
+
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+
+        detectionAlertStatusBuilder.setContentIntent(resultPendingIntent);
+
+        mNotificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        notificationDetectionAlertStatus = detectionAlertStatusBuilder.build(); //build the notiviation
+
+        detectionAlertStatusNotificationId = randomNotificationNumberGenerator.nextInt(1000)+2; //set an id for the notification
+    }
+
+    public void activateDetectionAlertStatusNotification(){
+        if(detectionAlertStatusNotitificationFirstBuilded){ //if it's the first time that it's built
+            initDetectionAlertStatusNotification(); //initialize the notification
+        }
+        mNotificationManager.notify(detectionAlertStatusNotificationId, notificationDetectionAlertStatus); //activate the notification with the notification itself and its id
+        detectionAlertStatusNotitificationFirstBuilded = true; //notification is created
+    }
+
+    public void cancelDetectionAlertStatusNotification(){
+        mNotificationManager.cancel(detectionAlertStatusNotificationId); //Cancel the notification with the help of the id
+    }
+
     public void initOnHoldStatusNotification(){
         onHoldStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
@@ -501,6 +585,29 @@ public class MainActivity extends AppCompatActivity {
         return isInBackground;
     } //get the background-status
 
+    public boolean[] checkJsonAndLocationPermissions() {
+        boolean[] saveJsonAndLocation = new boolean[2];
+        SharedPreferences sharedPref = getSettingsObject(); //get the settings
+        saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
+
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        boolean locationTrack = false;
+        //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+        boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
+        boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+
+        if((locationTrackGps&&isGPSEnabled)||(locationTrackNet&&isNetworkEnabled)){
+            locationTrack = true;
+        }
+
+        saveJsonAndLocation[0] = saveJsonFile;
+        saveJsonAndLocation[1] = locationTrack;
+
+        return saveJsonAndLocation;
+    }
 
     public native String stringFromJNI();
 

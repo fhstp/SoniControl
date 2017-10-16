@@ -114,13 +114,14 @@ public class Spoofer {
                                     //helpCounter = 0;
                                     playingGlobal = false; //set to false because its not playing anymore
                                     //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-                                    boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                                    boolean locationTrack = false;
+                                    //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                                     boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
                                     boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
-                                    if(!locationTrackGps&&!locationTrackNet){
-                                        locationTrack = false;
+                                    if(locationTrackGps||locationTrackNet){
+                                        locationTrack = true;
                                     }
-                                    if(locationTrack) {
+                                    if(locationTrack||(locFinder.getDetectedDBEntry()[0]==0&&locFinder.getDetectedDBEntry()[1]==0)) {
                                         positionLatest = locFinder.getLocation(); //get the latest position
                                         positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
                                         distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance

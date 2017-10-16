@@ -1,6 +1,7 @@
 package sonicontrol.testroutine;
 
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.Handler;
 import java.util.Random;
 
@@ -24,6 +25,11 @@ public class Scan {
     double[] position;
 
     String savedFileUrl;
+
+    boolean saveJsonFile;
+    protected LocationManager locationManager;
+    boolean isGPSEnabled = false;
+    boolean isNetworkEnabled = false;
 
     private Scan(){
     }
@@ -65,13 +71,18 @@ public class Scan {
                 Log.d("Scanner_Random", Integer.toString(randomNumber));
                 if(randomNumber==4){
                     locFinder.saveSignalTypeForLater(4);
-                    SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-                    boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                    /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+                    //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                    boolean locationTrack = false;
                     boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
                     boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
-                    if(!locationTrackGps&&!locationTrackNet){
-                        locationTrack = false;
-                    }
+
+                    if(locationTrackGps||locationTrackNet){
+                        locationTrack = true;
+                    }*/
+
+                    boolean locationTrack = main.checkJsonAndLocationPermissions()[1];
+
                     if(locationTrack) {
                         position = locFinder.getLocation(); //get the latest position
                     }
@@ -86,6 +97,20 @@ public class Scan {
                         }
                         main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                         main.activateSpoofingStatusNotification(); //activate the spoofing-status notification
+
+                        saveJsonFile = main.checkJsonAndLocationPermissions()[0];
+
+                        JSONManager jsonMan = new JSONManager(main);
+                        if(saveJsonFile&&locationTrack) {
+                            jsonMan.addJsonObject(locFinder.getDetectedDBEntry(), "Google Nearby", 1, locFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                        }
+                        if(saveJsonFile&&!locationTrack){
+                            double[] noLocation = new double[2];
+                            noLocation[0] = 0;
+                            noLocation[1] = 0;
+                            jsonMan.addJsonObject(noLocation, "Google Nearby", 1, "Not available!");
+                        }
+
                         locFinder.tryGettingMicAccessForBlockingMethod(); //try for microphone access and choose the blocking method
                         resetHandler(); //reset the handler
                     }
@@ -95,7 +120,7 @@ public class Scan {
                                 main.activateDetectionNotification(); //activate the notification for a detection
                             }
                             main.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                            main.activateOnHoldStatusNotification(); //activate the onHold-status notification
+                            main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
                             openAlert("Google Nearby"); //open the alert message for google nearby
                         } else {
                             if(locationTrack) {
@@ -105,7 +130,7 @@ public class Scan {
                                     main.activateDetectionNotification(); //activate the notification for a detection
                                 }
                                 main.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                                main.activateOnHoldStatusNotification(); //activate the onHold-status notification
+                                main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
                                 openAlert("Google Nearby"); //open the alert message for google nearby
                             }
                             resetHandler(); //reset the handler
@@ -113,13 +138,16 @@ public class Scan {
                     }
                 }else if(randomNumber==8){
                     locFinder.saveSignalTypeForLater(8);
-                    SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-                    boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                    /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+                    boolean locationTrack = false;
+                    //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                     boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
                     boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
-                    if(!locationTrackGps&&!locationTrackNet){
-                        locationTrack = false;
-                    }
+                    if(locationTrackGps||locationTrackNet){
+                        locationTrack = true;
+                    }*/
+                    boolean locationTrack = main.checkJsonAndLocationPermissions()[1];
+
                     if(locationTrack) {
                         position = locFinder.getLocation(); //get the latest position
                     }
@@ -134,6 +162,20 @@ public class Scan {
                         }
                         main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                         main.activateSpoofingStatusNotification(); //activate the spoofing-status notification
+
+                        saveJsonFile = main.checkJsonAndLocationPermissions()[0];
+
+                        JSONManager jsonMan = new JSONManager(main);
+                        if(saveJsonFile&&locationTrack) {
+                            jsonMan.addJsonObject(locFinder.getDetectedDBEntry(), "Lisnr", 1, locFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                        }
+                        if(saveJsonFile&&!locationTrack){
+                            double[] noLocation = new double[2];
+                            noLocation[0] = 0;
+                            noLocation[1] = 0;
+                            jsonMan.addJsonObject(noLocation, "Google Nearby", 1, "Not available!");
+                        }
+
                         locFinder.tryGettingMicAccessForBlockingMethod(); //try for microphone access and choose the blocking method
                         resetHandler(); //reset the handler
                     }
@@ -144,7 +186,7 @@ public class Scan {
                                 main.activateDetectionNotification(); //activate the notification for a detection
                             }
                             main.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                            main.activateOnHoldStatusNotification(); //activate the onHold-status notification
+                            main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
                             openAlert("Lisnr"); //open the alert message for lisnr
                         }else {
                             if(locationTrack) {
@@ -154,7 +196,7 @@ public class Scan {
                                     main.activateDetectionNotification(); //activate the notification for a detection
                                 }
                                 main.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                                main.activateOnHoldStatusNotification(); //activate the onHold-status notification
+                                main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
                                 openAlert("Lisnr"); //open the alert message for lisnr
                             }
                             resetHandler(); //reset the handler
@@ -162,13 +204,16 @@ public class Scan {
                     }
                 }else if(randomNumber==2){
                     locFinder.saveSignalTypeForLater(2);
-                    SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-                    boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                    /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+                    boolean locationTrack = false;
+                    //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                     boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
                     boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
-                    if(!locationTrackGps&&!locationTrackNet){
-                        locationTrack = false;
-                    }
+                    if(locationTrackGps||locationTrackNet){
+                        locationTrack = true;
+                    }*/
+                    boolean locationTrack = main.checkJsonAndLocationPermissions()[1];
+
                     if(locationTrack) {
                         position = locFinder.getLocation(); //get the latest position
                     }
@@ -183,6 +228,20 @@ public class Scan {
                         }
                         main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                         main.activateSpoofingStatusNotification(); //activate the spoofing-status notification
+
+                        saveJsonFile = main.checkJsonAndLocationPermissions()[0];
+
+                        JSONManager jsonMan = new JSONManager(main);
+                        if(saveJsonFile&&locationTrack) {
+                            jsonMan.addJsonObject(locFinder.getDetectedDBEntry(), "Prontoly", 1, locFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                        }
+                        if(saveJsonFile&&!locationTrack){
+                            double[] noLocation = new double[2];
+                            noLocation[0] = 0;
+                            noLocation[1] = 0;
+                            jsonMan.addJsonObject(noLocation, "Google Nearby", 1, "Not available!");
+                        }
+
                         locFinder.tryGettingMicAccessForBlockingMethod(); //try for microphone access and choose the blocking method
                         resetHandler(); //reset the handler
                     }
@@ -193,7 +252,7 @@ public class Scan {
                                 main.activateDetectionNotification(); //activate the notification for a detection
                             }
                             main.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                            main.activateOnHoldStatusNotification(); //activate the onHold-status notification
+                            main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
                             openAlert("Prontoly"); //open the alert message for prontoly
                         }else {
                             if(locationTrack) {
@@ -203,7 +262,7 @@ public class Scan {
                                     main.activateDetectionNotification(); //activate the notification for a detection
                                 }
                                 main.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                                main.activateOnHoldStatusNotification(); //activate the onHold-status notification
+                                main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
                                 openAlert("Prontoly"); //open the alert message for prontoly
                             }
                             resetHandler(); //reset the handler
