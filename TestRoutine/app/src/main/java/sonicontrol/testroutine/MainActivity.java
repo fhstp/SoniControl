@@ -26,6 +26,8 @@ import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
+    static MainActivity mainIsMain;
+
     Button btnStorLoc;
     Button btnStart;
     Button btnStop;
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mainIsMain = this;
 
         detector = Scan.getInstance(); //Get Scan-object if no object is available yet make a new one
         detector.init(MainActivity.this); //initialize the detector with the main method
@@ -314,6 +318,7 @@ public class MainActivity extends AppCompatActivity {
         btnStorLoc.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent myIntent = new Intent(MainActivity.this, StoredLocations.class); //redirect to the stored locations activity
+                //myIntent.putExtra("json", );
                 startActivityForResult(myIntent, 0);
             }
         });
@@ -579,6 +584,10 @@ public class MainActivity extends AppCompatActivity {
     public void onPause(){ //override the onPause method for setting a variable for checking the background-status
         super.onPause();
         isInBackground = true;
+    }
+
+    public static MainActivity getMainIsMain(){
+        return mainIsMain;
     }
 
     public boolean getBackgroundStatus(){

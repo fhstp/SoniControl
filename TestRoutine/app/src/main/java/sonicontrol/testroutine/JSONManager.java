@@ -1,6 +1,7 @@
 package sonicontrol.testroutine;
 
 import android.content.SharedPreferences;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -366,7 +367,7 @@ public class JSONManager {
                 jObjectResult.remove("signal"); //remove the whole old json-array
                 jObjectResult.put("signal",jArrayWithoutDeletedEntry); //put in the new json-array
                 FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), "soni.json")); //write the json-object into the new json file
-                Log.d("TryJsonSave", "I am saved");
+                Log.d("TryJsonSave", "I am deleted");
                 file.write( jObject.toString() );
                 file.flush();
                 file.close();
