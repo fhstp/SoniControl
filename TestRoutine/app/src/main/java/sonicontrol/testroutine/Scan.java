@@ -132,8 +132,8 @@ public class Scan {
                                 main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                                 main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
                                 openAlert("Google Nearby"); //open the alert message for google nearby
+                                resetHandler(); //reset the handler
                             }
-                            resetHandler(); //reset the handler
                         }
                     }
                 }else if(randomNumber==8){
@@ -198,8 +198,8 @@ public class Scan {
                                 main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                                 main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
                                 openAlert("Lisnr"); //open the alert message for lisnr
+                                resetHandler(); //reset the handler
                             }
-                            resetHandler(); //reset the handler
                         }
                     }
                 }else if(randomNumber==2){
@@ -264,8 +264,8 @@ public class Scan {
                                 main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                                 main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
                                 openAlert("Prontoly"); //open the alert message for prontoly
+                                resetHandler(); //reset the handler
                             }
-                            resetHandler(); //reset the handler
                         }
                     }
                 }else {
