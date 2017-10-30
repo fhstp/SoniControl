@@ -154,6 +154,7 @@ public class Location {
             boolean locationTrack = main.checkJsonAndLocationPermissions()[1];
             boolean saveJsonFile = main.checkJsonAndLocationPermissions()[0];
 
+            /*
             if(saveJsonFile&&locationTrack) {
                 jsonMan.addJsonObject(getDetectedDBEntry(), signalTech, 1, getDetectedDBEntryAddres()); //adding the found signal in the JSON file
             }
@@ -162,7 +163,7 @@ public class Location {
                 noLocation[0] = 0;
                 noLocation[1] = 0;
                 jsonMan.addJsonObject(noLocation, signalTech, 1, "Not available!");
-            }
+            }*/
 
             tryGettingMicAccessForBlockingMethod(); //try get the microphone access for choosing the blocking method
         }else { //if it should not be spoofed

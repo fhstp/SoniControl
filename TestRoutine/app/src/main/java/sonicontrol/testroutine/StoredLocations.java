@@ -62,6 +62,7 @@ public class StoredLocations extends AppCompatActivity {
         //jsonMan = new JSONManager(main);
 
         lv = (ListView) findViewById(R.id.storedListView);
+        lv.setAdapter(null);
         //ArrayAdapter<String>adapter=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, testArray);
         final Context listContext = this;
         stored_adapter = new Stored_Adapter(this, data);

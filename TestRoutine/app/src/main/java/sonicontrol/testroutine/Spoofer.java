@@ -1,7 +1,9 @@
 package sonicontrol.testroutine;
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Handler;
 import android.util.Log;
@@ -79,6 +81,11 @@ public class Spoofer {
         spoofHandler.postDelayed(spoofRun = new Runnable() {
             public void run() {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
+                AudioManager audioManager = (AudioManager) main.getSystemService(Context.AUDIO_SERVICE);
+                int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+                Log.d("Streamtype", String.valueOf(AudioManager.STREAM_MUSIC));
+                audioManager.setStreamVolume(3, (int)Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)/*0.75D*/)),0);
+
                 if(playingHandler) {
                     playtime = genNoise.getPlayertime(); //get the playertime depending on the generated whitenoise
                 }else{

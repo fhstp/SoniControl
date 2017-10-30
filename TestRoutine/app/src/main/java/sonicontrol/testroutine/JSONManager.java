@@ -1,6 +1,7 @@
 package sonicontrol.testroutine;
 
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.util.Log;
 
@@ -166,9 +167,12 @@ public class JSONManager {
     }
 
     public boolean checkIfSavefolderIsAvailable(){
-        File file = new File(main.getExternalFilesDir(null) +"/detected-files"); //get the folder for the audio files
+        File file = new File(main.getExternalFilesDir(null) + "/detected-files"); //get the folder for the audio files
         if(file.isDirectory()){ //if directory is available
             Log.d("Dircheck","The directory is here");
+            Log.d("ExternalCheck1",Environment.getExternalStorageState());
+            Log.d("ExternalCheck2",String.valueOf(Environment.isExternalStorageEmulated()));
+            Log.d("ExternalCheck3",String.valueOf(Environment.isExternalStorageRemovable()));
             return true;
         }else{
             Log.d("Dircheck","here is no directory");
