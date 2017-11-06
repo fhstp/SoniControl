@@ -12,6 +12,7 @@ public class Scan {
 
     private static Scan instance;
     private Handler scanHandler = new Handler();
+    private JSONManager jsonMan;
 
     private Runnable scanRun;
 
@@ -61,6 +62,7 @@ public class Scan {
         savedFileUrl = main.getExternalFilesDir(null) + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
 
         locFinder = Location.getInstanceLoc(); //get an instance of location
+        jsonMan = new JSONManager(main);
 
         scanHandler.postDelayed(scanRun = new Runnable() {
             public void run() {
@@ -115,7 +117,7 @@ public class Scan {
                         resetHandler(); //reset the handler
                     }
                     else{
-                        if (!checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
+                        if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
                             if (main.getBackgroundStatus()) { //if the app is in the background
                                 main.activateDetectionNotification(); //activate the notification for a detection
                             }
@@ -181,7 +183,7 @@ public class Scan {
                     }
                     else{
 
-                        if(!checkIfJsonFileIsAvailable()){ //check if the user has a JSON file
+                        if(!jsonMan.checkIfJsonFileIsAvailable()){ //check if the user has a JSON file
                             if(main.getBackgroundStatus()) { //if the app is in the background
                                 main.activateDetectionNotification(); //activate the notification for a detection
                             }
@@ -247,7 +249,7 @@ public class Scan {
                     }
                     else{
 
-                        if(!checkIfJsonFileIsAvailable()){ //check if the user has a JSON file
+                        if(!jsonMan.checkIfJsonFileIsAvailable()){ //check if the user has a JSON file
                             if(main.getBackgroundStatus()) { //if the app is in the background
                                 main.activateDetectionNotification(); //activate the notification for a detection
                             }
@@ -282,17 +284,6 @@ public class Scan {
 
     public void resetHandler(){
         scanHandler.removeCallbacks(scanRun); //reset the handler completely
-    }
-
-    public boolean checkIfJsonFileIsAvailable(){
-        File file = new File(main.getExternalFilesDir(null), "soni.json"); //"make" a new file where the file normally should be
-        if(file.exists()){ //if it exists
-            Log.d("Filecheck","The file is here");
-            return true;
-        }else{
-            Log.d("Filecheck","here is no file");
-            return false;
-        }
     }
 
     public String getDetectedFileUrl(){

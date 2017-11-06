@@ -8,19 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.graphics.Color;
 
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-/**
- * Created by SoniControl#1 on 25.09.2017.
- */
 
-
-class Stored_Adapter extends ArrayAdapter<String[]>{
+public class Stored_Adapter extends ArrayAdapter<String[]>{
 
 
 
@@ -52,14 +50,22 @@ class Stored_Adapter extends ArrayAdapter<String[]>{
         txtLon.setText(singleArrayItem[0]);
         txtLat.setText(singleArrayItem[1]);
         txtTech.setText(singleArrayItem[2]);
-        txtLastDet.setText(singleArrayItem[3]);
+        String formattedDate = singleArrayItem[3];
+        //StringBuilder dateBuild = new StringBuilder(formattedDate);
+        //dateBuild.setCharAt(11,);
+        formattedDate = formattedDate.replace("T"," ");
+        formattedDate = formattedDate.replace("Z","");
+
+        txtLastDet.setText(formattedDate);
         txtAddress.setText(singleArrayItem[5]);
 
         String spoofingStatus;
         if(Integer.valueOf(singleArrayItem[4])==1){
             spoofingStatus = "Will be spoofed!";
+            customView.setBackgroundColor(0xFFE39B26);
         }else {
             spoofingStatus = "Will not be spoofed!";
+            customView.setBackgroundColor(0x00ffffff);
         }
         txtSpoofingStatus.setText(spoofingStatus);
 

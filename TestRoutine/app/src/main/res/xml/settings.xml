@@ -20,17 +20,20 @@
             android:defaultValue="true"
             android:key="cbprefNetworkUse"
             android:title="Use Network Connection" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="cbprefMicBlock"
-            android:title="Use Microphone for Blocking" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="cbprefJsonSave"
-            android:title="Save Data in JSON File" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Expert - Spoofer">
-        <EditTextPreference
+        <Preference
+            android:key="deleteJson"
+            android:title="Delete the JSON File"></Preference>
+        <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="cbprefMicBlock"
+        android:title="Use Microphone for Blocking" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="cbprefJsonSave"
+        android:title="Save Data in JSON File" />
+    <EditTextPreference
         android:defaultValue="1000"
         android:key="etprefPulseDuration"
         android:selectAllOnFocus="true"

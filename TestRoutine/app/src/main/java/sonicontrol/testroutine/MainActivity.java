@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,10 @@ import android.app.Notification;
 import android.content.SharedPreferences;
 import android.preference.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -164,6 +168,20 @@ public class MainActivity extends AppCompatActivity {
         btnAlertDismiss.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 stopAutomaticBlockingMethodOnAction();
+
+                saveJsonFile = checkJsonAndLocationPermissions()[0];
+                boolean locationTrack = checkJsonAndLocationPermissions()[1];
+
+                if(saveJsonFile && locationTrack) {
+                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType, 2, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                }
+                if(saveJsonFile&&!locationTrack){
+                    double[] noLocation = new double[2];
+                    noLocation[0] = 0;
+                    noLocation[1] = 0;
+                    jsonMan.addJsonObject(noLocation, sigType, 2, "Not available!");
+                }
+
                 detector.startScanning(); //start scanning again
                 alert.cancel(); //cancel the alert dialog
                 txtSignalType.setText(""); //can be deleted it's only for debugging
@@ -217,6 +235,14 @@ public class MainActivity extends AppCompatActivity {
         btnAlertStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
+                    /*File f1 = new File(getExternalFilesDir(null) + "/detected-files/savedSignal.pcm"); // The location of your PCM file
+                    File f2 = new File(getExternalFilesDir(null) + "/detected-files/savedSignal.wav"); // The location where you want your WAV file
+                    try {
+                        SignalConverter sigCon = new SignalConverter();
+                        sigCon.rawToWave(f1, f2);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }*/
                     btnAlertStart.setText("Pause"); //set the button for playing/stopping to "stop"
                     sigPlayer = locationFinder.generatePlayer(); //create a new player
                     isSignalPlayerGenerated = true; //player is generated so it's true
@@ -238,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                 saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
 
                 if(saveJsonFile) {
-                    if (!detector.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
+                    if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
                         jsonMan.createJsonFile(); //create a JSON file
                     }
                     if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
@@ -327,6 +353,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
                 Intent myIntent = new Intent(MainActivity.this, Settings.class); //redirect to the settings activity
                 startActivityForResult(myIntent, 0);
+                String uniqueID = UUID.randomUUID().toString();
+                Log.d("UUID", uniqueID);
             }
         });
 
@@ -360,7 +388,8 @@ public class MainActivity extends AppCompatActivity {
     public void initDetectionNotification(){
         detectionBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_info_outline_white_48dp) //adding the icon
+                        //.setSmallIcon(R.drawable.ic_info_outline_white_48dp) //adding the icon
+                        .setSmallIcon(R.drawable.hearing_found) //adding the icon
                         .setContentTitle("Detection") //adding the title
                         .setContentText("I found a signal!") //adding the text
                         .setOngoing(true) //can't be canceled
@@ -403,7 +432,8 @@ public class MainActivity extends AppCompatActivity {
     public void initSpoofingStatusNotification(){
         spoofingStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_volume_up_white_48dp) //adding the icon
+                        //.setSmallIcon(R.drawable.ic_volume_up_white_48dp) //adding the icon
+                        .setSmallIcon(R.drawable.hearing_block) //adding the icon
                         .setContentTitle("Blocking") //adding the title
                         .setContentText("I am blocking the signal now!") //adding the text
                         .setOngoing(true); //it's canceled when tapped on it
@@ -443,7 +473,8 @@ public class MainActivity extends AppCompatActivity {
     public void initDetectionAlertStatusNotification(){
         detectionAlertStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_info_outline_white_48dp) //adding the icon
+                        //.setSmallIcon(R.drawable.ic_info_outline_white_48dp) //adding the icon
+                        .setSmallIcon(R.drawable.hearing_found) //adding the icon
                         .setContentTitle("Detection") //adding the title
                         .setContentText("I detected a signal!") //adding the text
                         .setOngoing(true); //it's canceled when tapped on it
@@ -483,7 +514,8 @@ public class MainActivity extends AppCompatActivity {
     public void initOnHoldStatusNotification(){
         onHoldStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_pause_white_48dp) //adding the icon
+                        //.setSmallIcon(R.drawable.ic_pause_white_48dp) //adding the icon
+                        .setSmallIcon(R.drawable.hearing_pause) //adding the icon
                         .setContentTitle("On Hold") //adding the title
                         .setContentText("I am waiting for input!") //adding the text
                         .setOngoing(true); //it's canceled when tapped on it
@@ -573,11 +605,12 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSettingsObject(); //get the settings
         saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
 
+        /*
         if(!saveJsonFile) {
-            if (detector.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
+            if (jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
                 jsonMan.deleteJsonFile();
             }
-        }
+        }*/
     }
 
     @Override

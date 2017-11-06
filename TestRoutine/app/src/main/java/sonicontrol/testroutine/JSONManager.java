@@ -107,7 +107,18 @@ public class JSONManager {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream
             JSONObject jObjectResult = jObject.getJSONObject("items"); //get the jsonobject "items"
-            JSONArray jArray = jObjectResult.getJSONArray("signal"); //get the jsonarray with the signals
+            JSONArray jArray;
+            if(position[0]==0&&position[1]==0) {
+                jArray = jObjectResult.getJSONArray("signalUnknownPosition");
+                if(spoof==2){
+                    spoof=0;
+                }
+            }else if(spoof==2){
+                jArray = jObjectResult.getJSONArray("signalDismissedThisTime");
+                spoof=0;
+            }else{
+                jArray = jObjectResult.getJSONArray("signal"); //get the jsonarray with the signals
+            }
 
             JSONObject addArray = new JSONObject(); //new json-object
 
@@ -146,12 +157,15 @@ public class JSONManager {
         try {
             jObject.put("items", jsObject); //put the second json-object into the first with "items"
             jsObject.put("signal", jArray); //put the json-array into the second json-object with "signal"
+            jsObject.put("signalUnknownPosition", jArray); //put the json-array into the second json-object with "signal"
+            jsObject.put("signalDismissedThisTime", jArray); //put the json-array into the second json-object with "signal"
 
         }catch (JSONException ext) {
 
         }
         try {
             FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), "soni.json")); //write the newly created json-object into the new json file
+            //FileWriter file = new FileWriter(new File(System.getenv("EXTERNAL_STORAGE"), "soni.json"));
             file.write( jObject.toString() );
             file.flush();
             file.close();
@@ -166,13 +180,31 @@ public class JSONManager {
             boolean deleted = file.delete();
     }
 
+    public boolean checkIfJsonFileIsAvailable(){
+        File file = new File(main.getExternalFilesDir(null), "soni.json"); //"make" a new file where the file normally should be
+        //File file = new File(System.getenv("EXTERNAL_STORAGE"), "soni.json"); //"make" a new file where the file normally should be
+        if(file.exists()){ //if it exists
+            Log.d("Filecheck","The file is here");
+            return true;
+        }else{
+            Log.d("Filecheck","here is no file");
+            return false;
+        }
+    }
+
     public boolean checkIfSavefolderIsAvailable(){
         File file = new File(main.getExternalFilesDir(null) + "/detected-files"); //get the folder for the audio files
+        //File file = new File(System.getenv("EXTERNAL_STORAGE")+ "/Android" + String.valueOf(main.getFilesDir()) + "/detected-files"); //get the folder for the audio files
+        Log.d("ExternalCheck0",System.getenv("EXTERNAL_STORAGE")+ "/Android" + String.valueOf(main.getFilesDir()) + "/detected-files");
         if(file.isDirectory()){ //if directory is available
             Log.d("Dircheck","The directory is here");
             Log.d("ExternalCheck1",Environment.getExternalStorageState());
             Log.d("ExternalCheck2",String.valueOf(Environment.isExternalStorageEmulated()));
             Log.d("ExternalCheck3",String.valueOf(Environment.isExternalStorageRemovable()));
+            Log.d("ExternalCheck4",System.getenv("EXTERNAL_STORAGE"));
+            Log.d("ExternalCheck5",String.valueOf(main.getExternalFilesDir(null)));
+            Log.d("ExternalCheck6",String.valueOf(main.getFilesDir()));
+            Log.d("ExternalCheck6",String.valueOf(Environment.getExternalStorageDirectory()));
             return true;
         }else{
             Log.d("Dircheck","here is no directory");
@@ -187,7 +219,8 @@ public class JSONManager {
 
     public String returnDateString(){
         Long currentTime = Calendar.getInstance().getTimeInMillis(); //get the current time in milliseconds
-        SimpleDateFormat rightFormat = new SimpleDateFormat("HH:mm:ss.SSS"); //get the time formatted
+        //SimpleDateFormat rightFormat = new SimpleDateFormat("HH:mm:ss.SSS"); //get the time formatted old with milliseconds
+        SimpleDateFormat rightFormat = new SimpleDateFormat("HH:mm:ss"); //get the time formatted
         SimpleDateFormat leftFormat = new SimpleDateFormat("yyyy-MM-dd"); //get the date formatted
         String dateLeft = String.valueOf(leftFormat.format(currentTime));
         String dateRight = String.valueOf(rightFormat.format(currentTime));

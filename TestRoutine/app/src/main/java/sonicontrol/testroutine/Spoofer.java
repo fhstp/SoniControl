@@ -84,7 +84,7 @@ public class Spoofer {
                 AudioManager audioManager = (AudioManager) main.getSystemService(Context.AUDIO_SERVICE);
                 int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
                 Log.d("Streamtype", String.valueOf(AudioManager.STREAM_MUSIC));
-                audioManager.setStreamVolume(3, (int)Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)/*0.75D*/)),0);
+                audioManager.setStreamVolume(3, (int)Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.80D)),0);
 
                 if(playingHandler) {
                     playtime = genNoise.getPlayertime(); //get the playertime depending on the generated whitenoise
