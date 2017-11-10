@@ -47,23 +47,24 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        Button extremecutButton = (Button) findViewById(R.id.SetExtremeCut);
-        final EditText inputExtremeCut = (EditText) findViewById(R.id.inputSetExtremeCut);
-        extremecutButton.setOnClickListener(new OnClickListener() {
+        Button rmsDButton = (Button) findViewById(R.id.SetRMSStdDev);
+        final EditText inputrmsDev = (EditText) findViewById(R.id.inputSetRMSStdDevN);
+        rmsDButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SetNewExtremeCut(Float.parseFloat(inputExtremeCut.getText().toString()));
+                SetRmsStdDevN(Integer.parseInt(inputrmsDev.getText().toString()));
             }
         });
 
-        Button extremeMinButton = (Button) findViewById(R.id.SetExtremeMinimum);
-        final EditText inputExtremeMin = (EditText) findViewById(R.id.inputSetExtremeMinimum);
-        extremeMinButton.setOnClickListener(new OnClickListener() {
+        Button buffersizeButton = (Button) findViewById(R.id.SetBufferSize);
+        final EditText inputbuffersize = (EditText) findViewById(R.id.inputSetBufferSize);
+        buffersizeButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                SetNewExtremeMinimum(Float.parseFloat(inputExtremeMin.getText().toString()));
+                SetNewBufferSize(Integer.parseInt(inputbuffersize.getText().toString()));
             }
         });
+
 
         Button extremeBaseButton = (Button) findViewById(R.id.SetNewExtremeBase);
         final EditText inputExtremeBase = (EditText) findViewById(R.id.inputSetNewExtremeBase);
@@ -76,6 +77,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         Button avgButton = (Button) findViewById(R.id.SetNewAVGType);
         final EditText inputTimes = (EditText) findViewById(R.id.inputMeanNtimes);
+        final EditText inputAvgDev = (EditText) findViewById(R.id.inputAvgStdDevNtimes);
         final RadioButton avg0 = (RadioButton) findViewById(R.id.radioButtonMean);
         avg0.setChecked(true);
         final RadioButton avg1 = (RadioButton) findViewById(R.id.radioButtonVariance);
@@ -84,21 +86,15 @@ public class SettingsActivity extends AppCompatActivity {
         avgButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(avg0.isChecked())
-                {
+                if (avg0.isChecked()) {
                     SetNewAverageRmsType(0);
-                }
-                else if(avg1.isChecked())
-                {
+                } else if (avg1.isChecked()) {
+                    SetAvgStdDevN(Integer.parseInt(inputAvgDev.getText().toString()));
                     SetNewAverageRmsType(1);
-                }
-                else if(avg2.isChecked())
-                {
+                } else if (avg2.isChecked()) {
                     SetNewRmsCustomVar(Integer.parseInt(inputTimes.getText().toString()));
                     SetNewAverageRmsType(2);
-                }
-                else if(avg3.isChecked())
-                {
+                } else if (avg3.isChecked()) {
                     SetNewRmsCustomVar(Integer.parseInt(inputTimes.getText().toString()));
                     SetNewAverageRmsType(3);
                 }
@@ -106,15 +102,82 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+
+        EditText inputFreq = (EditText) findViewById(R.id.inputCutF);
+        EditText inputDetection = (EditText) findViewById(R.id.inputSetDetectionWindow);
+        EditText inputrms = (EditText) findViewById(R.id.inputSetRMSWindow);
+        EditText inputrmsDev = (EditText) findViewById(R.id.inputSetRMSStdDevN);
+        EditText inputbuffersize = (EditText) findViewById(R.id.inputSetBufferSize);
+        EditText inputExtremeBase = (EditText) findViewById(R.id.inputSetNewExtremeBase);
+        EditText inputTimes = (EditText) findViewById(R.id.inputMeanNtimes);
+        EditText inputAvgDev = (EditText) findViewById(R.id.inputAvgStdDevNtimes);
+        RadioButton avg0 = (RadioButton) findViewById(R.id.radioButtonMean);
+        RadioButton avg1 = (RadioButton) findViewById(R.id.radioButtonVariance);
+        RadioButton avg2 = (RadioButton) findViewById(R.id.radioButtonTimes);
+        RadioButton avg3 = (RadioButton) findViewById(R.id.radioButtonX);
+
+        inputFreq.setText(GetNewCutFrequency()+"");
+        inputDetection.setText(GetNewDetectionTime() + "");
+        inputrms.setText(GetNewRmsBuffer()+ "");
+        inputrmsDev.setText(GetRmsStdDevN() + "");
+        inputExtremeBase.setText(GetNewExtremeBase() + "");
+        inputTimes.setText(GetNewRmsCustomVar() + "");
+        inputAvgDev.setText(GetAvgStdDevN()+"");
+
+        int type = GetNewAverageRmsType();
+
+        if(type == 0)
+        {
+            avg0.setChecked(true);
+        } else if(type == 1)
+        {
+            avg1.setChecked(true);
+        } else if(type == 2)
+        {
+            avg2.setChecked(true);
+        } else if(type == 3)
+        {
+            avg3.setChecked(true);
+        }
+
+    }
 
 
     private native void SetNewCutFrequency(int f);
+
     private native void SetNewBufferSize(int buffer);
+
     private native void SetNewExtremeBase(float base);
+
     private native void SetNewAverageRmsType(int type);
+
     private native void SetNewRmsCustomVar(int var);
+
     private native void SetNewRmsBuffer(int lastSeconds);
+
     private native void SetNewDetectionTime(int lastMilliseconds);
-    private native void SetNewExtremeCut(float percentage);
-    private native void SetNewExtremeMinimum(float minimum);
+
+    private native void SetAvgStdDevN(int n);
+
+    private native void SetRmsStdDevN(int n);
+
+    private native int GetNewCutFrequency();
+
+    private native float GetNewExtremeBase();
+
+    private native int GetNewAverageRmsType();
+
+    private native int GetNewRmsCustomVar();
+
+    private native int GetNewRmsBuffer();
+
+    private native int GetNewDetectionTime();
+
+    private native int GetAvgStdDevN();
+
+    private native int GetRmsStdDevN();
 }

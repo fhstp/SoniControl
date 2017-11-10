@@ -1,15 +1,19 @@
 #include <jni.h>
 #include <stdlib.h>
 #include <SuperpoweredFrequencyDomain.h>
-#include <SuperpoweredFilter.h>
 #include <AndroidIO/SuperpoweredAndroidAudioIO.h>
 #include <SuperpoweredSimple.h>
 #include <SuperpoweredCPU.h>
 #include <SLES/OpenSLES.h>
 #include <cmath>
 #include <stdio.h>
+#include <algorithm>
+#include <functional>
+#include <vector>
+#include <stdlib.h>
 #include <math.h>
 #include <SLES/OpenSLES_AndroidConfiguration.h>
+#include <string.h>
 
 static SuperpoweredFrequencyDomain *frequencyDomain;
 static float *magnitudeLeft, *magnitudeRight, *phaseLeft, *phaseRight, *inputBufferFloat;
@@ -20,7 +24,7 @@ static float rmsT;
 
 static float binSizeinHz; //what range of HZ does one Bin occupy
 static float cutFrequency=18000.0f; //fq above this treshold will be sued in detection
-static float cutBin; //
+static float cutBin; //including this bin to the last, these will be sonsidered for the RMS
 
 static int bufferSize; //is consumed in Java
 
@@ -37,13 +41,13 @@ static int rmsSizeInS = 30; //How many Seconds should be holded for AVG RMS, use
 static int rmsSize; //the size of the array rmsHolder
 static int rmsIndex; //the index of the array rmsHolder
 static bool rmsAvgAvailable = false; //is true when there is enough data available (3/4)
-static int rmsType=0; //0=Sum, 1=STD DEV, 2=NTIMES, 3=Manual
-static int rmsCustom = 20;
+static int rmsType=0; //0=Sum, 1=Mean + x Std Dev, 2=Median, 3=Manual
+static int rmsCustom = 20; //A custom AVG treshold
+static int rmsDevN = 1; //How many Standard Deviations should be added to the Mean of the RMS
+static int avgDevN = 1; //how many standard deviations should be added to the Mean of the AVG
 
+static float extremeCutBase = 0.02; //AVG is atleast this size, if not, the AVG will be this size
 
-static float extremeCutOff = 10.0; //reading 10 times more than the avg are not read
-static float extremeCutMinimum = 10.0; //reading under 10 are always read
-static float extremeCutBase = 0.02; //AVG is atleast this size
 #define FFT_LOG_SIZE 11 // 2^11 = 2048 - minimum viable size
 
 static int advanceSampleArray()
@@ -60,6 +64,12 @@ static int advanceRMSArray()
         return ++rmsIndex;
     else
         return rmsIndex=0;
+}
+
+static float GetMedian(float *daArray, int iSize) {
+    std::vector<float> vec (daArray, daArray+iSize);
+    std::nth_element(vec.begin(), vec.begin()+ (iSize/2), vec.end());
+    return vec[(iSize/2)];
 }
 
 static float GetAvgRMS(int rmstype)
@@ -84,17 +94,22 @@ static float GetAvgRMS(int rmstype)
         for (i = 0; i < rmsSize; ++i) {
             variance += powf((*(rmsHolder + i) - mean),2.0);
         }
-        return sqrtf(variance/(i)) > extremeCutBase ? sqrtf(variance/(i)) : extremeCutBase;
+        float dev = sqrtf(variance/(i));
+        return  (dev * avgDevN) + mean > extremeCutBase ? sqrtf(variance/(i)) + mean: extremeCutBase;
     }
 
     if(rmstype == 2) {
-        return GetAvgRMS(0)*rmsCustom;
+        float median = GetMedian(rmsHolder, rmsSize);
+
+        return median > extremeCutBase ? median: extremeCutBase;
     }
 
     if(rmstype == 3) {
         return rmsCustom;
     }
 }
+
+
 
 static void saveSample(float *samples, int numberOfSamples)
 {
@@ -128,17 +143,32 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
     while (frequencyDomain->timeDomainToFrequencyDomain(magnitudeLeft, magnitudeRight, phaseLeft, phaseRight)) {
 
         float rmsFi = 0.0f; // 1/n * SUMn[Xn]
+        float rmsFmean = 0.0f; //the mean of the rms values above the cutbin
+        float rmsDev = 0.0f; //the standard deviation, calculated
+        int rmsCounts = 0; //the number of actual elements considered for the RMS (above mean + std dev)
+
         for (int i = (int) cutBin; i < powf(2.0,(float)FFT_LOG_SIZE-1); i++) { //half the size
             if(*(magnitudeLeft+i) >= 0.0f) //if bin above 0
-                rmsFi += (*(magnitudeLeft+i) * *(magnitudeLeft+i)); //square them and sum them over
+                rmsFmean += *(magnitudeLeft+i); //sum
         }
-        rmsFi *= 1.0f/ (powf(2.0,(float)FFT_LOG_SIZE-1) - cutBin); //multiply with the number of the elements
+        rmsFmean = rmsFmean/ (powf(2.0,(float)FFT_LOG_SIZE-1) - cutBin); //mean
+
+        for (int i = (int) cutBin; i < powf(2.0,(float)FFT_LOG_SIZE-1); i++) { //half the size
+            if (*(magnitudeLeft + i) >= 0.0f) //if bin above 0
+                rmsDev += powf((*(magnitudeLeft + i) - rmsFmean), 2.0);
+        }
+        rmsDev = sqrtf(rmsDev/(powf(2.0,(float)FFT_LOG_SIZE-1) - cutBin)); //std dev
+
+        for (int i = (int) cutBin; i < powf(2.0,(float)FFT_LOG_SIZE-1); i++) { //half the size
+            if(*(magnitudeLeft+i) >= rmsFmean+(rmsDev*rmsDevN)) { //if bin above Mean
+                rmsFi += (*(magnitudeLeft + i) * *(magnitudeLeft + i)); //square them and sum them over
+                rmsCounts++; //and count it
+            }
+        }
+        rmsFi *= 1.0f/ rmsCounts; //multiply with inverse of the number of the elements
         rmsFi = sqrtf(rmsFi); //get the root
-
-        //if(rmsFi > extremeCutMinimum && rmsFi > GetAvgRMS(rmsType) * extremeCutOff )
-          //  continue;
-
         rmsF = rmsFi;
+        //rmsF = logf(1.0f + rmsFi);
         *(rmsHolder+rmsIndex) = rmsF; //save rms, first in, last out circle
         advanceRMSArray();
 
@@ -165,18 +195,19 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
     return true;
 }
 
-
+//TODO, find out if realloc is broken on android? it it is, change everything to vectors ffs
 static void createNewRmsBuffer()
 {
     float* container = (float*)malloc(rmsSize * sizeof(rmsHolder));
     int oldsize = rmsSize;
     memcpy(container, rmsHolder, rmsSize * sizeof(float));
 
+    //rmsSizeInS has been changed in native callback
     rmsSize = (int)bufferSeconds * rmsSizeInS;
-    rmsIndex = rmsIndex>=rmsSize?0:rmsIndex;
+    rmsIndex = rmsIndex>=rmsSize?0:rmsIndex; //resetIndex if size has shirnked (still FIFO)
     rmsHolder = (float*)malloc(rmsSize * sizeof(rmsHolder));
 
-    memcpy(rmsHolder, container, rmsSize>oldsize?oldsize * sizeof(float):rmsSize * sizeof(float));
+    memcpy(rmsHolder, container, rmsSize>oldsize?oldsize * sizeof(float):rmsSize * sizeof(float)); //copy all or only max amount
 
     free(container);
 }
@@ -263,6 +294,9 @@ extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity
     cutFrequency = cutF;
     cutBin = cutFrequency / binSizeinHz;
 }
+extern "C" JNIEXPORT int Java_com_superpowered_frequencydomain_SettingsActivity_GetNewCutFrequency(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+    return cutFrequency;
+}
 
 extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewBufferSize(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint buffer){
 
@@ -271,31 +305,52 @@ extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity
 extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewRmsCustomVar(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint ntimes){
     rmsCustom = ntimes;
 }
-
-extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewExtremeMinimum(JNIEnv * __unused javaEnvironment, jobject __unused obj, jfloat min){
-    extremeCutMinimum = min;
+extern "C" JNIEXPORT int Java_com_superpowered_frequencydomain_SettingsActivity_GetNewRmsCustomVar(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+    return rmsCustom;
 }
 
-extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewExtremeCut(JNIEnv * __unused javaEnvironment, jobject __unused obj, jfloat cut){
-    extremeCutOff = cut;
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetAvgStdDevN(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint n){
+    avgDevN = n;
+}
+extern "C" JNIEXPORT int Java_com_superpowered_frequencydomain_SettingsActivity_GetAvgStdDevN(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+    return avgDevN;
+}
+
+extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetRmsStdDevN(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint n){
+    rmsDevN = n;
+}
+extern "C" JNIEXPORT int Java_com_superpowered_frequencydomain_SettingsActivity_GetRmsStdDevN(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+    return rmsDevN;
 }
 
 extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewExtremeBase(JNIEnv * __unused javaEnvironment, jobject __unused obj, jfloat base){
     extremeCutBase = base;
+}
+extern "C" JNIEXPORT float Java_com_superpowered_frequencydomain_SettingsActivity_GetNewExtremeBase(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+    return extremeCutBase;
 }
 
 extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewDetectionTime(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint lastms){
     saveLastMilliseconds = lastms;
     createNewDetectionBuffers();
 }
+extern "C" JNIEXPORT int Java_com_superpowered_frequencydomain_SettingsActivity_GetNewDetectionTime(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+    return saveLastMilliseconds;
+}
 
 extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewRmsBuffer(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint lasts){
     rmsSizeInS = lasts;
     createNewRmsBuffer();
 }
+extern "C" JNIEXPORT int Java_com_superpowered_frequencydomain_SettingsActivity_GetNewRmsBuffer(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+    return rmsSizeInS;
+}
 
 extern "C" JNIEXPORT void Java_com_superpowered_frequencydomain_SettingsActivity_SetNewAverageRmsType(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint type){
     rmsType = type;
+}
+extern "C" JNIEXPORT int Java_com_superpowered_frequencydomain_SettingsActivity_GetNewAverageRmsType(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+    return rmsType;
 }
 
 extern "C" JNIEXPORT jintArray Java_com_superpowered_frequencydomain_MainActivity_GetDetectionArray(JNIEnv *javaEnvironment, jobject __unused obj) {
