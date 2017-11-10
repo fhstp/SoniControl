@@ -237,6 +237,7 @@ public class Location {
                 available = false;
             }
         } finally{
+            // TODO: Check why we can get "stop() called on an uninitialized AudioRecord."
             recorder.stop(); //stop the recorder
             recorder.release(); //release the recorder resources
         }
