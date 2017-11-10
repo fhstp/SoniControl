@@ -12,6 +12,7 @@ import android.content.*;
 
 public class SettingsFragment extends PreferenceFragment {
 
+    static SettingsFragment settingsFragment;
     MainActivity main = new MainActivity();
     JSONManager jsonMan;
     MainActivity nextMain;
@@ -21,6 +22,8 @@ public class SettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.settings_old);
         addPreferencesFromResource(R.xml.settings); //set the settings.xml as the preferences
+
+        settingsFragment = this;
 
         nextMain = main.getMainIsMain();
         jsonMan = new JSONManager(nextMain);
@@ -37,10 +40,33 @@ public class SettingsFragment extends PreferenceFragment {
             }
         });
 
-
+        final Preference prefLocRad = findPreference("etprefLocationRadius");
+        prefLocRad.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                prefLocRad.setTitle("Location Radius (" + newValue + " metres)");
+                Log.d("MyApp", "Pref " + preference.getKey() + " " + newValue.toString());
+                Log.d("testfortest",String.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), "30")));
+                return true;
+            }
+        });
+        //Integer.valueOf(sharedPref.getString("etprefLocationRadius", "30"))
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        Preference prefLocRad = findPreference("etprefLocationRadius");
+        int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), "30"));
+        prefLocRad.setTitle("Location Radius (" + locationRadius + " metres)");
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Preference prefLocRad = findPreference("etprefLocationRadius");
+        int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), "30"));
+        prefLocRad.setTitle("Location Radius (" + locationRadius + " metres)");
+    }
 
 
 }

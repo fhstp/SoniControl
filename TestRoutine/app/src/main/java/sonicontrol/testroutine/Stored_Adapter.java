@@ -47,8 +47,8 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
         TextView txtAddress = (TextView) customView.findViewById(R.id.txtAddress);
         TextView txtSpoofingStatus = (TextView) customView.findViewById(R.id.txtSpoofingStatus);
 
-        txtLon.setText(singleArrayItem[0]);
-        txtLat.setText(singleArrayItem[1]);
+        txtLon.setText("Lon " + singleArrayItem[0]);
+        txtLat.setText("Lat " + singleArrayItem[1]);
         txtTech.setText(singleArrayItem[2]);
         String formattedDate = singleArrayItem[3];
         //StringBuilder dateBuild = new StringBuilder(formattedDate);
