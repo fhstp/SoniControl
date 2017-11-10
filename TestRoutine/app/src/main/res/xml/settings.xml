@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Settings">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="cbprefContinuousSpoof"
+            android:title="Spoof on each Location" />
+        <EditTextPreference
+            android:defaultValue="30"
+            android:key="etprefLocationRadius"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Location Radius (metre)" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbprefGpsUse"
+            android:title="Use GPS" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbprefNetworkUse"
+            android:title="Use Network Connection" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Expert - Spoofer">
+        <Preference
+            android:key="deleteJson"
+            android:title="Delete the JSON File"></Preference>
+        <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="cbprefMicBlock"
+        android:title="Use Microphone for Blocking" />
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="cbprefJsonSave"
+        android:title="Save Data in JSON File" />
+    <EditTextPreference
+        android:defaultValue="1000"
+        android:key="etprefPulseDuration"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:inputType="number"
+        android:title="Pulse Duration (ms)" />
+    <EditTextPreference
+        android:defaultValue="1000"
+        android:key="etprefPauseDuration"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:inputType="number"
+        android:title="Pause Duration (ms)" />
+    <EditTextPreference
+        android:defaultValue="1"
+        android:key="etprefBandwidth"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:inputType="number"
+        android:title="Bandwidth" />
+        <EditTextPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="1"
+            android:inputType="number"
+            android:key="etprefSpoofDuration"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Blocking duration in minutes" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Expert - Detector">
+
+        <EditTextPreference
+            android:defaultValue="50"
+            android:key="etprefBufferSize"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Buffersize (ms)" />
+        <EditTextPreference
+            android:defaultValue="10"
+            android:key="etprefBackgroundBufferSize"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Background Buffersize (sec)" />
+        <EditTextPreference
+            android:defaultValue="1"
+            android:key="etprefMedianBufferSize"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Median Buffersize (sec)" />
+        <EditTextPreference
+            android:defaultValue="16800"
+            android:key="etprefCutoffFrequency"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Cutoff Frequency" />
+        <EditTextPreference
+            android:defaultValue="0,5"
+            android:key="etprefDecisionThreshold"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Decision Threshold" />
+        <EditTextPreference
+            android:defaultValue="3,5"
+            android:key="etprefDecisionThresholdNearby"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Decision Threshold Nearby" />
+        <EditTextPreference
+            android:defaultValue="0,05"
+            android:key="etprefDecisionThresholdNearbyAc"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Decision Threshold Nearby AC" />
+    </PreferenceCategory>
+</PreferenceScreen>

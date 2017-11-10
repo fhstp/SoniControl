@@ -1,0 +1,28 @@
+{
+  "items": {
+    "signal": [{
+      "long": 54.872,
+      "lat": 21.502,
+      "technology": "Google Nearby",
+      "last_detection": "2012-04-23T18:25:43.511Z",
+      "spoof": 1,
+      "URL": "test"
+    },
+    {
+      "long": 34.822,
+      "lat": 51.592,
+      "technology": "Lisnr",
+      "last_detection": "2012-04-23T18:25:43.511Z",
+      "spoof": 1,
+      "URL": "test"
+    },
+    {
+      "long": 15.630347,
+      "lat": 48.2127277,
+      "technology": "Google Nearby",
+      "last_detection": "2012-04-23T18:25:43.511Z",
+      "spoof": 1,
+      "URL": "test"
+    }]
+  }
+}

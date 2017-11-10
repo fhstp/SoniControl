@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/rectimage"
+            android:layout_width="340dp"
+            android:layout_height="350dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/rectangle"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"></ImageView>
+
+        <Button
+            android:id="@+id/btnPlay"
+            android:layout_width="308dp"
+            android:layout_height="wrap_content"
+            android:text="Play"
+            android:layout_above="@+id/btnDismissAlwaysHere"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/btnSpoof"
+            android:layout_width="309dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/rectimage"
+            android:layout_alignLeft="@+id/btnDismissThisTime"
+            android:layout_alignStart="@+id/btnDismissThisTime"
+            android:layout_marginBottom="25dp"
+            android:text="Spoof" />
+
+        <Button
+            android:id="@+id/btnDismissThisTime"
+            android:layout_width="308dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btnSpoof"
+            android:layout_alignLeft="@+id/btnDismissAlwaysHere"
+            android:layout_alignStart="@+id/btnDismissAlwaysHere"
+            android:layout_marginBottom="11dp"
+            android:text="Dismiss this Time" />
+
+        <Button
+            android:id="@+id/btnDismissAlwaysHere"
+            android:layout_width="308dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btnDismissThisTime"
+            android:layout_alignLeft="@+id/btnPlay"
+            android:layout_alignStart="@+id/btnPlay"
+            android:layout_marginBottom="15dp"
+            android:text="Dismiss always here" />
+
+        <TextView
+            android:id="@+id/txtSignalType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btnPlay"
+            android:layout_alignEnd="@+id/btnPlay"
+            android:layout_alignLeft="@+id/btnPlay"
+            android:layout_alignRight="@+id/btnPlay"
+            android:layout_alignStart="@+id/btnPlay"
+            android:layout_alignTop="@+id/rectimage"
+            android:layout_marginTop="24dp"
+            android:textAlignment="center"
+            android:textSize="36sp" />
+
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="253dp"
+        android:layout_height="47dp"
+        android:layout_alignLeft="@+id/btnPlay"
+        android:layout_alignStart="@+id/btnPlay"
+        android:layout_below="@+id/btnPlay"
+        android:layout_marginTop="27dp"
+        android:text="Stop"
+        tools:layout_editor_absoluteX="66dp"
+        tools:layout_editor_absoluteY="125dp" />
+
+    <Button
+        android:id="@+id/btnSettings"
+        android:layout_width="253dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="28dp"
+        android:text="Settings"
+        tools:layout_editor_absoluteX="66dp"
+        tools:layout_editor_absoluteY="202dp"
+        android:layout_below="@+id/btnStorLoc"
+        android:layout_alignLeft="@+id/btnStop"
+        android:layout_alignStart="@+id/btnStop" />
+
+    <Button
+        android:id="@+id/btnStorLoc"
+        android:layout_width="253dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="29dp"
+        android:text="stored Locations"
+        tools:layout_editor_absoluteX="66dp"
+        tools:layout_editor_absoluteY="279dp"
+        android:layout_below="@+id/btnStop"
+        android:layout_alignLeft="@+id/btnSettings"
+        android:layout_alignStart="@+id/btnSettings" />
+
+    <Button
+        android:id="@+id/btnExit"
+        android:layout_width="253dp"
+        android:layout_height="47dp"
+        android:text="Exit"
+        tools:layout_editor_absoluteX="66dp"
+        tools:layout_editor_absoluteY="359dp"
+        android:layout_marginTop="24dp"
+        android:layout_below="@+id/btnSettings"
+        android:layout_alignLeft="@+id/btnSettings"
+        android:layout_alignStart="@+id/btnSettings" />
+
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="253dp"
+        android:layout_height="47dp"
+        android:text="Start"
+        tools:layout_editor_absoluteX="66dp"
+        tools:layout_editor_absoluteY="54dp"
+        android:layout_marginTop="39dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/txtDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/btnExit"
+        android:layout_alignLeft="@+id/btnExit"
+        android:layout_alignRight="@+id/btnExit"
+        android:layout_alignStart="@+id/btnExit"
+        android:layout_below="@+id/btnExit"
+        android:layout_marginTop="32dp"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/txtSpoofing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtDistance"
+        android:layout_alignStart="@+id/txtDistance"
+        android:layout_below="@+id/txtDistance"
+        android:layout_marginTop="21dp"
+        android:enabled="false"
+        android:text="Spoof"
+        android:textSize="22sp" />
+
+</RelativeLayout>
