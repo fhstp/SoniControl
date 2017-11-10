@@ -1,7 +1,0 @@
-﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:Boolean x:Key="/Default/RunConfigs/Config/=068C1EBB7CB60F49844C579C0B2B9296/@KeyIndexDefined">True</s:Boolean>
-	<s:String x:Key="/Default/RunConfigs/Config/=068C1EBB7CB60F49844C579C0B2B9296/Type/@EntryValue">project</s:String>
-	<s:String x:Key="/Default/RunConfigs/Config/=068C1EBB7CB60F49844C579C0B2B9296/Name/@EntryValue">JarBinding</s:String>
-	<s:String x:Key="/Default/RunConfigs/Config/=068C1EBB7CB60F49844C579C0B2B9296/ProjectGuid/@EntryValue">258AFBE5B55F7545BCADE5BDB385B932</s:String>
-	<s:String x:Key="/Default/RunConfigs/Config/=068C1EBB7CB60F49844C579C0B2B9296/DefaultAction/@EntryValue">run</s:String>
-	</wpf:ResourceDictionary>

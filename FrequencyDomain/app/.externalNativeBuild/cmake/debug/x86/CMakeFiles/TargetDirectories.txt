@@ -1,3 +1,0 @@
-C:/Repository/SoniControlFH/FrequencyDomain/app/.externalNativeBuild/cmake/debug/x86/CMakeFiles/SuperpoweredExample.dir
-C:/Repository/SoniControlFH/FrequencyDomain/app/.externalNativeBuild/cmake/debug/x86/CMakeFiles/edit_cache.dir
-C:/Repository/SoniControlFH/FrequencyDomain/app/.externalNativeBuild/cmake/debug/x86/CMakeFiles/rebuild_cache.dir
