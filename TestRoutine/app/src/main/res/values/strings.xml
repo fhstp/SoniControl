@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TestRoutine</string>
     <string name="spoofOnEachLoc">Spoof on each Location</string>
+    <string name="addressData">Not available!</string>
 </resources>

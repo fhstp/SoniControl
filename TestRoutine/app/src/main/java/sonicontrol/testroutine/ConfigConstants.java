@@ -6,5 +6,7 @@ package sonicontrol.testroutine;
 
 public final class ConfigConstants {
     public static final String JSON_FILENAME = "soni.json";
+    public static final String DIR_NAME_SAVED_RECORDINGS = "/detected-files";
 
+    public static final String SETTING_CONTINOUS_SPOOFING = "cbprefContinuousSpoof";
 }
