@@ -1,18 +1,29 @@
 apply plugin: 'com.android.application'
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def superpowered_sdk_path = properties.getProperty('superpowered.dir')
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "sonicontrol.testroutine"
-        minSdkVersion 16
+        minSdkVersion 16 // more than 95% of all active Android devices (mid 2017)
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64' // these platforms cover 99% percent of all Android devices
+        }
+
         externalNativeBuild {
             cmake {
-                cppFlags ""
+                arguments '-DANDROID_PLATFORM=android-16', '-DANDROID_TOOLCHAIN=clang', '-DANDROID_ARM_NEON=TRUE', '-DANDROID_STL=gnustl_static', "-DPATH_TO_SUPERPOWERED:STRING=${superpowered_sdk_path}"
+                cFlags '-O3', '-fsigned-char' // full optimization, char data type is signed
+                cppFlags '-fsigned-char','-std=c++11', "-I${superpowered_sdk_path}"
             }
         }
     }
@@ -22,9 +33,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/jni']
+        }
+    }
     externalNativeBuild {
         cmake {
-            path "CMakeLists.txt"
+            path 'src/main/jni/CMakeLists.txt'
         }
     }
 }
@@ -37,6 +53,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    //compile 'pl.edu.icm:JLargeArrays:1.6'
-    compile files('libs/JTransforms-3.1-with-dependencies.jar')
+    compile 'pl.edu.icm:JLargeArrays:1.6' // Better to have it here than in jar folder (see gitignore)
+    compile 'com.jjoe64:graphview:4.2.1'
 }

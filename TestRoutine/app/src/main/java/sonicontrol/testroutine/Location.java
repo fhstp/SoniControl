@@ -238,6 +238,7 @@ public class Location {
             }
         } finally{
             // TODO: Check why we can get "stop() called on an uninitialized AudioRecord."
+            // TODO: Note, it seems to happen when the permission for audio recording is not yet given.
             recorder.stop(); //stop the recorder
             recorder.release(); //release the recorder resources
         }

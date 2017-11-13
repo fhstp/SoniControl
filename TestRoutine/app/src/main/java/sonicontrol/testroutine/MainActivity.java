@@ -701,12 +701,4 @@ public class MainActivity extends AppCompatActivity {
             .setIcon(android.R.drawable.ic_dialog_alert)
             .show();*/
     }
-
-    public native String stringFromJNI();
-
-    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
-
 }
