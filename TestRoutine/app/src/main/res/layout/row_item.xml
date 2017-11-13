@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/technologyName"
-        android:layout_width="110dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/linearLayout"
         android:layout_alignParentEnd="true"

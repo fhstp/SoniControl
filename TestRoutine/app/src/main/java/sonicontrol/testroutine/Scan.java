@@ -71,7 +71,12 @@ public class Scan {
                 //random numbers created for testing the random detection of signals
                 randomNumber = randomNumGenerator.nextInt(20);
                 Log.d("Scanner_Random", Integer.toString(randomNumber));
+
+                //TODO:Here we can implement the Detection the if Statements after these commentline are the different cases now for signal technologies
+                //TODO:They are now redundant because of the testing.
+
                 if(randomNumber==4){
+
                     locFinder.saveSignalTypeForLater(4);
                     /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);

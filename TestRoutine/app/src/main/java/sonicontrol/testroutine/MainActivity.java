@@ -2,9 +2,12 @@ package sonicontrol.testroutine;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioTrack;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -271,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
                         jsonMan.createSaveFolder(); //create a folder for the audio files
                     }
                 }
-
+/*
                 //Request permission fot the audio recording
                 int status = ActivityCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.RECORD_AUDIO);
@@ -316,6 +319,13 @@ public class MainActivity extends AppCompatActivity {
                             MainActivity.this,
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                             0);
+                }
+                */
+                int PERMISSION_ALL = 1;
+                String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+                if(!hasPermissions(MainActivity.this, PERMISSIONS)){
+                    ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, PERMISSION_ALL);
                 }
 
                 cancelOnHoldStatusNotification(); //cancel the onHold notification
@@ -367,6 +377,17 @@ public class MainActivity extends AppCompatActivity {
 
         activateOnHoldStatusNotification(); //activate the onHold-status notification
         getSettingsObject(); //get the settings
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public void activateAlert(String signalType){
@@ -605,6 +626,15 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSettingsObject(); //get the settings
         saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
 
+        if(saveJsonFile) {
+            if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
+                jsonMan.createJsonFile(); //create a JSON file
+            }
+            if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
+                jsonMan.createSaveFolder(); //create a folder for the audio files
+            }
+        }
+
         /*
         if(!saveJsonFile) {
             if (jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
@@ -649,6 +679,27 @@ public class MainActivity extends AppCompatActivity {
         saveJsonAndLocation[1] = locationTrack;
 
         return saveJsonAndLocation;
+    }
+
+    public AlertDialog.Builder createAlertDialog(){
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(MainActivity.this);
+        return builder;
+/*
+        builder.setTitle("Delete entry")
+            .setMessage("Are you sure you want to delete this entry?")
+            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // continue with delete
+                }
+            })
+            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // do nothing
+                }
+            })
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show();*/
     }
 
     public native String stringFromJNI();

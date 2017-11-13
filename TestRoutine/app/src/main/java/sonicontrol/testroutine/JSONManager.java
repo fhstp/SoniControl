@@ -25,12 +25,24 @@ public class JSONManager {
     private Location locationFinder;
     ArrayList<String[]> data = new ArrayList<String[]>();
 
+    private static final String JSON_LIST_NAME = "items";
+    private static final String JSON_ARRAY_SIGNALS = "signal";
+    private static final String JSON_ARRAY_DISMISSED_SIGNALS = "signalDismissedThisTime";
+    private static final String JSON_ARRAY_UNKNOWN_SIGNALS = "signalUnknownPosition";
+    private static final String JSON_ARRAY_SIGNAL_LONGITUDE = "long";
+    private static final String JSON_ARRAY_SIGNAL_LATITUDE = "";
+    private static final String JSON_ARRAY_SIGNAL_LAST_DETECTION = "";
+    private static final String JSON_ARRAY_SIGNAL_SPOOFING_STATUS = "";
+    private static final String JSON_ARRAY_SIGNAL_ADDRESS = "";
+    private static final String JSON_ARRAY_SIGNAL_URL = "";
+
+
     public JSONManager(MainActivity main){
         this.main = main;
     }
 
     public ArrayList<String[]> getJsonData(){
-        File jsonFile = new File(main.getExternalFilesDir(null), "soni.json"); //get json file from external storage
+        File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
         FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
@@ -83,7 +95,7 @@ public class JSONManager {
     }
 
     public void addJsonObject(double[] position, String technology, int spoof, String address){
-        File jsonFile = new File(main.getExternalFilesDir(null), "soni.json"); //get json file from external storage
+        File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
         FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
@@ -135,7 +147,7 @@ public class JSONManager {
             jArray.put(addArray); //add the created object to the json array
 
             try {
-                FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), "soni.json")); //get the json file
+                FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME)); //get the json file
                 Log.d("TryJsonSave", "I am saved");
                 file.write( jObject.toString() ); //write the new entry into the file
                 file.flush();
@@ -164,8 +176,8 @@ public class JSONManager {
 
         }
         try {
-            FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), "soni.json")); //write the newly created json-object into the new json file
-            //FileWriter file = new FileWriter(new File(System.getenv("EXTERNAL_STORAGE"), "soni.json"));
+            FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME)); //write the newly created json-object into the new json file
+            //FileWriter file = new FileWriter(new File(System.getenv("EXTERNAL_STORAGE"), ConfigConstants.JSON_FILENAME));
             file.write( jObject.toString() );
             file.flush();
             file.close();
@@ -176,13 +188,13 @@ public class JSONManager {
     }
 
     public void deleteJsonFile(){
-            File file = new File(main.getExternalFilesDir(null), "soni.json");
+            File file = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME);
             boolean deleted = file.delete();
     }
 
     public boolean checkIfJsonFileIsAvailable(){
-        File file = new File(main.getExternalFilesDir(null), "soni.json"); //"make" a new file where the file normally should be
-        //File file = new File(System.getenv("EXTERNAL_STORAGE"), "soni.json"); //"make" a new file where the file normally should be
+        File file = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //"make" a new file where the file normally should be
+        //File file = new File(System.getenv("EXTERNAL_STORAGE"), ConfigConstants.JSON_FILENAME); //"make" a new file where the file normally should be
         if(file.exists()){ //if it exists
             Log.d("Filecheck","The file is here");
             return true;
@@ -231,7 +243,7 @@ public class JSONManager {
 
     public void setLatestDate(double[] position, String signalType){
         locationFinder = Location.getInstanceLoc();
-        File jsonFile = new File(main.getExternalFilesDir(null), "soni.json"); //get json file from external storage
+        File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
         FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
@@ -276,7 +288,7 @@ public class JSONManager {
                 }
             }
             try {
-                FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), "soni.json")); //write the newly created json-object into the new json file
+                FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME)); //write the newly created json-object into the new json file
                 Log.d("TryJsonSave", "I am saved");
                 file.write( jObject.toString() );
                 file.flush();
@@ -297,7 +309,7 @@ public class JSONManager {
         }else if(shouldBeSpoofed == 0){ //if spoofStatus is 0 change it to 1
             shouldBeSpoofed = 1;
         }
-        File jsonFile = new File(main.getExternalFilesDir(null), "soni.json"); //get json-file from external storage
+        File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json-file from external storage
         FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
@@ -340,7 +352,7 @@ public class JSONManager {
                 }
             }
             try {
-                FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), "soni.json")); //write the json-object into the new json file
+                FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME)); //write the json-object into the new json file
                 Log.d("TryJsonSave", "I am saved");
                 file.write( jObject.toString() );
                 file.flush();
@@ -355,7 +367,7 @@ public class JSONManager {
     }
 
     public void deleteEntryInStoredLoc(double[] position, String signalType) {
-        File jsonFile = new File(main.getExternalFilesDir(null), "soni.json"); //get json-file from external storage
+        File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json-file from external storage
         FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
@@ -403,7 +415,7 @@ public class JSONManager {
             try {
                 jObjectResult.remove("signal"); //remove the whole old json-array
                 jObjectResult.put("signal",jArrayWithoutDeletedEntry); //put in the new json-array
-                FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), "soni.json")); //write the json-object into the new json file
+                FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME)); //write the json-object into the new json file
                 Log.d("TryJsonSave", "I am deleted");
                 file.write( jObject.toString() );
                 file.flush();
