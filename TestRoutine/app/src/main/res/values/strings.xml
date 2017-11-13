@@ -2,4 +2,20 @@
     <string name="app_name">TestRoutine</string>
     <string name="spoofOnEachLoc">Spoof on each Location</string>
     <string name="addressData">Not available!</string>
+    <string name="deleteJsonAlertTitle">Delete JSON-File</string>
+    <string name="deleteJsonAlertMessage">Are you sure you want to delete the JSON-File?</string>
+    <string name="StatusNotificationSpoofingTitle">Blocking</string>
+    <string name="StatusNotificationSpoofingMesssage">I am blocking the signal now!</string>
+    <string name="StatusNotificationDetectionAlertTitle">Detection</string>
+    <string name="StatusNotificationDetectionAlertMessage">I detected a signal!</string>
+    <string name="StatusNotificationOnHoldTitle">On Hold</string>
+    <string name="StatusNotificationOnHoldMessage">I am waiting for input!</string>
+    <string name="StatusNotificationScanningTitle">Scanner is active</string>
+    <string name="StatusNotificationScanningMessage">I am scanning now!</string>
+    <string name="NotificationDetectionTitle">Detection</string>
+    <string name="NotificationDetectionMessage">I found a signal!</string>
+    <string name="ButtonStopSignal">Pause</string>
+    <string name="ButtonPlaySignal">Play</string>
+    <string name="DeleteJsonAlertTitle">Delete Location-Entry</string>
+    <string name="DeleteJsonAlertMessage">Are you sure you want to delete the Location-Entry?</string>
 </resources>

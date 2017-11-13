@@ -77,8 +77,8 @@ public class StoredLocations extends AppCompatActivity {
 
 
         final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(StoredLocations.this);
-        deleteJsonDialog.setTitle("Delete Location-Entry")
-                .setMessage("Are you sure you want to delete the Location-Entry?")
+        deleteJsonDialog.setTitle(R.string.DeleteJsonAlertTitle)
+                .setMessage(R.string.DeleteJsonAlertMessage)
                 .setCancelable(false)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

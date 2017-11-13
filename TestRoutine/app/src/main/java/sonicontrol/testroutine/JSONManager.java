@@ -168,7 +168,7 @@ public class JSONManager {
         JSONArray jArray = new JSONArray(); //create a json-array
 
         try {
-            jObject.put("items", jsObject); //put the second json-object into the first with JSON_LIST_NAME
+            jObject.put(JSON_LIST_NAME, jsObject); //put the second json-object into the first with JSON_LIST_NAME
             jsObject.put(JSON_ARRAY_SIGNALS, jArray); //put the json-array into the second json-object with "signal"
             jsObject.put(JSON_ARRAY_UNKNOWN_SIGNALS, jArray); //put the json-array into the second json-object with "signal"
             jsObject.put(JSON_ARRAY_DISMISSED_SIGNALS, jArray); //put the json-array into the second json-object with "signal"

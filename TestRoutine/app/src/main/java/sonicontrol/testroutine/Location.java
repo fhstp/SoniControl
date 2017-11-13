@@ -62,10 +62,10 @@ public class Location {
     public double[] getLocation(){
         locationData = new GPSTracker(main, main); //get a gpstracker for the location finding
         longitude = locationData.getLongitude(); //get the longitude
-        Log.d("longitude", Double.toString(longitude));
+        //Log.d("longitude", Double.toString(longitude));
 
         latitude = locationData.getLatitude(); //get the latitude
-        Log.d("latitude", Double.toString(latitude));
+        //Log.d("latitude", Double.toString(latitude));
 
         positionLatest[0] = longitude; //save the longitude in the positionLatest variable
         positionLatest[1] = latitude; //save the latitude in the positionLatest variable
@@ -92,7 +92,7 @@ public class Location {
             double distance = getDistanceInMetres(positionDBEntry, position); //calculate the distance between the latest Position and the position from the JSON-file
 
             SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-            locationRadius = Integer.valueOf(sharedPref.getString("etprefLocationRadius", "30")); //save the radius of the location in metres
+            locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //save the radius of the location in metres
             if(distance<locationRadius && array[2].equals(signalType)){ //if in the location and the technologie is the same
                 isNewSignal = false; //no new signal
                 Log.v("Longitude", array[0]);
@@ -187,7 +187,7 @@ public class Location {
     public String tryGettingMicAccessForBlockingMethod(){
         String usedBlockingMethod = null;
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-        micBlockPref = sharedPref.getBoolean("cbprefMicBlock", true);
+        micBlockPref = sharedPref.getBoolean(ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING, ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING_DEFAULT);
        //micBlockPref = Boolean.valueOf(sharedPref.getString("cbprefMicBlock", true)); //save the radius of the location in metres
         if(micBlockPref) {
             if (!validateMicAvailability()) { //if we don't have access to the microphone
@@ -229,7 +229,6 @@ public class Location {
         try{
             if(recorder.getRecordingState() != AudioRecord.RECORDSTATE_STOPPED ){ //if recorder state is not stopped its not available
                 available = false;
-
             }
 
             recorder.startRecording(); //start recording
@@ -237,7 +236,6 @@ public class Location {
                 available = false;
             }
         } finally{
-            // TODO: Check why we can get "stop() called on an uninitialized AudioRecord."
             recorder.stop(); //stop the recorder
             recorder.release(); //release the recorder resources
         }
