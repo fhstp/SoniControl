@@ -3,6 +3,7 @@ package sonicontrol.testroutine;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioTrack;
@@ -625,6 +626,15 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSettingsObject(); //get the settings
         saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
 
+        if(saveJsonFile) {
+            if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
+                jsonMan.createJsonFile(); //create a JSON file
+            }
+            if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
+                jsonMan.createSaveFolder(); //create a folder for the audio files
+            }
+        }
+
         /*
         if(!saveJsonFile) {
             if (jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
@@ -669,6 +679,27 @@ public class MainActivity extends AppCompatActivity {
         saveJsonAndLocation[1] = locationTrack;
 
         return saveJsonAndLocation;
+    }
+
+    public AlertDialog.Builder createAlertDialog(){
+        AlertDialog.Builder builder;
+        builder = new AlertDialog.Builder(MainActivity.this);
+        return builder;
+/*
+        builder.setTitle("Delete entry")
+            .setMessage("Are you sure you want to delete this entry?")
+            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // continue with delete
+                }
+            })
+            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // do nothing
+                }
+            })
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .show();*/
     }
 
     public native String stringFromJNI();

@@ -1,14 +1,11 @@
 package sonicontrol.testroutine;
 
-import android.content.SharedPreferences;
-import android.preference.CheckBoxPreference;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.preference.PreferenceFragment;
 import android.preference.*;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
-import android.content.*;
 
 public class SettingsFragment extends PreferenceFragment {
 
@@ -16,6 +13,7 @@ public class SettingsFragment extends PreferenceFragment {
     MainActivity main = new MainActivity();
     JSONManager jsonMan;
     MainActivity nextMain;
+    AlertDialog alertDelete = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +33,22 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Log.d("TestPref", "Hi");
-                jsonMan.deleteJsonFile();
+                final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(getActivity());
+                deleteJsonDialog.setTitle("Delete JSON-File")
+                        .setMessage("Are you sure you want to delete the JSON-File?")
+                        .setCancelable(false)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                jsonMan.deleteJsonFile();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                alertDelete.cancel();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert);
+                alertDelete = deleteJsonDialog.show();
                 return false;
             }
         });
@@ -51,6 +64,7 @@ public class SettingsFragment extends PreferenceFragment {
         });
         //Integer.valueOf(sharedPref.getString("etprefLocationRadius", "30"))
     }
+
 
     @Override
     public void onStart() {

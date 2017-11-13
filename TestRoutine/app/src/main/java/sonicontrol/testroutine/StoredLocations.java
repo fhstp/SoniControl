@@ -1,6 +1,8 @@
 package sonicontrol.testroutine;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +29,10 @@ public class StoredLocations extends AppCompatActivity {
     ListAdapter stored_adapter;
     ListView lv;
     MainActivity nextMain;
+    AlertDialog alertDelete = null;
+
+    AdapterView<?> parentLongClick;
+    int positionLongClick;
 
 
     /*private StoredLocations(){
@@ -70,6 +76,31 @@ public class StoredLocations extends AppCompatActivity {
         stored_adapter = new Stored_Adapter(this, data);
 
 
+        final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(StoredLocations.this);
+        deleteJsonDialog.setTitle("Delete Location-Entry")
+                .setMessage("Are you sure you want to delete the Location-Entry?")
+                .setCancelable(false)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String[] singleArrayItem = (String[]) parentLongClick.getItemAtPosition(positionLongClick);
+                        double[] positionSignal = new double[2];
+                        positionSignal[0] = Double.valueOf(singleArrayItem[0]);
+                        positionSignal[1] = Double.valueOf(singleArrayItem[1]);
+                        jsonMan.deleteEntryInStoredLoc(positionSignal,singleArrayItem[2]);
+                        jsonMan = new JSONManager(nextMain);
+                        data = jsonMan.getJsonData();
+                        lv.setAdapter(null);
+                        stored_adapter = new Stored_Adapter(listContext, data);
+                        lv.setAdapter(stored_adapter);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertDelete.cancel();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert);
+
 
         //lv.setAdapter(adapter);
 
@@ -89,8 +120,7 @@ public class StoredLocations extends AppCompatActivity {
                         lv.setAdapter(null);
                         stored_adapter = new Stored_Adapter(listContext, data);
                         lv.setAdapter(stored_adapter);
-                        //String food = String.valueOf(parent.getItemAtPosition(position));
-                        //Toast.makeText(StoredLocations.this, food, Toast.LENGTH_SHORT).show();
+
                     }
                 }
         );
@@ -99,17 +129,10 @@ public class StoredLocations extends AppCompatActivity {
                 new AdapterView.OnItemLongClickListener(){
                     @Override
                     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                        String[] singleArrayItem = (String[]) parent.getItemAtPosition(position);
-                        double[] positionSignal = new double[2];
-                        positionSignal[0] = Double.valueOf(singleArrayItem[0]);
-                        positionSignal[1] = Double.valueOf(singleArrayItem[1]);
-                        jsonMan.deleteEntryInStoredLoc(positionSignal,singleArrayItem[2]);
-                        jsonMan = new JSONManager(nextMain);
-                        data = jsonMan.getJsonData();
-                        lv.setAdapter(null);
-                        stored_adapter = new Stored_Adapter(listContext, data);
-                        lv.setAdapter(stored_adapter);
-                        return false;
+                        parentLongClick = parent;
+                        positionLongClick = position;
+                        alertDelete = deleteJsonDialog.show();
+                        return true;
                     }
                 }
         );
