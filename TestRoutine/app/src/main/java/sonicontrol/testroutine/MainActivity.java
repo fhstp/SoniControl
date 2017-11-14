@@ -3,7 +3,6 @@ package sonicontrol.testroutine;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioTrack;
@@ -26,8 +25,6 @@ import android.app.Notification;
 import android.content.SharedPreferences;
 import android.preference.*;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Random;
 import java.util.UUID;
 
@@ -246,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }*/
-                    btnAlertStart.setText("Pause"); //set the button for playing/stopping to "stop"
+                    btnAlertStart.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
                     sigPlayer = locationFinder.generatePlayer(); //create a new player
                     isSignalPlayerGenerated = true; //player is generated so it's true
                     sigPlayer.play(); //start the player
@@ -254,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
                     sigPlayer.stop(); //stop the player
                     sigPlayer.release(); //release the resources of the player
                     sigPlayer = null; //set the player variable to null
-                    btnAlertStart.setText("Play"); //set the button for playing/stopping to "play"
+                    btnAlertStart.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
                     isSignalPlayerGenerated = false; //now there is no player anymore so it's false
                 }
                 txtSignalType.setText(sigType); //can be deleted it's only for debugging
@@ -264,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 SharedPreferences sharedPref = getSettingsObject(); //get the settings
-                saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
+                saveJsonFile = sharedPref.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
                 if(saveJsonFile) {
                     if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
@@ -411,8 +408,8 @@ public class MainActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(this)
                         //.setSmallIcon(R.drawable.ic_info_outline_white_48dp) //adding the icon
                         .setSmallIcon(R.drawable.hearing_found) //adding the icon
-                        .setContentTitle("Detection") //adding the title
-                        .setContentText("I found a signal!") //adding the text
+                        .setContentTitle(getString(R.string.NotificationDetectionTitle)) //adding the title
+                        .setContentText(getString(R.string.NotificationDetectionMessage)) //adding the text
                         .setOngoing(true) //can't be canceled
                         .setPriority(Notification.PRIORITY_HIGH) //high priority in the notification system
                         .setAutoCancel(true); //it's canceled when tapped on it
@@ -455,8 +452,8 @@ public class MainActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(this)
                         //.setSmallIcon(R.drawable.ic_volume_up_white_48dp) //adding the icon
                         .setSmallIcon(R.drawable.hearing_block) //adding the icon
-                        .setContentTitle("Blocking") //adding the title
-                        .setContentText("I am blocking the signal now!") //adding the text
+                        .setContentTitle(getString(R.string.StatusNotificationSpoofingTitle)) //adding the title
+                        .setContentText(getString(R.string.StatusNotificationSpoofingMesssage)) //adding the text
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -496,8 +493,8 @@ public class MainActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(this)
                         //.setSmallIcon(R.drawable.ic_info_outline_white_48dp) //adding the icon
                         .setSmallIcon(R.drawable.hearing_found) //adding the icon
-                        .setContentTitle("Detection") //adding the title
-                        .setContentText("I detected a signal!") //adding the text
+                        .setContentTitle(getString(R.string.StatusNotificationDetectionAlertTitle)) //adding the title
+                        .setContentText(getString(R.string.StatusNotificationDetectionAlertMessage)) //adding the text
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -537,8 +534,8 @@ public class MainActivity extends AppCompatActivity {
                 new NotificationCompat.Builder(this)
                         //.setSmallIcon(R.drawable.ic_pause_white_48dp) //adding the icon
                         .setSmallIcon(R.drawable.hearing_pause) //adding the icon
-                        .setContentTitle("On Hold") //adding the title
-                        .setContentText("I am waiting for input!") //adding the text
+                        .setContentTitle(getString(R.string.StatusNotificationOnHoldTitle)) //adding the title
+                        .setContentText(getString(R.string.StatusNotificationOnHoldMessage)) //adding the text
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -577,8 +574,8 @@ public class MainActivity extends AppCompatActivity {
         scanningStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_hearing_white_48dp) //adding the icon
-                        .setContentTitle("Scanner is active") //adding the title
-                        .setContentText("I am scanning now!") //adding the text
+                        .setContentTitle(getString(R.string.StatusNotificationScanningTitle)) //adding the title
+                        .setContentText(getString(R.string.StatusNotificationScanningMessage)) //adding the text
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -624,7 +621,7 @@ public class MainActivity extends AppCompatActivity {
         isInBackground = false;
 
         SharedPreferences sharedPref = getSettingsObject(); //get the settings
-        saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
+        saveJsonFile = sharedPref.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
         if(saveJsonFile) {
             if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
@@ -660,7 +657,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean[] checkJsonAndLocationPermissions() {
         boolean[] saveJsonAndLocation = new boolean[2];
         SharedPreferences sharedPref = getSettingsObject(); //get the settings
-        saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
+        saveJsonFile = sharedPref.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -668,8 +665,8 @@ public class MainActivity extends AppCompatActivity {
 
         boolean locationTrack = false;
         //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
-        boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
-        boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+        boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+        boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
         if((locationTrackGps&&isGPSEnabled)||(locationTrackNet&&isNetworkEnabled)){
             locationTrack = true;

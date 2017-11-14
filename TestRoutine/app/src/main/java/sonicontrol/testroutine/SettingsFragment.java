@@ -27,15 +27,15 @@ public class SettingsFragment extends PreferenceFragment {
         jsonMan = new JSONManager(nextMain);
 
 
-        Preference pref = findPreference("deleteJson");
+        Preference pref = findPreference(ConfigConstants.PREFERENCE_DELETE_JSON);
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Log.d("TestPref", "Hi");
                 final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(getActivity());
-                deleteJsonDialog.setTitle("Delete JSON-File")
-                        .setMessage("Are you sure you want to delete the JSON-File?")
+                deleteJsonDialog.setTitle(R.string.deleteJsonAlertTitle)
+                        .setMessage(R.string.deleteJsonAlertMessage)
                         .setCancelable(false)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -53,33 +53,97 @@ public class SettingsFragment extends PreferenceFragment {
             }
         });
 
-        final Preference prefLocRad = findPreference("etprefLocationRadius");
+        final Preference prefLocRad = findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
         prefLocRad.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 prefLocRad.setTitle("Location Radius (" + newValue + " metres)");
-                Log.d("MyApp", "Pref " + preference.getKey() + " " + newValue.toString());
-                Log.d("testfortest",String.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), "30")));
+                //Log.d("MyApp", "Pref " + preference.getKey() + " " + newValue.toString());
+                //Log.d("testfortest",String.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)));
                 return true;
             }
         });
-        //Integer.valueOf(sharedPref.getString("etprefLocationRadius", "30"))
+
+        final Preference prefPulseDur = findPreference(ConfigConstants.SETTING_PULSE_DURATION);
+        prefPulseDur.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                prefPulseDur.setTitle("Pulse Duration (" + newValue + " ms)");
+                return true;
+            }
+        });
+
+        final Preference prefPauseDur = findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
+        prefPauseDur.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                prefPauseDur.setTitle("Pause Duration (" + newValue + " ms)");
+                return true;
+            }
+        });
+
+        final Preference prefBandwidth = findPreference(ConfigConstants.SETTING_BANDWIDTH);
+        prefBandwidth.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                prefBandwidth.setTitle("Bandwidth (" + newValue + " Hz)");
+                return true;
+            }
+        });
+
+        final Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
+        prefBlockingDuration.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                prefBlockingDuration.setTitle("Blocking Duration (" + newValue + " Minute(s))");
+                return true;
+            }
+        });
+        //Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, "30"))
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
-        Preference prefLocRad = findPreference("etprefLocationRadius");
-        int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), "30"));
+        Preference prefLocRad = findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
+        int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT));
         prefLocRad.setTitle("Location Radius (" + locationRadius + " metres)");
+
+        Preference prefPulseDur = findPreference(ConfigConstants.SETTING_PULSE_DURATION);
+        int pulsingDuration = Integer.valueOf(prefPulseDur.getSharedPreferences().getString(prefPulseDur.getKey(), ConfigConstants.SETTING_PULSE_DURATION_DEFAULT));
+        prefPulseDur.setTitle("Pulse Duration (" + pulsingDuration + " ms)");
+
+        Preference prefPauseDur = findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
+        int pauseDuration = Integer.valueOf(prefPulseDur.getSharedPreferences().getString(prefPulseDur.getKey(), ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT));
+        prefPauseDur.setTitle("Pause Duration (" + pauseDuration + " ms)");
+
+        Preference prefBandwidth = findPreference(ConfigConstants.SETTING_BANDWIDTH);
+        int bandwidth = Integer.valueOf(prefBandwidth.getSharedPreferences().getString(prefBandwidth.getKey(), ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
+        prefBandwidth.setTitle("Bandwidth (" + bandwidth + " Hz)");
+
+        Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
+        int blockingDuration = Integer.valueOf(prefBlockingDuration.getSharedPreferences().getString(prefBlockingDuration.getKey(), ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT));
+        prefBlockingDuration.setTitle("Blocking Duration (" + blockingDuration + " Minute(s))");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Preference prefLocRad = findPreference("etprefLocationRadius");
-        int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), "30"));
+        Preference prefLocRad = findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
+        int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT));
         prefLocRad.setTitle("Location Radius (" + locationRadius + " metres)");
+
+        Preference prefPulseDur = findPreference(ConfigConstants.SETTING_PULSE_DURATION);
+        int pulsingDuration = Integer.valueOf(prefPulseDur.getSharedPreferences().getString(prefPulseDur.getKey(), ConfigConstants.SETTING_PULSE_DURATION_DEFAULT));
+        prefPulseDur.setTitle("Pulse Duration (" + pulsingDuration + " ms)");
+
+        Preference prefPauseDur = findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
+        int pauseDuration = Integer.valueOf(prefPauseDur.getSharedPreferences().getString(prefPauseDur.getKey(), ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT));
+        prefPauseDur.setTitle("Pause Duration (" + pauseDuration + " ms)");
+
+        Preference prefBandwidth = findPreference(ConfigConstants.SETTING_BANDWIDTH);
+        int bandwidth = Integer.valueOf(prefBandwidth.getSharedPreferences().getString(prefBandwidth.getKey(), ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
+        prefBandwidth.setTitle("Bandwidth (" + bandwidth + " Hz)");
+
+        Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
+        int blockingDuration = Integer.valueOf(prefBlockingDuration.getSharedPreferences().getString(prefBlockingDuration.getKey(), ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT));
+        prefBlockingDuration.setTitle("Spoofing Duration (" + blockingDuration + " Minute(s))");
     }
 
 
