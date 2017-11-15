@@ -6,7 +6,6 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Handler;
-import android.util.Log;
 
 import java.util.Calendar;
 
@@ -98,7 +97,7 @@ public class MicCapture {
                         //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                         locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the settings for the locationdistance
                         if (distance < locationRadius) { //if in distance
-                            locFinder.tryGettingMicAccessForBlockingMethod(); //start the blocking again with trying to get microphone access
+                            locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access
                         } else {
                             main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
                             main.activateScanningStatusNotification(); //activate the scanning status notification

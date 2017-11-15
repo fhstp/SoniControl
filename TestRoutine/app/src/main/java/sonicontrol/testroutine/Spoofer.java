@@ -103,72 +103,72 @@ public class Spoofer {
                     isFirstPlay = false; //set the first play to false
                     onPulsing(); //execute the method again
                 } else {
-                            if (playingGlobal) {
-                                startStop(playingHandler); //starting it depending on the playingHandler boolean
-                                playingHandler = !playingHandler; //change the variable for the next run
-                                Log.d("Spoofer", "I spoof now!");
-                                SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-                                locationRadius = Integer.valueOf(sharedPref.getString("etprefLocationRadius", "30")); //get the location radius in metres
-                                int spoofingTime = Integer.valueOf(sharedPref.getString("etprefSpoofDuration", "1")); //get the spoofingtime in minutes
-                                stopTime = Calendar.getInstance().getTimeInMillis(); //get the stoptime
-                                Log.d("StartTime", String.valueOf(startTime));
-                                Log.d("StopTime",String.valueOf(stopTime));
-                                Long logLong = (stopTime-startTime)/1000; //get the difference of the start- and stoptime
-                                String logTime = String.valueOf(logLong);
-                                Log.d("HowLongSpoofed",logTime);
-                                if(logLong>(spoofingTime*60)){ //check if its over the spoofing time from the settings
-                                    startStop(false); //stop the spoofer
-                                    //helpCounter = 0;
-                                    playingGlobal = false; //set to false because its not playing anymore
-                                    //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-                                    boolean locationTrack = false;
-                                    //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
-                                    boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
-                                    boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
-                                    if(locationTrackGps||locationTrackNet){
-                                        locationTrack = true;
-                                    }
-                                    if(locationTrack||(locFinder.getDetectedDBEntry()[0]==0&&locFinder.getDetectedDBEntry()[1]==0)) {
-                                        positionLatest = locFinder.getLocation(); //get the latest position
-                                        positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
-                                        distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
-                                        Log.d("Distance", Double.toString(distance));
-                                        Log.d("LatestPosition", Double.toString(positionLatest[0]));
-                                        Log.d("LatestPosition", Double.toString(positionLatest[1]));
-                                        Log.d("OldPosition", Double.toString(positionOld[0]));
-                                        Log.d("OldPosition", Double.toString(positionOld[1]));
-                                        if (distance < locationRadius) { //if we are still in the locationRadius
-                                            genNoise.setGeneratedPlayerToNull(); //set the noiseplayer to null
-                                            audioTrack.release(); //release the player resources
-                                            audioTrack = null; //set the player to null
-                                            genNoise = null; //set the the noisegenerator object to null
-                                            setInstanceNull(); //set the NoiseGenerator instance to null
-                                            locFinder.tryGettingMicAccessForBlockingMethod(); //try again to get access to the microphone and then choose the spoofing method
-                                            spoofHandler.removeCallbacks(spoofRun); //reset the handler
-                                        } else {
-                                            setInstanceNull(); //set the NoiseGenerator instance to null
-                                            main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
-                                            main.activateScanningStatusNotification(); //activate the scanning status notification
-                                            detector.getTheOldSpoofer(Spoofer.this); //update the spoofer object in the detector
-                                            detector.startScanning(); //start scanning again
-                                            spoofHandler.removeCallbacks(spoofRun); //reset handler
-                                        }
-                                    }else {
-                                        setInstanceNull(); //set the NoiseGenerator instance to null
-                                        main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
-                                        main.activateScanningStatusNotification(); //activate the scanning status notification
-                                        detector.getTheOldSpoofer(Spoofer.this); //update the spoofer object in the detector
-                                        detector.startScanning(); //start scanning again
-                                        spoofHandler.removeCallbacks(spoofRun); //reset handler
-                                    }
-                                }else{
-                                    onPulsing(); //start the pulsing again
-                                }
-                            } else {
-                                playingGlobal = true; //set the variable for playing to true again
-                                //helpCounter = 0;
+                    if (playingGlobal) {
+                        startStop(playingHandler); //starting it depending on the playingHandler boolean
+                        playingHandler = !playingHandler; //change the variable for the next run
+                        Log.d("Spoofer", "I spoof now!");
+                        SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+                        locationRadius = Integer.valueOf(sharedPref.getString("etprefLocationRadius", "30")); //get the location radius in metres
+                        int spoofingTime = Integer.valueOf(sharedPref.getString("etprefSpoofDuration", "1")); //get the spoofingtime in minutes
+                        stopTime = Calendar.getInstance().getTimeInMillis(); //get the stoptime
+                        Log.d("StartTime", String.valueOf(startTime));
+                        Log.d("StopTime",String.valueOf(stopTime));
+                        Long logLong = (stopTime-startTime)/1000; //get the difference of the start- and stoptime
+                        String logTime = String.valueOf(logLong);
+                        Log.d("HowLongSpoofed",logTime);
+                        if(logLong>(spoofingTime*60)){ //check if its over the spoofing time from the settings
+                            startStop(false); //stop the spoofer
+                            //helpCounter = 0;
+                            playingGlobal = false; //set to false because its not playing anymore
+                            //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+                            boolean locationTrack = false;
+                            //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                            boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
+                            boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+                            if(locationTrackGps||locationTrackNet){
+                                locationTrack = true;
                             }
+                            if(locationTrack||(locFinder.getDetectedDBEntry()[0]==0&&locFinder.getDetectedDBEntry()[1]==0)) {
+                                positionLatest = locFinder.getLocation(); //get the latest position
+                                positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
+                                distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
+                                Log.d("Distance", Double.toString(distance));
+                                Log.d("LatestPosition", Double.toString(positionLatest[0]));
+                                Log.d("LatestPosition", Double.toString(positionLatest[1]));
+                                Log.d("OldPosition", Double.toString(positionOld[0]));
+                                Log.d("OldPosition", Double.toString(positionOld[1]));
+                                if (distance < locationRadius) { //if we are still in the locationRadius
+                                    genNoise.setGeneratedPlayerToNull(); //set the noiseplayer to null
+                                    audioTrack.release(); //release the player resources
+                                    audioTrack = null; //set the player to null
+                                    genNoise = null; //set the the noisegenerator object to null
+                                    setInstanceNull(); //set the NoiseGenerator instance to null
+                                    locFinder.blockMicOrSpoof(); //try again to get access to the microphone and then choose the spoofing method
+                                    spoofHandler.removeCallbacks(spoofRun); //reset the handler
+                                } else {
+                                    setInstanceNull(); //set the NoiseGenerator instance to null
+                                    main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
+                                    main.activateScanningStatusNotification(); //activate the scanning status notification
+                                    detector.getTheOldSpoofer(Spoofer.this); //update the spoofer object in the detector
+                                    detector.startScanning(); //start scanning again
+                                    spoofHandler.removeCallbacks(spoofRun); //reset handler
+                                }
+                            }else {
+                                setInstanceNull(); //set the NoiseGenerator instance to null
+                                main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
+                                main.activateScanningStatusNotification(); //activate the scanning status notification
+                                detector.getTheOldSpoofer(Spoofer.this); //update the spoofer object in the detector
+                                detector.startScanning(); //start scanning again
+                                spoofHandler.removeCallbacks(spoofRun); //reset handler
+                            }
+                        }else{
+                            onPulsing(); //start the pulsing again
                         }
+                    } else {
+                        playingGlobal = true; //set the variable for playing to true again
+                        //helpCounter = 0;
+                    }
+                }
 
                 }
         }, playtime);

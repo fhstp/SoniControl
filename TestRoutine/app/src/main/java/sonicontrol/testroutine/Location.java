@@ -79,7 +79,7 @@ public class Location {
     }
 
 
-    public void checkExistingLocatinoDB(double[] position, String signalType){
+    public void checkExistingLocationDB(double[] position, String signalType){
         signalTech = signalType;
         boolean isNewSignal = true;
         double[] positionDBEntry = new double[2];
@@ -168,7 +168,7 @@ public class Location {
                 jsonMan.addJsonObject(noLocation, signalTech, 1, "Not available!");
             }*/
 
-            tryGettingMicAccessForBlockingMethod(); //try get the microphone access for choosing the blocking method
+            blockMicOrSpoof(); //try get the microphone access for choosing the blocking method
         }else { //if it should not be spoofed
             Log.d("Location", "I shouldn't be spoofed");
             if (!main.getBackgroundStatus()) { //if the app is not in the background
@@ -186,8 +186,21 @@ public class Location {
         return (distance*1000);
     }
 
+    private void blockBySpoofing() {
+        boolean playingGlobal = true; //the global play status is now true after the start
+        boolean playingHandler = true; //helpboolean for switching the playstatus in the puslinghandler
+        spoof = Spoofer.getInstance(); //get an instance of the spoofer
+        spoof.init(main, playingGlobal, playingHandler, signalType); //initialize the spoofer
+        spoof.startSpoofing(); //start spoofing
+    }
 
-    public String tryGettingMicAccessForBlockingMethod(){
+    private void blockMicrophone() {
+        micCap = MicCapture.getInstance(); //get an instance of the microphone capture
+        micCap.init(main);
+        micCap.startCapturing(); //start capturing
+    }
+
+    public String blockMicOrSpoof(){
         String usedBlockingMethod = null;
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
         micBlockPref = sharedPref.getBoolean(ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING, ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING_DEFAULT);
@@ -195,26 +208,16 @@ public class Location {
         if(micBlockPref) {
             if (!validateMicAvailability()) { //if we don't have access to the microphone
                 Log.d("MicAcc", "I don't have MicAccess");
-                boolean playingGlobal = true; //the global play status is now true after the start
-                boolean playingHandler = true; //helpboolean for switching the playstatus in the puslinghandler
-                spoof = Spoofer.getInstance(); //get an instance of the spoofer
-                spoof.init(main, playingGlobal, playingHandler, signalType); //initialize the spoofer
-                spoof.startSpoofing(); //start spoofing
+                blockBySpoofing();
                 usedBlockingMethod = "Spoofer";
             } else {
                 Log.d("MicAcc", "I have MicAccess");
-                micCap = MicCapture.getInstance(); //get an instance of the microphone capture
-                micCap.init(main);
-                micCap.startCapturing(); //start capturing
                 usedBlockingMethod = "Microphone";
+                blockMicrophone();
             }
         }else{
             Log.d("MicAcc", "I don't have MicAccess");
-            boolean playingGlobal = true; //the global play status is now true after the start
-            boolean playingHandler = true; //helpboolean for switching the playstatus in the puslinghandler
-            spoof = Spoofer.getInstance(); //get an instance of the spoofer
-            spoof.init(main, playingGlobal, playingHandler, signalType); //initialize the spoofer
-            spoof.startSpoofing(); //start spoofing
+            blockBySpoofing();
             usedBlockingMethod = "Spoofer";
         }
         return usedBlockingMethod;
@@ -272,6 +275,7 @@ public class Location {
 
 
     public AudioTrack generatePlayer(){
+        //TODO: Use a file that is in the app resources.
         File file = new File("/storage/emulated/0/DCIM/lisnr_test4.wav"); //get the audio file //not working dynamically now because no dynamic links
         noiseByteArray = new byte[(int) file.length()]; //size & length of the file
         InputStream is = null;

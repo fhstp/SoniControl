@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
                     noLocation[1] = 0;
                     jsonMan.addJsonObject(noLocation, sigType, 1, "Not available!");
                 }
-                locationFinder.tryGettingMicAccessForBlockingMethod(); //try to get the microphone access for choosing the blocking method
+                locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
                 alert.cancel(); //cancel the alert dialog
                 cancelDetectionNotification(); //cancel the detection notification
                 cancelDetectionAlertStatusNotification(); //canceling the onHold notification
@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void activateAlert(String signalType){
-        usedBlockingMethod = locationFinder.tryGettingMicAccessForBlockingMethod();
+        usedBlockingMethod = locationFinder.blockMicOrSpoof();
         alert.show(); //open the alert
         sigType = signalType; //set the technology variable to the latest detected one
     }
