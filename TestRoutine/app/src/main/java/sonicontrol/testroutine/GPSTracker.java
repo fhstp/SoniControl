@@ -59,9 +59,9 @@ public class GPSTracker extends Service implements LocationListener {
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-            boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
-            boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
-            boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+            //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+            boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+            boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
             if (isGPSEnabled && locationTrackGps) {
                 this.isGPSTrackingEnabled = true;

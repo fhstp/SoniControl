@@ -94,7 +94,7 @@ public class Scan {
                         position = locFinder.getLocation(); //get the latest position
                     }
 
-                    if(main.getSettingsObject().getBoolean("cbprefContinuousSpoof", false)){ //check if the settings are set to continous spoofing
+                    if(main.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)){ //check if the settings are set to continous spoofing
                         if (!main.getBackgroundStatus()) { //if the app is not in the background
                             main.cancelDetectionNotification(); //cancel the detection notification
                         }
@@ -109,13 +109,13 @@ public class Scan {
 
                         JSONManager jsonMan = new JSONManager(main);
                         if(saveJsonFile&&locationTrack) {
-                            jsonMan.addJsonObject(locFinder.getDetectedDBEntry(), "Google Nearby", 1, locFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                            jsonMan.addJsonObject(locFinder.getDetectedDBEntry(), Technology.GOOGLE_NEARBY.toString(), 1, locFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                         }
                         if(saveJsonFile&&!locationTrack){
                             double[] noLocation = new double[2];
                             noLocation[0] = 0;
                             noLocation[1] = 0;
-                            jsonMan.addJsonObject(noLocation, "Google Nearby", 1, "Not available!");
+                            jsonMan.addJsonObject(noLocation, Technology.GOOGLE_NEARBY.toString(), 1, main.getResources().getString(R.string.addressData));
                         }
 
                         locFinder.tryGettingMicAccessForBlockingMethod(); //try for microphone access and choose the blocking method
@@ -128,17 +128,17 @@ public class Scan {
                             }
                             main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                             main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                            openAlert("Google Nearby"); //open the alert message for google nearby
+                            openAlert(Technology.GOOGLE_NEARBY.toString()); //open the alert message for google nearby
                         } else {
                             if(locationTrack) {
-                                locFinder.checkExistingLocatinoDB(position, "Google Nearby"); //if a JSON file is available we check if the signal is a new one with position and technologytype
+                                locFinder.checkExistingLocatinoDB(position, Technology.GOOGLE_NEARBY.toString()); //if a JSON file is available we check if the signal is a new one with position and technologytype
                             }else{
                                 if (main.getBackgroundStatus()) { //if the app is in the background
                                     main.activateDetectionNotification(); //activate the notification for a detection
                                 }
                                 main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                                 main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                                openAlert("Google Nearby"); //open the alert message for google nearby
+                                openAlert(Technology.GOOGLE_NEARBY.toString()); //open the alert message for google nearby
                                 resetHandler(); //reset the handler
                             }
                         }
@@ -159,7 +159,7 @@ public class Scan {
                         position = locFinder.getLocation(); //get the latest position
                     }
 
-                    if(main.getSettingsObject().getBoolean("cbprefContinuousSpoof", false)){ //check if the settings are set to continous spoofing
+                    if(main.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)){ //check if the settings are set to continous spoofing
                         if (!main.getBackgroundStatus()) { //if the app is not in the background
                             main.cancelDetectionNotification(); //cancel the detection notification
                         }
@@ -174,13 +174,13 @@ public class Scan {
 
                         JSONManager jsonMan = new JSONManager(main);
                         if(saveJsonFile&&locationTrack) {
-                            jsonMan.addJsonObject(locFinder.getDetectedDBEntry(), "Lisnr", 1, locFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                            jsonMan.addJsonObject(locFinder.getDetectedDBEntry(), Technology.LISNR.toString(), 1, locFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                         }
                         if(saveJsonFile&&!locationTrack){
                             double[] noLocation = new double[2];
                             noLocation[0] = 0;
                             noLocation[1] = 0;
-                            jsonMan.addJsonObject(noLocation, "Google Nearby", 1, "Not available!");
+                            jsonMan.addJsonObject(noLocation, Technology.GOOGLE_NEARBY.toString(), 1, main.getResources().getString(R.string.addressData));
                         }
 
                         locFinder.tryGettingMicAccessForBlockingMethod(); //try for microphone access and choose the blocking method
@@ -194,17 +194,17 @@ public class Scan {
                             }
                             main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                             main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                            openAlert("Lisnr"); //open the alert message for lisnr
+                            openAlert(Technology.LISNR.toString()); //open the alert message for lisnr
                         }else {
                             if(locationTrack) {
-                                locFinder.checkExistingLocatinoDB(position, "Lisnr"); //if a JSON file is available we check if the signal is a new one with position and technologytype
+                                locFinder.checkExistingLocatinoDB(position, Technology.LISNR.toString()); //if a JSON file is available we check if the signal is a new one with position and technologytype
                             }else {
                                 if(main.getBackgroundStatus()) { //if the app is in the background
                                     main.activateDetectionNotification(); //activate the notification for a detection
                                 }
                                 main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                                 main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                                openAlert("Lisnr"); //open the alert message for lisnr
+                                openAlert(Technology.LISNR.toString()); //open the alert message for lisnr
                                 resetHandler(); //reset the handler
                             }
                         }
@@ -225,7 +225,7 @@ public class Scan {
                         position = locFinder.getLocation(); //get the latest position
                     }
 
-                    if(main.getSettingsObject().getBoolean("cbprefContinuousSpoof", false)){ //check if the settings are set to continous spoofing
+                    if(main.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)){ //check if the settings are set to continous spoofing
                         if (!main.getBackgroundStatus()) { //if the app is not in the background
                             main.cancelDetectionNotification(); //cancel the detection notification
                         }
@@ -240,13 +240,13 @@ public class Scan {
 
                         JSONManager jsonMan = new JSONManager(main);
                         if(saveJsonFile&&locationTrack) {
-                            jsonMan.addJsonObject(locFinder.getDetectedDBEntry(), "Prontoly", 1, locFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                            jsonMan.addJsonObject(locFinder.getDetectedDBEntry(), Technology.PRONTOLY.toString(), 1, locFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                         }
                         if(saveJsonFile&&!locationTrack){
                             double[] noLocation = new double[2];
                             noLocation[0] = 0;
                             noLocation[1] = 0;
-                            jsonMan.addJsonObject(noLocation, "Google Nearby", 1, "Not available!");
+                            jsonMan.addJsonObject(noLocation, Technology.PRONTOLY.toString(), 1, main.getResources().getString(R.string.addressData));
                         }
 
                         locFinder.tryGettingMicAccessForBlockingMethod(); //try for microphone access and choose the blocking method
@@ -260,17 +260,17 @@ public class Scan {
                             }
                             main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                             main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                            openAlert("Prontoly"); //open the alert message for prontoly
+                            openAlert(Technology.PRONTOLY.toString()); //open the alert message for prontoly
                         }else {
                             if(locationTrack) {
-                                locFinder.checkExistingLocatinoDB(position, "Prontoly"); //if a JSON file is available we check if the signal is a new one with position and technologytype
+                                locFinder.checkExistingLocatinoDB(position, Technology.PRONTOLY.toString()); //if a JSON file is available we check if the signal is a new one with position and technologytype
                             }else{
                                 if(main.getBackgroundStatus()) { //if the app is in the background
                                     main.activateDetectionNotification(); //activate the notification for a detection
                                 }
                                 main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                                 main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                                openAlert("Prontoly"); //open the alert message for prontoly
+                                openAlert(Technology.PRONTOLY.toString()); //open the alert message for prontoly
                                 resetHandler(); //reset the handler
                             }
                         }
