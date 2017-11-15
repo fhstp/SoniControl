@@ -1,7 +1,6 @@
 package sonicontrol.testroutine;
 
 
-import android.app.Application;
 import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -10,10 +9,14 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.util.Log;
 import android.widget.TextView;
-import java.io.*;
-import org.json.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
+
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 
 public class Location {

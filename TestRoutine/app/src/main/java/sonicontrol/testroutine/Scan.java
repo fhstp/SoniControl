@@ -1,12 +1,10 @@
 package sonicontrol.testroutine;
 
-import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Handler;
-import java.util.Random;
-
 import android.util.Log;
-import java.io.File;
+
+import java.util.Random;
 
 public class Scan {
 
@@ -294,4 +292,9 @@ public class Scan {
     public String getDetectedFileUrl(){
         return savedFileUrl; //get the detected file url /at the moment not dynamically working because there is no dynamically saving
     }
+
+    private native void FrequencyDomain(int samplerate, int buffersize);
+    private native float GetAndroidOut1();
+    private native int GetAndroidOut2();
+    private native boolean GetBackgroundModelUpdating();
 }
