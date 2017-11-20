@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TestRoutine - Release build</string>
+    <string name="app_name">SoniControl</string>
     <string name="spoofOnEachLoc">Spoof on each Location</string>
     <string name="addressData">Not available!</string>
     <string name="deleteJsonAlertTitle">Delete JSON-File</string>
@@ -18,4 +18,5 @@
     <string name="ButtonPlaySignal">Play</string>
     <string name="DeleteJsonAlertTitle">Delete Location-Entry</string>
     <string name="DeleteJsonAlertMessage">Are you sure you want to delete the Location-Entry?</string>
+    <string name="noAddressForJsonFile">Not available!</string>
 </resources>

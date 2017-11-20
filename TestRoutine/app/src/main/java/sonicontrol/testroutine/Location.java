@@ -46,7 +46,7 @@ public class Location {
 
     int locationRadius;
     boolean micBlockPref;
-    int signalType;
+    String signalType;
 
     private Location(){
     }
@@ -113,22 +113,7 @@ public class Location {
             }
         }
 
-        if(isNewSignal){ //if its a new signal
-            Log.d("Location", "I am a new Signal");
-            detectedSignalPosition = position; //save the new signal as the detected Position
-            main.cancelScanningStatusNotification(); //cancel the scanning status notification
-            main.activateDetectionAlertStatusNotification(); //activate the onHold status notification
-            if(main.getBackgroundStatus()) { //if the app is in the background
-                main.activateDetectionNotification(); //activate the detection notification
-            }
-            main.activateAlert(signalType); //open the alert with the found technology
-
-        }else{
-            Log.d("Location", "I am not a new Signal");
-            detectedSignalPosition = positionDBEntry; //save the position from the json-file
-            shouldDBEntrySpoofed(shouldBeSpoofed,positionDBEntry); //check the spoofed status from the json-file
-
-        }
+        decideIfNewSignalOrNot(isNewSignal, positionDBEntry, shouldBeSpoofed, position);
     }
 
     public double[] getDetectedDBEntry(){
@@ -209,16 +194,16 @@ public class Location {
             if (!validateMicAvailability()) { //if we don't have access to the microphone
                 Log.d("MicAcc", "I don't have MicAccess");
                 blockBySpoofing();
-                usedBlockingMethod = "Spoofer";
+                usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_SPOOFER;
             } else {
                 Log.d("MicAcc", "I have MicAccess");
-                usedBlockingMethod = "Microphone";
+                usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_MICROPHONE;
                 blockMicrophone();
             }
         }else{
             Log.d("MicAcc", "I don't have MicAccess");
             blockBySpoofing();
-            usedBlockingMethod = "Spoofer";
+            usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_SPOOFER;
         }
         return usedBlockingMethod;
     }
@@ -242,7 +227,6 @@ public class Location {
                 available = false;
             }
         } finally{
-            // TODO: Check why we can get "stop() called on an uninitialized AudioRecord."
             // TODO: Note, it seems to happen when the permission for audio recording is not yet given.
             recorder.stop(); //stop the recorder
             recorder.release(); //release the recorder resources
@@ -275,12 +259,12 @@ public class Location {
 
 
     public AudioTrack generatePlayer(){
-        //TODO: Use a file that is in the app resources.
+        //TODO: Will be solved after we get the correct links, now it would have to be restructured for getting it from the ressources
         File file = new File("/storage/emulated/0/DCIM/lisnr_test4.wav"); //get the audio file //not working dynamically now because no dynamic links
         noiseByteArray = new byte[(int) file.length()]; //size & length of the file
         InputStream is = null;
         try{
-            is  = new FileInputStream(file);
+            is = new FileInputStream(file);
         }
         catch(IOException ex){
 
@@ -305,7 +289,26 @@ public class Location {
         return sigPlayer;
     }
 
-    public void saveSignalTypeForLater(int sigType){
+    public void saveSignalTypeForLater(String sigType){
         this.signalType = sigType;
+    }
+
+    public void decideIfNewSignalOrNot(boolean isNewSignal, double[] positionDBEntry, boolean shouldBeSpoofed, double[] position){
+        if(isNewSignal){ //if its a new signal
+            Log.d("Location", "I am a new Signal");
+            detectedSignalPosition = position; //save the new signal as the detected Position
+            main.cancelScanningStatusNotification(); //cancel the scanning status notification
+            main.activateDetectionAlertStatusNotification(); //activate the onHold status notification
+            if(main.getBackgroundStatus()) { //if the app is in the background
+                main.activateDetectionNotification(); //activate the detection notification
+            }
+            main.activateAlert(signalType); //open the alert with the found technology
+
+        }else{
+            Log.d("Location", "I am not a new Signal");
+            detectedSignalPosition = positionDBEntry; //save the position from the json-file
+            shouldDBEntrySpoofed(shouldBeSpoofed,positionDBEntry); //check the spoofed status from the json-file
+
+        }
     }
 }

@@ -1,5 +1,6 @@
 package sonicontrol.testroutine;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -44,7 +45,8 @@ public class JSONManager {
 
     public ArrayList<String[]> getJsonData(){
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
-        FileInputStream inputStream = null;
+        ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
+        /*FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
         }
@@ -62,7 +64,7 @@ public class JSONManager {
             inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         Log.v("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
@@ -97,6 +99,8 @@ public class JSONManager {
 
     public void addJsonObject(double[] position, String technology, int spoof, String address){
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
+        ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
+        /*
         FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
@@ -115,7 +119,7 @@ public class JSONManager {
             inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         try {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -245,7 +249,8 @@ public class JSONManager {
     public void setLatestDate(double[] position, String signalType){
         locationFinder = Location.getInstanceLoc();
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
-        FileInputStream inputStream = null;
+        ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
+        /*FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
         }
@@ -263,7 +268,7 @@ public class JSONManager {
             inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         Log.v("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
@@ -283,7 +288,7 @@ public class JSONManager {
                 positionDBEntry[1] = Double.valueOf(lat);
                 double distance = locationFinder.getDistanceInMetres(positionDBEntry, position);
                 SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-                locationFinder.locationRadius = Integer.valueOf(sharedPref.getString("etprefLocationRadius", "30")); //save the radius of the location in metres
+                locationFinder.locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //save the radius of the location in metres
                 if (distance < locationFinder.locationRadius && tech.equals(signalType)) { //if in the location and the right technologytype
                     jArray.getJSONObject(i).put(JSON_ARRAY_SIGNAL_LAST_DETECTION, returnDateString()); //change latest detection date
                 }
@@ -311,6 +316,8 @@ public class JSONManager {
             shouldBeSpoofed = 1;
         }
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json-file from external storage
+        ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
+        /*
         FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
@@ -329,7 +336,7 @@ public class JSONManager {
             inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         Log.v("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
@@ -368,7 +375,10 @@ public class JSONManager {
     }
 
     public void deleteEntryInStoredLoc(double[] position, String signalType) {
+
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json-file from external storage
+        ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
+        /*
         FileInputStream inputStream = null;
         try{
             inputStream = new FileInputStream(jsonFile);
@@ -387,7 +397,7 @@ public class JSONManager {
             inputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         Log.v("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
@@ -428,5 +438,28 @@ public class JSONManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private ByteArrayOutputStream getByteArrayOutputStreamWithJsonData(File jsonFile){
+        FileInputStream inputStream = null;
+        try{
+            inputStream = new FileInputStream(jsonFile);
+        }
+        catch(IOException ioex){
+        }
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        int ctr;
+        try {
+            ctr = inputStream.read(); //read the inputstream of the file
+            while (ctr != -1) {
+                byteArrayOutputStream.write(ctr);
+                ctr = inputStream.read();
+            }
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return byteArrayOutputStream;
     }
 }

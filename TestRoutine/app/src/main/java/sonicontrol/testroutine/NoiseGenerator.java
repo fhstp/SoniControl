@@ -4,8 +4,6 @@ import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.os.Handler;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -15,7 +13,7 @@ import java.util.Random;
 
 public class NoiseGenerator {
 
-    private int signalTech;
+    private String signalTech;
     private String techForFile;
 
     private int fs = 44100;
@@ -44,39 +42,40 @@ public class NoiseGenerator {
         this.main = main;
     }
 
-    public void generateWhitenoise(final int signalType){
+    public void generateWhitenoise(final String signalType){
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
         signalTech = signalType; //get the technology
-        if(signalTech ==4){
-            techForFile = "nearby";
+        //If Clauses only for Debug
+        if(signalTech.equals(Technology.GOOGLE_NEARBY.toString())){
+            //techForFile = "nearby";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Google Nearby");
-        }else if(signalTech==8){
-            techForFile = "lisnr";
+        }else if(signalTech.equals(Technology.LISNR.toString())){
+            //techForFile = "lisnr";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Lisnr");
-        }else if(signalTech==2){
-            techForFile = "prontoly";
+        }else if(signalTech.equals(Technology.PRONTOLY.toString())){
+            //techForFile = "prontoly";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Prontoly");
-        }else if(signalTech==12){
-            techForFile = "signal360";
+        }else if(signalTech.equals(Technology.SIGNAL360.toString())){
+            //techForFile = "signal360";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Signal 360");
-        }else if(signalTech==14){
-            techForFile = "shopkick";
+        }else if(signalTech.equals(Technology.SHOPKICK.toString())){
+            //techForFile = "shopkick";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Shopkick");
-        }else if(signalTech==16){
-            techForFile = "silverpush";
+        }else if(signalTech.equals(Technology.SILVERPUSH.toString())){
+            //techForFile = "silverpush";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Silverpush");
-        }else if(signalTech==18){
-            techForFile = "unknown";
+        }else if(signalTech.equals(Technology.UNKNOWN.toString())){
+            //techForFile = "unknown";
             Log.d("Generator", "I generated a whitenoisesignal to spoof unknown");
         }
-        Log.d("ControlType",techForFile);
+        //Log.d("ControlType",techForFile);
         generatedWhitenoisePlayer = whiteNoise(); //get the generated whitenoise for spoofing
     }
 
     public AudioTrack whiteNoise(){
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-        winLen = Integer.valueOf(sharedPref.getString("etprefPulseDuration", "1000")); //read the windowLength from the settings - NOTE: This setting will not be updated dynamically once the signal is created. Next update when new Signal is created.
-        whiteNoiseBands = importSpecificSignal(techForFile); //import the frequencies /has to be changed to the detected technology
+        winLen = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_PULSE_DURATION, ConfigConstants.SETTING_PULSE_DURATION_DEFAULT)); //read the windowLength from the settings - NOTE: This setting will not be updated dynamically once the signal is created. Next update when new Signal is created.
+        whiteNoiseBands = importSpecificSignal(signalTech); //import the frequencies /has to be changed to the detected technology
 
         if (winLen==0){winLen= 80;} //if the windowLength is still 0 after the start, set to 80
         winLenSamples = winLen*fs/1000; //windowSamples according to the windowLength
@@ -120,6 +119,14 @@ public class NoiseGenerator {
 
         double[] complexWhiteNoise = doFFT(winLenSamples, signal); //execute the fft method for creating whitenoisebands
 
+
+
+
+
+
+
+
+        //TODO: NEW FUNCTION
         for (int i = 0; i < (winLenSamples * 2); i++) {
             if (Math.abs(complexWhiteNoise[i]) > max) {
                 max = Math.abs(complexWhiteNoise[i]); //searching for the maximum value of the whitenoisesignal
@@ -234,29 +241,29 @@ public class NoiseGenerator {
 
         double[][] test; //helparray for storing the frequencybands of the technologies
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-        bandWidth = Integer.valueOf(sharedPref.getString("etprefBandwidth", "1"));
+        bandWidth = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BANDWIDTH, ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
 
         BufferedReader reader = null;
         try {
-            if(signalTechnology.equals("nearby")) { //according to the name of the technology the right file will be scanned and split into lines for each frequency
+            if(signalTechnology.equals(Technology.GOOGLE_NEARBY.toString())) { //according to the name of the technology the right file will be scanned and split into lines for each frequency
                 reader = new BufferedReader(new InputStreamReader(main.getAssets().open("nearby-frequencies.txt"), "UTF-8"));
             }
-            if(signalTechnology.equals("lisnr")) {
+            if(signalTechnology.equals(Technology.LISNR.toString())) {
                 reader = new BufferedReader(new InputStreamReader(main.getAssets().open("lisnr-frequencies.txt"), "UTF-8"));
             }
-            if(signalTechnology.equals("shopkick")) {
+            if(signalTechnology.equals(Technology.SHOPKICK.toString())) {
                 reader = new BufferedReader(new InputStreamReader(main.getAssets().open("shopkick-frequencies.txt"), "UTF-8"));
             }
-            if(signalTechnology.equals("signal360")) {
+            if(signalTechnology.equals(Technology.SIGNAL360.toString())) {
                 reader = new BufferedReader(new InputStreamReader(main.getAssets().open("signal360-frequencies.txt"), "UTF-8"));
             }
-            if(signalTechnology.equals("silverpush")) {
+            if(signalTechnology.equals(Technology.SILVERPUSH.toString())) {
                 reader = new BufferedReader(new InputStreamReader(main.getAssets().open("silverpush-frequencies.txt"), "UTF-8"));
             }
-            if(signalTechnology.equals("prontoly")) {
+            if(signalTechnology.equals(Technology.PRONTOLY.toString())) {
                 reader = new BufferedReader(new InputStreamReader(main.getAssets().open("prontoly-frequencies.txt"), "UTF-8"));
             }
-            if(signalTechnology.equals("unknown")){
+            if(signalTechnology.equals(Technology.UNKNOWN.toString())){
                 reader = new BufferedReader(new InputStreamReader(main.getAssets().open("unknown-frequencies.txt"), "UTF-8"));
                 bandWidth = 2250;
             }

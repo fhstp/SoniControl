@@ -1,8 +1,5 @@
 package sonicontrol.testroutine;
 
-/**
- * Created by Otakusarea on 13.11.2017.
- */
 
 public enum Technology {
     PRONTOLY("Prontoly"),
@@ -10,6 +7,7 @@ public enum Technology {
     LISNR("Lisnr"),
     SIGNAL360("Signal360"),
     SHOPKICK("Shopkick"),
+    UNKNOWN("Unknown"),
     SILVERPUSH("Silverpush");
 
     private String stringValue;

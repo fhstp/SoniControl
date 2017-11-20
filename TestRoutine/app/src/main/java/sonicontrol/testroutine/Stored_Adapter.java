@@ -20,17 +20,9 @@ import java.util.ArrayList;
 
 public class Stored_Adapter extends ArrayAdapter<String[]>{
 
-
-
-
-
-
     Stored_Adapter(@NonNull Context context, ArrayList<String[]> resource) {
         super(context, R.layout.row_item, resource);
-
     }
-
-
 
     @NonNull
     @Override
@@ -51,8 +43,6 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
         txtLat.setText("Lat " + singleArrayItem[1]);
         txtTech.setText(singleArrayItem[2]);
         String formattedDate = singleArrayItem[3];
-        //StringBuilder dateBuild = new StringBuilder(formattedDate);
-        //dateBuild.setCharAt(11,);
         formattedDate = formattedDate.replace("T"," ");
         formattedDate = formattedDate.replace("Z","");
 
@@ -68,16 +58,6 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
             customView.setBackgroundColor(0x00ffffff);
         }
         txtSpoofingStatus.setText(spoofingStatus);
-
-        //TODO FILL LIST WITH JSON ITEMS
-        //ArrayList<String[]> stored_data = jm.getJsonData();
-
-        //ArrayList<String[]> test = jm.getJsonData();
-
-        //System.out.println(stored_data);
-
-
-
 
         return customView;
     }

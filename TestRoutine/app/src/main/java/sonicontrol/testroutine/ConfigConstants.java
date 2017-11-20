@@ -25,5 +25,7 @@ public final class ConfigConstants {
     public static final boolean SETTING_MICROPHONE_FOR_BLOCKING_DEFAULT = true;
     public static final String SETTING_SAVE_DATA_TO_JSON_FILE = "cbprefJsonSave";
     public static final boolean SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT = true;
+    public static final String USED_BLOCKING_METHOD_SPOOFER = "Spoofer";
+    public static final String USED_BLOCKING_METHOD_MICROPHONE = "Microphone";
 
 }

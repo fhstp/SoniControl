@@ -24,9 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".StoredLocations" >
+        <activity android:name=".StoredLocations"
+            android:label="Found Signals">
         </activity>
-        <activity android:name=".Settings" >
+        <activity android:name=".Settings"
+            android:label="Settings">
         </activity>
 
 

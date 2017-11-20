@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                     double[] noLocation = new double[2];
                     noLocation[0] = 0;
                     noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType, 0, "Not available!");
+                    jsonMan.addJsonObject(noLocation, sigType, 0, getString(R.string.noAddressForJsonFile));
                 }
                 detector.startScanning(); //start scanning again
                 alert.cancel(); //cancel the alert dialog
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     double[] noLocation = new double[2];
                     noLocation[0] = 0;
                     noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType, 2, "Not available!");
+                    jsonMan.addJsonObject(noLocation, sigType, 2, getString(R.string.noAddressForJsonFile));
                 }
 
                 detector.startScanning(); //start scanning again
@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                     double[] noLocation = new double[2];
                     noLocation[0] = 0;
                     noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType, 1, "Not available!");
+                    jsonMan.addJsonObject(noLocation, sigType, 1, getString(R.string.noAddressForJsonFile));
                 }
                 locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
                 alert.cancel(); //cancel the alert dialog
@@ -394,10 +394,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopAutomaticBlockingMethodOnAction(){
-        if(usedBlockingMethod.equals("Spoofer")){
+        if(usedBlockingMethod.equals(ConfigConstants.USED_BLOCKING_METHOD_SPOOFER)){
             Spoofer spoofBlock = Spoofer.getInstance();
             spoofBlock.stopSpoofingComplete();
-        }else if(usedBlockingMethod.equals("Microphone")){
+        }else if(usedBlockingMethod.equals(ConfigConstants.USED_BLOCKING_METHOD_MICROPHONE)){
             MicCapture micBlock = MicCapture.getInstance();
             micBlock.stopMicCapturingComplete();
         }

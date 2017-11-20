@@ -81,7 +81,7 @@ public class Scan {
 
         if(randomNumber==4){
 
-            locFinder.saveSignalTypeForLater(4);
+            locFinder.saveSignalTypeForLater(Technology.GOOGLE_NEARBY.toString());
                     /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                     boolean locationTrack = false;
@@ -148,7 +148,7 @@ public class Scan {
                 }
             }
         }else if(randomNumber==8){
-            locFinder.saveSignalTypeForLater(8);
+            locFinder.saveSignalTypeForLater(Technology.LISNR.toString());
                     /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     boolean locationTrack = false;
                     //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
@@ -214,7 +214,7 @@ public class Scan {
                 }
             }
         }else if(randomNumber==2){
-            locFinder.saveSignalTypeForLater(2);
+            locFinder.saveSignalTypeForLater(Technology.PRONTOLY.toString());
                     /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     boolean locationTrack = false;
                     //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
