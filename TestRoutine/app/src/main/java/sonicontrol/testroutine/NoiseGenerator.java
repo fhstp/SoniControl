@@ -47,32 +47,24 @@ public class NoiseGenerator {
         signalTech = signalType; //get the technology
         //If Clauses only for Debug
         if(signalTech.equals(Technology.GOOGLE_NEARBY.toString())){
-            //techForFile = "nearby";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Google Nearby");
         }else if(signalTech.equals(Technology.LISNR.toString())){
-            //techForFile = "lisnr";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Lisnr");
         }else if(signalTech.equals(Technology.PRONTOLY.toString())){
-            //techForFile = "prontoly";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Prontoly");
         }else if(signalTech.equals(Technology.SIGNAL360.toString())){
-            //techForFile = "signal360";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Signal 360");
         }else if(signalTech.equals(Technology.SHOPKICK.toString())){
-            //techForFile = "shopkick";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Shopkick");
         }else if(signalTech.equals(Technology.SILVERPUSH.toString())){
-            //techForFile = "silverpush";
             Log.d("Generator", "I generated a whitenoisesignal to spoof Silverpush");
         }else if(signalTech.equals(Technology.UNKNOWN.toString())){
-            //techForFile = "unknown";
             Log.d("Generator", "I generated a whitenoisesignal to spoof unknown");
         }
-        //Log.d("ControlType",techForFile);
-        generatedWhitenoisePlayer = whiteNoise(); //get the generated whitenoise for spoofing
+        generatedWhitenoisePlayer = generateWhitenoisePlayer(); //get the generated whitenoise for spoofing
     }
 
-    public AudioTrack whiteNoise(){
+    public double[] /*AudioTrack*/ produceWhiteNoise(){
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
         winLen = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_PULSE_DURATION, ConfigConstants.SETTING_PULSE_DURATION_DEFAULT)); //read the windowLength from the settings - NOTE: This setting will not be updated dynamically once the signal is created. Next update when new Signal is created.
         whiteNoiseBands = importSpecificSignal(signalTech); //import the frequencies /has to be changed to the detected technology
@@ -119,14 +111,11 @@ public class NoiseGenerator {
 
         double[] complexWhiteNoise = doFFT(winLenSamples, signal); //execute the fft method for creating whitenoisebands
 
+        return complexWhiteNoise;
+    }
 
-
-
-
-
-
-
-        //TODO: NEW FUNCTION
+    private double[] normalizeWhitenoiseSignal(){
+        double[] complexWhiteNoise = produceWhiteNoise();
         for (int i = 0; i < (winLenSamples * 2); i++) {
             if (Math.abs(complexWhiteNoise[i]) > max) {
                 max = Math.abs(complexWhiteNoise[i]); //searching for the maximum value of the whitenoisesignal
@@ -142,7 +131,11 @@ public class NoiseGenerator {
             }
         }
 
+        return helpNoise;
+    }
 
+    private double[] makeFadeInAndFadeOut(){
+        double[] helpNoise = normalizeWhitenoiseSignal();
         int fadeSamples = Math.round(helpNoise.length / 10); //value for the length of the fade in/fade out
         //int fadeSamples = 500;
         for (int i = 0; i < fadeSamples; i++) { //fade in
@@ -153,6 +146,11 @@ public class NoiseGenerator {
             helpNoise[helpNoise.length - (fadeSamples - (fadeSamples - i)) - 1] = (helpNoise[helpNoise.length - (fadeSamples - (fadeSamples - i)) - 1] * ((double) i / (double) fadeSamples));
         }
 
+        return helpNoise;
+    }
+
+    private short[] transformDoubleArrayIntoShortArray(){
+        double[] helpNoise = makeFadeInAndFadeOut();
         if(whiteNoiseVolume == 0){whiteNoiseVolume = 1;}
         for (int i = 0; i < winLenSamples; i++) {
             helpNoise[i] = (helpNoise[i]*(1+(whiteNoiseVolume/100))); //multiplay every value of the array with numbers between 1.0 to 3.0 (depending on the whiteNoiseValue = Slidervalue)
@@ -182,10 +180,7 @@ public class NoiseGenerator {
             whiteNoise[i] = (short) (helpNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
         }
 
-        AudioTrack generatedNoisePlayer;
-        generatedNoisePlayer = generatePlayer(); //create the audiotrack player
-        noiseGenerated = true; //after creation of the noise, set the flag to true
-        return generatedNoisePlayer;
+        return whiteNoise;
     }
 
     private double[] doFFT(int fftSize, double[] inputSignal) {
@@ -293,7 +288,11 @@ public class NoiseGenerator {
 
     }
 
-    private AudioTrack generatePlayer(){
+    private AudioTrack generateWhitenoisePlayer(){
+        short[] whiteNoise = transformDoubleArrayIntoShortArray();
+        //AudioTrack generatedNoisePlayer;
+        //generatedNoisePlayer = generatePlayer(whiteNoise); //create the audiotrack player
+        noiseGenerated = true; //after creation of the noise, set the flag to true
         winLenSamples = winLen*fs/1000; //calculating the windowLengthSamples
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,fs, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,(winLenSamples/*+(winLenSamples/65)*/)*2,AudioTrack.MODE_STATIC); //creating the audiotrack player with winLenSamples*2 as the buffersize because the constructor wants bytes
         audioTrack.write(whiteNoise, 0, (winLenSamples/*+(winLenSamples/65)*/)); //put the whiteNoise shortarray into the player, buffersize winLenSamples are Shorts here
