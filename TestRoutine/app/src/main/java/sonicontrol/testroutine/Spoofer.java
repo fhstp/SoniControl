@@ -134,7 +134,7 @@ public class Spoofer {
         }, playtime);
     }
 
-    public boolean getNoiseGenerated(){
+    public boolean isNoiseGenerated(){
         return noiseGenerated;
     }
 

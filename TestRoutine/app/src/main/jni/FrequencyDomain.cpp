@@ -12,12 +12,14 @@
 #include <SLES/OpenSLES_AndroidConfiguration.h>
 #include <android/log.h>
 #include <sstream>
+#include <cstring>
 
 #include <chrono>
 #define  LOG_TAG    "debug-tag"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
 //SUPERPOWERED FFT VARIABLES
+static SuperpoweredAndroidAudioIO *audioIO;
 static SuperpoweredFrequencyDomain *frequencyDomain;
 static float *magnitudeLeft, *magnitudeRight, *phaseLeft, *phaseRight, *inputBufferFloat;
 
@@ -349,7 +351,7 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
 
 extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
     initFrequencyDomain(sampleRateJava, bufferSizeSmplJava);
-    new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmplJava * 2); // Start audio input/output.
+    audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmplJava * 2); // Start audio input/output.
 }
 
 // Update Median Buffer size and buffer history (detection time) after update from SettingsActivity
@@ -390,6 +392,15 @@ extern "C" JNIEXPORT int Java_sonicontrol_testroutine_Scan_GetAndroidOut2(JNIEnv
 
 extern "C" JNIEXPORT jboolean Java_sonicontrol_testroutine_Scan_GetBackgroundModelUpdating(JNIEnv * __unused javaEnvironment, jobject __unused obj){
     return backgroundModelUpdating;
+}
+
+extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+    // onBackground would be cleaner if it was actually doing something. But it works only when you use the output
+    audioIO->stop();
+}
+
+extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+    audioIO->start();
 }
 
 /* SettingsActivity does not exist in the full app
