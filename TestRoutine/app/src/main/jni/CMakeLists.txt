@@ -10,7 +10,7 @@ message(${ANDROID_ABI})
 file(GLOB CPP_FILES "*.cpp")
 
 add_library(
-	SuperpoweredExample
+	Superpowered
 	SHARED
 	${CPP_FILES}
 	${PATH_TO_SUPERPOWERED}/AndroidIO/SuperpoweredAndroidAudioIO.cpp
@@ -20,7 +20,7 @@ include_directories(src/main/jni)
 include_directories(${PATH_TO_SUPERPOWERED})
 
 target_link_libraries(
-    SuperpoweredExample
+    Superpowered
     log
     android
     OpenSLES

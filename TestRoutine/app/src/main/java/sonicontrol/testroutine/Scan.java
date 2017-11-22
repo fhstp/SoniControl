@@ -39,6 +39,7 @@ public class Scan {
 
     public void init(MainActivity main){
         this.main = main; //initialize the Scan with a main object
+        System.loadLibrary("Superpowered");
     }
 
     public void getTheOldSpoofer(Spoofer spoofing){
