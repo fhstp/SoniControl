@@ -302,7 +302,7 @@ public class Location {
             if(main.getBackgroundStatus()) { //if the app is in the background
                 main.activateDetectionNotification(); //activate the detection notification
             }
-            main.activateAlert(signalType); //open the alert with the found technology
+            main.activateAlertAndBlock(signalType); //open the alert with the found technology
 
         }else{
             Log.d("Location", "I am not a new Signal");

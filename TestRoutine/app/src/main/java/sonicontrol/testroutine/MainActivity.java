@@ -29,7 +29,7 @@ import java.util.Random;
 import java.util.UUID;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
     static MainActivity mainIsMain;
 
     Button btnStorLoc;
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
     protected LocationManager locationManager;
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
+    double[] lastPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
         detector = Scan.getInstance(); //Get Scan-object if no object is available yet make a new one
         detector.init(MainActivity.this); //initialize the detector with the main method
+        detector.addDetectionListener(this); // MainActivity will be notified of detections (calls onDetection)
+
         locationFinder = Location.getInstanceLoc(); //Get LocationFinder-object if no object is available yet make a new one
         locationFinder.init(MainActivity.this); //initialize the location-object with the main method
 
@@ -387,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void activateAlert(String signalType){
+    public void activateAlertAndBlock(String signalType){
         usedBlockingMethod = locationFinder.blockMicOrSpoof();
         alert.show(); //open the alert
         sigType = signalType; //set the technology variable to the latest detected one
@@ -698,4 +701,221 @@ public class MainActivity extends AppCompatActivity {
             .setIcon(android.R.drawable.ic_dialog_alert)
             .show();*/
     }
+
+    @Override
+    public void onDetection(Technology technology) {
+        //TODO: someHandler.post(checkTechnologyAndDoAccordingly(technology));
+        checkTechnologyAndDoAccordingly(technology);
+    }
+
+
+    private void checkTechnologyAndDoAccordingly(Technology detectedTechnology){
+        boolean locationTrack;
+        if(detectedTechnology == null) {
+            detector.startScanning();
+        }
+        else {
+            switch (detectedTechnology) {
+                case GOOGLE_NEARBY:
+                    locationFinder.saveSignalTypeForLater(Technology.GOOGLE_NEARBY.toString());
+                        /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+                        //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                        boolean locationTrack = false;
+                        boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
+                        boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+
+                        if(locationTrackGps||locationTrackNet){
+                            locationTrack = true;
+                        }*/
+
+                    locationTrack = this.checkJsonAndLocationPermissions()[1];
+
+                    if (locationTrack) {
+                        lastPosition = locationFinder.getLocation(); //get the latest position
+                    }
+
+                    if (this.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)) { //check if the settings are set to continous spoofing
+                        if (!this.getBackgroundStatus()) { //if the app is not in the background
+                            this.cancelDetectionNotification(); //cancel the detection notification
+                        }
+                        Log.d("Spoof", "I spoof oontinuous");
+                        if (locationTrack) {
+                            locationFinder.setPositionForContinuousSpoofing(lastPosition); //set the position for distance calculation to the latest position
+                        }
+                        this.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                        this.activateSpoofingStatusNotification(); //activate the spoofing-status notification
+
+                        saveJsonFile = this.checkJsonAndLocationPermissions()[0];
+
+                        JSONManager jsonMan = new JSONManager(this);
+                        if (saveJsonFile && locationTrack) {
+                            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), Technology.GOOGLE_NEARBY.toString(), 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                        }
+                        if (saveJsonFile && !locationTrack) {
+                            double[] noLocation = new double[2];
+                            noLocation[0] = 0;
+                            noLocation[1] = 0;
+                            jsonMan.addJsonObject(noLocation, Technology.GOOGLE_NEARBY.toString(), 1, this.getResources().getString(R.string.addressData));
+                        }
+
+                        locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
+                        //resetHandler(); // Should be handled by the cpp (just stop scanning)
+                    } else {
+                        if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
+                            if (this.getBackgroundStatus()) { //if the app is in the background
+                                this.activateDetectionNotification(); //activate the notification for a detection
+                            }
+                            this.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                            this.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
+                            this.activateAlertAndBlock(Technology.GOOGLE_NEARBY.toString()); //open the alert message for google nearby
+                        } else {
+                            if (locationTrack) {
+                                locationFinder.checkExistingLocationDB(lastPosition, Technology.GOOGLE_NEARBY.toString()); //if a JSON file is available we check if the signal is a new one with position and technologytype
+                            } else {
+                                if (this.getBackgroundStatus()) { //if the app is in the background
+                                    this.activateDetectionNotification(); //activate the notification for a detection
+                                }
+                                this.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                                this.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
+                                this.activateAlertAndBlock(Technology.GOOGLE_NEARBY.toString()); //open the alert message for google nearby
+                                //resetHandler(); // Should be handled by the cpp (just stop scanning)
+                            }
+                        }
+                    }
+                case LISNR:
+                    locationFinder.saveSignalTypeForLater(Technology.LISNR.toString());
+                        /*SharedPreferences sharedPref = this.getSettingsObject(); //get the settings
+                        boolean locationTrack = false;
+                        //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                        boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
+                        boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+                        if(locationTrackGps||locationTrackNet){
+                            locationTrack = true;
+                        }*/
+                    locationTrack = this.checkJsonAndLocationPermissions()[1];
+
+                    if (locationTrack) {
+                        lastPosition = locationFinder.getLocation(); //get the latest position
+                    }
+
+                    if (this.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)) { //check if the settings are set to continous spoofing
+                        if (!this.getBackgroundStatus()) { //if the app is not in the background
+                            this.cancelDetectionNotification(); //cancel the detection notification
+                        }
+                        Log.d("Spoof", "I spoof oontinuous");
+                        if (locationTrack) {
+                            locationFinder.setPositionForContinuousSpoofing(lastPosition); //set the position for distance calculation to the latest position
+                        }
+                        this.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                        this.activateSpoofingStatusNotification(); //activate the spoofing-status notification
+
+                        saveJsonFile = this.checkJsonAndLocationPermissions()[0];
+
+                        JSONManager jsonMan = new JSONManager(this);
+                        if (saveJsonFile && locationTrack) {
+                            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), Technology.LISNR.toString(), 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                        }
+                        if (saveJsonFile && !locationTrack) {
+                            double[] noLocation = new double[2];
+                            noLocation[0] = 0;
+                            noLocation[1] = 0;
+                            jsonMan.addJsonObject(noLocation, Technology.GOOGLE_NEARBY.toString(), 1, this.getResources().getString(R.string.addressData));
+                        }
+
+                        locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
+                        //resetHandler(); // Should be handled by the cpp (just stop scanning)
+                    } else {
+
+                        if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
+                            if (this.getBackgroundStatus()) { //if the app is in the background
+                                this.activateDetectionNotification(); //activate the notification for a detection
+                            }
+                            this.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                            this.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
+                            this.activateAlertAndBlock(Technology.LISNR.toString()); //open the alert message for lisnr
+                        } else {
+                            if (locationTrack) {
+                                locationFinder.checkExistingLocationDB(lastPosition, Technology.LISNR.toString()); //if a JSON file is available we check if the signal is a new one with position and technologytype
+                            } else {
+                                if (this.getBackgroundStatus()) { //if the app is in the background
+                                    this.activateDetectionNotification(); //activate the notification for a detection
+                                }
+                                this.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                                this.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
+                                this.activateAlertAndBlock(Technology.LISNR.toString()); //open the alert message for lisnr
+                                //resetHandler(); // Should be handled by the cpp (just stop scanning)
+                            }
+                        }
+                    }
+                case PRONTOLY:
+                    locationFinder.saveSignalTypeForLater(Technology.PRONTOLY.toString());
+                        /*SharedPreferences sharedPref = this.getSettingsObject(); //get the settings
+                        boolean locationTrack = false;
+                        //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+                        boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
+                        boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
+                        if(locationTrackGps||locationTrackNet){
+                            locationTrack = true;
+                        }*/
+                    locationTrack = this.checkJsonAndLocationPermissions()[1];
+
+                    if (locationTrack) {
+                        lastPosition = locationFinder.getLocation(); //get the latest position
+                    }
+
+                    if (this.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)) { //check if the settings are set to continous spoofing
+                        if (!this.getBackgroundStatus()) { //if the app is not in the background
+                            this.cancelDetectionNotification(); //cancel the detection notification
+                        }
+                        Log.d("Spoof", "I spoof oontinuous");
+                        if (locationTrack) {
+                            locationFinder.setPositionForContinuousSpoofing(lastPosition); //set the position for distance calculation to the latest position
+                        }
+                        this.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                        this.activateSpoofingStatusNotification(); //activate the spoofing-status notification
+
+                        saveJsonFile = this.checkJsonAndLocationPermissions()[0];
+
+                        JSONManager jsonMan = new JSONManager(this);
+                        if (saveJsonFile && locationTrack) {
+                            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), Technology.PRONTOLY.toString(), 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                        }
+                        if (saveJsonFile && !locationTrack) {
+                            double[] noLocation = new double[2];
+                            noLocation[0] = 0;
+                            noLocation[1] = 0;
+                            jsonMan.addJsonObject(noLocation, Technology.PRONTOLY.toString(), 1, this.getResources().getString(R.string.addressData));
+                        }
+
+                        locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
+                        //resetHandler(); // Should be handled by the cpp (just stop scanning)
+                    } else {
+
+                        if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
+                            if (this.getBackgroundStatus()) { //if the app is in the background
+                                this.activateDetectionNotification(); //activate the notification for a detection
+                            }
+                            this.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                            this.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
+                            this.activateAlertAndBlock(Technology.PRONTOLY.toString()); //open the alert message for prontoly
+                        } else {
+                            if (locationTrack) {
+                                locationFinder.checkExistingLocationDB(lastPosition, Technology.PRONTOLY.toString()); //if a JSON file is available we check if the signal is a new one with position and technologytype
+                            } else {
+                                if (this.getBackgroundStatus()) { //if the app is in the background
+                                    this.activateDetectionNotification(); //activate the notification for a detection
+                                }
+                                this.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                                this.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
+                                this.activateAlertAndBlock(Technology.PRONTOLY.toString()); //open the alert message for prontoly
+                                //resetHandler(); // Should be handled by the cpp (just stop scanning)
+                            }
+                        }
+                    }
+                case UNKNOWN:
+                    Log.d("Detected:", "Unknown ultrasonic signal");
+            }
+        }
+    }
+
 }

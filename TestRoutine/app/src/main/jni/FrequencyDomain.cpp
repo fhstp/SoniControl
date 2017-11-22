@@ -79,6 +79,9 @@ static bool backgroundModelUpdating = true; //{IS SET} indicates if the backgrou
 #define FFT_LOG_SIZE 11 // 2^11 = 2048 - minimum viable size, should stay here
 static int counter = 0; //increments in every loop (without exception), helps to find out when backgroundBuffer is full and detection can be started
 
+// Needed to call Java functions
+static JNIEnv * jniEnv;
+static jobject jniScan;
 
 
 static int advanceSampleArray()
@@ -301,12 +304,25 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             /* 2. make an FFT over the entire buffer.
              * 3. Perform recognition of the individual technologies
              * ??? Is there a 4. ???
+             */
+
+             // Following is handled in Java
+            /*
              * 5. Show an alert to the user
              * 6. Store the type of sound for future spoofing and start the spoofer if requested (for some time, e.g. 5s)
              * 7. When spoofing is done, continue with this loop. Note: while spoofing is done, the background
              * model is not updated (otherwise we would model our own spoofing signals!)
              * Important: the detector must retain its state, i.e. the background model must be stored during the spoofer is active.
              * */
+
+            // Construct a String
+            jstring technologyString = jniEnv->NewStringUTF("UNKNOWN");
+            // First get the class that contains the method you need to call
+            jclass scanClass = jniEnv->FindClass("sonicontrol/testroutine/Scan");
+            // Get the method that you want to call
+            jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;)V");
+            // Call the method on the object
+            jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString);
         }
         frequencyDomain->advance(numberOfSamples);
     };
@@ -350,6 +366,8 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
 }
 
 extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
+    jniEnv = javaEnvironment;
+    jniScan = obj;
     initFrequencyDomain(sampleRateJava, bufferSizeSmplJava);
     audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmplJava * 2); // Start audio input/output.
 }
