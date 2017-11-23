@@ -913,7 +913,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         }
                     }
                 case UNKNOWN:
-                    Log.d("Detected:", "Unknown ultrasonic signal");
+                    Log.d("Detected", "Unknown ultrasonic signal");
             }
         }
     }

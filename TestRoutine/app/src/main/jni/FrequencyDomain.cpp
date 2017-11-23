@@ -15,7 +15,7 @@
 #include <cstring>
 
 #include <chrono>
-#define  LOG_TAG    "debug-tag"
+#define  LOG_TAG    "FrequencyDomain"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
 //SUPERPOWERED FFT VARIABLES
@@ -80,9 +80,19 @@ static bool backgroundModelUpdating = true; //{IS SET} indicates if the backgrou
 static int counter = 0; //increments in every loop (without exception), helps to find out when backgroundBuffer is full and detection can be started
 
 // Needed to call Java functions
-static JNIEnv * jniEnv;
-static jobject jniScan;
+static JavaVM* jvm = 0;
+static jobject jniScan = 0; // GlobalRef
 
+static void pauseIO() {
+    // onBackground only sets internals->foreground = false;
+    // Which stops the queues only when you use the output, so I also stop manually
+    audioIO->onBackground();
+    audioIO->stop();
+}
+
+static void resumeIO() {
+    audioIO->onForeground(); // Starts the queues again
+}
 
 static int advanceSampleArray()
 {
@@ -315,14 +325,38 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
              * Important: the detector must retain its state, i.e. the background model must be stored during the spoofer is active.
              * */
 
+            // Source: https://stackoverflow.com/a/12901159
+            JNIEnv * jniEnv;
+            // double check if it's all ok
+            int getEnvStat = jvm->GetEnv((void **)&jniEnv, JNI_VERSION_1_6);
+            if (getEnvStat == JNI_EDETACHED) {
+                LOGD("GetEnv: not attached");
+                if (jvm->AttachCurrentThread(&jniEnv, NULL) != 0) {
+                    LOGD("Failed to attach");
+                }
+                LOGD("Attached thread from audio callback");
+            } else if (getEnvStat == JNI_OK) {
+                LOGD("Audio callback thread already attached ");
+            } else if (getEnvStat == JNI_EVERSION) {
+                LOGD("GetEnv: version not supported");
+            }
+
             // Construct a String
-            jstring technologyString = jniEnv->NewStringUTF("UNKNOWN");
+            jstring technologyString = jniEnv->NewStringUTF("Prontoly");
             // First get the class that contains the method you need to call
-            jclass scanClass = jniEnv->FindClass("sonicontrol/testroutine/Scan");
+            jclass scanClass = jniEnv->GetObjectClass(jniScan);
             // Get the method that you want to call
             jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;)V");
             // Call the method on the object
             jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString);
+
+            if (jniEnv->ExceptionCheck()) {
+                jniEnv->ExceptionDescribe();
+            }
+
+            jvm->DetachCurrentThread();
+
+            pauseIO();
         }
         frequencyDomain->advance(numberOfSamples);
     };
@@ -366,8 +400,10 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
 }
 
 extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
-    jniEnv = javaEnvironment;
-    jniScan = obj;
+    // Source: https://stackoverflow.com/a/26534926
+    javaEnvironment->GetJavaVM(&jvm); // Keep a global reference to the jvm
+    jniScan = javaEnvironment->NewGlobalRef(obj); // Keep a global reference to the Scan activity
+
     initFrequencyDomain(sampleRateJava, bufferSizeSmplJava);
     audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmplJava * 2); // Start audio input/output.
 }
@@ -399,7 +435,6 @@ static void createNewDetectionsDequeAndSamplesBuffer()
     medianBuffer.resize(medianBufferSizeItems);
 }
 
-
 extern "C" JNIEXPORT float Java_sonicontrol_testroutine_Scan_GetAndroidOut1(JNIEnv *__unused javaEnvironment, jobject __unused obj){
     return androidOut1;
 }
@@ -413,12 +448,11 @@ extern "C" JNIEXPORT jboolean Java_sonicontrol_testroutine_Scan_GetBackgroundMod
 }
 
 extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
-    // onBackground would be cleaner if it was actually doing something. But it works only when you use the output
-    audioIO->stop();
+    pauseIO();
 }
 
 extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
-    audioIO->start();
+    resumeIO();
 }
 
 /* SettingsActivity does not exist in the full app

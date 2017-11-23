@@ -62,8 +62,18 @@ public class Scan {
         }
     }
 
+    /***
+     * Translates the String received from CPP to a Technology value and notifies the listeners of the detection.
+     * @param technology String corresponding to a Technology Enum value
+     */
     public void detectedSignal(String technology) {
-        lastDetectedTechnology = Technology.UNKNOWN;
+        try {
+            lastDetectedTechnology = Technology.fromString(technology);
+        }
+        catch (IllegalArgumentException e) {
+            Log.d(TAG, "detectedSignal: " + e.getMessage());
+            lastDetectedTechnology = Technology.UNKNOWN;
+        }
         notifyDetectionListeners();
     }
 
