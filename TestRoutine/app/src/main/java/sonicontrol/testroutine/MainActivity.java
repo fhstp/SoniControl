@@ -2,31 +2,32 @@ package sonicontrol.testroutine;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioTrack;
 import android.os.Build;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.content.Intent;
 import android.widget.TextView;
-import android.app.Notification;
-
-import android.content.SharedPreferences;
-import android.preference.*;
 
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
@@ -87,6 +88,10 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
     double[] lastPosition;
+
+    // Thread handling
+    private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
+    public static final ExecutorService threadPool = Executors.newScheduledThreadPool(NUMBER_OF_CORES + 1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -703,9 +708,14 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     @Override
-    public void onDetection(Technology technology) {
+    public void onDetection(final Technology technology) {
         //TODO: someHandler.post(checkTechnologyAndDoAccordingly(technology));
-        checkTechnologyAndDoAccordingly(technology);
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                checkTechnologyAndDoAccordingly(technology);
+            }
+        });
     }
 
 
