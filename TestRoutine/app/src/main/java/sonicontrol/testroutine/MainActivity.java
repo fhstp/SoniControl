@@ -28,6 +28,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 
 public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     // Thread handling
     private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
-    public static final ExecutorService threadPool = Executors.newScheduledThreadPool(NUMBER_OF_CORES + 1);
+    public static final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(NUMBER_OF_CORES + 1);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -345,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             public void onClick(View v){
                 mNotificationManager.cancelAll(); //cancel all active notifications
                 activateOnHoldStatusNotification(); //activate only the onHold-status notification again
-                detector.resetHandler(); //reset the handler of the scanning handler
+                detector.pause(); // stop scanning
                 alert.cancel();
                 Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
                 spoof.stopSpoofingComplete(); //stop the whole spoofing process
@@ -652,6 +654,14 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     public void onPause(){ //override the onPause method for setting a variable for checking the background-status
         super.onPause();
         isInBackground = true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // TODO: Release resources not released yet in onStop()
+        // Maybe threads, microphone, ... ?
     }
 
     public static MainActivity getMainIsMain(){

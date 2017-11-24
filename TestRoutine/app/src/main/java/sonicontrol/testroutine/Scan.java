@@ -15,7 +15,6 @@ public class Scan {
     private List<DetectionListener> detectionListeners = new ArrayList<>();
 
     private static Scan instance;
-    private Handler scanHandler = new Handler();
     private JSONManager jsonMan;
 
     MainActivity main;
@@ -83,8 +82,6 @@ public class Scan {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
 
             FrequencyDomain(ConfigConstants.SCAN_SAMPLE_RATE, ConfigConstants.SCAN_BUFFER_SIZE);
-
-            // TODO: The CPP should trigger the call to notifyDetectionListeners.
         }
     };
 
@@ -102,12 +99,7 @@ public class Scan {
         locFinder = Location.getInstanceLoc(); //get an instance of location
         jsonMan = new JSONManager(main);
 
-        scanHandler.postDelayed(scanRun, 500);
-    }
-
-
-    public void resetHandler(){
-        scanHandler.removeCallbacks(scanRun); //reset the handler completely
+        MainActivity.threadPool.execute(scanRun);
     }
 
     public void getTheOldSpoofer(Spoofer spoofing){
@@ -118,14 +110,17 @@ public class Scan {
         return savedFileUrl; //get the detected file url /at the moment not dynamically working because there is no dynamically saving
     }
 
+    public void pause() {
+        paused = true; // Might not be needed if we do not do anything in Scan (update UI ?)
+        Pause();
+    }
+
     // ------
     // Native functions to find in jni/FrequencyDomain.cpp
-
     private native void FrequencyDomain(int samplerate, int buffersize);
     private native float GetAndroidOut1();
     private native int GetAndroidOut2();
     private native boolean GetBackgroundModelUpdating();
-
     private native void Pause();
     private native void Resume();
 }

@@ -10,13 +10,14 @@ import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.ConsoleHandler;
 
 public class Spoofer {
 
     static Spoofer instance;
-    private Handler spoofHandler = new Handler();
-    private Runnable spoofRun;
+    //private Handler spoofHandler = new Handler();
+    //private Runnable spoofRun;
 
     int helpCounter = 0;
 
@@ -41,6 +42,8 @@ public class Spoofer {
 
     private String signalType;
 
+    private boolean stopped = false;
+
     private Spoofer(){
     }
 
@@ -51,8 +54,12 @@ public class Spoofer {
         return instance;
     }
 
-    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, String sigType){  //initialize the Scan with a main object
+    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, String sigType){
         this.main = main;
+
+        // TODO: init() probably should be called only once.
+        // TODO: Here we create a new NoiseGenerator object every time we want to spoof ?!
+
         this.genNoise = new NoiseGenerator(main);
         this.playingGlobal = playingGlobal;
         this.playingHandler = playingHandler;
@@ -81,17 +88,24 @@ public class Spoofer {
     }
 
     public void onPulsing() {
-        spoofHandler.postDelayed(spoofRun = new Runnable() {
-            public void run() {
+        MainActivity.threadPool.schedule(spoofRun, playtime, TimeUnit.MILLISECONDS);
+    }
+
+    private Runnable spoofRun = new Runnable() {
+        public void run() {
+            if (stopped) {
+                // TODO: Do we need to reinitialize something ?
+            }
+            else {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
                 AudioManager audioManager = (AudioManager) main.getSystemService(Context.AUDIO_SERVICE);
-                int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+                // not used ? int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
                 Log.d("Streamtype", String.valueOf(AudioManager.STREAM_MUSIC));
-                audioManager.setStreamVolume(3, (int)Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)*0.80D)),0);
+                audioManager.setStreamVolume(3, (int) Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 0.80D)), 0);
 
-                if(playingHandler) {
+                if (playingHandler) {
                     playtime = genNoise.getPlayertime(); //get the playertime depending on the generated whitenoise
-                }else{
+                } else {
                     playtime = Integer.valueOf(main.getSettingsObject().getString(ConfigConstants.SETTING_PAUSE_DURATION, ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT)); //get the pause value from the settings
                 }
                 if (!noiseGenerated) { //if no whitenoise is available generate a new one
@@ -115,24 +129,24 @@ public class Spoofer {
                         int spoofingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
                         stopTime = Calendar.getInstance().getTimeInMillis(); //get the stoptime
                         Log.d("StartTime", String.valueOf(startTime));
-                        Log.d("StopTime",String.valueOf(stopTime));
-                        Long logLong = (stopTime-startTime)/1000; //get the difference of the start- and stoptime
+                        Log.d("StopTime", String.valueOf(stopTime));
+                        Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
                         String logTime = String.valueOf(logLong);
-                        Log.d("HowLongSpoofed",logTime);
-                        if(logLong>(spoofingTime*60)){ //check if its over the spoofing time from the settings
+                        Log.d("HowLongSpoofed", logTime);
+                        if (logLong > (spoofingTime * 60)) { //check if its over the spoofing time from the settings
                             executeRoutineAfterExpiredTime();
-                        }else{
+                        } else {
                             onPulsing(); //start the pulsing again
                         }
                     } else {
+                        // TODO: Why would we put it back to true ?!
                         playingGlobal = true; //set the variable for playing to true again
                         //helpCounter = 0;
                     }
                 }
-
-                }
-        }, playtime);
-    }
+            }
+        }
+    };
 
     public boolean isNoiseGenerated(){
         return noiseGenerated;
@@ -155,20 +169,24 @@ public class Spoofer {
     }
 
     public void stopSpoofingComplete(){
+        stopped = true;
         if(instance != null) { //if there is an instance
+            // TODO: Is this safe ? Could other classes have kept the reference to the instance ? ...
             setInstanceNull(); //set the instance of the spoofer null
         }
         if(audioTrack != null){ //if there is an audioplayer
-            spoofHandler.removeCallbacks(spoofRun); //reset the handler of the spoofer
+            //Handled with stopped variable ? spoofHandler.removeCallbacks(spoofRun); //reset the handler of the spoofer
             audioTrack.stop(); //stop playing
-            genNoise.setGeneratedPlayerToNull(); //set the player of the generator null
             audioTrack.release(); //release the player resources
             audioTrack = null; //set the player to null
+            // TODO: shouldnt we keep it in case we can reuse it ?
+            genNoise.setGeneratedPlayerToNull(); //set the player of the generator null
             genNoise = null; //set the NoiseGenerator object to null
         }
     }
 
     private void executeRoutineAfterExpiredTime(){
+        stopped = true;
         startStop(false); //stop the spoofer
         playingGlobal = false; //set to false because its not playing anymore
         boolean locationTrack = false;
@@ -209,16 +227,17 @@ public class Spoofer {
         main.activateScanningStatusNotification(); //activate the scanning status notification
         detector.getTheOldSpoofer(Spoofer.this); //update the spoofer object in the detector
         detector.startScanning(); //start scanning again
-        spoofHandler.removeCallbacks(spoofRun); //reset handler
+        //Handled with stopped variable ? spoofHandler.removeCallbacks(spoofRun); //reset handler
     }
 
     private void setSpoofingNoiseToNullAndTryGettingMicAccessAgain(){
+        // TODO: Keep the generated noise in case of reuse ? Not sure what our strategy should be regarding resource management
         genNoise.setGeneratedPlayerToNull(); //set the noiseplayer to null
         audioTrack.release(); //release the player resources
         audioTrack = null; //set the player to null
         genNoise = null; //set the the noisegenerator object to null
         setInstanceNull(); //set the NoiseGenerator instance to null
         locFinder.blockMicOrSpoof(); //try again to get access to the microphone and then choose the spoofing method
-        spoofHandler.removeCallbacks(spoofRun); //reset the handler
+        //Handled with stopped variable ? spoofHandler.removeCallbacks(spoofRun); //reset the handler
     }
 }
