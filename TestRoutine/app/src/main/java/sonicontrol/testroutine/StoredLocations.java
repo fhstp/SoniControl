@@ -34,6 +34,7 @@ public class StoredLocations extends AppCompatActivity {
     AdapterView<?> parentLongClick;
     int positionLongClick;
 
+    TextView txtNothingDiscovered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class StoredLocations extends AppCompatActivity {
 
         data = jsonMan.getJsonData();
 
-        TextView txtNothingDiscovered = (TextView) findViewById(R.id.txtNoDetectionsYet);
+        txtNothingDiscovered = (TextView) findViewById(R.id.txtNoDetectionsYet);
 
         if(data.size()==0){
             txtNothingDiscovered.setVisibility(View.VISIBLE);
@@ -72,6 +73,11 @@ public class StoredLocations extends AppCompatActivity {
                         jsonMan.deleteEntryInStoredLoc(positionSignal,singleArrayItem[2]);
                         jsonMan = new JSONManager(nextMain);
                         data = jsonMan.getJsonData();
+                        if(data.size()==0){
+                            txtNothingDiscovered.setVisibility(View.VISIBLE);
+                        }else {
+                            txtNothingDiscovered.setVisibility(View.INVISIBLE);
+                        }
                         lv.setAdapter(null);
                         stored_adapter = new Stored_Adapter(listContext, data);
                         lv.setAdapter(stored_adapter);

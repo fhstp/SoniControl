@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
     boolean saveJsonFile;
     String usedBlockingMethod;
+    boolean preventiveSpoof;
 
     protected LocationManager locationManager;
     boolean isGPSEnabled = false;
@@ -304,7 +305,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void activateAlert(Technology signalType){
-        usedBlockingMethod = locationFinder.blockMicOrSpoof();
+        SharedPreferences sharedPref = getSettingsObject(); //get the settings
+        preventiveSpoof = sharedPref.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
+        if(preventiveSpoof) {
+            usedBlockingMethod = locationFinder.blockMicOrSpoof();
+        }
         alert.show(); //open the alert
         sigType = signalType; //set the technology variable to the latest detected one
     }

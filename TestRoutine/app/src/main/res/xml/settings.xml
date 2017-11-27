@@ -20,11 +20,15 @@
             android:defaultValue="true"
             android:key="cbprefNetworkUse"
             android:title="Use Network Connection for Location" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbprefPreventiveSpoofing"
+            android:title="Preventive Spoofing" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Expert - Spoofer">
         <Preference
             android:key="deleteJson"
-            android:title="Delete the JSON File and all WAV-Detections"></Preference>
+            android:title="Clear stored Detections"></Preference>
         <CheckBoxPreference
         android:defaultValue="true"
         android:key="cbprefMicBlock"
