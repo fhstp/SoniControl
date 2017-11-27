@@ -35,43 +35,26 @@ public class StoredLocations extends AppCompatActivity {
     int positionLongClick;
 
 
-    /*private StoredLocations(){
-    }*/
-
-    /*public static StoredLocations getInstance() { //getInstance method for Singleton pattern
-        if(instanceStoredLoc == null) { //if no instance of Scan is there create a new one, otherwise return the existing
-            instanceStoredLoc = new StoredLocations();
-        }
-        return instanceStoredLoc;
-    }*/
-
-    /*public void init(MainActivity main){
-        this.main = main;
-    }*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stored_locations);
 
-        //Intent i = getIntent();
-        //main = (MainActivity) i.getSerializableExtra("json");
         nextMain = main.getMainIsMain();
         jsonMan = new JSONManager(nextMain);
 
         data = jsonMan.getJsonData();
-        /*for (String[] array : data){
-            Log.d("StoredLocTest",array[1] + " " + array[2] + " " + array[3]);
+
+        TextView txtNothingDiscovered = (TextView) findViewById(R.id.txtNoDetectionsYet);
+
+        if(data.size()==0){
+            txtNothingDiscovered.setVisibility(View.VISIBLE);
+        }else {
+            txtNothingDiscovered.setVisibility(View.INVISIBLE);
         }
-
-
-            String[] testArray ={"test", "toast", "yummie"};
-*/
-        //jsonMan = new JSONManager(main);
 
         lv = (ListView) findViewById(R.id.storedListView);
         lv.setAdapter(null);
-        //ArrayAdapter<String>adapter=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, testArray);
         final Context listContext = this;
         stored_adapter = new Stored_Adapter(this, data);
 
@@ -100,9 +83,6 @@ public class StoredLocations extends AppCompatActivity {
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert);
-
-
-        //lv.setAdapter(adapter);
 
         lv.setAdapter(stored_adapter);
 

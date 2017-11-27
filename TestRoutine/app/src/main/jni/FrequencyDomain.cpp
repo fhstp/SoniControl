@@ -14,6 +14,8 @@
 #include <sstream>
 
 #include <chrono>
+#include <cstring>
+
 #define  LOG_TAG    "debug-tag"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 

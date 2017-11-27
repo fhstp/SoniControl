@@ -39,7 +39,7 @@ public class Spoofer {
     private long startTime;
     private long stopTime;
 
-    private String signalType;
+    private Technology signalType;
 
     private Spoofer(){
     }
@@ -51,7 +51,7 @@ public class Spoofer {
         return instance;
     }
 
-    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, String sigType){  //initialize the Scan with a main object
+    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, Technology sigType){  //initialize the Scan with a main object
         this.main = main;
         this.genNoise = new NoiseGenerator(main);
         this.playingGlobal = playingGlobal;

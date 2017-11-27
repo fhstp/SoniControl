@@ -81,7 +81,7 @@ public class Scan {
 
         if(randomNumber==4){
 
-            locFinder.saveSignalTypeForLater(Technology.GOOGLE_NEARBY.toString());
+            locFinder.saveSignalTypeForLater(Technology.GOOGLE_NEARBY);
                     /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
                     boolean locationTrack = false;
@@ -132,23 +132,23 @@ public class Scan {
                     }
                     main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                     main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                    openAlert(Technology.GOOGLE_NEARBY.toString()); //open the alert message for google nearby
+                    openAlert(Technology.GOOGLE_NEARBY); //open the alert message for google nearby
                 } else {
                     if(locationTrack) {
-                        locFinder.checkExistingLocationDB(position, Technology.GOOGLE_NEARBY.toString()); //if a JSON file is available we check if the signal is a new one with position and technologytype
+                        locFinder.checkExistingLocationDB(position, Technology.GOOGLE_NEARBY); //if a JSON file is available we check if the signal is a new one with position and technologytype
                     }else{
                         if (main.getBackgroundStatus()) { //if the app is in the background
                             main.activateDetectionNotification(); //activate the notification for a detection
                         }
                         main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                         main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                        openAlert(Technology.GOOGLE_NEARBY.toString()); //open the alert message for google nearby
+                        openAlert(Technology.GOOGLE_NEARBY); //open the alert message for google nearby
                         resetHandler(); //reset the handler
                     }
                 }
             }
         }else if(randomNumber==8){
-            locFinder.saveSignalTypeForLater(Technology.LISNR.toString());
+            locFinder.saveSignalTypeForLater(Technology.LISNR);
                     /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     boolean locationTrack = false;
                     //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
@@ -198,23 +198,23 @@ public class Scan {
                     }
                     main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                     main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                    openAlert(Technology.LISNR.toString()); //open the alert message for lisnr
+                    openAlert(Technology.LISNR); //open the alert message for lisnr
                 }else {
                     if(locationTrack) {
-                        locFinder.checkExistingLocationDB(position, Technology.LISNR.toString()); //if a JSON file is available we check if the signal is a new one with position and technologytype
+                        locFinder.checkExistingLocationDB(position, Technology.LISNR); //if a JSON file is available we check if the signal is a new one with position and technologytype
                     }else {
                         if(main.getBackgroundStatus()) { //if the app is in the background
                             main.activateDetectionNotification(); //activate the notification for a detection
                         }
                         main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                         main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                        openAlert(Technology.LISNR.toString()); //open the alert message for lisnr
+                        openAlert(Technology.LISNR); //open the alert message for lisnr
                         resetHandler(); //reset the handler
                     }
                 }
             }
         }else if(randomNumber==2){
-            locFinder.saveSignalTypeForLater(Technology.PRONTOLY.toString());
+            locFinder.saveSignalTypeForLater(Technology.PRONTOLY);
                     /*SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     boolean locationTrack = false;
                     //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
@@ -264,17 +264,17 @@ public class Scan {
                     }
                     main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                     main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                    openAlert(Technology.PRONTOLY.toString()); //open the alert message for prontoly
+                    openAlert(Technology.PRONTOLY); //open the alert message for prontoly
                 }else {
                     if(locationTrack) {
-                        locFinder.checkExistingLocationDB(position, Technology.PRONTOLY.toString()); //if a JSON file is available we check if the signal is a new one with position and technologytype
+                        locFinder.checkExistingLocationDB(position, Technology.PRONTOLY); //if a JSON file is available we check if the signal is a new one with position and technologytype
                     }else{
                         if(main.getBackgroundStatus()) { //if the app is in the background
                             main.activateDetectionNotification(); //activate the notification for a detection
                         }
                         main.cancelScanningStatusNotification(); //cancel the scanning-status notification
                         main.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                        openAlert(Technology.PRONTOLY.toString()); //open the alert message for prontoly
+                        openAlert(Technology.PRONTOLY); //open the alert message for prontoly
                         resetHandler(); //reset the handler
                     }
                 }
@@ -284,7 +284,7 @@ public class Scan {
         }
     }
 
-    private void openAlert(String signalType){
+    private void openAlert(Technology signalType){
         main.activateAlert(signalType); //open the alert message on the main-activity with the technology type
         resetHandler(); //reset the handler
     }

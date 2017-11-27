@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     AlertDialog alert;
     TextView txtSignalType;
-    String sigType;
+    Technology sigType;
     View view;
 
     Random randomNotificationNumberGenerator = new Random();
@@ -128,32 +128,18 @@ public class MainActivity extends AppCompatActivity {
         btnAlertStore.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 stopAutomaticBlockingMethodOnAction();
-                /*SharedPreferences sharedPref = getSettingsObject(); //get the settings
-                saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
-
-                locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-                boolean locationTrack = false;
-                //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
-                boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
-                boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
-                if((locationTrackGps&&isGPSEnabled)||(locationTrackNet&&isNetworkEnabled)){
-                    locationTrack = true;
-                }*/
 
                 saveJsonFile = checkJsonAndLocationPermissions()[0];
                 boolean locationTrack = checkJsonAndLocationPermissions()[1];
 
                 if(saveJsonFile && locationTrack) {
-                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType, 0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                 }
                 if(saveJsonFile&&!locationTrack){
                     double[] noLocation = new double[2];
                     noLocation[0] = 0;
                     noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType, 0, getString(R.string.noAddressForJsonFile));
+                    jsonMan.addJsonObject(noLocation, sigType.toString(), 0, getString(R.string.noAddressForJsonFile));
                 }
                 detector.startScanning(); //start scanning again
                 alert.cancel(); //cancel the alert dialog
@@ -173,13 +159,13 @@ public class MainActivity extends AppCompatActivity {
                 boolean locationTrack = checkJsonAndLocationPermissions()[1];
 
                 if(saveJsonFile && locationTrack) {
-                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType, 2, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 2, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                 }
                 if(saveJsonFile&&!locationTrack){
                     double[] noLocation = new double[2];
                     noLocation[0] = 0;
                     noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType, 2, getString(R.string.noAddressForJsonFile));
+                    jsonMan.addJsonObject(noLocation, sigType.toString(), 2, getString(R.string.noAddressForJsonFile));
                 }
 
                 detector.startScanning(); //start scanning again
@@ -195,33 +181,18 @@ public class MainActivity extends AppCompatActivity {
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 stopAutomaticBlockingMethodOnAction();
-                /*SharedPreferences sharedPref = getSettingsObject(); //get the settings
-                saveJsonFile = sharedPref.getBoolean("cbprefJsonSave", true);
 
-
-                locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-                isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-
-                boolean locationTrack = false;
-                //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
-                boolean locationTrackGps = sharedPref.getBoolean("cbprefGpsUse", true);
-                boolean locationTrackNet = sharedPref.getBoolean("cbprefNetworkUse", true);
-                if((locationTrackGps&&isGPSEnabled)||(locationTrackNet&&isNetworkEnabled)){
-                    locationTrack = true;
-                }*/
                 saveJsonFile = checkJsonAndLocationPermissions()[0];
                 boolean locationTrack = checkJsonAndLocationPermissions()[1];
 
                 if(saveJsonFile&&locationTrack) {
-                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType, 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                 }
                 if(saveJsonFile&&!locationTrack){
                     double[] noLocation = new double[2];
                     noLocation[0] = 0;
                     noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType, 1, getString(R.string.noAddressForJsonFile));
+                    jsonMan.addJsonObject(noLocation, sigType.toString(), 1, getString(R.string.noAddressForJsonFile));
                 }
                 locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
                 alert.cancel(); //cancel the alert dialog
@@ -235,14 +206,6 @@ public class MainActivity extends AppCompatActivity {
         btnAlertStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
-                    /*File f1 = new File(getExternalFilesDir(null) + "/detected-files/savedSignal.pcm"); // The location of your PCM file
-                    File f2 = new File(getExternalFilesDir(null) + "/detected-files/savedSignal.wav"); // The location where you want your WAV file
-                    try {
-                        SignalConverter sigCon = new SignalConverter();
-                        sigCon.rawToWave(f1, f2);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
                     btnAlertStart.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
                     sigPlayer = locationFinder.generatePlayer(); //create a new player
                     isSignalPlayerGenerated = true; //player is generated so it's true
@@ -254,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                     btnAlertStart.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
                     isSignalPlayerGenerated = false; //now there is no player anymore so it's false
                 }
-                txtSignalType.setText(sigType); //can be deleted it's only for debugging
+                txtSignalType.setText(sigType.toString()); //can be deleted it's only for debugging
             }
         });
 
@@ -271,53 +234,7 @@ public class MainActivity extends AppCompatActivity {
                         jsonMan.createSaveFolder(); //create a folder for the audio files
                     }
                 }
-/*
-                //Request permission fot the audio recording
-                int status = ActivityCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.RECORD_AUDIO);
-                if (status != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(
-                            MainActivity.this,
-                            new String[]{Manifest.permission.RECORD_AUDIO},
-                            0);
-                }
-                //request permission for the location
-                int statusLocation = ActivityCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.ACCESS_FINE_LOCATION);
-                if (statusLocation != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(
-                            MainActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            0);
-                }
-                //request permission for the internet access
-                int statusInternet = ActivityCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.INTERNET);
-                if (statusInternet != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(
-                            MainActivity.this,
-                            new String[]{Manifest.permission.INTERNET},
-                            0);
-                }
-                //request permission for writing to the external storage
-                int statusRead = ActivityCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                if (statusRead != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(
-                            MainActivity.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            0);
-                }
-                //request permission for reading the external storage
-                int statusWrite = ActivityCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE);
-                if (statusWrite != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(
-                            MainActivity.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            0);
-                }
-                */
+
                 int PERMISSION_ALL = 1;
                 String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
 
@@ -351,7 +268,6 @@ public class MainActivity extends AppCompatActivity {
         btnStorLoc.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent myIntent = new Intent(MainActivity.this, StoredLocations.class); //redirect to the stored locations activity
-                //myIntent.putExtra("json", );
                 startActivityForResult(myIntent, 0);
             }
         });
@@ -387,12 +303,15 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void activateAlert(String signalType){
+    public void activateAlert(Technology signalType){
         usedBlockingMethod = locationFinder.blockMicOrSpoof();
         alert.show(); //open the alert
         sigType = signalType; //set the technology variable to the latest detected one
     }
 
+    /***
+     *
+     */
     private void stopAutomaticBlockingMethodOnAction(){
         if(usedBlockingMethod.equals(ConfigConstants.USED_BLOCKING_METHOD_SPOOFER)){
             Spoofer spoofBlock = Spoofer.getInstance();
@@ -406,7 +325,6 @@ public class MainActivity extends AppCompatActivity {
     public void initDetectionNotification(){
         detectionBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
-                        //.setSmallIcon(R.drawable.ic_info_outline_white_48dp) //adding the icon
                         .setSmallIcon(R.drawable.hearing_found) //adding the icon
                         .setContentTitle(getString(R.string.NotificationDetectionTitle)) //adding the title
                         .setContentText(getString(R.string.NotificationDetectionMessage)) //adding the text
@@ -450,7 +368,6 @@ public class MainActivity extends AppCompatActivity {
     public void initSpoofingStatusNotification(){
         spoofingStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
-                        //.setSmallIcon(R.drawable.ic_volume_up_white_48dp) //adding the icon
                         .setSmallIcon(R.drawable.hearing_block) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationSpoofingTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationSpoofingMesssage)) //adding the text
@@ -491,7 +408,6 @@ public class MainActivity extends AppCompatActivity {
     public void initDetectionAlertStatusNotification(){
         detectionAlertStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
-                        //.setSmallIcon(R.drawable.ic_info_outline_white_48dp) //adding the icon
                         .setSmallIcon(R.drawable.hearing_found) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationDetectionAlertTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationDetectionAlertMessage)) //adding the text
@@ -532,7 +448,6 @@ public class MainActivity extends AppCompatActivity {
     public void initOnHoldStatusNotification(){
         onHoldStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
-                        //.setSmallIcon(R.drawable.ic_pause_white_48dp) //adding the icon
                         .setSmallIcon(R.drawable.hearing_pause) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationOnHoldTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationOnHoldMessage)) //adding the text
@@ -631,13 +546,6 @@ public class MainActivity extends AppCompatActivity {
                 jsonMan.createSaveFolder(); //create a folder for the audio files
             }
         }
-
-        /*
-        if(!saveJsonFile) {
-            if (jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
-                jsonMan.deleteJsonFile();
-            }
-        }*/
     }
 
     @Override
@@ -664,7 +572,6 @@ public class MainActivity extends AppCompatActivity {
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         boolean locationTrack = false;
-        //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
         boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
         boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
@@ -676,26 +583,5 @@ public class MainActivity extends AppCompatActivity {
         saveJsonAndLocation[1] = locationTrack;
 
         return saveJsonAndLocation;
-    }
-
-    public AlertDialog.Builder createAlertDialog(){
-        AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(MainActivity.this);
-        return builder;
-/*
-        builder.setTitle("Delete entry")
-            .setMessage("Are you sure you want to delete this entry?")
-            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // continue with delete
-                }
-            })
-            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // do nothing
-                }
-            })
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .show();*/
     }
 }

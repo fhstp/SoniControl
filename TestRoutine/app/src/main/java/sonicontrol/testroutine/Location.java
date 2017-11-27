@@ -40,13 +40,13 @@ public class Location {
 
     private String fileUrl;
 
-    private String signalTech;
+    private Technology signalTech;
 
     byte[] noiseByteArray;
 
     int locationRadius;
     boolean micBlockPref;
-    String signalType;
+    Technology signalType;
 
     private Location(){
     }
@@ -65,10 +65,8 @@ public class Location {
     public double[] getLocation(){
         locationData = new GPSTracker(main, main); //get a gpstracker for the location finding
         longitude = locationData.getLongitude(); //get the longitude
-        //Log.d("longitude", Double.toString(longitude));
 
         latitude = locationData.getLatitude(); //get the latitude
-        //Log.d("latitude", Double.toString(latitude));
 
         positionLatest[0] = longitude; //save the longitude in the positionLatest variable
         positionLatest[1] = latitude; //save the latitude in the positionLatest variable
@@ -79,7 +77,7 @@ public class Location {
     }
 
 
-    public void checkExistingLocationDB(double[] position, String signalType){
+    public void checkExistingLocationDB(double[] position, Technology signalType){
         signalTech = signalType;
         boolean isNewSignal = true;
         double[] positionDBEntry = new double[2];
@@ -96,7 +94,7 @@ public class Location {
 
             SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
             locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //save the radius of the location in metres
-            if(distance<locationRadius && array[2].equals(signalType)){ //if in the location and the technologie is the same
+            if(distance<locationRadius && array[2].equals(signalType.toString())){ //if in the location and the technologie is the same
                 isNewSignal = false; //no new signal
                 Log.v("Longitude", array[0]);
                 Log.v("Latitude", array[1]);
@@ -142,17 +140,6 @@ public class Location {
             boolean locationTrack = main.checkJsonAndLocationPermissions()[1];
             boolean saveJsonFile = main.checkJsonAndLocationPermissions()[0];
 
-            /*
-            if(saveJsonFile&&locationTrack) {
-                jsonMan.addJsonObject(getDetectedDBEntry(), signalTech, 1, getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-            }
-            if(saveJsonFile&&!locationTrack){
-                double[] noLocation = new double[2];
-                noLocation[0] = 0;
-                noLocation[1] = 0;
-                jsonMan.addJsonObject(noLocation, signalTech, 1, "Not available!");
-            }*/
-
             blockMicOrSpoof(); //try get the microphone access for choosing the blocking method
         }else { //if it should not be spoofed
             Log.d("Location", "I shouldn't be spoofed");
@@ -188,8 +175,7 @@ public class Location {
     public String blockMicOrSpoof(){
         String usedBlockingMethod = null;
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-        micBlockPref = sharedPref.getBoolean(ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING, ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING_DEFAULT);
-       //micBlockPref = Boolean.valueOf(sharedPref.getString("cbprefMicBlock", true)); //save the radius of the location in metres
+        micBlockPref = sharedPref.getBoolean(ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING, ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING_DEFAULT); //save the radius of the location in metres
         if(micBlockPref) {
             if (!validateMicAvailability()) { //if we don't have access to the microphone
                 Log.d("MicAcc", "I don't have MicAccess");
@@ -289,7 +275,7 @@ public class Location {
         return sigPlayer;
     }
 
-    public void saveSignalTypeForLater(String sigType){
+    public void saveSignalTypeForLater(Technology sigType){
         this.signalType = sigType;
     }
 

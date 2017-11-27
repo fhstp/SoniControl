@@ -24,7 +24,7 @@
     <PreferenceCategory android:title="Expert - Spoofer">
         <Preference
             android:key="deleteJson"
-            android:title="Delete the JSON File"></Preference>
+            android:title="Delete the JSON File and all WAV-Detections"></Preference>
         <CheckBoxPreference
         android:defaultValue="true"
         android:key="cbprefMicBlock"
