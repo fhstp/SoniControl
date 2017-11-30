@@ -46,25 +46,7 @@ public class JSONManager {
     public ArrayList<String[]> getJsonData(){
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-        /*FileInputStream inputStream = null;
-        try{
-            inputStream = new FileInputStream(jsonFile);
-        }
-        catch(IOException ioex){
-        }
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        int ctr;
-        try {
-            ctr = inputStream.read(); //read the inputstream of the file
-            while (ctr != -1) {
-                byteArrayOutputStream.write(ctr);
-                ctr = inputStream.read();
-            }
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         Log.v("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
@@ -100,26 +82,7 @@ public class JSONManager {
     public void addJsonObject(double[] position, String technology, int spoof, String address){
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-        /*
-        FileInputStream inputStream = null;
-        try{
-            inputStream = new FileInputStream(jsonFile);
-        }
-        catch(IOException ioex){
-        }
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        int ctr;
-        try {
-            ctr = inputStream.read(); //read the inputstream of the file
-            while (ctr != -1) {
-                byteArrayOutputStream.write(ctr);
-                ctr = inputStream.read();
-            }
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         try {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -182,7 +145,6 @@ public class JSONManager {
         }
         try {
             FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME)); //write the newly created json-object into the new json file
-            //FileWriter file = new FileWriter(new File(System.getenv("EXTERNAL_STORAGE"), ConfigConstants.JSON_FILENAME));
             file.write( jObject.toString() );
             file.flush();
             file.close();
@@ -193,13 +155,30 @@ public class JSONManager {
     }
 
     public void deleteJsonFile(){
-            File file = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME);
-            boolean deleted = file.delete();
+        File file = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME);
+        file.delete();
+        deleteWaveFilesInDirectory();
+    }
+
+    public void deleteWaveFilesInDirectory(){
+        File fileOrDirectory = new File(main.getExternalFilesDir(null) +ConfigConstants.DIR_NAME_SAVED_RECORDINGS);
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles())
+                deleteWaveFilesInDirectory(child);
+
+        fileOrDirectory.delete();
+    }
+
+    public void deleteWaveFilesInDirectory(File fileOrDirectory){
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles())
+                deleteWaveFilesInDirectory(child);
+
+        fileOrDirectory.delete();
     }
 
     public boolean checkIfJsonFileIsAvailable(){
         File file = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //"make" a new file where the file normally should be
-        //File file = new File(System.getenv("EXTERNAL_STORAGE"), ConfigConstants.JSON_FILENAME); //"make" a new file where the file normally should be
         if(file.exists()){ //if it exists
             Log.d("Filecheck","The file is here");
             return true;
@@ -211,20 +190,9 @@ public class JSONManager {
 
     public boolean checkIfSavefolderIsAvailable(){
         File file = new File(main.getExternalFilesDir(null) + ConfigConstants.DIR_NAME_SAVED_RECORDINGS); //get the folder for the audio files
-        //File file = new File(System.getenv("EXTERNAL_STORAGE")+ "/Android" + String.valueOf(main.getFilesDir()) + ConfigConstants.DIR_NAME_SAVED_RECORDINGS); //get the folder for the audio files
-        //Log.d("ExternalCheck0",System.getenv("EXTERNAL_STORAGE")+ "/Android" + String.valueOf(main.getFilesDir()) + ConfigConstants.DIR_NAME_SAVED_RECORDINGS);
         if(file.isDirectory()){ //if directory is available
-            /*Log.d("Dircheck","The directory is here");
-            Log.d("ExternalCheck1",Environment.getExternalStorageState());
-            Log.d("ExternalCheck2",String.valueOf(Environment.isExternalStorageEmulated()));
-            Log.d("ExternalCheck3",String.valueOf(Environment.isExternalStorageRemovable()));
-            Log.d("ExternalCheck4",System.getenv("EXTERNAL_STORAGE"));
-            Log.d("ExternalCheck5",String.valueOf(main.getExternalFilesDir(null)));
-            Log.d("ExternalCheck6",String.valueOf(main.getFilesDir()));
-            Log.d("ExternalCheck6",String.valueOf(Environment.getExternalStorageDirectory()));*/
             return true;
         }else{
-            //Log.d("Dircheck","here is no directory");
             return false;
         }
     }
@@ -246,29 +214,10 @@ public class JSONManager {
     }
 
 
-    public void setLatestDate(double[] position, String signalType){
+    public void setLatestDate(double[] position, Technology signalType){
         locationFinder = Location.getInstanceLoc();
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-        /*FileInputStream inputStream = null;
-        try{
-            inputStream = new FileInputStream(jsonFile);
-        }
-        catch(IOException ioex){
-        }
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        int ctr;
-        try {
-            ctr = inputStream.read(); //read the inputstream of the file
-            while (ctr != -1) {
-                byteArrayOutputStream.write(ctr);
-                ctr = inputStream.read();
-            }
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         Log.v("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
@@ -289,7 +238,7 @@ public class JSONManager {
                 double distance = locationFinder.getDistanceInMetres(positionDBEntry, position);
                 SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                 locationFinder.locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //save the radius of the location in metres
-                if (distance < locationFinder.locationRadius && tech.equals(signalType)) { //if in the location and the right technologytype
+                if (distance < locationFinder.locationRadius && tech.equals(signalType.toString())) { //if in the location and the right technologytype
                     jArray.getJSONObject(i).put(JSON_ARRAY_SIGNAL_LAST_DETECTION, returnDateString()); //change latest detection date
                 }
             }
@@ -317,26 +266,7 @@ public class JSONManager {
         }
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json-file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-        /*
-        FileInputStream inputStream = null;
-        try{
-            inputStream = new FileInputStream(jsonFile);
-        }
-        catch(IOException ioex){
-        }
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        int ctr;
-        try {
-            ctr = inputStream.read(); //read the inputstream of the file
-            while (ctr != -1) {
-                byteArrayOutputStream.write(ctr);
-                ctr = inputStream.read();
-            }
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         Log.v("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
@@ -378,26 +308,7 @@ public class JSONManager {
 
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json-file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-        /*
-        FileInputStream inputStream = null;
-        try{
-            inputStream = new FileInputStream(jsonFile);
-        }
-        catch(IOException ioex){
-        }
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        int ctr;
-        try {
-            ctr = inputStream.read(); //read the inputstream of the file
-            while (ctr != -1) {
-                byteArrayOutputStream.write(ctr);
-                ctr = inputStream.read();
-            }
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
         Log.v("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(

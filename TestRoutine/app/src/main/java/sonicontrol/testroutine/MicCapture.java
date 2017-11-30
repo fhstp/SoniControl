@@ -8,6 +8,7 @@ import android.media.MediaRecorder;
 import android.os.Handler;
 
 import java.util.Calendar;
+import android.util.Log;
 import java.util.concurrent.TimeUnit;
 
 public class MicCapture {
@@ -91,13 +92,10 @@ public class MicCapture {
 
                     recorder.startRecording(); //start the recorder
                 }
-                //i++;
                 stopTime = Calendar.getInstance().getTimeInMillis();
-                //Log.d("StartTime", String.valueOf(startTime));
-                //Log.d("StopTime",String.valueOf(stopTime));
                 Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
                 String logTime = String.valueOf(logLong);
-                //Log.d("HowLongBlocked",logTime);
+                Log.d("HowLongBlocked",logTime);
                 int blockingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
 
 
@@ -106,36 +104,55 @@ public class MicCapture {
                 }
                 // TODO: Should this else redirect somewhere else ? (MainActivity ?)
                 else {
-                    //Log.d("Capture", "I captured the microphonesignal!");
-                    startTime = 0;
-                    recorder.stop(); //stop the recording
-                    recorder.release(); //release the recorder resources
-                    recorder = null; //set the recorder to null
-                    waitTime = 0; //set the waittime for the next capture to 0
-                    i = 0;
-                    boolean locationTrack = false;
-                    // boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
-                    boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
-                    boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
+                    executeRoutineAfterExpiredTimme();
+                }
+            }
+        }
+    };
+
+    public void stopMicCapturingComplete(){ //method for stopping the capturing process
+        if(instance != null) {
+            instance = null; //set instance to null so that there is no miccapture anymore
+        }
+        if(recorder != null){
+            recorder.stop(); //stop the recorder
+            recorder.release(); //release the recorder resources
+            captHandler.removeCallbacks(captRun); //reset the handler
+        }
+    }
+
+    public void executeRoutineAfterExpiredTimme(){
+        SharedPreferences sharedPref = main.getSettingsObject();
+        //Log.d("Capture", "I captured the microphonesignal!");
+        startTime = 0;
+        recorder.stop(); //stop the recording
+        recorder.release(); //release the recorder resources
+        recorder = null; //set the recorder to null
+        waitTime = 0; //set the waittime for the next capture to 0
+        i = 0;
+        boolean locationTrack = false;
+        // boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
+        boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+        boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
                     if (locationTrackGps || locationTrackNet) {
-                        locationTrack = true;
-                    }
-                    if (locationTrack || (locFinder.getDetectedDBEntry()[0] == 0 && locFinder.getDetectedDBEntry()[1] == 0)) {
-                        positionLatest = locFinder.getLocation(); //get the latest position
-                        positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
-                        distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
-                        //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-                        locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the settings for the locationdistance
+            locationTrack = true;
+        }
+        if(locationTrack||(locFinder.getDetectedDBEntry()[0]==0&&locFinder.getDetectedDBEntry()[1]==0)) {
+            positionLatest = locFinder.getLocation(); //get the latest position
+            positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
+            distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
+            //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+            locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the settings for the locationdistance
                         // TODO: Check if we are thread safe
                         // TODO: Are we sure that a spoofer / scan is not already on ?
-                        if (distance < locationRadius) { //if in distance
-                            locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access
-                        } else {
+            if (distance < locationRadius) { //if in distance
+                locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access
+            } else {
                             // Note: It is okay to update notification from a worker thread, see : https://stackoverflow.com/a/15803726/5232306
                             main.cancelSpoofingStatusNotification();
                             main.activateScanningStatusNotification();
-                            detector.startScanning(); //start scanning again
-                        }
+                detector.startScanning(); //start scanning again
+            }
                     } else {
                         main.cancelSpoofingStatusNotification();
                         main.activateScanningStatusNotification();

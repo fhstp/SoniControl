@@ -17,7 +17,8 @@
         android:theme="@style/AppTheme"
         android:installLocation="auto" >
         <activity android:name=".MainActivity"
-                  android:launchMode="singleTask">
+                  android:launchMode="singleTask"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -25,10 +26,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".StoredLocations"
-            android:label="Found Signals">
+            android:label="Found Signals"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".Settings"
-            android:label="Settings">
+            android:label="Settings"
+            android:screenOrientation="portrait">
         </activity>
 
 

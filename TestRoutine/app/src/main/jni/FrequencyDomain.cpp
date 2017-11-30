@@ -16,6 +16,7 @@
 
 #include <chrono>
 #define  LOG_TAG    "FrequencyDomain"
+
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
 //SUPERPOWERED FFT VARIABLES

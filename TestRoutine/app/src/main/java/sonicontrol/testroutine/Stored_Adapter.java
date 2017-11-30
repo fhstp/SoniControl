@@ -32,6 +32,7 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
         View customView = storedInflater.inflate(R.layout.row_item,parent, false);
 
         String[] singleArrayItem = getItem(position);
+
         TextView txtLat = (TextView) customView.findViewById(R.id.latitude);
         TextView txtLon = (TextView) customView.findViewById(R.id.longitude);
         TextView txtTech = (TextView) customView.findViewById(R.id.technologyName);

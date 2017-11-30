@@ -40,7 +40,7 @@ public class Spoofer {
     private long startTime;
     private long stopTime;
 
-    private String signalType;
+    private Technology signalType;
 
     private boolean stopped = false;
 
@@ -54,7 +54,7 @@ public class Spoofer {
         return instance;
     }
 
-    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, String sigType){
+    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, Technology sigType){  //initialize the Scan with a main object
         this.main = main;
 
         // TODO: init() probably should be called only once.
@@ -139,8 +139,8 @@ public class Spoofer {
                             onPulsing(); //start the pulsing again
                         }
                     } else {
+                        //playingGlobal = true; //set the variable for playing to true again
                         // TODO: Why would we put it back to true ?!
-                        playingGlobal = true; //set the variable for playing to true again
                         //helpCounter = 0;
                     }
                 }
