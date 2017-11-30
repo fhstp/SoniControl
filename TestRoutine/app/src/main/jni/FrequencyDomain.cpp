@@ -343,7 +343,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             }
 
             // Construct a String
-            jstring technologyString = jniEnv->NewStringUTF("Prontoly");
+            jstring technologyString = jniEnv->NewStringUTF("Unknown");
             // First get the class that contains the method you need to call
             jclass scanClass = jniEnv->GetObjectClass(jniScan);
             // Get the method that you want to call

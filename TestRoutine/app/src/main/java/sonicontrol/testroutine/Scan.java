@@ -63,6 +63,7 @@ public class Scan {
 
     /***
      * Translates the String received from CPP to a Technology value and notifies the listeners of the detection.
+     * TODO: Note: This is called from the native code every time there is a detection (might be called several times in a row)
      * @param technology String corresponding to a Technology Enum value
      */
     public void detectedSignal(String technology) {

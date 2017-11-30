@@ -68,58 +68,47 @@ public class MicCapture {
 
     private Runnable captRun = new Runnable() {
         public void run() {
-            if (stopped) {
-                // Reinitialize everything, could be in a function.
-                startTime = 0;
-                waitTime = 0;
-                i = 0;
-                if (recorder != null) {
-                    recorder.stop(); //stop the recording
-                    recorder.release(); //release the recorder resources
-                    recorder = null; //set the recorder to null
-                }
+        if (stopped) {
+            // Reinitialize everything, could be in a function.
+            startTime = 0;
+            waitTime = 0;
+            i = 0;
+            if (recorder != null) {
+                recorder.stop(); //stop the recording
+                recorder.release(); //release the recorder resources
+                recorder = null; //set the recorder to null
             }
+        }
+        else {
+            SharedPreferences sharedPref = main.getSettingsObject();
+            waitTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_PULSE_DURATION, ConfigConstants.SETTING_PULSE_DURATION_DEFAULT)); //time for capturing
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+
+            if (recorder == null) {
+                recorder = //create a new recorder
+                        new AudioRecord(MediaRecorder.AudioSource.MIC, 4000,
+                                AudioFormat.CHANNEL_IN_MONO,
+                                AudioFormat.ENCODING_DEFAULT, 4000);
+
+                recorder.startRecording(); //start the recorder
+            }
+            stopTime = Calendar.getInstance().getTimeInMillis();
+            Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
+            String logTime = String.valueOf(logLong);
+            Log.d("HowLongBlocked",logTime);
+            int blockingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
+
+
+            if (logLong < (blockingTime * 60)/*i<2*/) {
+                startCapturing(); //start the capture again
+            }
+            // TODO: Should this else redirect somewhere else ? (MainActivity ?)
             else {
-                SharedPreferences sharedPref = main.getSettingsObject();
-                waitTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_PULSE_DURATION, ConfigConstants.SETTING_PULSE_DURATION_DEFAULT)); //time for capturing
-                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-
-                if (recorder == null) {
-                    recorder = //create a new recorder
-                            new AudioRecord(MediaRecorder.AudioSource.MIC, 4000,
-                                    AudioFormat.CHANNEL_IN_MONO,
-                                    AudioFormat.ENCODING_DEFAULT, 4000);
-
-                    recorder.startRecording(); //start the recorder
-                }
-                stopTime = Calendar.getInstance().getTimeInMillis();
-                Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
-                String logTime = String.valueOf(logLong);
-                Log.d("HowLongBlocked",logTime);
-                int blockingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
-
-
-                if (logLong < (blockingTime * 60)/*i<2*/) {
-                    startCapturing(); //start the capture again
-                }
-                // TODO: Should this else redirect somewhere else ? (MainActivity ?)
-                else {
-                    executeRoutineAfterExpiredTimme();
-                }
+                executeRoutineAfterExpiredTimme();
             }
+        }
         }
     };
-
-    public void stopMicCapturingComplete(){ //method for stopping the capturing process
-        if(instance != null) {
-            instance = null; //set instance to null so that there is no miccapture anymore
-        }
-        if(recorder != null){
-            recorder.stop(); //stop the recorder
-            recorder.release(); //release the recorder resources
-            captHandler.removeCallbacks(captRun); //reset the handler
-        }
-    }
 
     public void executeRoutineAfterExpiredTimme(){
         SharedPreferences sharedPref = main.getSettingsObject();
@@ -143,23 +132,20 @@ public class MicCapture {
             distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
             //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
             locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the settings for the locationdistance
-                        // TODO: Check if we are thread safe
-                        // TODO: Are we sure that a spoofer / scan is not already on ?
+            // TODO: Check if we are thread safe
+            // TODO: Are we sure that a spoofer / scan is not already on ?
             if (distance < locationRadius) { //if in distance
                 locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access
             } else {
-                            // Note: It is okay to update notification from a worker thread, see : https://stackoverflow.com/a/15803726/5232306
-                            main.cancelSpoofingStatusNotification();
-                            main.activateScanningStatusNotification();
+                // Note: It is okay to update notification from a worker thread, see : https://stackoverflow.com/a/15803726/5232306
+                main.cancelSpoofingStatusNotification();
+                main.activateScanningStatusNotification();
                 detector.startScanning(); //start scanning again
             }
-                    } else {
-                        main.cancelSpoofingStatusNotification();
-                        main.activateScanningStatusNotification();
-                        detector.startScanning(); //start scanning again
-                    }
-                }
-            }
+        } else {
+            main.cancelSpoofingStatusNotification();
+            main.activateScanningStatusNotification();
+            detector.startScanning(); //start scanning again
         }
-    };
+    }
 }
