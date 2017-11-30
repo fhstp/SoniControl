@@ -125,7 +125,7 @@ public class Spoofer {
                             onPulsing(); //start the pulsing again
                         }
                     } else {
-                        playingGlobal = true; //set the variable for playing to true again
+                        //playingGlobal = true; //set the variable for playing to true again
                         //helpCounter = 0;
                     }
                 }

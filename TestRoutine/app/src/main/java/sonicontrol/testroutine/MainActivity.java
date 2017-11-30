@@ -181,7 +181,9 @@ public class MainActivity extends AppCompatActivity {
         Button btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                stopAutomaticBlockingMethodOnAction();
+                if(usedBlockingMethod != null) {
+                    stopAutomaticBlockingMethodOnAction();
+                }
 
                 saveJsonFile = checkJsonAndLocationPermissions()[0];
                 boolean locationTrack = checkJsonAndLocationPermissions()[1];
