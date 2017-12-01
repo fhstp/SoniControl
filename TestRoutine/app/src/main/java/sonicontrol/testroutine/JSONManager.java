@@ -47,7 +47,7 @@ public class JSONManager {
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
-        Log.v("Text Data", byteArrayOutputStream.toString());
+        Log.d("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -68,9 +68,9 @@ public class JSONManager {
                 spoof = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_SPOOFING_STATUS); //save spoofingStatus
                 address = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_ADDRESS); //save spoofingStatus
                 url = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_URL); //save fileUrl
-                Log.v("Longitude", lon);
-                Log.v("Latitude", lat);
-                Log.v("Technology", tech);
+                Log.d("Longitude", lon);
+                Log.d("Latitude", lat);
+                Log.d("Technology", tech);
                 data.add(new String[] { lon, lat, tech, lastDet, spoof, address, url }); //add every data of one array-index in the data-list
             }
         } catch (Exception e) {
@@ -218,7 +218,7 @@ public class JSONManager {
         locationFinder = Location.getInstanceLoc();
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-        Log.v("Text Data", byteArrayOutputStream.toString());
+        Log.d("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -267,7 +267,7 @@ public class JSONManager {
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json-file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
-        Log.v("Text Data", byteArrayOutputStream.toString());
+        Log.d("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -309,7 +309,7 @@ public class JSONManager {
         File jsonFile = new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME); //get json-file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
-        Log.v("Text Data", byteArrayOutputStream.toString());
+        Log.d("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream

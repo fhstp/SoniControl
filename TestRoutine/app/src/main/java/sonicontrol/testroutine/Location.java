@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 
 public class Location {
+    private static final String TAG = "Location";
 
     MainActivity main;
     private Scan detector;
@@ -63,7 +64,9 @@ public class Location {
     }
 
     public double[] getLocation(){
-        locationData = new GPSTracker(main, main); //get a gpstracker for the location finding
+        if (locationData == null) {
+            locationData = new GPSTracker(main); //get a gpstracker for the location finding
+        }
         longitude = locationData.getLongitude(); //get the longitude
 
         latitude = locationData.getLatitude(); //get the latitude
@@ -96,10 +99,10 @@ public class Location {
             locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //save the radius of the location in metres
             if(distance<locationRadius && array[2].equals(signalType.toString())){ //if in the location and the technologie is the same
                 isNewSignal = false; //no new signal
-                Log.v("Longitude", array[0]);
-                Log.v("Latitude", array[1]);
-                Log.v("Technology", array[2]);
-                Log.v("ShouldSpoof", array[4]);
+                Log.d(TAG, "Longitude: " + array[0]);
+                Log.d(TAG, "Latitude : " + array[1]);
+                Log.d(TAG, "Technology : " + array[2]);
+                Log.d(TAG, "ShouldSpoof : " + array[4]);
 
                 fileUrl = array[6]; //get file from json and save in fileUrl variable
 
@@ -131,6 +134,7 @@ public class Location {
         jsonMan.setLatestDate(position, signalTech); //update the date in the json-file at the detected position
         if(shouldBeSpoofed){ //if it should be spoofed
             Log.d("Location", "I should be spoofed");
+            // TODO: Check notifications cancellation...
             if (!main.getBackgroundStatus()) { //if the app is not in the background
                 main.cancelDetectionNotification(); //cancel the detection notification
             }
@@ -153,8 +157,7 @@ public class Location {
 
     public double getDistanceInMetres(double[] positionOld, double[] positionNew){
         double distance = distance(positionOld[1],positionOld[0],positionNew[1],positionNew[0]); //calculate the distance between two distances
-        TextView txtDistance = (TextView) main.findViewById(R.id.txtDistance); //can be deleted only for debugging
-        txtDistance.setText(String.valueOf(distance*1000)); //can be deleted only for debugging
+        main.updateDistance(distance); //can be deleted only for debugging
         return (distance*1000);
     }
 

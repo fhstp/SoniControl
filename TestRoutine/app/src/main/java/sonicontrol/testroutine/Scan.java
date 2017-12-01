@@ -74,6 +74,7 @@ public class Scan {
             Log.d(TAG, "detectedSignal: " + e.getMessage());
             lastDetectedTechnology = Technology.UNKNOWN;
         }
+        paused = true;
         notifyDetectionListeners();
     }
 
@@ -100,7 +101,14 @@ public class Scan {
         locFinder = Location.getInstanceLoc(); //get an instance of location
         jsonMan = new JSONManager(main);
 
-        MainActivity.threadPool.execute(scanRun);
+        if (paused) {
+            Log.d(TAG, "Resume scanning");
+            resume();
+        }
+        else { // Most probably only the first call
+            Log.d(TAG, "startScanning");
+            MainActivity.threadPool.execute(scanRun);
+        }
     }
 
     public void getTheOldSpoofer(Spoofer spoofing){
@@ -114,6 +122,11 @@ public class Scan {
     public void pause() {
         paused = true; // Might not be needed if we do not do anything in Scan (update UI ?)
         Pause();
+    }
+
+    public void resume() {
+        paused = false;
+        Resume();
     }
 
     // ------

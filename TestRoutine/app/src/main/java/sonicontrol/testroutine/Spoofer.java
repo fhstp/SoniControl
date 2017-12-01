@@ -100,7 +100,7 @@ public class Spoofer {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
                 AudioManager audioManager = (AudioManager) main.getSystemService(Context.AUDIO_SERVICE);
                 // not used ? int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-                Log.d("Streamtype", String.valueOf(AudioManager.STREAM_MUSIC));
+                Log.d("Spoofer", "Streamtype: " + String.valueOf(AudioManager.STREAM_MUSIC));
                 audioManager.setStreamVolume(3, (int) Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 0.80D)), 0);
 
                 if (playingHandler) {

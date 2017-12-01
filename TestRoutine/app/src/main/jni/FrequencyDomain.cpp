@@ -275,6 +275,9 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
                     scoreNearbyAC=0;
                 }
                 androidOut2 = detectionAfterMedian;
+                /*if (counter % 10 == 0) {
+                    LOGD("detectionAfterMedian: %d", detectionAfterMedian);
+                }*/
             }
         }
 
@@ -289,6 +292,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             // Should replace the last medianBufferSizeItems values with the medianBufferSizeItems that were captured before!
             // Currently delete the last
             backgroundModelUpdating = false;
+            //TODO: We might want to empty the audio buffers too
             deleteLastBuffersFromBackground(medianBufferSizeInSec * 1000);
         }
         else if (!backgroundModelUpdating && detectionAfterMedian != 1) {
@@ -357,6 +361,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
             jvm->DetachCurrentThread();
 
+            //TODO: We might want to empty the buffers before the pause... (to do with delete last buffer ?)
             pauseIO();
         }
         frequencyDomain->advance(numberOfSamples);

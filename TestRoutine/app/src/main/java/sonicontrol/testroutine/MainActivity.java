@@ -34,6 +34,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 
 public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
+    private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
 
     Button btnStorLoc;
@@ -588,6 +589,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         // TODO: Release resources not released yet in onStop()
         // Maybe threads, microphone, ... ?
+        mNotificationManager.cancelAll();
+        threadPool.shutdownNow();
     }
 
     public static MainActivity getMainIsMain(){
@@ -636,6 +639,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     private void checkTechnologyAndDoAccordingly(Technology detectedTechnology){
         if(detectedTechnology == null) {
             // TODO: Needed ? detector.startScanning();
+            Log.d(TAG, "checkTechnologyAndDoAccordingly: detectedTechnology is null !?");
         }
         else {
             switch (detectedTechnology) {
@@ -689,7 +693,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
             //resetHandler(); // Should be handled by the cpp (just stop scanning)
         } else {
-
             if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
                 if (this.getBackgroundStatus()) { //if the app is in the background
                     this.activateDetectionNotification(); //activate the notification for a detection
@@ -713,4 +716,13 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         }
     }
 
+    public void updateDistance(final double distance) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView txtDistance = (TextView) mainIsMain.findViewById(R.id.txtDistance); //can be deleted only for debugging
+                txtDistance.setText(String.valueOf(distance*1000)); //can be deleted only for debugging
+            }
+        });
+    }
 }

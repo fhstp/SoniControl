@@ -68,45 +68,46 @@ public class MicCapture {
 
     private Runnable captRun = new Runnable() {
         public void run() {
-        if (stopped) {
-            // Reinitialize everything, could be in a function.
-            startTime = 0;
-            waitTime = 0;
-            i = 0;
-            if (recorder != null) {
-                recorder.stop(); //stop the recording
-                recorder.release(); //release the recorder resources
-                recorder = null; //set the recorder to null
+            Log.d("MicCapture", "captRun stopped : " + String.valueOf(stopped));
+            if (stopped) {
+                // Reinitialize everything, could be in a function.
+                startTime = 0;
+                waitTime = 0;
+                i = 0;
+                if (recorder != null) {
+                    recorder.stop(); //stop the recording
+                    recorder.release(); //release the recorder resources
+                    recorder = null; //set the recorder to null
+                }
             }
-        }
-        else {
-            SharedPreferences sharedPref = main.getSettingsObject();
-            waitTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_PULSE_DURATION, ConfigConstants.SETTING_PULSE_DURATION_DEFAULT)); //time for capturing
-            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-
-            if (recorder == null) {
-                recorder = //create a new recorder
-                        new AudioRecord(MediaRecorder.AudioSource.MIC, 4000,
-                                AudioFormat.CHANNEL_IN_MONO,
-                                AudioFormat.ENCODING_DEFAULT, 4000);
-
-                recorder.startRecording(); //start the recorder
-            }
-            stopTime = Calendar.getInstance().getTimeInMillis();
-            Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
-            String logTime = String.valueOf(logLong);
-            Log.d("HowLongBlocked",logTime);
-            int blockingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
-
-
-            if (logLong < (blockingTime * 60)/*i<2*/) {
-                startCapturing(); //start the capture again
-            }
-            // TODO: Should this else redirect somewhere else ? (MainActivity ?)
             else {
-                executeRoutineAfterExpiredTimme();
+                SharedPreferences sharedPref = main.getSettingsObject();
+                waitTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_PULSE_DURATION, ConfigConstants.SETTING_PULSE_DURATION_DEFAULT)); //time for capturing
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+
+                if (recorder == null) {
+                    recorder = //create a new recorder
+                            new AudioRecord(MediaRecorder.AudioSource.MIC, 4000,
+                                    AudioFormat.CHANNEL_IN_MONO,
+                                    AudioFormat.ENCODING_DEFAULT, 4000);
+
+                    recorder.startRecording(); //start the recorder
+                }
+                stopTime = Calendar.getInstance().getTimeInMillis();
+                Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
+                String logTime = String.valueOf(logLong);
+                Log.d("HowLongBlocked",logTime);
+                int blockingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
+
+
+                if (logLong < (blockingTime * 60)/*i<2*/) {
+                    startCapturing(); //start the capture again
+                }
+                // TODO: Should this else redirect somewhere else ? (MainActivity ?)
+                else {
+                    executeRoutineAfterExpiredTimme();
+                }
             }
-        }
         }
     };
 

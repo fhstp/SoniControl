@@ -24,7 +24,6 @@ import java.util.Locale;
 public class GPSTracker extends Service implements LocationListener {
 
     private static String TAG = GPSTracker.class.getName();
-    private final Context mContext;
     private final MainActivity main;
 
     boolean isGPSEnabled = false;
@@ -36,30 +35,28 @@ public class GPSTracker extends Service implements LocationListener {
     double longitude;
 
     int geocoderMaxResults = 1;
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 3;
+    private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 3.0f;
     private static final long MIN_TIME_BW_UPDATES = 1000 * 5 * 1;
 
     protected LocationManager locationManager;
-    private String provider_info;
+    private String provider_info = "";
 
-    public GPSTracker(Context context, MainActivity main) {
-        this.mContext = context;
+    public GPSTracker(MainActivity main) {
         this.main = main;
-        getLocation();
+        initGPSTracker();
     }
 
 
-    public void getLocation() {
+    public void initGPSTracker() {
 
         try {
-            locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
+            locationManager = (LocationManager) main.getApplicationContext().getSystemService(LOCATION_SERVICE);
 
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-            //boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
             boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
             boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
@@ -74,7 +71,8 @@ public class GPSTracker extends Service implements LocationListener {
                 provider_info = LocationManager.NETWORK_PROVIDER;
             }
 
-            int status = ActivityCompat.checkSelfPermission(main,
+            // TODO: Why are we checking audio ? Shouldnt it be GPS ?
+            int status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
                     Manifest.permission.RECORD_AUDIO);
             if (status != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(
@@ -88,7 +86,8 @@ public class GPSTracker extends Service implements LocationListener {
                         provider_info,
                         MIN_TIME_BW_UPDATES,
                         MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                        this
+                        this,
+                        main.uiHandler.getLooper()
                 );
 
                 if (locationManager != null) {
