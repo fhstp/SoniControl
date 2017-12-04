@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioTrack;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,10 +24,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 import java.util.UUID;
@@ -319,6 +322,35 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // action with ID action_refresh was selected
+            case R.id.open_help:
+                openHelp();
+                break;
+            // action with ID action_settings was selected
+            case R.id.open_about_us:
+                openAboutUs();
+                break;
+            default:
+                break;
+        }
+
+        return true;
+    }
+
+    public void openHelp(){
+        Uri uri = Uri.parse("http://sonicontrol.fhstp.ac.at"); // missing 'http://' will cause crashed
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
+
+    public void openAboutUs(){
+        Intent myIntent = new Intent(MainActivity.this, AboutUs.class); //redirect to the stored locations activity
+        startActivityForResult(myIntent, 0);
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {

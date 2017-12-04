@@ -33,7 +33,10 @@
             android:label="Settings"
             android:screenOrientation="portrait">
         </activity>
-
+        <activity android:name=".AboutUs"
+            android:label="About Us"
+            android:screenOrientation="portrait">
+        </activity>
 
     </application>
 

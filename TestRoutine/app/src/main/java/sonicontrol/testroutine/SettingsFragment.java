@@ -18,7 +18,7 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.settings_old);
+        //setContentView(R.layout.settings_container);
         addPreferencesFromResource(R.xml.settings); //set the settings.xml as the preferences
 
         settingsFragment = this;
