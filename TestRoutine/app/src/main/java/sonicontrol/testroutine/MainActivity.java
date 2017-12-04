@@ -18,8 +18,11 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -309,6 +312,13 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         activateOnHoldStatusNotification(); //activate the onHold-status notification
         getSettingsObject(); //get the settings
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
