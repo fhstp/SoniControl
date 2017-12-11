@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -18,6 +19,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,16 +41,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
+
 
 public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
 
-    Button btnStorLoc;
-    Button btnStart;
-    Button btnStop;
-    Button btnSettings;
-    Button btnExit;
+    ImageButton btnStorLoc;
+    ImageButton btnStart;
+    ImageButton btnStop;
+    ImageButton btnSettings;
+    ImageButton btnExit;
+
+    Button btnAlertStart;
+    Button btnAlertSpoof;
+    Button btnAlertDismiss;
+    Button btnAlertStore;
 
     Scan detector;
     Location locationFinder;
@@ -120,11 +130,11 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         locationFinder = Location.getInstanceLoc(); //Get LocationFinder-object if no object is available yet make a new one
         locationFinder.init(MainActivity.this); //initialize the location-object with the main method
 
-        btnStop = (Button) findViewById(R.id.btnStop); //Main button for stopping the whole process
-        btnStart = (Button) findViewById(R.id.btnPlay); //Main button for starting the whole process
-        btnStorLoc = (Button) findViewById(R.id.btnStorLoc); //button for getting into the storedLocations activity
-        btnSettings = (Button) findViewById(R.id.btnSettings); //button for getting into the settings activity
-        btnExit = (Button) findViewById(R.id.btnExit); //button for exiting the application
+        btnStop = (ImageButton) findViewById(R.id.btnStop); //Main button for stopping the whole process
+        btnStart = (ImageButton) findViewById(R.id.btnPlay); //Main button for starting the whole process
+        btnStorLoc = (ImageButton) findViewById(R.id.btnStorLoc); //button for getting into the storedLocations activity
+        btnSettings = (ImageButton) findViewById(R.id.btnSettings); //button for getting into the settings activity
+        btnExit = (ImageButton) findViewById(R.id.btnExit); //button for exiting the application
 
         btnStop.setEnabled(false); //after the start of the app set the stop button to false because nothing is there to stop yet
 
@@ -145,121 +155,36 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
 
-        Button btnAlertStore = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
+        btnAlertStore = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
         btnAlertStore.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                stopAutomaticBlockingMethodOnAction();
-
-                // TODO: Function to be called in a thread, for IO (save json entry)
-
-                saveJsonFile = checkJsonAndLocationPermissions()[0];
-                boolean locationTrack = checkJsonAndLocationPermissions()[1];
-
-                if(saveJsonFile && locationTrack) {
-                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-                }
-                if(saveJsonFile&&!locationTrack){
-                    double[] noLocation = new double[2];
-                    noLocation[0] = 0;
-                    noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType.toString(), 0, getString(R.string.noAddressForJsonFile));
-                }
-                detector.startScanning(); //start scanning again
-                alert.cancel(); //cancel the alert dialog
-                txtSignalType.setText(""); //can be deleted it's only for debugging
-                cancelDetectionNotification(); //cancel the detection notification
-                cancelDetectionAlertStatusNotification(); //canceling the onHold notification
-                activateScanningStatusNotification(); //activates the notification for the scanning process
+            onAlertDismissAlways();
             }
         });
 
-        Button btnAlertDismiss = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
+        btnAlertDismiss = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
         btnAlertDismiss.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                stopAutomaticBlockingMethodOnAction();
-
-                saveJsonFile = checkJsonAndLocationPermissions()[0];
-                boolean locationTrack = checkJsonAndLocationPermissions()[1];
-
-                if(saveJsonFile && locationTrack) {
-                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 2, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-                }
-                if(saveJsonFile&&!locationTrack){
-                    double[] noLocation = new double[2];
-                    noLocation[0] = 0;
-                    noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType.toString(), 2, getString(R.string.noAddressForJsonFile));
-                }
-
-                detector.startScanning(); //start scanning again
-                alert.cancel(); //cancel the alert dialog
-                txtSignalType.setText(""); //can be deleted it's only for debugging
-                cancelDetectionNotification(); //cancel the detection notification
-                cancelDetectionAlertStatusNotification(); //canceling the onHold notification
-                activateScanningStatusNotification(); //activates the notification for the scanning process
+            onAlertDismissThisTime();
             }
         });
 
-        Button btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
+        btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(usedBlockingMethod != null) {
-                    stopAutomaticBlockingMethodOnAction();
-                }
-
-                saveJsonFile = checkJsonAndLocationPermissions()[0];
-                boolean locationTrack = checkJsonAndLocationPermissions()[1];
-
-                if(saveJsonFile && locationTrack) {
-                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-                }
-                if(saveJsonFile&&!locationTrack){
-                    double[] noLocation = new double[2];
-                    noLocation[0] = 0;
-                    noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType.toString(), 1, getString(R.string.noAddressForJsonFile));
-                }
-                locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
-                alert.cancel(); //cancel the alert dialog
-                cancelDetectionNotification(); //cancel the detection notification
-                cancelDetectionAlertStatusNotification(); //canceling the onHold notification
-                activateSpoofingStatusNotification(); //activates the notification for the spoofing process
+            onAlertSpoofDetectedSignal();
             }
         });
 
-        final Button btnAlertStart = (Button) view.findViewById(R.id.btnPlay); //button of the alert for playing the found signal with fs/3
+        btnAlertStart = (Button) view.findViewById(R.id.btnPlay); //button of the alert for playing the found signal with fs/3
         btnAlertStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
-                    btnAlertStart.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
-                    sigPlayer = locationFinder.generatePlayer(); //create a new player
-                    isSignalPlayerGenerated = true; //player is generated so it's true
-                    sigPlayer.play(); //start the player
-                }else if(sigPlayer!=null && isSignalPlayerGenerated){ //if a player for the signal is created and the boolean for generating is true
-                    sigPlayer.stop(); //stop the player
-                    sigPlayer.release(); //release the resources of the player
-                    sigPlayer = null; //set the player variable to null
-                    btnAlertStart.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
-                    isSignalPlayerGenerated = false; //now there is no player anymore so it's false
-                }
-                txtSignalType.setText(sigType.toString()); //can be deleted it's only for debugging
+            onAlertPlayDetectedSignal();
             }
         });
 
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                SharedPreferences sharedPref = getSettingsObject(); //get the settings
-                saveJsonFile = sharedPref.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
-
-                if(saveJsonFile) {
-                    if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
-                        jsonMan.createJsonFile(); //create a JSON file
-                    }
-                    if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
-                        jsonMan.createSaveFolder(); //create a folder for the audio files
-                    }
-                }
-
                 int PERMISSION_ALL = 1;
                 String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
 
@@ -267,42 +192,43 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                     ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, PERMISSION_ALL);
                 }
 
-                cancelOnHoldStatusNotification(); //cancel the onHold notification
-                activateScanningStatusNotification(); //start the scanning-status notification
-                detector.startScanning(); //start scanning for signals
-                btnStart.setEnabled(false); //disable the start button
-                btnStop.setEnabled(true); //enable the stop button
+                if(!hasPermissions(MainActivity.this, PERMISSIONS)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("Please give the Permission!");
+                    builder.setPositiveButton("Open the Permission Menu",new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent();
+                                intent.setAction(ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
+                        }
+                    );
+                    builder.setNegativeButton("Back to Main", null);
+                    builder.show();
+                }else {
+                    startDetection();
+                }
             }
         });
 
         btnStop.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                mNotificationManager.cancelAll(); //cancel all active notifications
-                activateOnHoldStatusNotification(); //activate only the onHold-status notification again
-                detector.pause(); // stop scanning
-                alert.cancel();
-                Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
-                spoof.stopSpoofingComplete(); //stop the whole spoofing process
-                MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
-                micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
-                btnStart.setEnabled(true); //enable the start button again
-                btnStop.setEnabled(false); //disable the stop button
+                stopApplicationProcesses();
             }
         });
 
         btnStorLoc.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Intent myIntent = new Intent(MainActivity.this, StoredLocations.class); //redirect to the stored locations activity
-                startActivityForResult(myIntent, 0);
+            openStoredLocations();
             }
         });
 
         btnSettings.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Intent myIntent = new Intent(MainActivity.this, Settings.class); //redirect to the settings activity
-                startActivityForResult(myIntent, 0);
-                String uniqueID = UUID.randomUUID().toString();
-                Log.d("UUID", uniqueID);
+            openSettings();
             }
         });
 
@@ -368,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         SharedPreferences sharedPref = getSettingsObject(); //get the settings
         preventiveSpoof = sharedPref.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
         if(preventiveSpoof) {
+            activateSpoofingStatusNotification();
             usedBlockingMethod = locationFinder.blockMicOrSpoof();
         }
         sigType = signalType; //set the technology variable to the latest detected one
@@ -758,6 +685,155 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         }
     }
 
+    public void startDetection(){
+        runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+                SharedPreferences sharedPref = getSettingsObject(); //get the settings
+                saveJsonFile = sharedPref.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
+
+                if(saveJsonFile) {
+                    if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
+                        jsonMan.createJsonFile(); //create a JSON file
+                    }
+                    if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
+                        jsonMan.createSaveFolder(); //create a folder for the audio files
+                    }
+                }
+
+
+
+                cancelOnHoldStatusNotification(); //cancel the onHold notification
+                activateScanningStatusNotification(); //start the scanning-status notification
+                detector.startScanning(); //start scanning for signals
+                btnStart.setEnabled(false); //disable the start button
+                btnStop.setEnabled(true); //enable the stop button
+        }
+        });
+    }
+
+    public void stopApplicationProcesses(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mNotificationManager.cancelAll(); //cancel all active notifications
+                activateOnHoldStatusNotification(); //activate only the onHold-status notification again
+                detector.pause(); // stop scanning
+                alert.cancel();
+                Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
+                spoof.stopSpoofingComplete(); //stop the whole spoofing process
+                MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
+                micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
+                btnStart.setEnabled(true); //enable the start button again
+                btnStop.setEnabled(false); //disable the stop button
+            }
+        });
+    }
+
+    public void openStoredLocations(){
+        Intent myIntent = new Intent(MainActivity.this, StoredLocations.class); //redirect to the stored locations activity
+        startActivityForResult(myIntent, 0);
+    }
+
+    public void openSettings(){
+        Intent myIntent = new Intent(MainActivity.this, Settings.class); //redirect to the settings activity
+        startActivityForResult(myIntent, 0);
+        String uniqueID = UUID.randomUUID().toString();
+        Log.d("UUID", uniqueID);
+    }
+
+    public void onAlertPlayDetectedSignal(){
+        if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
+            btnAlertStart.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
+            sigPlayer = locationFinder.generatePlayer(); //create a new player
+            isSignalPlayerGenerated = true; //player is generated so it's true
+            sigPlayer.play(); //start the player
+        }else if(sigPlayer!=null && isSignalPlayerGenerated){ //if a player for the signal is created and the boolean for generating is true
+            sigPlayer.stop(); //stop the player
+            sigPlayer.release(); //release the resources of the player
+            sigPlayer = null; //set the player variable to null
+            btnAlertStart.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+            isSignalPlayerGenerated = false; //now there is no player anymore so it's false
+        }
+        txtSignalType.setText(sigType.toString()); //can be deleted it's only for debugging
+    }
+
+    public void onAlertSpoofDetectedSignal(){
+        if(usedBlockingMethod != null) {
+            stopAutomaticBlockingMethodOnAction();
+        }
+
+        saveJsonFile = checkJsonAndLocationPermissions()[0];
+        boolean locationTrack = checkJsonAndLocationPermissions()[1];
+
+        if(saveJsonFile && locationTrack) {
+            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+        }
+        if(saveJsonFile&&!locationTrack){
+            double[] noLocation = new double[2];
+            noLocation[0] = 0;
+            noLocation[1] = 0;
+            jsonMan.addJsonObject(noLocation, sigType.toString(), 1, getString(R.string.noAddressForJsonFile));
+        }
+        locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
+        alert.cancel(); //cancel the alert dialog
+        cancelSpoofingStatusNotification();
+        cancelDetectionNotification(); //cancel the detection notification
+        cancelDetectionAlertStatusNotification(); //canceling the onHold notification
+        activateSpoofingStatusNotification(); //activates the notification for the spoofing process
+    }
+
+    public void onAlertDismissAlways(){
+        stopAutomaticBlockingMethodOnAction();
+
+        // TODO: Function to be called in a thread, for IO (save json entry)
+
+        saveJsonFile = checkJsonAndLocationPermissions()[0];
+        boolean locationTrack = checkJsonAndLocationPermissions()[1];
+
+        if(saveJsonFile && locationTrack) {
+            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+        }
+        if(saveJsonFile&&!locationTrack){
+            double[] noLocation = new double[2];
+            noLocation[0] = 0;
+            noLocation[1] = 0;
+            jsonMan.addJsonObject(noLocation, sigType.toString(), 0, getString(R.string.noAddressForJsonFile));
+        }
+        detector.startScanning(); //start scanning again
+        alert.cancel(); //cancel the alert dialog
+        txtSignalType.setText(""); //can be deleted it's only for debugging
+        cancelSpoofingStatusNotification();
+        cancelDetectionNotification(); //cancel the detection notification
+        cancelDetectionAlertStatusNotification(); //canceling the onHold notification
+        activateScanningStatusNotification(); //activates the notification for the scanning process
+    }
+
+    public void onAlertDismissThisTime(){
+        stopAutomaticBlockingMethodOnAction();
+
+        saveJsonFile = checkJsonAndLocationPermissions()[0];
+        boolean locationTrack = checkJsonAndLocationPermissions()[1];
+
+        if(saveJsonFile && locationTrack) {
+            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 2, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+        }
+        if(saveJsonFile&&!locationTrack){
+            double[] noLocation = new double[2];
+            noLocation[0] = 0;
+            noLocation[1] = 0;
+            jsonMan.addJsonObject(noLocation, sigType.toString(), 2, getString(R.string.noAddressForJsonFile));
+        }
+
+        detector.startScanning(); //start scanning again
+        alert.cancel(); //cancel the alert dialog
+        txtSignalType.setText(""); //can be deleted it's only for debugging
+        cancelSpoofingStatusNotification();
+        cancelDetectionNotification(); //cancel the detection notification
+        cancelDetectionAlertStatusNotification(); //canceling the onHold notification
+        activateScanningStatusNotification(); //activates the notification for the scanning process
+    }
+/*
     public void updateDistance(final double distance) {
         runOnUiThread(new Runnable() {
             @Override
@@ -766,5 +842,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                 txtDistance.setText(String.valueOf(distance*1000)); //can be deleted only for debugging
             }
         });
-    }
+    }*/
+
 }

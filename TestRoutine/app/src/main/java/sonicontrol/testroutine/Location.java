@@ -157,7 +157,7 @@ public class Location {
 
     public double getDistanceInMetres(double[] positionOld, double[] positionNew){
         double distance = distance(positionOld[1],positionOld[0],positionNew[1],positionNew[0]); //calculate the distance between two distances
-        main.updateDistance(distance); //can be deleted only for debugging
+        //main.updateDistance(distance); //can be deleted only for debugging
         return (distance*1000);
     }
 
