@@ -36,6 +36,7 @@ static float highPassSum = 0.0f; //{IS SET} used in the mainloop calculation
 //BUFFER SIZES
 static int bufferSizeSmpl; //{IS SET} is set while instantiating, used for reallocation of different buffers
 static float bufferPerSeconds; //Not used anymore. {IS SET} how many sampleSets of size bufferSizeSmpl per second - this is the theoretical equivalent of {specs.detector.bufferSizeSmpl}
+static int sampleRate;
 
 //RAW SAMPLES ARRAY
 static float *bufferHistory; //{IS SET} holds the samples from the inputBufferFloat of the last [medianBufferSizeInSec] milliseconds
@@ -84,16 +85,8 @@ static int counter = 0; //increments in every loop (without exception), helps to
 static JavaVM* jvm = 0;
 static jobject jniScan = 0; // GlobalRef
 
-static void pauseIO() {
-    // onBackground only sets internals->foreground = false;
-    // Which stops the queues only when you use the output, so I also stop manually
-    audioIO->onBackground();
-    audioIO->stop();
-}
-
-static void resumeIO() {
-    audioIO->onForeground(); // Starts the queues again
-}
+static void pauseIO();
+static void stopIO();
 
 static int advanceSampleArray()
 {
@@ -210,6 +203,13 @@ static bool isSignalDetected()
     return sum > (int) ceil(medianBufferSizeItems / 2);
 }
 
+/***
+ * Reset median buffer with zeros
+ */
+static void resetMedianBuffer() {
+    std::fill(medianBuffer.begin(), medianBuffer.end(), 0);
+}
+
 // This is called periodically by the media server.
 static bool audioProcessing(void * __unused clientdata, short int *audioInputOutput, int numberOfSamples, int __unused samplerate) {
     SuperpoweredShortIntToFloat(audioInputOutput, inputBufferFloat, (unsigned int)numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.
@@ -226,6 +226,8 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
     while (frequencyDomain->timeDomainToFrequencyDomain(magnitudeLeft, magnitudeRight, phaseLeft, phaseRight)) {
         //init
         std::fill(normalizedSpectrogram.begin(), normalizedSpectrogram.end(), 0.0f);
+        detectionAfterMedian = 0;
+        detection = 0;
 
         highPassSum = 0.0f;
         //Calculate the Sum of high-pass coefficients
@@ -281,6 +283,10 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             }
         }
 
+
+        // ----------
+        // Could be moved under the recognition because cleaning the buffers can be done while we start spoofing.
+
         /* If currently a detection (after temporal median filter) is active, do not further update the background model
           This avoids that the model learns wrong information and keeps the background threshold robust and stable
           When a detection (after median) is issued then, however, the background model already contains some information (frames) from the detected sound
@@ -292,8 +298,8 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             // Should replace the last medianBufferSizeItems values with the medianBufferSizeItems that were captured before!
             // Currently delete the last
             backgroundModelUpdating = false;
-            //TODO: We might want to empty the audio buffers too
             deleteLastBuffersFromBackground(medianBufferSizeInSec * 1000);
+            resetMedianBuffer(); // Otherwise we keep detecting the signal for medianBufferSizeItems / 2 times
         }
         else if (!backgroundModelUpdating && detectionAfterMedian != 1) {
             backgroundModelUpdating = true;
@@ -304,6 +310,8 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             addNormalizedSpectrogramToBackgroundModel();
             //TODO: acBuffer(:,cyclicBackgroundBufferIndex+1) = bufferAC;
         }
+
+        // ----------
 
         /*TODO: DO THE RECOGNITION
          * if detection lasts for at least the duration of the median buffer, start with the analysis
@@ -361,7 +369,6 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
             jvm->DetachCurrentThread();
 
-            //TODO: We might want to empty the buffers before the pause... (to do with delete last buffer ?)
             pauseIO();
         }
         frequencyDomain->advance(numberOfSamples);
@@ -376,6 +383,9 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
 
     frequencyDomain = new SuperpoweredFrequencyDomain(FFT_LOG_SIZE); // This will do the main "magic".
 
+    bufferSizeSmpl = bufferSizeSmplJava;
+    sampleRate = sampleRateJava;
+
     // Frequency domain data goes into these buffers:
     magnitudeLeft = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
     magnitudeRight = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
@@ -388,7 +398,6 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     bufferSizeInMs = 1000.0f / ((float) sampleRateJava / bufferSizeSmplJava); //the size of one sampleSet in MS
     binSizeinHz = sampleRateJava/ powf(2.0,(float)FFT_LOG_SIZE);
     cutoffFrequencyIdx = roundf(cutoffFrequency / binSizeinHz); // No +1 compared to Octave
-    bufferSizeSmpl = bufferSizeSmplJava;
 
     medianBufferSizeItems = (int) round(medianBufferSizeInSec*1000/bufferSizeInMs); // Match with Octave
     medianBuffer.resize(medianBufferSizeItems);
@@ -403,6 +412,25 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     currentBackgroundModel.resize(normalizedSpectrogramSize);
 
     SuperpoweredCPU::setSustainedPerformanceMode(true);
+}
+
+static void pauseIO() {
+    // onBackground only sets internals->foreground = false;
+    // Which stops the queues only when you use the output, so I also stop manually
+    audioIO->onBackground();
+    audioIO->stop();
+}
+
+static void resumeIO() {
+    audioIO->onForeground(); // Starts the queues again
+}
+
+static void stopIO() {
+    delete(audioIO);
+}
+
+static void startIO() {
+    audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmpl * 2); // Start audio input/output.
 }
 
 extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
