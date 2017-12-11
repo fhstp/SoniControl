@@ -19,13 +19,12 @@ public class SettingsFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.settings_container);
-        addPreferencesFromResource(R.xml.settings); //set the settings.xml as the preferences
+        addPreferencesFromResource(R.xml.settings_release); //set the settings.xml as the preferences
 
         settingsFragment = this;
 
         nextMain = main.getMainIsMain();
         jsonMan = new JSONManager(nextMain);
-
 
         Preference pref = findPreference(ConfigConstants.PREFERENCE_DELETE_JSON);
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -90,7 +89,11 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
         prefBlockingDuration.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                prefBlockingDuration.setTitle("Blocking Duration (" + newValue + " Minute(s))");
+                if(Integer.valueOf((String)newValue)==1) {
+                    prefBlockingDuration.setTitle("Blocking Duration (" + newValue + " Minute)");
+                }else{
+                    prefBlockingDuration.setTitle("Blocking Duration (" + newValue + " Minutes)");
+                }
                 return true;
             }
         });
@@ -119,7 +122,11 @@ public class SettingsFragment extends PreferenceFragment {
 
         Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
         int blockingDuration = Integer.valueOf(prefBlockingDuration.getSharedPreferences().getString(prefBlockingDuration.getKey(), ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT));
-        prefBlockingDuration.setTitle("Blocking Duration (" + blockingDuration + " Minute(s))");
+        if(blockingDuration==1) {
+            prefBlockingDuration.setTitle("Blocking Duration (" + blockingDuration + " Minute)");
+        }else{
+            prefBlockingDuration.setTitle("Blocking Duration (" + blockingDuration + " Minutes)");
+        }
     }
 
     @Override
@@ -143,7 +150,11 @@ public class SettingsFragment extends PreferenceFragment {
 
         Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
         int blockingDuration = Integer.valueOf(prefBlockingDuration.getSharedPreferences().getString(prefBlockingDuration.getKey(), ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT));
-        prefBlockingDuration.setTitle("Spoofing Duration (" + blockingDuration + " Minute(s))");
+        if(blockingDuration==1) {
+            prefBlockingDuration.setTitle("Blocking Duration (" + blockingDuration + " Minute)");
+        }else{
+            prefBlockingDuration.setTitle("Blocking Duration (" + blockingDuration + " Minutes)");
+        }
     }
 
 
