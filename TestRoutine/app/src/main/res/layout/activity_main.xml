@@ -3,88 +3,60 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context=".MainActivity">
-    
-    <Button
-        android:id="@+id/btnStop"
-        android:layout_width="253dp"
-        android:layout_height="47dp"
-        android:layout_alignLeft="@+id/btnPlay"
-        android:layout_alignStart="@+id/btnPlay"
-        android:layout_below="@+id/btnPlay"
-        android:layout_marginTop="27dp"
-        android:text="Stop"
-        tools:layout_editor_absoluteX="66dp"
-        tools:layout_editor_absoluteY="125dp" />
 
-    <Button
-        android:id="@+id/btnSettings"
-        android:layout_width="253dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="28dp"
-        android:text="Settings"
-        tools:layout_editor_absoluteX="66dp"
-        tools:layout_editor_absoluteY="202dp"
-        android:layout_below="@+id/btnStorLoc"
-        android:layout_alignLeft="@+id/btnStop"
-        android:layout_alignStart="@+id/btnStop" />
-
-    <Button
-        android:id="@+id/btnStorLoc"
-        android:layout_width="253dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="29dp"
-        android:text="stored Locations"
-        tools:layout_editor_absoluteX="66dp"
-        tools:layout_editor_absoluteY="279dp"
-        android:layout_below="@+id/btnStop"
-        android:layout_alignLeft="@+id/btnSettings"
-        android:layout_alignStart="@+id/btnSettings" />
-
-    <Button
-        android:id="@+id/btnExit"
-        android:layout_width="253dp"
-        android:layout_height="47dp"
-        android:text="Exit"
-        tools:layout_editor_absoluteX="66dp"
-        tools:layout_editor_absoluteY="359dp"
-        android:layout_marginTop="24dp"
-        android:layout_below="@+id/btnSettings"
-        android:layout_alignLeft="@+id/btnSettings"
-        android:layout_alignStart="@+id/btnSettings" />
-
-    <Button
+    <ImageButton
         android:id="@+id/btnPlay"
-        android:layout_width="253dp"
-        android:layout_height="47dp"
-        android:text="Start"
-        tools:layout_editor_absoluteX="66dp"
-        tools:layout_editor_absoluteY="54dp"
-        android:layout_marginTop="39dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginTop="50dp"
+        android:layout_toLeftOf="@+id/btnExit"
+        android:background="@android:color/darker_gray"
+        android:src="@drawable/ic_play_arrow_white_48dp" />
 
-    <TextView
-        android:id="@+id/txtDistance"
+    <ImageButton
+        android:id="@+id/btnStorLoc"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignTop="@+id/btnPlay"
+        android:layout_toEndOf="@+id/btnExit"
+        android:layout_toRightOf="@+id/btnExit"
+        android:background="@android:color/darker_gray"
+        android:src="@drawable/ic_save_white_48dp" />
+
+    <ImageButton
+        android:id="@+id/btnStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/btnExit"
-        android:layout_alignLeft="@+id/btnExit"
-        android:layout_alignRight="@+id/btnExit"
-        android:layout_alignStart="@+id/btnExit"
-        android:layout_below="@+id/btnExit"
-        android:layout_marginTop="32dp"
-        android:textSize="22sp" />
+        android:layout_alignBottom="@+id/btnSettings"
+        android:layout_alignEnd="@+id/btnPlay"
+        android:layout_alignLeft="@+id/btnPlay"
+        android:layout_alignRight="@+id/btnPlay"
+        android:layout_alignStart="@+id/btnPlay"
+        android:layout_alignTop="@+id/btnSettings"
+        android:background="@android:color/darker_gray"
+        android:src="@drawable/button_stop" />
 
-    <TextView
-        android:id="@+id/txtSpoofing"
+    <ImageButton
+        android:id="@+id/btnExit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtDistance"
-        android:layout_alignStart="@+id/txtDistance"
-        android:layout_below="@+id/txtDistance"
+        android:layout_below="@+id/btnStop"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:background="@android:color/darker_gray"
+        android:src="@drawable/ic_clear_white_48dp" />
+
+    <ImageButton
+        android:id="@+id/btnSettings"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignEnd="@+id/btnStorLoc"
+        android:layout_alignRight="@+id/btnStorLoc"
+        android:layout_below="@+id/btnStorLoc"
         android:layout_marginTop="21dp"
-        android:enabled="false"
-        android:text="Spoof"
-        android:textSize="22sp" />
+        android:layout_toRightOf="@+id/btnExit"
+        android:background="@android:color/darker_gray"
+        android:src="@drawable/ic_settings_white_48dp" />
 
 </RelativeLayout>
