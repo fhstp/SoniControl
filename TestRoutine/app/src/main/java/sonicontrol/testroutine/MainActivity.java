@@ -139,57 +139,20 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
 
-        Button btnAlertStore = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
-        btnAlertStore.setOnClickListener(new View.OnClickListener(){
+        Button btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
+        btnAlertDismissAlways.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                stopAutomaticBlockingMethodOnAction();
-
-                // TODO: Function to be called in a thread, for IO (save json entry)
-
-                saveJsonFile = checkJsonAndLocationPermissions()[0];
-                boolean locationTrack = checkJsonAndLocationPermissions()[1];
-
-                if(saveJsonFile && locationTrack) {
-                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-                }
-                if(saveJsonFile&&!locationTrack){
-                    double[] noLocation = new double[2];
-                    noLocation[0] = 0;
-                    noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType.toString(), 0, getString(R.string.noAddressForJsonFile));
-                }
+                onAlertChoice(0);
                 detector.startScanning(); //start scanning again
-                alert.cancel(); //cancel the alert dialog
-                txtSignalType.setText(""); //can be deleted it's only for debugging
-                cancelDetectionNotification(); //cancel the detection notification
-                cancelDetectionAlertStatusNotification(); //canceling the onHold notification
                 activateScanningStatusNotification(); //activates the notification for the scanning process
             }
         });
 
-        Button btnAlertDismiss = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
-        btnAlertDismiss.setOnClickListener(new View.OnClickListener(){
+        Button btnAlertDismissThisTime = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
+        btnAlertDismissThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                stopAutomaticBlockingMethodOnAction();
-
-                saveJsonFile = checkJsonAndLocationPermissions()[0];
-                boolean locationTrack = checkJsonAndLocationPermissions()[1];
-
-                if(saveJsonFile && locationTrack) {
-                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 2, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-                }
-                if(saveJsonFile&&!locationTrack){
-                    double[] noLocation = new double[2];
-                    noLocation[0] = 0;
-                    noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType.toString(), 2, getString(R.string.noAddressForJsonFile));
-                }
-
+                onAlertChoice(2);
                 detector.startScanning(); //start scanning again
-                alert.cancel(); //cancel the alert dialog
-                txtSignalType.setText(""); //can be deleted it's only for debugging
-                cancelDetectionNotification(); //cancel the detection notification
-                cancelDetectionAlertStatusNotification(); //canceling the onHold notification
                 activateScanningStatusNotification(); //activates the notification for the scanning process
             }
         });
@@ -197,26 +160,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         Button btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(usedBlockingMethod != null) {
-                    stopAutomaticBlockingMethodOnAction();
-                }
-
-                saveJsonFile = checkJsonAndLocationPermissions()[0];
-                boolean locationTrack = checkJsonAndLocationPermissions()[1];
-
-                if(saveJsonFile && locationTrack) {
-                    jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-                }
-                if(saveJsonFile&&!locationTrack){
-                    double[] noLocation = new double[2];
-                    noLocation[0] = 0;
-                    noLocation[1] = 0;
-                    jsonMan.addJsonObject(noLocation, sigType.toString(), 1, getString(R.string.noAddressForJsonFile));
-                }
+                onAlertChoice(1);
                 locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
-                alert.cancel(); //cancel the alert dialog
-                cancelDetectionNotification(); //cancel the detection notification
-                cancelDetectionAlertStatusNotification(); //canceling the onHold notification
                 activateSpoofingStatusNotification(); //activates the notification for the spoofing process
             }
         });
@@ -330,6 +275,31 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         }
         sigType = signalType; //set the technology variable to the latest detected one
         uiHandler.post(displayAlert);
+    }
+
+    public void onAlertChoice(int spoofDecision) {
+        if(usedBlockingMethod != null) {
+            stopAutomaticBlockingMethodOnAction();
+        }
+
+        // TODO: Function to be called in a thread, for IO (save json entry)
+
+        saveJsonFile = checkJsonAndLocationPermissions()[0];
+        boolean locationTrack = checkJsonAndLocationPermissions()[1];
+
+        if(saveJsonFile && locationTrack) {
+            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+        }
+        if(saveJsonFile&&!locationTrack){
+            double[] noLocation = new double[2];
+            noLocation[0] = 0;
+            noLocation[1] = 0;
+            jsonMan.addJsonObject(noLocation, sigType.toString(), spoofDecision, getString(R.string.noAddressForJsonFile));
+        }
+        alert.cancel(); //cancel the alert dialog
+        txtSignalType.setText(""); //can be deleted it's only for debugging
+        cancelDetectionNotification(); //cancel the detection notification
+        cancelDetectionAlertStatusNotification(); //canceling the onHold notification
     }
 
     private Runnable displayAlert = new Runnable() {
@@ -626,7 +596,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     @Override
     public void onDetection(final Technology technology) {
-        //TODO: someHandler.post(checkTechnologyAndDoAccordingly(technology));
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -662,7 +631,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         locationTrack = this.checkJsonAndLocationPermissions()[1];
 
         if (locationTrack) {
-            // TODO: Run Location code on UI Thread or call Looper.prepare()
             lastPosition = locationFinder.getLocation(); //get the latest position
         }
 
