@@ -361,6 +361,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
      *
      */
     private void stopAutomaticBlockingMethodOnAction(){
+        cancelSpoofingStatusNotification();
         if(usedBlockingMethod.equals(ConfigConstants.USED_BLOCKING_METHOD_SPOOFER)){
             Spoofer spoofBlock = Spoofer.getInstance();
             spoofBlock.stopSpoofingComplete();
