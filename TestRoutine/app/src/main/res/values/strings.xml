@@ -20,4 +20,5 @@
     <string name="DeleteJsonAlertMessage">Are you sure you want to delete the Location-Entry?</string>
     <string name="noAddressForJsonFile">Not available!</string>
     <string name="NoSignalDiscoveredAndSavedYet">You haven\'t discovered any Signals yet!</string>
+    <string name="permissionRequestExplanation">The app requires at least the permission to access the microphone. Otherwise it cannot detect ultrasonic communications.</string>
 </resources>

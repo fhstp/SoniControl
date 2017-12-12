@@ -120,7 +120,7 @@ public class Scan {
     }
 
     public void pause() {
-        paused = true; // Might not be needed if we do not do anything in Scan (update UI ?)
+        paused = true;
         Pause();
     }
 
