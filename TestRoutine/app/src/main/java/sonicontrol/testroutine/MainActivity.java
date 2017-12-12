@@ -21,6 +21,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 import java.util.UUID;
@@ -40,6 +42,8 @@ import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
 public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
+    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    private static final int REQUEST_ALL_PERMISSIONS = 42;
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
 
@@ -180,32 +184,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                int PERMISSION_ALL = 1;
-                String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-
-                if(!hasPermissions(MainActivity.this, PERMISSIONS)){
-                    ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, PERMISSION_ALL);
-                }
-
-                if(!hasPermissions(MainActivity.this, PERMISSIONS)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage("Please give the Permission!");
-                    builder.setPositiveButton("Open the Permission Menu",new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent();
-                                intent.setAction(ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                intent.setData(uri);
-                                startActivity(intent);
-                            }
-                        }
-                    );
-                    builder.setNegativeButton("Back to Main", null);
-                    builder.show();
-                }else {
-                    startDetection();
-                }
+                onBtnStartClick(v);
             }
         });
 
@@ -283,6 +262,82 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             }
         }
         return true;
+    }
+
+    private void onBtnStartClick(View v) {
+        if(!hasPermissions(MainActivity.this, PERMISSIONS)){
+            // If an explanation is needed
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.RECORD_AUDIO)) {
+
+                // TODO: Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                Toast toast = Toast.makeText(MainActivity.this, R.string.permissionRequestExplanation, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+                //showRequestPermissionExplanation();
+
+                uiHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_ALL_PERMISSIONS);
+                    }
+                }, 2000);
+            } else {
+                // First time, no explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_ALL_PERMISSIONS);
+            }
+        }
+        else {
+            startDetection();
+        }
+    }
+
+    private void showRequestPermissionExplanation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage(R.string.permissionRequestExplanation);
+        builder.setPositiveButton("Open the Permission Menu",new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent();
+                        intent.setAction(ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                    }
+                }
+        );
+        builder.setNegativeButton("Back to the main menu", null);
+        builder.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_ALL_PERMISSIONS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 0) {
+                    //we will show an explanation next time the user click on start
+                    //showRequestPermissionExplanation();
+                }
+                else {
+                    for (int i = 0; i < permissions.length; i++) {
+                        if (Manifest.permission.RECORD_AUDIO.equals(permissions[i])) {
+                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                                startDetection();
+                            }
+                            else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                                showRequestPermissionExplanation();
+                            }
+                        }
+                    }
+                }
+            }
+            // In all other cases :
+            // Permission denied, we will show an explanation next time the user click on start.
+            // If user click on do not ask again, we arrive here directly with a PERMISSION_DENIED
+        }
     }
 
     public void activateAlert(Technology signalType){
