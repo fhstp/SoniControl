@@ -23,6 +23,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,12 +40,13 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
 public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
+    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    private static final int REQUEST_ALL_PERMISSIONS = 42;
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
 
@@ -56,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     Button btnAlertStart;
     Button btnAlertSpoof;
-    Button btnAlertDismiss;
-    Button btnAlertStore;
+    Button btnAlertDismissThisTime;
+    Button btnAlertDismissAlways;
 
     Scan detector;
     Location locationFinder;
@@ -155,15 +157,15 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
 
-        btnAlertStore = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
-        btnAlertStore.setOnClickListener(new View.OnClickListener(){
+        btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
+        btnAlertDismissAlways.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
             onAlertDismissAlways();
             }
         });
 
-        btnAlertDismiss = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
-        btnAlertDismiss.setOnClickListener(new View.OnClickListener(){
+        btnAlertDismissThisTime = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
+        btnAlertDismissThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
             onAlertDismissThisTime();
             }
@@ -185,11 +187,32 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                onBtnStartClick(v);
                 int PERMISSION_ALL = 1;
                 String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
 
-                if(!hasPermissions(MainActivity.this, Manifest.permission.RECORD_AUDIO)){
+                if(!hasPermissions(MainActivity.this, PERMISSIONS)){
                     ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, PERMISSION_ALL);
+                }
+
+                if(!hasPermissions(MainActivity.this, PERMISSIONS)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setMessage("Please give the Permission!");
+                    builder.setPositiveButton("Open the Permission Menu",new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent();
+                                intent.setAction(ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
+                        }
+                    );
+                    builder.setNegativeButton("Back to Main", null);
+                    builder.show();
+                }else {
+                    startDetection();
                 }
             }
         });
@@ -270,6 +293,82 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         return true;
     }
 
+    private void onBtnStartClick(View v) {
+        if(!hasPermissions(MainActivity.this, PERMISSIONS)){
+            // If an explanation is needed
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.RECORD_AUDIO)) {
+
+                // TODO: Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                Toast toast = Toast.makeText(MainActivity.this, R.string.permissionRequestExplanation, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+                //showRequestPermissionExplanation();
+
+                uiHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_ALL_PERMISSIONS);
+                    }
+                }, 2000);
+            } else {
+                // First time, no explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQUEST_ALL_PERMISSIONS);
+            }
+        }
+        else {
+            startDetection();
+        }
+    }
+
+    private void showRequestPermissionExplanation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage(R.string.permissionRequestExplanation);
+        builder.setPositiveButton("Open the Permission Menu",new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent();
+                        intent.setAction(ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                    }
+                }
+        );
+        builder.setNegativeButton("Back to the main menu", null);
+        builder.show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_ALL_PERMISSIONS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length == 0) {
+                    //we will show an explanation next time the user click on start
+                    //showRequestPermissionExplanation();
+                }
+                else {
+                    for (int i = 0; i < permissions.length; i++) {
+                        if (Manifest.permission.RECORD_AUDIO.equals(permissions[i])) {
+                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                                startDetection();
+                            }
+                            else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                                showRequestPermissionExplanation();
+                            }
+                        }
+                    }
+                }
+            }
+            // In all other cases :
+            // Permission denied, we will show an explanation next time the user click on start.
+            // If user click on do not ask again, we arrive here directly with a PERMISSION_DENIED
+        }
+    }
+
     public void activateAlert(Technology signalType){
         SharedPreferences sharedPref = getSettingsObject(); //get the settings
         preventiveSpoof = sharedPref.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
@@ -291,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
      *
      */
     private void stopAutomaticBlockingMethodOnAction(){
+        cancelSpoofingStatusNotification();
         if(usedBlockingMethod.equals(ConfigConstants.USED_BLOCKING_METHOD_SPOOFER)){
             Spoofer spoofBlock = Spoofer.getInstance();
             spoofBlock.stopSpoofingComplete();
@@ -722,6 +822,31 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         Log.d("UUID", uniqueID);
     }
 
+    public void onAlertChoice(int spoofDecision) {
+        if(usedBlockingMethod != null) {
+            stopAutomaticBlockingMethodOnAction();
+        }
+
+        // TODO: Function to be called in a thread, for IO (save json entry)
+
+        saveJsonFile = checkJsonAndLocationPermissions()[0];
+        boolean locationTrack = checkJsonAndLocationPermissions()[1];
+
+        if(saveJsonFile && locationTrack) {
+            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+        }
+        if(saveJsonFile&&!locationTrack){
+            double[] noLocation = new double[2];
+            noLocation[0] = 0;
+            noLocation[1] = 0;
+            jsonMan.addJsonObject(noLocation, sigType.toString(), spoofDecision, getString(R.string.noAddressForJsonFile));
+        }
+        alert.cancel(); //cancel the alert dialog
+        txtSignalType.setText(""); //can be deleted it's only for debugging
+        cancelDetectionNotification(); //cancel the detection notification
+        cancelDetectionAlertStatusNotification(); //canceling the onHold notification
+    }
+
     public void onAlertPlayDetectedSignal(){
         if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
             btnAlertStart.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
@@ -739,6 +864,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void onAlertSpoofDetectedSignal(){
+        onAlertChoice(1);
         if(usedBlockingMethod != null) {
             stopAutomaticBlockingMethodOnAction();
         }
@@ -764,6 +890,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void onAlertDismissAlways(){
+        onAlertChoice(0);
         stopAutomaticBlockingMethodOnAction();
 
         // TODO: Function to be called in a thread, for IO (save json entry)
@@ -790,6 +917,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void onAlertDismissThisTime(){
+        onAlertChoice(2);
         stopAutomaticBlockingMethodOnAction();
 
         saveJsonFile = checkJsonAndLocationPermissions()[0];
