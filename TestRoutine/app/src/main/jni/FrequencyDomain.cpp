@@ -433,7 +433,7 @@ static void startIO() {
     audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmpl * 2); // Start audio input/output.
 }
 
-extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
     // Source: https://stackoverflow.com/a/26534926
     javaEnvironment->GetJavaVM(&jvm); // Keep a global reference to the jvm
     jniScan = javaEnvironment->NewGlobalRef(obj); // Keep a global reference to the Scan activity
@@ -469,58 +469,57 @@ static void createNewDetectionsDequeAndSamplesBuffer()
     medianBuffer.resize(medianBufferSizeItems);
 }
 
-extern "C" JNIEXPORT float Java_sonicontrol_testroutine_Scan_GetAndroidOut1(JNIEnv *__unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT float Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut1(JNIEnv *__unused javaEnvironment, jobject __unused obj){
     return androidOut1;
 }
 
-extern "C" JNIEXPORT int Java_sonicontrol_testroutine_Scan_GetAndroidOut2(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut2(JNIEnv * __unused javaEnvironment, jobject __unused obj){
     return  androidOut2;
 }
 
-extern "C" JNIEXPORT jboolean Java_sonicontrol_testroutine_Scan_GetBackgroundModelUpdating(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT jboolean Java_at_ac_fhstp_sonicontrol_Scan_GetBackgroundModelUpdating(JNIEnv * __unused javaEnvironment, jobject __unused obj){
     return backgroundModelUpdating;
 }
 
-extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
     pauseIO();
 }
 
-extern "C" JNIEXPORT void Java_sonicontrol_testroutine_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
     resumeIO();
 }
 
 /* SettingsActivity does not exist in the full app
-extern "C" JNIEXPORT void Java_sonicontrol_testroutine_SettingsActivity_SetNewCutFrequency(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint cutF){
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_SettingsActivity_SetNewCutFrequency(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint cutF){
     cutoffFrequency = cutF;
     cutoffFrequencyIdx = roundf(cutoffFrequency / binSizeinHz);// No +1 compared to Octave
 }
-extern "C" JNIEXPORT int Java_sonicontrol_testroutine_SettingsActivity_GetNewCutFrequency(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_SettingsActivity_GetNewCutFrequency(JNIEnv * __unused javaEnvironment, jobject __unused obj){
     return (int) cutoffFrequency;
 }
 
 //TODO: Unused, should be removed from SettingsActivity ?
-extern "C" JNIEXPORT void Java_sonicontrol_testroutine_SettingsActivity_SetNewBufferSize(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint buffer){
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_SettingsActivity_SetNewBufferSize(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint buffer){
 
 }
 
-extern "C" JNIEXPORT int Java_sonicontrol_testroutine_SettingsActivity_GetNewBufferSize(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint buffer){
+extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_SettingsActivity_GetNewBufferSize(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint buffer){
     return bufferSizeSmpl;
 }
 
-extern "C" JNIEXPORT void Java_sonicontrol_testroutine_SettingsActivity_SetNewDetectionTime(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint lastms){
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_SettingsActivity_SetNewDetectionTime(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint lastms){
     medianBufferSizeInSec = (float)lastms / 1000.0f;
     createNewDetectionsDequeAndSamplesBuffer();
 }
-extern "C" JNIEXPORT int Java_sonicontrol_testroutine_SettingsActivity_GetNewDetectionTime(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_SettingsActivity_GetNewDetectionTime(JNIEnv * __unused javaEnvironment, jobject __unused obj){
     return medianBufferSizeInSec*1000;
 }
 
-extern "C" JNIEXPORT void Java_sonicontrol_testroutine_SettingsActivity_SetNewBGTime(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint lastms){
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_SettingsActivity_SetNewBGTime(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint lastms){
     backgroundModelBufferSizeInSec = lastms;
     backgroundModelBufferSizeItems = (int) round(backgroundModelBufferSizeInSec*1000/bufferSizeInMs); // Match with Octave
 }
-extern "C" JNIEXPORT int Java_sonicontrol_testroutine_SettingsActivity_GetNewBGTime(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_SettingsActivity_GetNewBGTime(JNIEnv * __unused javaEnvironment, jobject __unused obj){
     return backgroundModelBufferSizeInSec;
 }
 */
-

@@ -1,9 +1,6 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
-import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONArray;

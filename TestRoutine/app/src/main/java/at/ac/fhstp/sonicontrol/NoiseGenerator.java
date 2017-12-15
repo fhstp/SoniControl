@@ -1,4 +1,4 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
 import android.content.SharedPreferences;
 import android.media.AudioFormat;

@@ -1,7 +1,6 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
 import android.location.LocationManager;
-import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -19,9 +19,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -37,7 +35,6 @@ import android.widget.Toast;
 
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 

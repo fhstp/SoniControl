@@ -1,11 +1,10 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
 
 import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.Handler;
 
 import java.util.Calendar;
 import android.util.Log;

@@ -1,4 +1,4 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("sonicontrol.testroutine", appContext.getPackageName());
+        assertEquals("at.ac.fhstp.sonicontrol", appContext.getPackageName());
     }
 }

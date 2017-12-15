@@ -1,4 +1,4 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -31,10 +31,6 @@ import java.util.logging.Logger;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static org.apache.commons.math3.util.FastMath.*;
 import pl.edu.icm.jlargearrays.ConcurrencyUtils;
 import pl.edu.icm.jlargearrays.DoubleLargeArray;

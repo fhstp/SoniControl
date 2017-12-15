@@ -1,4 +1,4 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
 
 import android.content.SharedPreferences;
@@ -8,7 +8,6 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.util.Log;
-import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;

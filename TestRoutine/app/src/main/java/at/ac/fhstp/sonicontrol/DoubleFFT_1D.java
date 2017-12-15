@@ -1,14 +1,10 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.concurrent.Future;
 //import org.jtransforms.utils.CommonUtils;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import pl.edu.icm.jlargearrays.ConcurrencyUtils;
 import pl.edu.icm.jlargearrays.DoubleLargeArray;
 import pl.edu.icm.jlargearrays.LargeArray;

@@ -8,7 +8,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
     defaultConfig {
-        applicationId "sonicontrol.testroutine"
+        applicationId "at.ac.fhstp.sonicontrol"
         minSdkVersion 16 // more than 95% of all active Android devices (mid 2017)
         targetSdkVersion 25
         versionCode 1

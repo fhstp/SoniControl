@@ -1,17 +1,14 @@
-package sonicontrol.testroutine;
+package at.ac.fhstp.sonicontrol;
 
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.os.Handler;
 import android.util.Log;
 
-import java.lang.reflect.Constructor;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.ConsoleHandler;
 
 public class Spoofer {
 
