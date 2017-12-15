@@ -6,7 +6,7 @@ def superpowered_sdk_path = properties.getProperty('superpowered.dir')
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "sonicontrol.testroutine"
         minSdkVersion 16 // more than 95% of all active Android devices (mid 2017)

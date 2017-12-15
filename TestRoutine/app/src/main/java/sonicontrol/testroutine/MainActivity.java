@@ -188,32 +188,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 onBtnStartClick(v);
-                int PERMISSION_ALL = 1;
-                String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-
-                if(!hasPermissions(MainActivity.this, PERMISSIONS)){
-                    ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, PERMISSION_ALL);
-                }
-
-                if(!hasPermissions(MainActivity.this, PERMISSIONS)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage("Please give the Permission!");
-                    builder.setPositiveButton("Open the Permission Menu",new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent = new Intent();
-                                intent.setAction(ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                intent.setData(uri);
-                                startActivity(intent);
-                            }
-                        }
-                    );
-                    builder.setNegativeButton("Back to Main", null);
-                    builder.show();
-                }else {
-                    startDetection();
-                }
             }
         });
 
