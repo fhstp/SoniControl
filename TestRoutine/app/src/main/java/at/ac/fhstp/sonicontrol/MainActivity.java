@@ -816,6 +816,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         txtSignalType.setText(""); //can be deleted it's only for debugging
         cancelDetectionNotification(); //cancel the detection notification
         cancelDetectionAlertStatusNotification(); //canceling the onHold notification
+        //Why this ? : cancelSpoofingStatusNotification();
     }
 
     public void onAlertPlayDetectedSignal(){
@@ -836,80 +837,19 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     public void onAlertSpoofDetectedSignal(){
         onAlertChoice(1);
-        if(usedBlockingMethod != null) {
-            stopAutomaticBlockingMethodOnAction();
-        }
-
-        saveJsonFile = checkJsonAndLocationPermissions()[0];
-        boolean locationTrack = checkJsonAndLocationPermissions()[1];
-
-        if(saveJsonFile && locationTrack) {
-            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-        }
-        if(saveJsonFile&&!locationTrack){
-            double[] noLocation = new double[2];
-            noLocation[0] = 0;
-            noLocation[1] = 0;
-            jsonMan.addJsonObject(noLocation, sigType.toString(), 1, getString(R.string.noAddressForJsonFile));
-        }
         locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
-        alert.cancel(); //cancel the alert dialog
-        cancelSpoofingStatusNotification();
-        cancelDetectionNotification(); //cancel the detection notification
-        cancelDetectionAlertStatusNotification(); //canceling the onHold notification
         activateSpoofingStatusNotification(); //activates the notification for the spoofing process
     }
 
     public void onAlertDismissAlways(){
         onAlertChoice(0);
-        stopAutomaticBlockingMethodOnAction();
-
-        // TODO: Function to be called in a thread, for IO (save json entry)
-
-        saveJsonFile = checkJsonAndLocationPermissions()[0];
-        boolean locationTrack = checkJsonAndLocationPermissions()[1];
-
-        if(saveJsonFile && locationTrack) {
-            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 0, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-        }
-        if(saveJsonFile&&!locationTrack){
-            double[] noLocation = new double[2];
-            noLocation[0] = 0;
-            noLocation[1] = 0;
-            jsonMan.addJsonObject(noLocation, sigType.toString(), 0, getString(R.string.noAddressForJsonFile));
-        }
         detector.startScanning(); //start scanning again
-        alert.cancel(); //cancel the alert dialog
-        txtSignalType.setText(""); //can be deleted it's only for debugging
-        cancelSpoofingStatusNotification();
-        cancelDetectionNotification(); //cancel the detection notification
-        cancelDetectionAlertStatusNotification(); //canceling the onHold notification
         activateScanningStatusNotification(); //activates the notification for the scanning process
     }
 
     public void onAlertDismissThisTime(){
         onAlertChoice(2);
-        stopAutomaticBlockingMethodOnAction();
-
-        saveJsonFile = checkJsonAndLocationPermissions()[0];
-        boolean locationTrack = checkJsonAndLocationPermissions()[1];
-
-        if(saveJsonFile && locationTrack) {
-            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), 2, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
-        }
-        if(saveJsonFile&&!locationTrack){
-            double[] noLocation = new double[2];
-            noLocation[0] = 0;
-            noLocation[1] = 0;
-            jsonMan.addJsonObject(noLocation, sigType.toString(), 2, getString(R.string.noAddressForJsonFile));
-        }
-
         detector.startScanning(); //start scanning again
-        alert.cancel(); //cancel the alert dialog
-        txtSignalType.setText(""); //can be deleted it's only for debugging
-        cancelSpoofingStatusNotification();
-        cancelDetectionNotification(); //cancel the detection notification
-        cancelDetectionAlertStatusNotification(); //canceling the onHold notification
         activateScanningStatusNotification(); //activates the notification for the scanning process
     }
 /*
