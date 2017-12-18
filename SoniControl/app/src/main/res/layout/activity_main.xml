@@ -22,7 +22,7 @@
         android:layout_toEndOf="@+id/btnExit"
         android:layout_toRightOf="@+id/btnExit"
         android:background="@android:color/darker_gray"
-        android:src="@drawable/ic_save_white_48dp" />
+        android:src="@drawable/ic_view_list_white_48dp" />
 
     <ImageButton
         android:id="@+id/btnStop"

@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     public Handler uiHandler = new Handler();
 
+    SharedPreferences sharedPref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -214,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         });
 
         activateOnHoldStatusNotification(); //activate the onHold-status notification
-        getSettingsObject(); //get the settings
+        getUpdatedSettings(); //get the settings
     }
 
     @Override
@@ -319,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length == 0) {
                     //we will show an explanation next time the user click on start
-                    //showRequestPermissionExplanation();
+                    showRequestPermissionExplanation();
                 }
                 else {
                     for (int i = 0; i < permissions.length; i++) {
@@ -334,15 +336,13 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                     }
                 }
             }
-            // In all other cases :
-            // Permission denied, we will show an explanation next time the user click on start.
-            // If user click on do not ask again, we arrive here directly with a PERMISSION_DENIED
         }
     }
 
+
     public void activateAlert(Technology signalType){
-        SharedPreferences sharedPref = getSettingsObject(); //get the settings
-        preventiveSpoof = sharedPref.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
+        SharedPreferences settings = getSettingsObject(); //get the settings
+        preventiveSpoof = settings.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
         if(preventiveSpoof) {
             activateSpoofingStatusNotification();
             usedBlockingMethod = locationFinder.blockMicOrSpoof();
@@ -575,8 +575,12 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public SharedPreferences getSettingsObject(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //get the object with the settings
+        //SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //get the object with the settings
         return sharedPref;
+    }
+
+    public void getUpdatedSettings(){
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     @Override
@@ -584,8 +588,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         super.onResume();
         isInBackground = false;
 
-        SharedPreferences sharedPref = getSettingsObject(); //get the settings
-        saveJsonFile = sharedPref.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
+        SharedPreferences settings = getSettingsObject(); //get the settings
+        saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
         if(saveJsonFile) {
             if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
@@ -609,7 +613,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         // TODO: Release resources not released yet in onStop()
         // Maybe threads, microphone, ... ?
-        mNotificationManager.cancelAll();
         threadPool.shutdownNow();
     }
 
@@ -623,16 +626,16 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     public boolean[] checkJsonAndLocationPermissions() {
         boolean[] saveJsonAndLocation = new boolean[2];
-        SharedPreferences sharedPref = getSettingsObject(); //get the settings
-        saveJsonFile = sharedPref.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
+        SharedPreferences settings = getSettingsObject(); //get the settings
+        saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         boolean locationTrack = false;
-        boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
-        boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
+        boolean locationTrackGps = settings.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+        boolean locationTrackNet = settings.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
         if((locationTrackGps&&isGPSEnabled)||(locationTrackNet&&isNetworkEnabled)){
             locationTrack = true;
@@ -740,8 +743,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         runOnUiThread(new Runnable() {
         @Override
         public void run() {
-                SharedPreferences sharedPref = getSettingsObject(); //get the settings
-                saveJsonFile = sharedPref.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
+                SharedPreferences settings = getSettingsObject(); //get the settings
+                saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
                 if(saveJsonFile) {
                     if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage

@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="1">
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RelativeLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
 
     <TextView
         android:id="@+id/textView"
@@ -20,13 +26,25 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="The project SoniControl is funded by Netidee and is a project at the Institute for Creative\Media/Technologies at the University of Applied Science Sankt Pölten. "
+        android:text="The project SoniControl is funded by Netidee and is a project at the Institute for Creative/Media/Technologies at the University of Applied Science Sankt Pölten. "
         android:textColor="@android:color/black"
         android:layout_marginTop="22dp"
         android:layout_marginRight="16dp"
         android:layout_below="@+id/textView"
         android:layout_alignLeft="@+id/textView"
         android:layout_alignStart="@+id/textView" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="www.sonicontrol.fhstp.ac.at"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="22dp"
+            android:layout_marginRight="16dp"
+            android:layout_below="@+id/textView2"
+            android:layout_alignLeft="@+id/textView2"
+            android:layout_alignStart="@+id/textView2" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -35,7 +53,21 @@
         android:layout_marginTop="19dp"
         android:layout_marginRight="16dp"
         app:srcCompat="@drawable/logo_sonicontrol_graublau"
-        android:layout_below="@+id/textView2"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_alignStart="@+id/textView2" />
-</RelativeLayout>
+        android:layout_below="@+id/textView4"
+        android:layout_alignLeft="@+id/textView4"
+        android:layout_alignStart="@+id/textView4" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Material Icons used, which are under the license of Apache License Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@+id/imageView"
+        android:layout_alignLeft="@+id/imageView"
+        android:layout_alignStart="@+id/imageView" />
+    </RelativeLayout>
+
+</ScrollView>

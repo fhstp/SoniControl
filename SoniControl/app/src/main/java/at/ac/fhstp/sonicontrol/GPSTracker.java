@@ -71,7 +71,6 @@ public class GPSTracker extends Service implements LocationListener {
                 provider_info = LocationManager.NETWORK_PROVIDER;
             }
 
-            // TODO: Why are we checking audio ? Shouldnt it be GPS ?
             int status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
                     Manifest.permission.RECORD_AUDIO);
             if (status != PackageManager.PERMISSION_GRANTED) {

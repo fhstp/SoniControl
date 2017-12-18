@@ -21,7 +21,7 @@
             android:layout_width="308dp"
             android:layout_height="wrap_content"
             android:text="Play"
-            android:layout_above="@+id/btnDismissAlwaysHere"
+            android:layout_above="@+id/btnSpoof"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
             android:visibility="invisible"/>
@@ -30,19 +30,19 @@
             android:id="@+id/btnSpoof"
             android:layout_width="309dp"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/rectimage"
-            android:layout_alignLeft="@+id/btnDismissThisTime"
-            android:layout_alignStart="@+id/btnDismissThisTime"
-            android:layout_marginBottom="25dp"
+            android:layout_above="@+id/btnDismissThisTime"
+            android:layout_alignLeft="@+id/btnPlay"
+            android:layout_alignStart="@+id/btnPlay"
+            android:layout_marginBottom="15dp"
             android:text="Spoof" />
 
         <Button
             android:id="@+id/btnDismissThisTime"
             android:layout_width="308dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/btnSpoof"
-            android:layout_alignLeft="@+id/btnDismissAlwaysHere"
-            android:layout_alignStart="@+id/btnDismissAlwaysHere"
+            android:layout_above="@+id/btnDismissAlwaysHere"
+            android:layout_alignLeft="@+id/btnSpoof"
+            android:layout_alignStart="@+id/btnSpoof"
             android:layout_marginBottom="11dp"
             android:text="Dismiss this Time" />
 
@@ -50,10 +50,10 @@
             android:id="@+id/btnDismissAlwaysHere"
             android:layout_width="308dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/btnDismissThisTime"
-            android:layout_alignLeft="@+id/btnPlay"
-            android:layout_alignStart="@+id/btnPlay"
-            android:layout_marginBottom="15dp"
+            android:layout_alignBottom="@+id/rectimage"
+            android:layout_alignLeft="@+id/btnDismissThisTime"
+            android:layout_alignStart="@+id/btnDismissThisTime"
+            android:layout_marginBottom="25dp"
             android:text="Dismiss always here" />
 
         <TextView
@@ -69,6 +69,21 @@
             android:layout_marginTop="24dp"
             android:textAlignment="center"
             android:textSize="36sp" />
+
+        <TextView
+            android:id="@+id/txtDiscovered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/btnPlay"
+            android:layout_alignEnd="@+id/btnPlay"
+            android:layout_alignLeft="@+id/txtSignalType"
+            android:layout_alignRight="@+id/btnPlay"
+            android:layout_alignStart="@+id/txtSignalType"
+            android:layout_alignTop="@+id/txtSignalType"
+            android:text="You discovered an ultrasonic signal. Choose your option for this Signal!"
+            android:textAlignment="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
 
     </RelativeLayout>
 </LinearLayout>

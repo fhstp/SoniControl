@@ -9,10 +9,16 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class Settings extends ActionBarActivity {
+
+    MainActivity main = new MainActivity();
+    MainActivity nextMain;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_container);
+
+        nextMain = main.getMainIsMain();
 
         // Display the fragment as the main content.
         getFragmentManager().beginTransaction()
@@ -45,5 +51,11 @@ public class Settings extends ActionBarActivity {
         }
 
         return true;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        nextMain.getUpdatedSettings();
     }
 }

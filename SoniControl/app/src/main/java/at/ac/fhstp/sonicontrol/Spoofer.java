@@ -136,9 +136,6 @@ public class Spoofer {
                             onPulsing(); //start the pulsing again
                         }
                     } else {
-                        //playingGlobal = true; //set the variable for playing to true again
-                        // TODO: Why would we put it back to true ?!
-                        //helpCounter = 0;
                     }
                 }
             }

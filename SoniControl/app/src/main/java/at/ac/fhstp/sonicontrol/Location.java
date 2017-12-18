@@ -133,7 +133,6 @@ public class Location {
         jsonMan.setLatestDate(position, signalTech); //update the date in the json-file at the detected position
         if(shouldBeSpoofed){ //if it should be spoofed
             Log.d("Location", "I should be spoofed");
-            // TODO: Check notifications cancellation...
             if (!main.getBackgroundStatus()) { //if the app is not in the background
                 main.cancelDetectionNotification(); //cancel the detection notification
             }
@@ -215,7 +214,6 @@ public class Location {
                 available = false;
             }
         } finally{
-            // TODO: Note, it seems to happen when the permission for audio recording is not yet given.
             recorder.stop(); //stop the recorder
             recorder.release(); //release the recorder resources
         }
