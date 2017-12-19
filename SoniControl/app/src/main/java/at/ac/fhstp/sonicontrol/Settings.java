@@ -47,7 +47,7 @@ public class Settings extends ActionBarActivity {
                         .show();
                 break;
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
 
         return true;

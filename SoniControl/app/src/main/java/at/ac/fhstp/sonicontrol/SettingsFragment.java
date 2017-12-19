@@ -31,7 +31,6 @@ public class SettingsFragment extends PreferenceFragment {
 
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Log.d("TestPref", "Hi");
                 final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(getActivity());
                 deleteJsonDialog.setTitle(R.string.deleteJsonAlertTitle)
                         .setMessage(R.string.deleteJsonAlertMessage)

@@ -44,6 +44,7 @@ import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
     private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
+
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
 
@@ -74,13 +75,13 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     int detectionNotificationId;
 
     NotificationCompat.Builder spoofingStatusBuilder;
-    int spoofingStatusNotificationId;
+    int spoofingStatusNotificationId = ConfigConstants.SPOOFING_NOTIFICATION_ID;
     NotificationCompat.Builder detectionAlertStatusBuilder;
-    int detectionAlertStatusNotificationId;
+    int detectionAlertStatusNotificationId = ConfigConstants.DETECTION_ALERT_STATUS_NOTIFICATION_ID;
     NotificationCompat.Builder onHoldStatusBuilder;
-    int onHoldStatusNotificationId;
+    int onHoldStatusNotificationId = ConfigConstants.ON_HOLD_NOTIFICATION_ID;
     NotificationCompat.Builder scanningStatusBuilder;
-    int scanningStatusNotificationId;
+    int scanningStatusNotificationId = ConfigConstants.SCANNING_NOTIFICATION_ID;
 
     Notification notificationDetection;
     Notification notificationDetectionAlertStatus;
@@ -90,11 +91,11 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     private boolean isInBackground = false;
 
-    private boolean detectionNotitificationFirstBuilded = false;
-    private boolean spoofingStatusNotitificationFirstBuilded = false;
-    private boolean detectionAlertStatusNotitificationFirstBuilded = false;
-    private boolean onHoldStatusNotitificationFirstBuilded = false;
-    private boolean scanningStatusNotitificationFirstBuilded = false;
+    private boolean detectionNotitificationFirstBuilt = false;
+    private boolean spoofingStatusNotitificationFirstBuilt = false;
+    private boolean detectionAlertStatusNotitificationFirstBuilt = false;
+    private boolean onHoldStatusNotitificationFirstBuilt = false;
+    private boolean scanningStatusNotitificationFirstBuilt = false;
 
     boolean isSignalPlayerGenerated;
 
@@ -215,7 +216,10 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             }
         });
 
-        activateOnHoldStatusNotification(); //activate the onHold-status notification
+        // savedInstanceState will only be null during the first run of the app, later we do not need to add notifications again.
+        if(savedInstanceState == null) {
+            activateOnHoldStatusNotification(); //activate the onHold-status notification
+        }
         getUpdatedSettings(); //get the settings
     }
 
@@ -379,6 +383,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setContentText(getString(R.string.NotificationDetectionMessage)) //adding the text
                         .setOngoing(true) //can't be canceled
                         .setPriority(Notification.PRIORITY_HIGH) //high priority in the notification system
+                        .setCategory(Notification.CATEGORY_STATUS)
                         .setAutoCancel(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -398,16 +403,14 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         notificationDetection = detectionBuilder.build(); //build the notiviation
 
-        detectionNotificationId = randomNotificationNumberGenerator.nextInt(1000)+2; //set an id for the notification
-
     }
 
     public void activateDetectionNotification(){
-        if(detectionNotitificationFirstBuilded){ //if it's the first time that it's built
+        if(detectionNotitificationFirstBuilt){ //if it's the first time that it's built
             initDetectionNotification(); //initialize the notification
         }
         mNotificationManager.notify(detectionNotificationId, notificationDetection); //activate the notification with the notification itself and its id
-        detectionNotitificationFirstBuilded = true; //notification is created
+        detectionNotitificationFirstBuilt = true; //notification is created
     }
 
     public void cancelDetectionNotification(){
@@ -420,6 +423,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setSmallIcon(R.drawable.hearing_block) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationSpoofingTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationSpoofingMesssage)) //adding the text
+                        .setCategory(Notification.CATEGORY_SERVICE)
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -438,16 +442,14 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         notificationSpoofingStatus = spoofingStatusBuilder.build(); //build the notiviation
-
-        spoofingStatusNotificationId = randomNotificationNumberGenerator.nextInt(1000)+2; //set an id for the notification
     }
 
     public void activateSpoofingStatusNotification(){
-        if(spoofingStatusNotitificationFirstBuilded){ //if it's the first time that it's built
+        if(spoofingStatusNotitificationFirstBuilt){ //if it's the first time that it's built
             initSpoofingStatusNotification(); //initialize the notification
         }
         mNotificationManager.notify(spoofingStatusNotificationId, notificationSpoofingStatus); //activate the notification with the notification itself and its id
-        spoofingStatusNotitificationFirstBuilded = true; //notification is created
+        spoofingStatusNotitificationFirstBuilt = true; //notification is created
     }
 
     public void cancelSpoofingStatusNotification(){
@@ -460,6 +462,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setSmallIcon(R.drawable.hearing_found) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationDetectionAlertTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationDetectionAlertMessage)) //adding the text
+                        .setCategory(Notification.CATEGORY_STATUS)
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -478,16 +481,14 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         notificationDetectionAlertStatus = detectionAlertStatusBuilder.build(); //build the notiviation
-
-        detectionAlertStatusNotificationId = randomNotificationNumberGenerator.nextInt(1000)+2; //set an id for the notification
     }
 
     public void activateDetectionAlertStatusNotification(){
-        if(detectionAlertStatusNotitificationFirstBuilded){ //if it's the first time that it's built
+        if(detectionAlertStatusNotitificationFirstBuilt){ //if it's the first time that it's built
             initDetectionAlertStatusNotification(); //initialize the notification
         }
         mNotificationManager.notify(detectionAlertStatusNotificationId, notificationDetectionAlertStatus); //activate the notification with the notification itself and its id
-        detectionAlertStatusNotitificationFirstBuilded = true; //notification is created
+        detectionAlertStatusNotitificationFirstBuilt = true; //notification is created
     }
 
     public void cancelDetectionAlertStatusNotification(){
@@ -500,6 +501,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setSmallIcon(R.drawable.hearing_pause) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationOnHoldTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationOnHoldMessage)) //adding the text
+                        .setCategory(Notification.CATEGORY_STATUS)
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -518,16 +520,14 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         notificationOnHoldStatus = onHoldStatusBuilder.build(); //build the notiviation
-
-        onHoldStatusNotificationId = randomNotificationNumberGenerator.nextInt(1000)+2; //set an id for the notification
     }
 
     public void activateOnHoldStatusNotification(){
-        if(onHoldStatusNotitificationFirstBuilded){ //if it's the first time that it's built
+        if(onHoldStatusNotitificationFirstBuilt){ //if it's the first time that it's built
             initOnHoldStatusNotification(); //initialize the notification
         }
         mNotificationManager.notify(onHoldStatusNotificationId, notificationOnHoldStatus); //activate the notification with the notification itself and its id
-        onHoldStatusNotitificationFirstBuilded = true; //notification is created
+        onHoldStatusNotitificationFirstBuilt = true; //notification is created
     }
 
     public void cancelOnHoldStatusNotification(){
@@ -540,6 +540,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setSmallIcon(R.drawable.ic_hearing_white_48dp) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationScanningTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationScanningMessage)) //adding the text
+                        .setCategory(Notification.CATEGORY_SERVICE)
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -558,16 +559,14 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         notificationScanningStatus = scanningStatusBuilder.build(); //build the notiviation
-
-        scanningStatusNotificationId = randomNotificationNumberGenerator.nextInt(1000)+2; //set an id for the notification
     }
 
     public void activateScanningStatusNotification(){
-        if(scanningStatusNotitificationFirstBuilded){ //if it's the first time that it's built
+        if(scanningStatusNotitificationFirstBuilt){ //if it's the first time that it's built
             initScanningStatusNotification(); //initialize the notification
         }
         mNotificationManager.notify(scanningStatusNotificationId, notificationScanningStatus); //activate the notification with the notification itself and its id
-        scanningStatusNotitificationFirstBuilded = true; //notification is created
+        scanningStatusNotitificationFirstBuilt = true; //notification is created
     }
 
     public void cancelScanningStatusNotification(){

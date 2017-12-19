@@ -27,9 +27,19 @@ public final class ConfigConstants {
     public static final boolean SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT = true;
     public static final String USED_BLOCKING_METHOD_SPOOFER = "Spoofer";
     public static final String USED_BLOCKING_METHOD_MICROPHONE = "Microphone";
+
     // Scan constants
     public static final int SCAN_SAMPLE_RATE = 44100;
     public static final String SETTING_PREVENTIVE_SPOOFING = "cbprefPreventiveSpoofing";
     public static final boolean SETTING_PREVENTIVE_SPOOFING_DEFAULT = true;
     public static final int SCAN_BUFFER_SIZE = 2048; //2048 is 46.440ms //2205 is 50 ms (5x 441)
+
+    //Notification ids
+    public static final int ON_HOLD_NOTIFICATION_ID = 1;
+    public static final int SCANNING_NOTIFICATION_ID = 2;
+    public static final int SPOOFING_NOTIFICATION_ID = 3;
+    public static final int DETECTION_NOTIFICATION_ID = 4;
+    public static final int DETECTION_ALERT_STATUS_NOTIFICATION_ID = 5;
+
+
 }

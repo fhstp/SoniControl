@@ -145,7 +145,7 @@ public class StoredLocations extends AppCompatActivity {
                         .show();
                 break;
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
 
         return true;
