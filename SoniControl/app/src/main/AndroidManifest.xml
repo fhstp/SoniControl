@@ -37,7 +37,7 @@
             android:label="Found Signals"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".Settings"
+        <activity android:name=".SettingsActivity"
             android:label="Settings"
             android:screenOrientation="portrait">
         </activity>

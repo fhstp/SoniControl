@@ -336,6 +336,23 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                     }
                 }
             }
+            case ConfigConstants.REQUEST_GPS_PERMISSION:{
+                if (grantResults.length == 0) {
+                    Toast.makeText(MainActivity.this, R.string.toastLocationAccessDenied, Toast.LENGTH_LONG).show();
+                }
+                else {
+                    for (int i = 0; i < permissions.length; i++) {
+                        if (Manifest.permission.ACCESS_FINE_LOCATION.equals(permissions[i])) {
+                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                                locationFinder.requestGPSUpdates();
+                            }
+                            else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                                Toast.makeText(MainActivity.this, R.string.toastLocationAccessDenied, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -790,7 +807,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void openSettings(){
-        Intent myIntent = new Intent(MainActivity.this, Settings.class); //redirect to the settings activity
+        Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class); //redirect to the settings activity
         startActivityForResult(myIntent, 0);
         String uniqueID = UUID.randomUUID().toString();
         Log.d("UUID", uniqueID);
