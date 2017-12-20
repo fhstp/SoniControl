@@ -23,7 +23,7 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefPreventiveSpoofing"
-            android:title="Preventive Spoofing" />
+            android:title="Preventive Jamming" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Expert - Spoofer">
         <Preference

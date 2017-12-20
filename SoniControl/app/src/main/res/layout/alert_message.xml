@@ -34,7 +34,7 @@
             android:layout_alignLeft="@+id/btnPlay"
             android:layout_alignStart="@+id/btnPlay"
             android:layout_marginBottom="15dp"
-            android:text="Spoof" />
+            android:text="Jam Always Here" />
 
         <Button
             android:id="@+id/btnDismissThisTime"

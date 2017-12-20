@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">SoniControl</string>
-    <string name="spoofOnEachLoc">Spoof on each Location</string>
+    <string name="spoofOnEachLoc">Jam on each Location</string>
     <string name="addressData">Not available!</string>
-    <string name="deleteJsonAlertTitle">Delete JSON-File</string>
+    <string name="deleteJsonAlertTitle">Empty Detection Cache</string>
     <string name="deleteJsonAlertMessage">Are you sure you want to delete the JSON-File and the detected WAV-Files?</string>
     <string name="StatusNotificationSpoofingTitle">Blocking</string>
     <string name="StatusNotificationSpoofingMesssage">I am blocking the signal now!</string>
