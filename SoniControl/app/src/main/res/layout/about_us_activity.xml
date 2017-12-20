@@ -19,14 +19,14 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
-        android:text="SoniControl is a novel technology for the recognition and masking of acoustic tracking information. The technology helps end-users to protect their privacy. Technologies like Google Nearby and Silverpush build upon ultrasonic sounds to exchange information. More and more of our devices communicate via this inaudible communication channel. Every device with a microphone and a speaker is able to send and receive ultrasonic information. The user is usually not aware of this inaudible and hidden data transfer. To overcome this gap SoniControl detects ultrasonic activity, notifies the user and blocks the information on demand. Thereby, we want to raise the awareness for this novel technology."
+        android:text="@string/aboutUsProject"
         android:textColor="@android:color/black" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="The project SoniControl is funded by Netidee and is a project at the Institute for Creative/Media/Technologies at the University of Applied Science Sankt Pölten. "
+        android:text="@string/aboutUsInfo"
         android:textColor="@android:color/black"
         android:layout_marginTop="22dp"
         android:layout_marginRight="16dp"

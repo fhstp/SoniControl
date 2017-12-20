@@ -98,6 +98,7 @@ public class GPSTracker extends Service implements LocationListener {
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             Log.e(TAG, "Impossible to connect to LocationManager", e);
         }
     }
@@ -146,6 +147,7 @@ public class GPSTracker extends Service implements LocationListener {
 
                 return addresses;
             } catch (IOException e) {
+                e.printStackTrace();
                 Log.e(TAG, "Impossible to connect to Geocoder", e);
             }
         }

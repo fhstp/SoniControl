@@ -138,7 +138,7 @@ public class JSONManager {
             jsObject.put(JSON_ARRAY_DISMISSED_SIGNALS, jArray); //put the json-array into the second json-object with "signal"
 
         }catch (JSONException ext) {
-
+            ext.printStackTrace();
         }
         try {
             FileWriter file = new FileWriter(new File(main.getExternalFilesDir(null), ConfigConstants.JSON_FILENAME)); //write the newly created json-object into the new json file
@@ -354,6 +354,7 @@ public class JSONManager {
             inputStream = new FileInputStream(jsonFile);
         }
         catch(IOException ioex){
+            ioex.printStackTrace();
         }
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
