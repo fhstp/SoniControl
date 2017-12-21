@@ -3,7 +3,6 @@ package at.ac.fhstp.sonicontrol;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -45,7 +44,8 @@ import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
     private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
-    private static final int NOTIFICATION_REQUEST_CODE = 0;
+    private static final int NOTIFICATION_STATUS_REQUEST_CODE = 2;
+    private static final int NOTIFICATION_DETECTION_REQUEST_CODE = 1;
 
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
@@ -93,11 +93,11 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     private boolean isInBackground = false;
 
-    private boolean detectionNotitificationFirstBuilt = false;
-    private boolean spoofingStatusNotitificationFirstBuilt = false;
-    private boolean detectionAlertStatusNotitificationFirstBuilt = false;
-    private boolean onHoldStatusNotitificationFirstBuilt = false;
-    private boolean scanningStatusNotitificationFirstBuilt = false;
+    private boolean detectionNotitificationFirstBuild = true;
+    private boolean spoofingStatusNotitificationFirstBuild = true;
+    private boolean detectionAlertStatusNotitificationFirstBuild = true;
+    private boolean onHoldStatusNotitificationFirstBuild = true;
+    private boolean scanningStatusNotitificationFirstBuild = true;
 
     boolean isSignalPlayerGenerated;
 
@@ -218,28 +218,48 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
             PendingIntent resultPendingIntent = PendingIntent.getActivity(
                     this,
-                    MainActivity.NOTIFICATION_REQUEST_CODE,
+                    MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
                     resultIntent,
                     PendingIntent.FLAG_NO_CREATE);
 
-            // This will be null if there is no pending intent pointing to the MainActivity
+            // This will be null if there is no pending intent pointing to the MainActivity, so if it does not run yet
             if (resultPendingIntent == null) {
-                initOnHoldStatusNotification(); //initialize the onHold-status notification
                 activateOnHoldStatusNotification();
+                btnStart.setEnabled(true);
+                btnStop.setEnabled(false);
+                // TODO: Anything else to initialize when we launch the app ?
             }
             else {
-                initOnHoldStatusNotification(); //initialize the onHold-status notification
+                // TODO: There are some initializations to add depending on the current status.
+
+                /*
+                Depends on the status. (it should be the opposite if we are ON_HOLD
+                btnStart.setEnabled(false);
+                btnStop.setEnabled(true);
+                */
+
+                Intent intent = getIntent();
+                Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
+                if(technology != null) {
+                    activateAlert(technology);
+                }
+
+/*
+                PendingIntent detectionPendingIntent = PendingIntent.getActivity(
+                        this,
+                        MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
+                        resultIntent,
+                        PendingIntent.FLAG_NO_CREATE);
+                // This will be null if there is no detection notification
+                if (detectionPendingIntent != null) {
+                    activateAlert(detectionPendingIntent.get);
+                }
+*/
             }
+
+            getUpdatedSettings(); //get the settings
         }
 
-        initDetectionNotification(); //initialize the detection notification
-        initDetectionAlertStatusNotification();
-        initScanningStatusNotification(); //initialize the scanning-status notification
-        initSpoofingStatusNotification(); //initialize the spoofing-status notification
-
-
-
-        getUpdatedSettings(); //get the settings
     }
 
     private void onBtnExitClick(View v) {
@@ -251,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
                 MainActivity.this,
-                MainActivity.NOTIFICATION_REQUEST_CODE,
+                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
                 resultIntent,
                 0);
         resultPendingIntent.cancel();
@@ -412,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             micBlock.stopMicCapturingComplete();
         }
     }
-
+/*
     public void initDetectionNotification(){
         detectionBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
@@ -430,9 +450,9 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
                 this,
-                MainActivity.NOTIFICATION_REQUEST_CODE,
+                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
                 resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         detectionBuilder.setContentIntent(resultPendingIntent);
 
@@ -441,18 +461,18 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void activateDetectionNotification(){
-        if(detectionNotitificationFirstBuilt){ //if it's the first time that it's built
+        if(detectionNotitificationFirstBuild){ //if it's the first time that it's built
             initDetectionNotification(); //initialize the notification
         }
         mNotificationManager.notify(detectionNotificationId, notificationDetection); //activate the notification with the notification itself and its id
-        detectionNotitificationFirstBuilt = true; //notification is created
+        detectionNotitificationFirstBuild = false; //notification is created
     }
 
     public void cancelDetectionNotification(){
         mNotificationManager.cancel(detectionNotificationId); //Cancel the notification with the help of the id
     }
-
-    public void initSpoofingStatusNotification(){
+*/
+    private void initSpoofingStatusNotification(){
         spoofingStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.hearing_block) //adding the icon
@@ -467,7 +487,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
                 this,
-                MainActivity.NOTIFICATION_REQUEST_CODE,
+                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
                 resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -477,54 +497,56 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void activateSpoofingStatusNotification(){
-        if(spoofingStatusNotitificationFirstBuilt){ //if it's the first time that it's built
+        if(spoofingStatusNotitificationFirstBuild){ //if it's the first time that it's built
             initSpoofingStatusNotification(); //initialize the notification
         }
         mNotificationManager.notify(spoofingStatusNotificationId, notificationSpoofingStatus); //activate the notification with the notification itself and its id
-        spoofingStatusNotitificationFirstBuilt = true; //notification is created
+        spoofingStatusNotitificationFirstBuild = false; //notification is created
     }
 
     public void cancelSpoofingStatusNotification(){
         mNotificationManager.cancel(spoofingStatusNotificationId); //Cancel the notification with the help of the id
     }
 
-    public void initDetectionAlertStatusNotification(){
+    private void initDetectionAlertStatusNotification(Technology technology){
         detectionAlertStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.hearing_found) //adding the icon
-                        .setContentTitle(getString(R.string.StatusNotificationDetectionAlertTitle)) //adding the title
-                        .setContentText(getString(R.string.StatusNotificationDetectionAlertMessage)) //adding the text
+                        .setSmallIcon(R.drawable.hearing_found)
+                        .setContentTitle(getString(R.string.StatusNotificationDetectionAlertTitle))
+                        .setContentText(getString(R.string.StatusNotificationDetectionAlertMessage))
                         .setCategory(Notification.CATEGORY_STATUS)
-                        .setOngoing(true); //it's canceled when tapped on it
+                        .setOngoing(true) // cannot be dismissed
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setCategory(Notification.CATEGORY_STATUS)
+                        .setAutoCancel(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        resultIntent.putExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED, technology);
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
                 this,
-                MainActivity.NOTIFICATION_REQUEST_CODE,
+                MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
                 resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         detectionAlertStatusBuilder.setContentIntent(resultPendingIntent);
 
         notificationDetectionAlertStatus = detectionAlertStatusBuilder.build(); //build the notiviation
     }
 
-    public void activateDetectionAlertStatusNotification(){
-        if(detectionAlertStatusNotitificationFirstBuilt){ //if it's the first time that it's built
-            initDetectionAlertStatusNotification(); //initialize the notification
-        }
+    public void activateDetectionAlertStatusNotification(Technology technology){
+        initDetectionAlertStatusNotification(technology); //initialize the notification
+
         mNotificationManager.notify(detectionAlertStatusNotificationId, notificationDetectionAlertStatus); //activate the notification with the notification itself and its id
-        detectionAlertStatusNotitificationFirstBuilt = true; //notification is created
+
     }
 
     public void cancelDetectionAlertStatusNotification(){
         mNotificationManager.cancel(detectionAlertStatusNotificationId); //Cancel the notification with the help of the id
     }
 
-    public void initOnHoldStatusNotification(){
+    private void initOnHoldStatusNotification(){
         onHoldStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.hearing_pause) //adding the icon
@@ -534,12 +556,11 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
                 this,
-                MainActivity.NOTIFICATION_REQUEST_CODE,
+                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
                 resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -549,18 +570,18 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void activateOnHoldStatusNotification(){
-        if(onHoldStatusNotitificationFirstBuilt){ //if it's the first time that it's built
+        if(onHoldStatusNotitificationFirstBuild){ //if it's the first time that it's built
             initOnHoldStatusNotification(); //initialize the notification
         }
         mNotificationManager.notify(onHoldStatusNotificationId, notificationOnHoldStatus); //activate the notification with the notification itself and its id
-        onHoldStatusNotitificationFirstBuilt = true; //notification is created
+        onHoldStatusNotitificationFirstBuild = false; //notification is created
     }
 
     public void cancelOnHoldStatusNotification(){
         mNotificationManager.cancel(onHoldStatusNotificationId); //Cancel the notification with the help of the id
     }
 
-    public void initScanningStatusNotification(){
+    private void initScanningStatusNotification(){
         scanningStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_hearing_white_48dp) //adding the icon
@@ -575,7 +596,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
                 this,
-                MainActivity.NOTIFICATION_REQUEST_CODE,
+                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
                 resultIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -585,11 +606,11 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void activateScanningStatusNotification(){
-        if(scanningStatusNotitificationFirstBuilt){ //if it's the first time that it's built
+        if(scanningStatusNotitificationFirstBuild){ //if it's the first time that it's built
             initScanningStatusNotification(); //initialize the notification
         }
         mNotificationManager.notify(scanningStatusNotificationId, notificationScanningStatus); //activate the notification with the notification itself and its id
-        scanningStatusNotitificationFirstBuilt = true; //notification is created
+        scanningStatusNotitificationFirstBuild = false; //notification is created
     }
 
     public void cancelScanningStatusNotification(){
@@ -707,14 +728,13 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         locationTrack = this.checkJsonAndLocationPermissions()[1];
 
         if (locationTrack) {
-            // TODO: Run Location code on UI Thread or call Looper.prepare()
             lastPosition = locationFinder.getLocation(); //get the latest position
         }
 
         if (this.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)) { //check if the settings are set to continous spoofing
-            if (!this.getBackgroundStatus()) { //if the app is not in the background
+            /*if (!this.getBackgroundStatus()) { //if the app is not in the background
                 this.cancelDetectionNotification(); //cancel the detection notification
-            }
+            }*/
             Log.d("Spoof", "I spoof oontinuous");
             if (locationTrack) {
                 locationFinder.setPositionForContinuousSpoofing(lastPosition); //set the position for distance calculation to the latest position
@@ -739,22 +759,22 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             //resetHandler(); // Should be handled by the cpp (just stop scanning)
         } else {
             if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
-                if (this.getBackgroundStatus()) { //if the app is in the background
+                /*if (this.getBackgroundStatus()) { //if the app is in the background
                     this.activateDetectionNotification(); //activate the notification for a detection
-                }
+                }*/
                 this.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                this.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                this.activateAlert(technology); //open the alert message for prontoly
+                this.activateDetectionAlertStatusNotification(technology);
+                this.activateAlert(technology); //open the alert dialog
             } else {
                 if (locationTrack) {
                     locationFinder.checkExistingLocationDB(lastPosition, technology); //if a JSON file is available we check if the signal is a new one with position and technologytype
                 } else {
-                    if (this.getBackgroundStatus()) { //if the app is in the background
+                    /*if (this.getBackgroundStatus()) { //if the app is in the background
                         this.activateDetectionNotification(); //activate the notification for a detection
-                    }
+                    }*/
                     this.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                    this.activateDetectionAlertStatusNotification(); //activate the onHold-status notification
-                    this.activateAlert(technology); //open the alert message for prontoly
+                    this.activateDetectionAlertStatusNotification(technology); //activate the onHold-status notification
+                    this.activateAlert(technology); //open the alert dialog
                     //resetHandler(); // Should be handled by the cpp (just stop scanning)
                 }
             }
@@ -839,7 +859,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         }
         alert.cancel(); //cancel the alert dialog
         txtSignalType.setText(""); //can be deleted it's only for debugging
-        cancelDetectionNotification(); //cancel the detection notification
+        //cancelDetectionNotification(); //cancel the detection notification
         cancelDetectionAlertStatusNotification(); //canceling the onHold notification
         //Why this ? : cancelSpoofingStatusNotification();
     }

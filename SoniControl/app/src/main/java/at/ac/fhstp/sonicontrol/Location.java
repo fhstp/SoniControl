@@ -133,9 +133,9 @@ public class Location {
         jsonMan.setLatestDate(position, signalTech); //update the date in the json-file at the detected position
         if(shouldBeSpoofed){ //if it should be spoofed
             Log.d("Location", "I should be spoofed");
-            if (!main.getBackgroundStatus()) { //if the app is not in the background
+            /*if (!main.getBackgroundStatus()) { //if the app is not in the background
                 main.cancelDetectionNotification(); //cancel the detection notification
-            }
+            }*/
             main.cancelScanningStatusNotification(); //cancel the scanning status notification
             main.activateSpoofingStatusNotification(); //activate the spoofing status notification
 
@@ -145,9 +145,9 @@ public class Location {
             blockMicOrSpoof(); //try get the microphone access for choosing the blocking method
         }else { //if it should not be spoofed
             Log.d("Location", "I shouldn't be spoofed");
-            if (!main.getBackgroundStatus()) { //if the app is not in the background
+            /*if (!main.getBackgroundStatus()) { //if the app is not in the background
                 main.cancelDetectionNotification(); //cancel the detection notification
-            }
+            }*/
             detector = Scan.getInstance(); //get an instance of the Scan
             detector.startScanning(); //start scanning again
         }
@@ -283,12 +283,12 @@ public class Location {
         if(isNewSignal){ //if its a new signal
             Log.d("Location", "I am a new Signal");
             detectedSignalPosition = position; //save the new signal as the detected Position
-            main.cancelScanningStatusNotification(); //cancel the scanning status notification
-            main.activateDetectionAlertStatusNotification(); //activate the onHold status notification
-            if(main.getBackgroundStatus()) { //if the app is in the background
+            main.cancelScanningStatusNotification();
+            main.activateDetectionAlertStatusNotification(signalType);
+            /*if(main.getBackgroundStatus()) { //if the app is in the background
                 main.activateDetectionNotification(); //activate the detection notification
-            }
-            main.activateAlert(signalType); //open the alert with the found technology
+            }*/
+            main.activateAlert(signalType); //open the alert dialog with the found technology
 
         }else{
             Log.d("Location", "I am not a new Signal");

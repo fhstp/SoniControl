@@ -41,5 +41,6 @@ public final class ConfigConstants {
     public static final int DETECTION_NOTIFICATION_ID = 4;
     public static final int DETECTION_ALERT_STATUS_NOTIFICATION_ID = 5;
 
+    public static String EXTRA_TECHNOLOGY_DETECTED = "at.ac.fhstp.sonicontrol.TECHNOLOGY_DETECTED";
 
 }
