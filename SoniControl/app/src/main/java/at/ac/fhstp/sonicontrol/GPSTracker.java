@@ -1,6 +1,7 @@
 package at.ac.fhstp.sonicontrol;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -71,32 +72,33 @@ public class GPSTracker extends Service implements LocationListener {
                 provider_info = LocationManager.NETWORK_PROVIDER;
             }
 
-            int status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
-                    Manifest.permission.RECORD_AUDIO);
-            if (status != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                        main,
-                        new String[]{Manifest.permission.RECORD_AUDIO},
-                        0);
-            }
-
             if (!provider_info.isEmpty()) {
-                locationManager.requestLocationUpdates(
-                        provider_info,
-                        MIN_TIME_BW_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                        this,
-                        main.uiHandler.getLooper()
-                );
+                int status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION);
+                if (status != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(
+                            main,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            ConfigConstants.REQUEST_GPS_PERMISSION);
+                } else {
+                        locationManager.requestLocationUpdates(
+                                provider_info,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                                this,
+                                main.uiHandler.getLooper()
+                        );
 
-                if (locationManager != null) {
-                    location = locationManager.getLastKnownLocation(provider_info);
-                    updateGPSCoordinates();
+                        if (locationManager != null) {
+                            location = locationManager.getLastKnownLocation(provider_info);
+                            updateGPSCoordinates();
+                        }
                 }
             }
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             Log.e(TAG, "Impossible to connect to LocationManager", e);
         }
     }
@@ -145,6 +147,7 @@ public class GPSTracker extends Service implements LocationListener {
 
                 return addresses;
             } catch (IOException e) {
+                e.printStackTrace();
                 Log.e(TAG, "Impossible to connect to Geocoder", e);
             }
         }
@@ -210,6 +213,7 @@ public class GPSTracker extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+
     }
 
     @Override
@@ -227,5 +231,19 @@ public class GPSTracker extends Service implements LocationListener {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    /***
+     * This method is called directly from the onRequestPermissionsResult. We do have the permission.
+     */
+    @SuppressLint("MissingPermission")
+    public void requestGPSUpdates() {
+        locationManager.requestLocationUpdates(
+                provider_info,
+                MIN_TIME_BW_UPDATES,
+                MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                this,
+                main.uiHandler.getLooper()
+        );
     }
 }

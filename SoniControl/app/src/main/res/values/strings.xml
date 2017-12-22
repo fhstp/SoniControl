@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">SoniControl</string>
-    <string name="spoofOnEachLoc">Spoof on each Location</string>
+    <string name="spoofOnEachLoc">Jam on each Location</string>
     <string name="addressData">Not available!</string>
-    <string name="deleteJsonAlertTitle">Delete JSON-File</string>
+    <string name="deleteJsonAlertTitle">Empty Detection Cache</string>
     <string name="deleteJsonAlertMessage">Are you sure you want to delete the JSON-File and the detected WAV-Files?</string>
     <string name="StatusNotificationSpoofingTitle">Blocking</string>
     <string name="StatusNotificationSpoofingMesssage">I am blocking the signal now!</string>
@@ -21,4 +21,7 @@
     <string name="noAddressForJsonFile">Not available!</string>
     <string name="NoSignalDiscoveredAndSavedYet">You haven\'t discovered any Signals yet!</string>
     <string name="permissionRequestExplanation">The app requires at least the permission to access the microphone. Otherwise it cannot detect ultrasonic communications.</string>
+    <string name="toastLocationAccessDenied">No permission to access location.</string>
+    <string name="aboutUsProject">SoniControl is a novel technology for the recognition and masking of acoustic tracking information. The technology helps end-users to protect their privacy. Technologies like Google Nearby and Silverpush build upon ultrasonic sounds to exchange information. More and more of our devices communicate via this inaudible communication channel. Every device with a microphone and a speaker is able to send and receive ultrasonic information. The user is usually not aware of this inaudible and hidden data transfer. To overcome this gap SoniControl detects ultrasonic activity, notifies the user and blocks the information on demand. Thereby, we want to raise the awareness for this novel technology.</string>
+    <string name="aboutUsInfo">The project SoniControl is funded by Netidee and is a project at the Institute for Creative/Media/Technologies at the University of Applied Science Sankt Pölten.</string>
 </resources>

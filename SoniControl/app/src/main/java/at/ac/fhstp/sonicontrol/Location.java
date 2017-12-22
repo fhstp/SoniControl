@@ -253,7 +253,7 @@ public class Location {
             is = new FileInputStream(file);
         }
         catch(IOException ex){
-
+            ex.printStackTrace();
         }
         BufferedInputStream bis = new BufferedInputStream(is, 44100);
         DataInputStream dis = new DataInputStream(bis);
@@ -268,7 +268,7 @@ public class Location {
             dis.close();
         }
         catch (IOException ex){
-
+            ex.printStackTrace();
         }
         AudioTrack sigPlayer = new AudioTrack(AudioManager.STREAM_MUSIC,14700, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,noiseByteArray.length,AudioTrack.MODE_STATIC); //create a new player with the byte array
         sigPlayer.write(noiseByteArray, 0, noiseByteArray.length); //write the byte array into the player
@@ -296,5 +296,9 @@ public class Location {
             shouldDBEntrySpoofed(shouldBeSpoofed,positionDBEntry); //check the spoofed status from the json-file
 
         }
+    }
+
+    public void requestGPSUpdates() {
+        locationData.requestGPSUpdates();
     }
 }

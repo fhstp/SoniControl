@@ -278,6 +278,7 @@ public class NoiseGenerator {
                     reader.close();
                 } catch (IOException e) {
                     //log the exception
+                    e.printStackTrace();
                 }
             }
         }

@@ -34,6 +34,7 @@ public final class ConfigConstants {
     public static final boolean SETTING_PREVENTIVE_SPOOFING_DEFAULT = true;
     public static final int SCAN_BUFFER_SIZE = 2048; //2048 is 46.440ms //2205 is 50 ms (5x 441)
 
+    public static final int REQUEST_GPS_PERMISSION = 1337;
     //Notification ids
     public static final int ON_HOLD_NOTIFICATION_ID = 1;
     public static final int SCANNING_NOTIFICATION_ID = 2;

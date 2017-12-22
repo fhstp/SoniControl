@@ -131,6 +131,8 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
+        // Maybe to add again when we support orientation change
+        /*
         Preference prefLocRad = findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
         int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT));
         prefLocRad.setTitle("Location Radius (" + locationRadius + " metres)");
@@ -154,6 +156,7 @@ public class SettingsFragment extends PreferenceFragment {
         }else{
             prefBlockingDuration.setTitle("Blocking Duration (" + blockingDuration + " Minutes)");
         }
+        */
     }
 
 
