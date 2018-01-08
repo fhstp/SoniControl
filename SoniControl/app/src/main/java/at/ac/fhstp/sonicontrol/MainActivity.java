@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
     public static final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(NUMBER_OF_CORES + 1);
 
-    public Handler uiHandler = new Handler();
+    public Handler uiHandler = new Handler(Looper.getMainLooper());
 
     SharedPreferences sharedPref;
 
@@ -209,6 +210,12 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             }
         });
 
+        // Store the "active" status
+        SharedPreferences sp = getSharedPreferences("appStatus", MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean("active", true);
+        ed.commit();
+
         // savedInstanceState will only be null during the first run of the app, later we do not need to add notifications again.
         if(savedInstanceState == null) {
             mNotificationManager = NotificationManagerCompat.from(this);
@@ -222,8 +229,15 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                     resultIntent,
                     PendingIntent.FLAG_NO_CREATE);
 
+
+            PendingIntent detectionPendingIntent = PendingIntent.getActivity(
+                    this,
+                    MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
+                    resultIntent,
+                    PendingIntent.FLAG_NO_CREATE);
+
             // This will be null if there is no pending intent pointing to the MainActivity, so if it does not run yet
-            if (resultPendingIntent == null) {
+            if (resultPendingIntent == null && detectionPendingIntent == null) {
                 activateOnHoldStatusNotification();
                 btnStart.setEnabled(true);
                 btnStop.setEnabled(false);
@@ -232,18 +246,31 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             else {
                 // TODO: There are some initializations to add depending on the current status.
 
-                /*
-                Depends on the status. (it should be the opposite if we are ON_HOLD
+
+                // TODO: To change for onHold status
+                // Depends on the status. (it should be the opposite if we are ON_HOLD
                 btnStart.setEnabled(false);
                 btnStop.setEnabled(true);
-                */
+
 
                 Intent intent = getIntent();
-                Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
-                if(technology != null) {
-                    activateAlert(technology);
+                if (intent.getExtras() != null || detectionPendingIntent != null) {
+                    Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
+                    if (technology != null) {
+                        activateAlert(technology);
+                    }
+                    else if (detectionPendingIntent != null) {
+                        try {
+                            detectionPendingIntent.send();
+                        } catch (PendingIntent.CanceledException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+                else {
+                    // TODO: ?
 
+                }
 /*
                 PendingIntent detectionPendingIntent = PendingIntent.getActivity(
                         this,
@@ -274,7 +301,17 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                 MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
                 resultIntent,
                 0);
-        resultPendingIntent.cancel();
+
+        if (resultPendingIntent != null)
+            resultPendingIntent.cancel();
+
+        PendingIntent detectionPendingIntent = PendingIntent.getActivity(
+                this,
+                MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
+                resultIntent,
+                PendingIntent.FLAG_NO_CREATE);
+        if (detectionPendingIntent != null)
+            detectionPendingIntent.cancel();
 
         // Stop all the background threads
         threadPool.shutdownNow();
@@ -427,7 +464,11 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             usedBlockingMethod = locationFinder.blockMicOrSpoof();
         }
         sigType = signalType; //set the technology variable to the latest detected one
-        uiHandler.post(displayAlert);
+
+        SharedPreferences sp = getSharedPreferences("appStatus", MODE_PRIVATE);
+        boolean activityExists = sp.getBoolean("active", false);
+        if (activityExists)
+            uiHandler.post(displayAlert);
     }
 
     private Runnable displayAlert = new Runnable() {
@@ -635,12 +676,18 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public SharedPreferences getSettingsObject(){
-        //SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //get the object with the settings
+        if (sharedPref == null)
+            sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //get the object with the settings
         return sharedPref;
     }
 
     public void getUpdatedSettings(){
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -665,6 +712,17 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     public void onPause(){ //override the onPause method for setting a variable for checking the background-status
         super.onPause();
         isInBackground = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // Store our shared preference
+        SharedPreferences sp = getSharedPreferences("appStatus", MODE_PRIVATE);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean("active", false);
+        ed.commit();
     }
 
     @Override
