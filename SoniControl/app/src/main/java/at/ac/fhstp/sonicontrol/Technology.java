@@ -2,6 +2,10 @@ package at.ac.fhstp.sonicontrol;
 
 
 public enum Technology {
+    /***
+     * WARNING: Changing the String values would make the app incompatible with previous version.
+     * (The Strings are used to persist values in SharedPreferences)
+     */
     PRONTOLY("Prontoly"),
     GOOGLE_NEARBY("Google_Nearby"),
     LISNR("Lisnr"),

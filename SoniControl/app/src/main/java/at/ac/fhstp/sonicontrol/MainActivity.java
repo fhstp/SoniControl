@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
+
+    private StateEnum appState;
 
     ImageButton btnStorLoc;
     ImageButton btnStart;
@@ -210,12 +213,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             }
         });
 
-        // Store the "active" status
-        SharedPreferences sp = getSharedPreferences("appStatus", MODE_PRIVATE);
-        SharedPreferences.Editor ed = sp.edit();
-        ed.putBoolean("active", true);
-        ed.commit();
-
         // savedInstanceState will only be null during the first run of the app, later we do not need to add notifications again.
         if(savedInstanceState == null) {
             mNotificationManager = NotificationManagerCompat.from(this);
@@ -290,6 +287,12 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     private void onBtnExitClick(View v) {
+        // Reset state
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.remove(ConfigConstants.PREFERENCES_APP_STATE);
+        ed.commit();
+
         mNotificationManager.cancelAll(); //cancel all notifications
 
         // Cancel the pending intent corresponding to the notification
@@ -465,8 +468,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         }
         sigType = signalType; //set the technology variable to the latest detected one
 
-        SharedPreferences sp = getSharedPreferences("appStatus", MODE_PRIVATE);
-        boolean activityExists = sp.getBoolean("active", false);
+        boolean activityExists = settings.getBoolean("active", false);
         if (activityExists)
             uiHandler.post(displayAlert);
     }
@@ -695,6 +697,39 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         super.onResume();
         isInBackground = false;
 
+        // Store the app state
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean("active", true);
+        ed.apply();
+        String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+        StateEnum state;
+        try {
+            state = StateEnum.fromString(stateString);
+        }
+        catch (IllegalArgumentException e) {
+            Log.d(TAG, "onResume: " + e.getMessage());
+            state = StateEnum.ON_HOLD;
+        }
+        switch (state) {
+            case ON_HOLD:
+                setGUIStateStopped();
+                break;
+            case JAMMING:
+                setGUIStateStarted();
+                break;
+            case SCANNING:
+                setGUIStateStarted();
+                break;
+            default:
+                // Should not happen as a default value is set above
+                break;
+        }
+
+        Snackbar.make(findViewById(android.R.id.content).getRootView(), state.toString(),
+                Snackbar.LENGTH_SHORT)
+                .show();
+
         SharedPreferences settings = getSettingsObject(); //get the settings
         saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
@@ -712,17 +747,17 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     public void onPause(){ //override the onPause method for setting a variable for checking the background-status
         super.onPause();
         isInBackground = true;
+
+        // Store our shared preference
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean("active", false);
+        ed.apply();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
-        // Store our shared preference
-        SharedPreferences sp = getSharedPreferences("appStatus", MODE_PRIVATE);
-        SharedPreferences.Editor ed = sp.edit();
-        ed.putBoolean("active", false);
-        ed.commit();
     }
 
     @Override
@@ -883,22 +918,34 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         });
     }
 
+    /***
+     * Called when clicking on the stop button
+     */
     public void stopApplicationProcesses(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mNotificationManager.cancelAll(); //cancel all active notifications
-                activateOnHoldStatusNotification(); //activate only the onHold-status notification again
-                detector.pause(); // stop scanning
-                alert.cancel();
-                Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
-                spoof.stopSpoofingComplete(); //stop the whole spoofing process
-                MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
-                micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
-                btnStart.setEnabled(true); //enable the start button again
-                btnStop.setEnabled(false); //disable the stop button
-            }
-        });
+        mNotificationManager.cancelAll(); //cancel all active notifications
+        activateOnHoldStatusNotification(); //activate only the onHold-status notification again
+        detector.pause(); // stop scanning
+        alert.cancel();
+        Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
+        spoof.stopSpoofingComplete(); //stop the whole spoofing process
+        MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
+        micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
+
+        setGUIStateStopped();
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+        ed.apply();
+    }
+
+    public void setGUIStateStopped() {
+        btnStart.setEnabled(true); //enable the start button again
+        btnStop.setEnabled(false); //disable the stop button
+    }
+
+    public void setGUIStateStarted() {
+        btnStart.setEnabled(false); //enable the start button again
+        btnStop.setEnabled(true); //disable the stop button
     }
 
     public void openStoredLocations(){

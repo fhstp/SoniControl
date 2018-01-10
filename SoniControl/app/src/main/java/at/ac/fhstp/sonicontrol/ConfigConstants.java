@@ -28,6 +28,8 @@ public final class ConfigConstants {
     public static final String USED_BLOCKING_METHOD_SPOOFER = "Spoofer";
     public static final String USED_BLOCKING_METHOD_MICROPHONE = "Microphone";
 
+    public final static String PREFERENCES_APP_STATE = "PREFERENCES_APP_STATE";
+
     // Scan constants
     public static final int SCAN_SAMPLE_RATE = 44100;
     public static final String SETTING_PREVENTIVE_SPOOFING = "cbprefPreventiveSpoofing";

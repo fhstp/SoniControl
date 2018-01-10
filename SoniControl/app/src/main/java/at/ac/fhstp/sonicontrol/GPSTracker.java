@@ -13,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.content.SharedPreferences;
@@ -100,6 +101,7 @@ public class GPSTracker extends Service implements LocationListener {
         {
             e.printStackTrace();
             Log.e(TAG, "Impossible to connect to LocationManager", e);
+            // TODO: Add a Toast or Snackbar ?
         }
     }
 

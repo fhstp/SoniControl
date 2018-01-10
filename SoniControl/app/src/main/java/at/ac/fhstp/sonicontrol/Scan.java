@@ -1,6 +1,8 @@
 package at.ac.fhstp.sonicontrol;
 
+import android.content.SharedPreferences;
 import android.location.LocationManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -108,6 +110,11 @@ public class Scan {
             Log.d(TAG, "startScanning");
             MainActivity.threadPool.execute(scanRun);
         }
+        // Stores the app state : SCANNING
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.SCANNING.toString());
+        ed.apply();
     }
 
     public void getTheOldSpoofer(Spoofer spoofing){

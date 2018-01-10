@@ -192,6 +192,11 @@ public class Location {
             blockBySpoofing();
             usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_SPOOFER;
         }
+        // Stores the app state : JAMMING
+        SharedPreferences.Editor ed = sharedPref.edit();
+        ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.JAMMING.toString());
+        ed.apply();
+
         return usedBlockingMethod;
     }
 
@@ -299,6 +304,12 @@ public class Location {
     }
 
     public void requestGPSUpdates() {
-        locationData.requestGPSUpdates();
+        if (locationData == null) {
+            // Will call requestLocationUpdates
+            locationData = new GPSTracker(main);
+        }
+        else {
+            locationData.requestGPSUpdates();
+        }
     }
 }

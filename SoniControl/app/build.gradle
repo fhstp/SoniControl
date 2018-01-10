@@ -56,4 +56,5 @@ dependencies {
     compile 'pl.edu.icm:JLargeArrays:1.6' // Better to have it here than in jar folder (see gitignore)
     compile 'com.jjoe64:graphview:4.2.1'
     compile 'com.android.support:appcompat-v7:25.0.3'
+    compile 'com.android.support:design:25.4.0'
 }
