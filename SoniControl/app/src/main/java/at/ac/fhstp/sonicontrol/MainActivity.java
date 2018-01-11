@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioTrack;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -526,6 +527,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     private void initDetectionAlertStatusNotification(Technology technology){
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
         detectionAlertStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.hearing_found)
@@ -535,7 +538,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setOngoing(true) // cannot be dismissed
                         .setPriority(Notification.PRIORITY_HIGH)
                         .setCategory(Notification.CATEGORY_STATUS)
-                        .setAutoCancel(true); //it's canceled when tapped on it
+                        .setAutoCancel(true) //it's canceled when tapped on it
+                        .setSound(alarmSound);
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
