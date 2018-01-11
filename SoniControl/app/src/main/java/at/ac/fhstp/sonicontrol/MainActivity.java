@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
 
-    private StateEnum appState;
-
     ImageButton btnStorLoc;
     ImageButton btnStart;
     ImageButton btnStop;
@@ -128,6 +126,20 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /***
+         * Android bug causes the launch of a new task when using the home screen or launcher icon.
+         * See: https://stackoverflow.com/a/12983901/5232306
+         */
+        if (!isTaskRoot()) {
+            Intent intent = getIntent();
+            String action = intent.getAction();
+            if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && action != null && action.equals(Intent.ACTION_MAIN)) {
+                finish();
+                return;
+            }
+        }
+
         setContentView(R.layout.activity_main);
 
         mainIsMain = this;
@@ -218,70 +230,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         if(savedInstanceState == null) {
             mNotificationManager = NotificationManagerCompat.from(this);
 
-            Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-            resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-            PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                    this,
-                    MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
-                    resultIntent,
-                    PendingIntent.FLAG_NO_CREATE);
-
-
-            PendingIntent detectionPendingIntent = PendingIntent.getActivity(
-                    this,
-                    MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
-                    resultIntent,
-                    PendingIntent.FLAG_NO_CREATE);
-
-            // This will be null if there is no pending intent pointing to the MainActivity, so if it does not run yet
-            if (resultPendingIntent == null && detectionPendingIntent == null) {
-                activateOnHoldStatusNotification();
-                btnStart.setEnabled(true);
-                btnStop.setEnabled(false);
-                // TODO: Anything else to initialize when we launch the app ?
-            }
-            else {
-                // TODO: There are some initializations to add depending on the current status.
-
-
-                // TODO: To change for onHold status
-                // Depends on the status. (it should be the opposite if we are ON_HOLD
-                btnStart.setEnabled(false);
-                btnStop.setEnabled(true);
-
-
-                Intent intent = getIntent();
-                if (intent.getExtras() != null || detectionPendingIntent != null) {
-                    Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
-                    if (technology != null) {
-                        activateAlert(technology);
-                    }
-                    else if (detectionPendingIntent != null) {
-                        try {
-                            detectionPendingIntent.send();
-                        } catch (PendingIntent.CanceledException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                else {
-                    // TODO: ?
-
-                }
-/*
-                PendingIntent detectionPendingIntent = PendingIntent.getActivity(
-                        this,
-                        MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
-                        resultIntent,
-                        PendingIntent.FLAG_NO_CREATE);
-                // This will be null if there is no detection notification
-                if (detectionPendingIntent != null) {
-                    activateAlert(detectionPendingIntent.get);
-                }
-*/
-            }
-
             getUpdatedSettings(); //get the settings
         }
 
@@ -292,6 +240,9 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
         ed.remove(ConfigConstants.PREFERENCES_APP_STATE);
+        // Clean the technology on disk
+        ed.remove("lastDetectedTechnology");
+        ed.apply();
         ed.commit();
 
         mNotificationManager.cancelAll(); //cancel all notifications
@@ -467,11 +418,13 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             activateSpoofingStatusNotification();
             usedBlockingMethod = locationFinder.blockMicOrSpoof();
         }
+
         sigType = signalType; //set the technology variable to the latest detected one
 
         boolean activityExists = settings.getBoolean("active", false);
-        if (activityExists)
+        if (activityExists) {
             uiHandler.post(displayAlert);
+        }
     }
 
     private Runnable displayAlert = new Runnable() {
@@ -580,7 +533,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
                         .setOngoing(true) // cannot be dismissed
                         .setPriority(Notification.PRIORITY_HIGH)
-                        .setAutoCancel(true) //it's canceled when tapped on it
+                        //Now canceled in activateALert() .setAutoCancel(true) //it's canceled when tapped on it
                         .setSound(alarmSound);
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -591,7 +544,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                 this,
                 MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
                 resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT);//Now canceled in activateALert()  | PendingIntent.FLAG_ONE_SHOT);
 
         detectionAlertStatusBuilder.setContentIntent(resultPendingIntent);
 
@@ -606,7 +559,16 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void cancelDetectionAlertStatusNotification(){
-        mNotificationManager.cancel(detectionAlertStatusNotificationId); //Cancel the notification with the help of the id
+        mNotificationManager.cancel(detectionAlertStatusNotificationId); //Cancel the notification with the help of the id Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
+        // Cancel the linked pending intent
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                this,
+                MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
+                resultIntent,
+                PendingIntent.FLAG_NO_CREATE);
+        resultPendingIntent.cancel();
     }
 
     private void initOnHoldStatusNotification(){
@@ -700,7 +662,15 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         super.onResume();
         isInBackground = false;
 
-        // Store the app state
+        Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent detectionPendingIntent = PendingIntent.getActivity(
+                this,
+                MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
+                resultIntent,
+                PendingIntent.FLAG_NO_CREATE);
+
+        // Store the app activeness and then check the state
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean("active", true);
@@ -714,20 +684,76 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             Log.d(TAG, "onResume: " + e.getMessage());
             state = StateEnum.ON_HOLD;
         }
+
         switch (state) {
             case ON_HOLD:
+                activateOnHoldStatusNotification();
                 setGUIStateStopped();
                 break;
             case JAMMING:
+                activateSpoofingStatusNotification();
                 setGUIStateStarted();
                 break;
             case SCANNING:
                 setGUIStateStarted();
+
+                Intent intent = getIntent();
+                if (intent.hasExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED)) {
+                    // TODO: THIS IS ONE OF THE LAST EDGE CASES TO SOLVE
+                    // The intent extra is not removed after dismissing the alert,
+                    // so going to another activity and coming back triggers this code again,
+                    // leading to a crash.
+                    //TODO: Try not to use the intent extra, directly the "lastDetectedTechnology"
+
+
+                    Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
+                    if (technology != null) {
+                        activateAlert(technology);
+                    }
+                }
+                else if (detectionPendingIntent != null) {
+                    if (sigType != null) {
+                        activateAlert(sigType);
+                    }
+                    else {
+                        // TODO: THIS IS ONE OF THE LAST EDGE CASES TO SOLVE
+                        // EDIT: Seems to work as is.
+
+                        // in case the Activity was destroyed
+                        String storedTechnology = sp.getString("lastDetectedTechnology", null);
+                        if (storedTechnology != null) {
+                            Technology lastDetectedTechnology = null;
+                            try {
+                                lastDetectedTechnology = Technology.fromString(storedTechnology);
+                            }
+                            catch (IllegalArgumentException e) {
+                                Log.d(TAG, "onResume: " + e.getMessage());
+                            }
+                            if (lastDetectedTechnology != null) {
+                                activateAlert(lastDetectedTechnology);
+                            }
+                            else {
+                                Log.d(TAG, "onResume: Technology not stored correctly ?");
+                            }
+                        }
+                    }
+                        /* Does not work and create an infinite loop
+                        try {
+                            detectionPendingIntent.send();
+                        } catch (PendingIntent.CanceledException e) {
+                            e.printStackTrace();
+                        }*/
+                }
+                else {
+                    activateScanningStatusNotification();
+                    // TODO: ?
+                }
                 break;
             default:
                 // Should not happen as a default value is set above
                 break;
         }
+
 
         Snackbar.make(findViewById(android.R.id.content).getRootView(), state.toString(),
                 Snackbar.LENGTH_SHORT)
@@ -755,6 +781,8 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean("active", false);
+        // Clean the technology on disk
+        ed.remove("lastDetectedTechnology");
         ed.apply();
     }
 
@@ -805,7 +833,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     @Override
     public void onDetection(final Technology technology) {
-        //TODO: someHandler.post(checkTechnologyAndDoAccordingly(technology));
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -817,7 +844,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
     private void checkTechnologyAndDoAccordingly(Technology detectedTechnology){
         if(detectedTechnology == null) {
-            // TODO: Needed ? detector.startScanning();
+            // This case should not happen
             Log.d(TAG, "checkTechnologyAndDoAccordingly: detectedTechnology is null !?");
         }
         else {
@@ -836,6 +863,12 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     private void handleSignal(Technology technology) {
+        // Stores the technology on disk in case the Activity was destroyed
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString("lastDetectedTechnology", technology.toString());
+        ed.apply();
+
         boolean locationTrack;
         locationFinder.saveSignalTypeForLater(technology);
         locationTrack = this.checkJsonAndLocationPermissions()[1];
@@ -984,9 +1017,13 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         }
         alert.cancel(); //cancel the alert dialog
         txtSignalType.setText(""); //can be deleted it's only for debugging
-        //cancelDetectionNotification(); //cancel the detection notification
-        cancelDetectionAlertStatusNotification(); //canceling the onHold notification
-        //Why this ? : cancelSpoofingStatusNotification();
+        cancelDetectionAlertStatusNotification();
+
+        // Clean the technology on disk
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.remove("lastDetectedTechnology");
+        ed.apply();
     }
 
     public void onAlertPlayDetectedSignal(){
