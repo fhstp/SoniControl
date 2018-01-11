@@ -539,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setSmallIcon(R.drawable.hearing_block) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationSpoofingTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationSpoofingMesssage)) //adding the text
-                        .setCategory(Notification.CATEGORY_SERVICE)
+                        //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -577,10 +577,9 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setSmallIcon(R.drawable.hearing_found)
                         .setContentTitle(getString(R.string.StatusNotificationDetectionAlertTitle))
                         .setContentText(getString(R.string.StatusNotificationDetectionAlertMessage))
-                        .setCategory(Notification.CATEGORY_STATUS)
+                        //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
                         .setOngoing(true) // cannot be dismissed
                         .setPriority(Notification.PRIORITY_HIGH)
-                        .setCategory(Notification.CATEGORY_STATUS)
                         .setAutoCancel(true) //it's canceled when tapped on it
                         .setSound(alarmSound);
 
@@ -616,7 +615,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setSmallIcon(R.drawable.hearing_pause) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationOnHoldTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationOnHoldMessage)) //adding the text
-                        .setCategory(Notification.CATEGORY_STATUS)
+                        //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
@@ -651,7 +650,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                         .setSmallIcon(R.drawable.ic_hearing_white_48dp) //adding the icon
                         .setContentTitle(getString(R.string.StatusNotificationScanningTitle)) //adding the title
                         .setContentText(getString(R.string.StatusNotificationScanningMessage)) //adding the text
-                        .setCategory(Notification.CATEGORY_SERVICE)
+                        //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
                         .setOngoing(true); //it's canceled when tapped on it
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
