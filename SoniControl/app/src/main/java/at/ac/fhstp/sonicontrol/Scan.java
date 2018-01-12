@@ -13,7 +13,8 @@ public class Scan {
     public interface DetectionListener {
         public void onDetection(Technology technology);
     }
-    private List<DetectionListener> detectionListeners = new ArrayList<>();
+    //private List<DetectionListener> detectionListeners = new ArrayList<>();
+    private DetectionListener mainDetectionListener = null;
 
     private static Scan instance;
     private JSONManager jsonMan;
@@ -47,15 +48,19 @@ public class Scan {
         System.loadLibrary("Superpowered");
     }
 
-    public void addDetectionListener(DetectionListener listener) {
+/*    public void addDetectionListener(DetectionListener listener) {
         this.detectionListeners.add(listener);
+    }*/
+    public void setDetectionListener(DetectionListener listener) {
+        this.mainDetectionListener = listener;
     }
 
     public void notifyDetectionListeners() {
         if (lastDetectedTechnology != null) {
-            for(DetectionListener listener: detectionListeners) {
+            /*for(DetectionListener listener: detectionListeners) {
                 listener.onDetection(lastDetectedTechnology);
-            }
+            }*/
+            mainDetectionListener.onDetection(lastDetectedTechnology);
         }
         else {
             Log.d(TAG, "notifyDetectionListeners: lastDetectedTechnology is null");

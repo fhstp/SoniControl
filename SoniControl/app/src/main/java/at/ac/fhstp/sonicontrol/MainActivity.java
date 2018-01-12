@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         //TODO: This should be ran only at first start...
         detector = Scan.getInstance(); //Get Scan-object if no object is available yet make a new one
         detector.init(MainActivity.this); //initialize the detector with the main method
-        detector.addDetectionListener(this); // MainActivity will be notified of detections (calls onDetection)
+        detector.setDetectionListener(this); // MainActivity will be notified of detections (calls onDetection)
 
         locationFinder = Location.getInstanceLoc(); //Get LocationFinder-object if no object is available yet make a new one
         locationFinder.init(MainActivity.this); //initialize the location-object with the main method
