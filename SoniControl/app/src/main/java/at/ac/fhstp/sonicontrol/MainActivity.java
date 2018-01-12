@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
 
         mainIsMain = this;
 
+        //TODO: This should be ran only at first start...
         detector = Scan.getInstance(); //Get Scan-object if no object is available yet make a new one
         detector.init(MainActivity.this); //initialize the detector with the main method
         detector.addDetectionListener(this); // MainActivity will be notified of detections (calls onDetection)
@@ -709,6 +710,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                     Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
                     if (technology != null) {
                         activateAlert(technology);
+                        intent.removeExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
                     }
                 }
                 else if (detectionPendingIntent != null) {
@@ -737,12 +739,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
                             }
                         }
                     }
-                        /* Does not work and create an infinite loop
-                        try {
-                            detectionPendingIntent.send();
-                        } catch (PendingIntent.CanceledException e) {
-                            e.printStackTrace();
-                        }*/
                 }
                 else {
                     activateScanningStatusNotification();
