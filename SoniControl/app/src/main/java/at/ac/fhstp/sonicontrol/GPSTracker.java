@@ -17,6 +17,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -52,6 +53,8 @@ public class GPSTracker extends Service implements LocationListener {
     public void initGPSTracker() {
 
         try {
+            //Todo: Toast
+            main.displayToast("I am in initGPS", Toast.LENGTH_SHORT);
             locationManager = (LocationManager) main.getApplicationContext().getSystemService(LOCATION_SERVICE);
 
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -102,6 +105,7 @@ public class GPSTracker extends Service implements LocationListener {
             e.printStackTrace();
             Log.e(TAG, "Impossible to connect to LocationManager", e);
             // TODO: Add a Toast or Snackbar ?
+            main.displayToast(getResources().getString(R.string.toastMessageNoGeocoderConnection), Toast.LENGTH_SHORT);
         }
     }
 

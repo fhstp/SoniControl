@@ -21,7 +21,7 @@
             android:key="cbprefNetworkUse"
             android:title="Use Network Connection for Location" />
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="cbprefPreventiveSpoofing"
             android:title="Preventive Jamming" />
     </PreferenceCategory>

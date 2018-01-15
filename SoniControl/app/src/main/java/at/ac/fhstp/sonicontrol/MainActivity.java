@@ -347,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
             }
         }
         else {
+            setGUIStateStarted();
             startDetection();
         }
     }
@@ -971,11 +972,21 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
     }
 
     public void setGUIStateStopped() {
+
+        btnStart.setBackgroundColor(0XFFAAAAAA);
+        btnStart.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+        btnStop.setBackgroundColor(0XFFD4D4D4);
+
         btnStart.setEnabled(true); //enable the start button again
         btnStop.setEnabled(false); //disable the stop button
     }
 
     public void setGUIStateStarted() {
+
+        btnStart.setBackgroundColor(0XFFD4D4D4);
+        btnStart.setImageResource(R.drawable.ic_play_arrow_blue_48dp);
+        btnStop.setBackgroundColor(0XFFAAAAAA);
+
         btnStart.setEnabled(false); //enable the start button again
         btnStop.setEnabled(true); //disable the stop button
     }
@@ -990,6 +1001,15 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         startActivityForResult(myIntent, 0);
         String uniqueID = UUID.randomUUID().toString();
         Log.d("UUID", uniqueID);
+    }
+
+    public void displayToast(final String toastText,final int duration){
+        uiHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(mainIsMain, toastText,duration).show();
+            }
+        });
     }
 
     public void onAlertChoice(int spoofDecision) {
