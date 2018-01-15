@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".StoredLocations"
-            android:label="Found Signals"
+            android:label="@string/storedLocationTitle"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
             <meta-data

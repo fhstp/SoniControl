@@ -20,7 +20,7 @@
             android:id="@+id/btnPlay"
             android:layout_width="308dp"
             android:layout_height="wrap_content"
-            android:text="Play"
+            android:text="@string/alertDialog_option_play"
             android:layout_above="@+id/btnSpoof"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
@@ -34,7 +34,7 @@
             android:layout_alignLeft="@+id/btnPlay"
             android:layout_alignStart="@+id/btnPlay"
             android:layout_marginBottom="15dp"
-            android:text="Jam Always Here" />
+            android:text="@string/alertDialog_option_jam_always_here" />
 
         <Button
             android:id="@+id/btnDismissThisTime"
@@ -44,7 +44,7 @@
             android:layout_alignLeft="@+id/btnSpoof"
             android:layout_alignStart="@+id/btnSpoof"
             android:layout_marginBottom="11dp"
-            android:text="Dismiss this Time" />
+            android:text="@string/alertDialog_option_dismiss_this_time" />
 
         <Button
             android:id="@+id/btnDismissAlwaysHere"
@@ -54,7 +54,7 @@
             android:layout_alignLeft="@+id/btnDismissThisTime"
             android:layout_alignStart="@+id/btnDismissThisTime"
             android:layout_marginBottom="25dp"
-            android:text="Dismiss always here" />
+            android:text="@string/alertDialog_option_dismiss_always_here" />
 
         <TextView
             android:id="@+id/txtSignalType"
@@ -80,7 +80,7 @@
             android:layout_alignRight="@+id/btnPlay"
             android:layout_alignStart="@+id/txtSignalType"
             android:layout_alignTop="@+id/txtSignalType"
-            android:text="You discovered an ultrasonic signal. Choose your option for this Signal!"
+            android:text="@string/alertDialog_text_ultrasonic_signal_detected"
             android:textAlignment="center"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"/>
