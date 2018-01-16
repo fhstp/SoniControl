@@ -12,7 +12,7 @@ android {
         minSdkVersion 16 // more than 95% of all active Android devices (mid 2017)
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "0.9-alpha"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -28,8 +28,12 @@ android {
         }
     }
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
