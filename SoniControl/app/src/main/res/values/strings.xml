@@ -30,5 +30,7 @@
     <string name="alertDialog_option_dismiss_always_here">Ignore always here</string>
     <string name="alertDialog_text_ultrasonic_signal_detected">Ultrasonic signal detected. Select one of the options below to proceed</string>
     <string name="alertDialog_option_play">Play</string>
-    <string name="storedLocationTitle">Detected signals</string>
+    <string name="storedLocationActivityTitle">Detected signals</string>
+    <string name="SettingsActivityTitle">Settings</string>
+    <string name="AboutUsActivityTitle">About us</string>
 </resources>

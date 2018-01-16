@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".StoredLocations"
-            android:label="@string/storedLocationTitle"
+            android:label="@string/storedLocationActivityTitle"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -41,7 +41,7 @@
                 android:value=".MainActivity"/>
         </activity>
         <activity android:name=".SettingsActivity"
-            android:label="Settings"
+            android:label="@string/SettingsActivityTitle"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -49,7 +49,7 @@
                 android:value=".MainActivity"/>
         </activity>
         <activity android:name=".AboutUs"
-            android:label="About Us"
+            android:label="@string/AboutUsActivityTitle"
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
             <meta-data
