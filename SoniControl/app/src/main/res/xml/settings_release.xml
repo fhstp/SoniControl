@@ -24,19 +24,19 @@
             android:defaultValue="false"
             android:key="cbprefPreventiveSpoofing"
             android:title="Preventive Jamming" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Expert - Spoofer">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbprefMicBlock"
+            android:title="Use Microphone for Blocking" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbprefJsonSave"
+            android:title="Save Data in JSON File" />
         <Preference
             android:key="deleteJson"
             android:title="Clear stored Detections"></Preference>
-        <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="cbprefMicBlock"
-        android:title="Use Microphone for Blocking" />
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="cbprefJsonSave"
-        android:title="Save Data in JSON File" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Expert settings - Jammer">
     <EditTextPreference
         android:defaultValue="4000"
         android:key="etprefPulseDuration"
