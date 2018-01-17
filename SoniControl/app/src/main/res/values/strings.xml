@@ -24,7 +24,7 @@
     <string name="toastLocationAccessDenied">No permission to access location.</string>
     <string name="aboutUsProject">SoniControl is a novel technology for the recognition and masking of acoustic tracking information. The technology helps end-users to protect their privacy. Technologies like Google Nearby and Silverpush build upon ultrasonic sounds to exchange information. More and more of our devices communicate via this inaudible communication channel. Every device with a microphone and a speaker is able to send and receive ultrasonic information. The user is usually not aware of this inaudible and hidden data transfer. To overcome this gap SoniControl detects ultrasonic activity, notifies the user and blocks the information on demand. Thereby, we want to raise the awareness for this novel technology.</string>
     <string name="toastMessageNoGeocoderConnection">Not able to access location</string>
-    <string name="aboutUsInfo">The project SoniControl is funded by Netidee and is a project at the Institute for Creative/Media/Technologies at the University of Applied Science Sankt Pölten.</string>
+    <string name="aboutUsInfo">The project SoniControl is funded by Netidee and is a project at the Institute for Creative/Media/Technologies at the University of Applied Science Sankt Poelten.</string>
     <string name="alertDialog_option_jam_always_here">Block always here</string>
     <string name="alertDialog_option_dismiss_this_time">Ignore this time</string>
     <string name="alertDialog_option_dismiss_always_here">Ignore always here</string>
@@ -34,4 +34,14 @@
     <string name="SettingsActivityTitle">Settings</string>
     <string name="AboutUsActivityTitle">About us</string>
     <string name="creditsText">Material Icons used, which are under the license of Apache License Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)</string>
+    <string name="privacy_policy_menuItem">Privacy policy</string>
+    <string name="about_us_menuItem">About us</string>
+    <string name="help_menuItem">Help</string>
+    <string name="privacy_policy_text">Data collection and data processing:\n\n
+- We use the microphone to capture sound, but process only the ultrasonic part, we remove everything under 17kHz.\n\n
+- Sounds are analyzed in real time on the phone. They are not sent to the web, nor stored on the phone.\n\n
+- Detections are stored locally in a JSON file, including the time and location (if allowed by the user). The user can delete this file at any time via the Settings menu.\n\n
+- If allowed, we check the user\'s location regularly in order to tell him when he enters an area where he previously detected ultrasonic communications.
+    </string>
+    <string name="privacy_policy_label">Privacy policy</string>
 </resources>

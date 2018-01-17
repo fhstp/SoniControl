@@ -9,7 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
     MainActivity main = new MainActivity();
     MainActivity nextMain;
@@ -25,38 +25,5 @@ public class SettingsActivity extends AppCompatActivity {
         getFragmentManager().beginTransaction()
                 .replace(R.id.preference_container, new SettingsFragment()) //replace the layout file with the settingsFragment
                 .commit();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // action with ID action_refresh was selected
-            case R.id.open_help:
-                Toast.makeText(this, "Help selected", Toast.LENGTH_SHORT)
-                        .show();
-                break;
-            // action with ID action_settings was selected
-            case R.id.open_about_us:
-                Toast.makeText(this, "About Us selected", Toast.LENGTH_SHORT)
-                        .show();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        nextMain.getUpdatedSettings();
     }
 }

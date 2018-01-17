@@ -9,10 +9,14 @@
         android:orderInCategory="100"
         app:showAsAction="always"
         android:icon="@drawable/ic_help_outline_white_48dp"
-        android:title="Help"/>
+        android:title="@string/help_menuItem"/>
     <item
         android:id="@+id/open_about_us"
-        android:title="About Us">
+        android:title="@string/about_us_menuItem">
+    </item>
+    <item
+        android:id="@+id/open_privacy_policy"
+        android:title="@string/privacy_policy_menuItem">
     </item>
 
 </menu>

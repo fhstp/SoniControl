@@ -44,7 +44,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
-public class MainActivity extends AppCompatActivity implements Scan.DetectionListener {
+public class MainActivity extends BaseActivity implements Scan.DetectionListener {
     private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
     private static final int NOTIFICATION_STATUS_REQUEST_CODE = 2;
@@ -272,42 +272,6 @@ public class MainActivity extends AppCompatActivity implements Scan.DetectionLis
         // Stop all the background threads
         threadPool.shutdownNow();
         System.exit(0); //exit the application
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // action with ID action_refresh was selected
-            case R.id.open_help:
-                openHelp();
-                break;
-            // action with ID action_settings was selected
-            case R.id.open_about_us:
-                openAboutUs();
-                break;
-            default:
-                break;
-        }
-
-        return true;
-    }
-
-    public void openHelp(){
-        Uri uri = Uri.parse("http://sonicontrol.fhstp.ac.at"); // missing 'http://' will cause crashed
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
-    }
-
-    public void openAboutUs(){
-        Intent myIntent = new Intent(MainActivity.this, AboutUs.class); //redirect to the stored locations activity
-        startActivityForResult(myIntent, 0);
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
