@@ -33,4 +33,5 @@
     <string name="storedLocationActivityTitle">Detected signals</string>
     <string name="SettingsActivityTitle">Settings</string>
     <string name="AboutUsActivityTitle">About us</string>
+    <string name="creditsText">Material Icons used, which are under the license of Apache License Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)</string>
 </resources>

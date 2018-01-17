@@ -35,7 +35,7 @@ public class AboutUs extends AppCompatActivity {
                 openHelp();
                 break;
             default:
-                break;
+                return super.onOptionsItemSelected(item);
         }
 
         return true;

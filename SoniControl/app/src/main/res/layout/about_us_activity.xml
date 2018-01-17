@@ -61,7 +61,7 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Material Icons used, which are under the license of Apache License Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
+        android:text="@string/creditsText"
         android:textColor="@android:color/black"
         android:layout_marginTop="15dp"
         android:layout_marginRight="16dp"
