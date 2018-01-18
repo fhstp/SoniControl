@@ -15,9 +15,11 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.renderscript.Sampler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
@@ -627,6 +629,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     public void onResume(){ //override the onResume method for setting a variable for checking the background-status
         super.onResume();
         isInBackground = false;
+        checkFirstRunForInstructionsShowing();
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -1038,6 +1041,23 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         onAlertChoice(2);
         detector.startScanning(); //start scanning again
         activateScanningStatusNotification(); //activates the notification for the scanning process
+    }
+
+    public void onFirstOpeningShowInstructions(){
+        new AlertDialog.Builder(this).setTitle("Instructions").setMessage("Welcome to the Sonicontrol Firewall").setNeutralButton("OK", null).show();
+    }
+
+    public void checkFirstRunForInstructionsShowing() {
+        SharedPreferences sp = getSettingsObject();
+        boolean isFirstRun = sp.getBoolean("isFirstRun", true);
+        Log.d("I am in First run", String.valueOf(isFirstRun));
+        if (isFirstRun){
+            onFirstOpeningShowInstructions();
+            sp
+                    .edit()
+                    .putBoolean("isFirstRun", false)
+                    .apply();
+        }
     }
 /*
     public void updateDistance(final double distance) {
