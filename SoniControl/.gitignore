@@ -44,6 +44,7 @@ captures/
 *.ipr
 *~
 *.swp
+/*/release/output.json
 
 # Android Patch
 gen-external-apklibs
