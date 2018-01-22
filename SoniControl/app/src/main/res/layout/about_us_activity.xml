@@ -19,6 +19,8 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
+        android:autoLink="web"
+        android:linksClickable="true"
         android:text="@string/aboutUsProject"
         android:textColor="@android:color/black" />
 
@@ -38,7 +40,9 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="www.sonicontrol.fhstp.ac.at"
+            android:autoLink="web"
+            android:linksClickable="true"
+            android:text="@string/sonicontrolLink"
             android:textColor="@android:color/black"
             android:layout_marginTop="22dp"
             android:layout_marginRight="16dp"
@@ -61,6 +65,8 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autoLink="web"
+        android:linksClickable="true"
         android:text="@string/creditsText"
         android:textColor="@android:color/black"
         android:layout_marginTop="15dp"
