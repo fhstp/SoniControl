@@ -15,6 +15,10 @@
         android:title="@string/about_us_menuItem">
     </item>
     <item
+        android:id="@+id/open_instructions"
+        android:title="@string/instructions_menuItem">
+    </item>
+    <item
         android:id="@+id/open_privacy_policy"
         android:title="@string/privacy_policy_menuItem">
     </item>

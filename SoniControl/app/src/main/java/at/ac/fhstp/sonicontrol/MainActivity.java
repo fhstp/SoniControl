@@ -2,6 +2,7 @@ package at.ac.fhstp.sonicontrol;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,22 +16,16 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.renderscript.Sampler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -47,7 +42,7 @@ import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
 public class MainActivity extends BaseActivity implements Scan.DetectionListener {
-    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET/*, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE*/};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
     private static final int NOTIFICATION_STATUS_REQUEST_CODE = 2;
     private static final int NOTIFICATION_DETECTION_REQUEST_CODE = 1;
@@ -629,7 +624,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     public void onResume(){ //override the onResume method for setting a variable for checking the background-status
         super.onResume();
         isInBackground = false;
-        checkFirstRunForInstructionsShowing();
+        checkFirstRunForWelcomeShowing();
 
         Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -1043,22 +1038,50 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         activateScanningStatusNotification(); //activates the notification for the scanning process
     }
 
-    public void onFirstOpeningShowInstructions(){
-        new AlertDialog.Builder(this).setTitle("Instructions").setMessage("Welcome to the Sonicontrol Firewall").setNeutralButton("OK", null).show();
+    public void onFirstOpeningShowWelcome(){
+        new AlertDialog.Builder(this).setTitle("Welcome").setMessage(R.string.instructionsText)
+            /*.setNeutralButton("Instuctions", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                checkFirstStartForInstructionsShowing();
+            }
+        })*/
+            .setPositiveButton("OK", null).show();
     }
 
-    public void checkFirstRunForInstructionsShowing() {
+    public void checkFirstRunForWelcomeShowing() {
         SharedPreferences sp = getSettingsObject();
         boolean isFirstRun = sp.getBoolean("isFirstRun", true);
         Log.d("I am in First run", String.valueOf(isFirstRun));
         if (isFirstRun){
-            onFirstOpeningShowInstructions();
+            onFirstOpeningShowWelcome();
             sp
                     .edit()
                     .putBoolean("isFirstRun", false)
                     .apply();
         }
     }
+
+    /*
+    public void onFirstStartShowInstructions(){
+        final Dialog instructionsDialog = new Dialog(this);
+        instructionsDialog.setContentView(R.layout.about_us_activity);
+        instructionsDialog.setTitle("Instructions");
+        instructionsDialog.show();
+    }
+
+    public void checkFirstStartForInstructionsShowing() {
+        SharedPreferences sp = getSettingsObject();
+        boolean isFirstStarted = sp.getBoolean("isFirstStarted", true);
+        Log.d("I am in First start", String.valueOf(isFirstStarted));
+        if (isFirstStarted){
+            onFirstStartShowInstructions();
+            sp
+                    .edit()
+                    .putBoolean("isFirstStarted", false)
+                    .apply();
+        }
+    }*/
+
 /*
     public void updateDistance(final double distance) {
         runOnUiThread(new Runnable() {

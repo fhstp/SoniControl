@@ -36,6 +36,7 @@
     <string name="creditsText">The audio library used is Superpowered (http://www.superpowered.com/) Material Icons used, which are under the license of Apache License Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
     <string name="privacy_policy_menuItem">Privacy policy</string>
     <string name="about_us_menuItem">About us</string>
+    <string name="instructions_menuItem">Instructions</string>
     <string name="help_menuItem">Help</string>
     <string name="privacy_policy_text">Data collection and data processing:\n\n
 - We use the microphone to capture sound, but process only the ultrasonic part, we remove everything under 17kHz.\n\n
@@ -45,4 +46,5 @@
     </string>
     <string name="privacy_policy_label">Privacy policy</string>
     <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
+    <string name="instructionsText">Welcome to the Sonicontrol Firewall</string>
 </resources>
