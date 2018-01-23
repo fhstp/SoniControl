@@ -938,6 +938,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         btnStart.setBackgroundColor(0XFFAAAAAA);
         btnStart.setImageResource(R.drawable.ic_play_arrow_white_48dp);
         btnStop.setBackgroundColor(0XFFD4D4D4);
+        btnStop.setImageResource(R.drawable.ic_pause_blue_48dp);
 
         btnStart.setEnabled(true); //enable the start button again
         btnStop.setEnabled(false); //disable the stop button
@@ -948,6 +949,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         btnStart.setBackgroundColor(0XFFD4D4D4);
         btnStart.setImageResource(R.drawable.ic_play_arrow_blue_48dp);
         btnStop.setBackgroundColor(0XFFAAAAAA);
+        btnStop.setImageResource(R.drawable.ic_pause_white_48dp);
 
         btnStart.setEnabled(false); //enable the start button again
         btnStop.setEnabled(true); //disable the stop button
