@@ -1,5 +1,6 @@
 package at.ac.fhstp.sonicontrol;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +32,9 @@ public class BaseActivity extends AppCompatActivity {
             case R.id.open_about_us:
                 openAboutUs();
                 break;
+            case R.id.open_instructions:
+                openInstructions();
+                break;
             case R.id.open_privacy_policy:
                 openPrivacyPolicy();
             default:
@@ -49,6 +53,10 @@ public class BaseActivity extends AppCompatActivity {
         Uri uri = Uri.parse("http://sonicontrol.fhstp.ac.at"); // missing 'http://' will cause crashed
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
+    }
+
+    public void openInstructions(){
+        new AlertDialog.Builder(this).setTitle(R.string.instructionsTitle).setMessage(R.string.instructionsText).setPositiveButton("OK", null).show();
     }
 
     public void openAboutUs(){

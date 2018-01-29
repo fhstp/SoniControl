@@ -60,6 +60,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     Button btnAlertSpoof;
     Button btnAlertDismissThisTime;
     Button btnAlertDismissAlways;
+    Button btnAlertSpoofThisTime;
 
     Scan detector;
     Location locationFinder;
@@ -185,6 +186,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
             onAlertSpoofDetectedSignal();
+            }
+        });
+
+        btnAlertSpoofThisTime = (Button) view.findViewById(R.id.btnBlockThisTime);
+        btnAlertSpoofThisTime.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                onAlertSpoofThisTime();
             }
         });
 
@@ -1028,6 +1036,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         activateSpoofingStatusNotification(); //activates the notification for the spoofing process
     }
 
+    public void onAlertSpoofThisTime(){
+        onAlertChoice(2);
+        locationFinder.blockMicOrSpoof(); //start scanning again
+        activateScanningStatusNotification(); //activates the notification for the scanning process
+    }
+
     public void onAlertDismissAlways(){
         onAlertChoice(0);
         detector.startScanning(); //start scanning again
@@ -1041,7 +1055,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void onFirstOpeningShowWelcome(){
-        new AlertDialog.Builder(this).setTitle("Welcome").setMessage(R.string.instructionsText)
+        new AlertDialog.Builder(this).setTitle(R.string.instructionsTitle).setMessage(R.string.instructionsText)
             /*.setNeutralButton("Instuctions", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 checkFirstStartForInstructionsShowing();

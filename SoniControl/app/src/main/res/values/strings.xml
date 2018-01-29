@@ -28,12 +28,13 @@
     <string name="alertDialog_option_jam_always_here">Block always here</string>
     <string name="alertDialog_option_dismiss_this_time">Ignore this time</string>
     <string name="alertDialog_option_dismiss_always_here">Ignore always here</string>
+    <string name="alertDialog_option_jam_this_time">Jam this time</string>
     <string name="alertDialog_text_ultrasonic_signal_detected">Ultrasonic signal detected. Select one of the options below to proceed</string>
     <string name="alertDialog_option_play">Play</string>
     <string name="storedLocationActivityTitle">Detected signals</string>
     <string name="SettingsActivityTitle">Settings</string>
     <string name="AboutUsActivityTitle">About us</string>
-    <string name="creditsText">The audio library used is Superpowered (http://www.superpowered.com/) Material Icons used, which are under the license of Apache License Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
+    <string name="creditsText">Credits \n\nThe audio library used is Superpowered (http://www.superpowered.com/)\n\nMaterial Icons used, which are under the license of Apache License Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
     <string name="privacy_policy_menuItem">Privacy policy</string>
     <string name="about_us_menuItem">About us</string>
     <string name="instructions_menuItem">Instructions</string>
@@ -47,4 +48,5 @@
     <string name="privacy_policy_label">Privacy policy</string>
     <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
     <string name="instructionsText">Welcome to the Sonicontrol Firewall</string>
+    <string name="instructionsTitle">Instructions</string>
 </resources>
