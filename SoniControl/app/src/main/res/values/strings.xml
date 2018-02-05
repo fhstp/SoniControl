@@ -49,4 +49,8 @@
     <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
     <string name="instructionsText">Welcome to the Sonicontrol Firewall</string>
     <string name="instructionsTitle">Instructions</string>
+    <string name="alert_no_json_file_message">To save/see locations where ultrasonic communications were detected, you need to check the \'Save data in JSON file\' setting</string>
+    <string name="alert_no_json_file_title">No JSON file</string>
+    <string name="alert_no_json_file_negative">Cancel</string>
+    <string name="alert_no_json_file_positive">Save data in JSON file</string>
 </resources>

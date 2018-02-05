@@ -64,7 +64,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     Scan detector;
     Location locationFinder;
-    JSONManager jsonMan = new JSONManager(this);
+    JSONManager jsonMan;
 
     AlertDialog alert;
     TextView txtSignalType;
@@ -137,6 +137,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 return;
             }
         }
+        jsonMan = new JSONManager(this);
+
 
         setContentView(R.layout.activity_main);
 
@@ -965,8 +967,32 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void openStoredLocations(){
-        Intent myIntent = new Intent(MainActivity.this, StoredLocations.class); //redirect to the stored locations activity
-        startActivityForResult(myIntent, 0);
+        if (jsonMan.checkIfJsonFileIsAvailable()) {
+            Intent myIntent = new Intent(MainActivity.this, StoredLocations.class); //redirect to the stored locations activity
+            startActivityForResult(myIntent, 0);
+        }
+        else {
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+            alertBuilder.setTitle(R.string.alert_no_json_file_title)
+                    .setMessage(R.string.alert_no_json_file_message)
+                    .setPositiveButton(R.string.alert_no_json_file_positive, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            getSettingsObject().edit().putBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, true).apply();
+                            jsonMan.createJsonFile();
+                            Intent myIntent = new Intent(MainActivity.this, StoredLocations.class); //redirect to the stored locations activity
+                            startActivityForResult(myIntent, 0);
+                        }
+                    })
+                    .setNegativeButton(R.string.alert_no_json_file_negative, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    })
+                    .create()
+            .show();
+        }
     }
 
     public void openSettings(){
