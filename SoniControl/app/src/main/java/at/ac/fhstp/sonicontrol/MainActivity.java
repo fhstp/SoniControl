@@ -244,6 +244,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     private void onBtnExitClick(View v) {
+        Intent service = new Intent(MainActivity.this, SoniService.class);
+        if (SoniService.IS_SERVICE_RUNNING) {
+            service.setAction(ServiceConstants.ACTION.STOPFOREGROUND_ACTION);
+            SoniService.IS_SERVICE_RUNNING = false;
+        }
+        startService(service);
+        
         // Reset state
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
@@ -318,6 +325,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         }
         else {
+            Intent service = new Intent(MainActivity.this, SoniService.class);
+            if (!SoniService.IS_SERVICE_RUNNING) {
+                service.setAction(ServiceConstants.ACTION.STARTFOREGROUND_ACTION);
+                SoniService.IS_SERVICE_RUNNING = true;
+            }
+            startService(service);
+
             setGUIStateStarted();
             startDetection();
         }
