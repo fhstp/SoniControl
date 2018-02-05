@@ -10,10 +10,19 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 
 public class SoniService extends Service {
     private static final String LOG_TAG = "ForegroundService";
     public static boolean IS_SERVICE_RUNNING = false;
+
+    // Thread handling
+    private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
+    public static final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(NUMBER_OF_CORES + 1);
+
+    private boolean keepPrintingAliveness = true;
 
     @Override
     public void onCreate() {
@@ -32,6 +41,22 @@ public class SoniService extends Service {
             Log.i(LOG_TAG, "Received Start Foreground Intent ");
             showNotification();
             Toast.makeText(this, "Service Started!", Toast.LENGTH_SHORT).show();
+
+            threadPool.execute(new Runnable() {
+                @Override
+                public void run() {
+                    boolean interrupted = false;
+                    while (keepPrintingAliveness && !interrupted) {
+                        Log.d(LOG_TAG, "background thread in Foreground Service alive.");
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            interrupted = true;
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
 
         } else if (ServiceConstants.ACTION.STOPFOREGROUND_ACTION.equals(intent.getAction())) {
             Log.i(LOG_TAG, "Received Stop Foreground Intent");
@@ -66,7 +91,8 @@ public class SoniService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.i(LOG_TAG, "In onDestroy");
-        Toast.makeText(this, "Service Detroyed!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Service Destroyed!", Toast.LENGTH_SHORT).show();
+        keepPrintingAliveness = false;
     }
 
     @Nullable
