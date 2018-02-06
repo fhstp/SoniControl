@@ -38,6 +38,9 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import android.preference.Preference;
+import android.provider.Settings;
+
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
@@ -120,6 +123,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     public Handler uiHandler = new Handler(Looper.getMainLooper());
 
     SharedPreferences sharedPref;
+
+    AlertDialog alertLocation = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -318,6 +323,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         }
         else {
+            checkForActivatedLocation();
             setGUIStateStarted();
             startDetection();
         }
@@ -354,6 +360,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     for (int i = 0; i < permissions.length; i++) {
                         if (Manifest.permission.RECORD_AUDIO.equals(permissions[i])) {
                             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                                checkForActivatedLocation();
                                 startDetection();
                             }
                             else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
@@ -390,6 +397,18 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         if(preventiveSpoof) {
             activateSpoofingStatusNotification();
             usedBlockingMethod = locationFinder.blockMicOrSpoof();
+        }
+
+        boolean gpsEnabled = settings.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+        boolean networkEnabled = settings.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
+        locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        if(!gpsEnabled&&!networkEnabled||!isNetworkEnabled){
+            btnAlertSpoof.setEnabled(false);
+            btnAlertDismissAlways.setEnabled(false);
+        }else{
+            btnAlertSpoof.setEnabled(true);
+            btnAlertDismissAlways.setEnabled(true);
         }
 
         sigType = signalType; //set the technology variable to the latest detected one
@@ -1135,5 +1154,30 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         });
     }*/
+
+    public void checkForActivatedLocation(){
+        locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if(!isNetworkEnabled) {
+            final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(this);
+            deleteJsonDialog.setTitle("Turn on Location")
+                    .setMessage("To use store detections please turn on your location! 'Phone Settings', will lead you to your settings, where you can activate the location!")
+                    .setCancelable(false)
+                    .setPositiveButton("Phone Settings", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            alertLocation.cancel();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert);
+            alertLocation = deleteJsonDialog.show();
+        }
+    }
 
 }
