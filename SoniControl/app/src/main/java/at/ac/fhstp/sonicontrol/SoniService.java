@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -67,6 +68,8 @@ public class SoniService extends Service {
     }
 
     private void showNotification() {
+        NotificationHelper.mNotificationManager = NotificationManagerCompat.from(getApplicationContext());
+/*
         Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setAction(ServiceConstants.ACTION.MAIN_ACTION);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
@@ -81,9 +84,11 @@ public class SoniService extends Service {
                 .setSmallIcon(R.drawable.ic_hearing_white_48dp)
                 .setContentIntent(pendingIntent)
                 .setOngoing(true).build();
+*/
 
-        startForeground(ServiceConstants.NOTIFICATION_ID.FOREGROUND_SERVICE,
-                notification);
+
+        startForeground(NotificationHelper.NOTIFICATION_STATUS_ID,
+                NotificationHelper.initScanningStatusNotification(getApplicationContext()));
 
     }
 

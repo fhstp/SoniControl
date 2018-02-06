@@ -2,8 +2,6 @@ package at.ac.fhstp.sonicontrol;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioTrack;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +18,6 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.view.Gravity;
@@ -44,8 +40,6 @@ import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 public class MainActivity extends BaseActivity implements Scan.DetectionListener {
     private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION/*, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE*/};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
-    private static final int NOTIFICATION_STATUS_REQUEST_CODE = 2;
-    private static final int NOTIFICATION_DETECTION_REQUEST_CODE = 1;
 
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
@@ -72,6 +66,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     View view;
 
     Random randomNotificationNumberGenerator = new Random();
+/*
+    private static final int NOTIFICATION_STATUS_REQUEST_CODE = 2;
+    private static final int NOTIFICATION_DETECTION_REQUEST_CODE = 1;
 
     NotificationCompat.Builder detectionBuilder;
     NotificationManagerCompat mNotificationManager;
@@ -92,13 +89,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     Notification notificationOnHoldStatus;
     Notification notificationScanningStatus;
 
-    private boolean isInBackground = false;
-
     private boolean detectionNotitificationFirstBuild = true;
     private boolean spoofingStatusNotitificationFirstBuild = true;
     private boolean detectionAlertStatusNotitificationFirstBuild = true;
     private boolean onHoldStatusNotitificationFirstBuild = true;
     private boolean scanningStatusNotitificationFirstBuild = true;
+
+*/
+    private boolean isInBackground = false;
 
     boolean isSignalPlayerGenerated;
 
@@ -234,13 +232,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         });
 
-        // savedInstanceState will only be null during the first run of the app, later we do not need to add notifications again.
+        // savedInstanceState will be null unless there is a configuration change
         if(savedInstanceState == null) {
-            mNotificationManager = NotificationManagerCompat.from(this);
-
-            getUpdatedSettings(); //get the settings
         }
-
+        NotificationHelper.mNotificationManager = NotificationManagerCompat.from(getApplicationContext());
+        getUpdatedSettings(); //get the settings
     }
 
     private void onBtnExitClick(View v) {
@@ -259,29 +255,21 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         ed.remove("lastDetectedTechnology");
         ed.apply();
         ed.commit();
-
-        mNotificationManager.cancelAll(); //cancel all notifications
+/*
+        NotificationHelper.mNotificationManager.cancelAll(); //cancel all notifications
 
         // Cancel the pending intent corresponding to the notification
-        Intent resultIntent = new Intent(MainActivity.this, MainActivity.class); //the intent is still the main-activity
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                MainActivity.this,
-                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
-                resultIntent,
-                0);
-
+        PendingIntent resultPendingIntent = NotificationHelper.getPendingIntentStatusNoCreate(getApplicationContext());
         if (resultPendingIntent != null)
             resultPendingIntent.cancel();
+*/
+        NotificationHelper.cancelDetectionAlertStatusNotification(getApplicationContext());
 
-        PendingIntent detectionPendingIntent = PendingIntent.getActivity(
-                this,
-                MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
-                resultIntent,
-                PendingIntent.FLAG_NO_CREATE);
-        if (detectionPendingIntent != null)
-            detectionPendingIntent.cancel();
+        detector.pause(); // stop scanning
+        Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
+        spoof.stopSpoofingComplete(); //stop the whole spoofing process
+        MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
+        micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
 
         // Stop all the background threads
         threadPool.shutdownNow();
@@ -405,7 +393,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SharedPreferences settings = getSettingsObject(); //get the settings
         preventiveSpoof = settings.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
         if(preventiveSpoof) {
-            activateSpoofingStatusNotification();
+            NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
             usedBlockingMethod = locationFinder.blockMicOrSpoof();
         }
 
@@ -427,7 +415,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
      *
      */
     private void stopAutomaticBlockingMethodOnAction(){
-        cancelSpoofingStatusNotification();
+        //NotificationHelper.cancelSpoofingStatusNotification();
         if(usedBlockingMethod.equals(ConfigConstants.USED_BLOCKING_METHOD_SPOOFER)){
             Spoofer spoofBlock = Spoofer.getInstance();
             spoofBlock.stopSpoofingComplete();
@@ -476,6 +464,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         mNotificationManager.cancel(detectionNotificationId); //Cancel the notification with the help of the id
     }
 */
+/*
     private void initSpoofingStatusNotification(){
         spoofingStatusBuilder = //create a builder for the detection notification
                 new NotificationCompat.Builder(this)
@@ -631,7 +620,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     public void cancelScanningStatusNotification(){
         mNotificationManager.cancel(scanningStatusNotificationId); //Cancel the notification with the help of the id
     }
-
+*/
     public SharedPreferences getSettingsObject(){
         if (sharedPref == null)
             sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //get the object with the settings
@@ -653,13 +642,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         isInBackground = false;
         checkFirstRunForWelcomeShowing();
 
-        Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent detectionPendingIntent = PendingIntent.getActivity(
-                this,
-                MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
-                resultIntent,
-                PendingIntent.FLAG_NO_CREATE);
+        PendingIntent detectionPendingIntent = NotificationHelper.getPendingIntentDetectionFlagNoCreate(getApplicationContext());
 
         // Store the app activeness and then check the state
         SharedPreferences sp = getSettingsObject();
@@ -678,11 +661,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         switch (state) {
             case ON_HOLD:
-                activateOnHoldStatusNotification();
+                NotificationHelper.activateOnHoldStatusNotification(getApplicationContext());
                 setGUIStateStopped();
                 break;
             case JAMMING:
-                activateSpoofingStatusNotification();
+                NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
                 setGUIStateStarted();
                 break;
             case SCANNING:
@@ -731,7 +714,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     }
                 }
                 else {
-                    activateScanningStatusNotification();
+                    NotificationHelper.activateScanningStatusNotification(getApplicationContext());
                     // TODO: ?
                 }
                 break;
@@ -871,8 +854,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             if (locationTrack) {
                 locationFinder.setPositionForContinuousSpoofing(lastPosition); //set the position for distance calculation to the latest position
             }
-            this.cancelScanningStatusNotification(); //cancel the scanning-status notification
-            this.activateSpoofingStatusNotification(); //activate the spoofing-status notification
+            //NotificationHelper.cancelScanningStatusNotification(); //cancel the scanning-status notification
+            NotificationHelper.activateSpoofingStatusNotification(getApplicationContext()); //activate the spoofing-status notification
 
             saveJsonFile = this.checkJsonAndLocationPermissions()[0];
 
@@ -894,8 +877,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 /*if (this.getBackgroundStatus()) { //if the app is in the background
                     this.activateDetectionNotification(); //activate the notification for a detection
                 }*/
-                this.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                this.activateDetectionAlertStatusNotification(technology);
+                //NotificationHelper.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology);
                 this.activateAlert(technology); //open the alert dialog
             } else {
                 if (locationTrack) {
@@ -904,8 +887,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     /*if (this.getBackgroundStatus()) { //if the app is in the background
                         this.activateDetectionNotification(); //activate the notification for a detection
                     }*/
-                    this.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                    this.activateDetectionAlertStatusNotification(technology); //activate the onHold-status notification
+                    //NotificationHelper.cancelScanningStatusNotification(); //cancel the scanning-status notification
+                    NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology); //activate the onHold-status notification
                     this.activateAlert(technology); //open the alert dialog
                     //resetHandler(); // Should be handled by the cpp (just stop scanning)
                 }
@@ -926,8 +909,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         }
 
-        cancelOnHoldStatusNotification(); //cancel the onHold notification
-        activateScanningStatusNotification(); //start the scanning-status notification
+        //NotificationHelper.cancelOnHoldStatusNotification(); //cancel the onHold notification
+        NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //start the scanning-status notification
         setGUIStateStarted();
         detector.startScanning(); //start scanning for signals
     }
@@ -936,9 +919,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
      * Called when clicking on the stop button
      */
     public void stopApplicationProcesses(){
-        mNotificationManager.cancelAll(); //cancel all active notifications
-
-        activateOnHoldStatusNotification(); //activate only the onHold-status notification again
+        //NotificationHelper.mNotificationManager.cancelAll(); //cancel all active notifications
+        NotificationHelper.activateOnHoldStatusNotification(getApplicationContext()); //activate only the onHold-status notification again
         detector.pause(); // stop scanning
         alert.cancel();
         Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
@@ -1049,7 +1031,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
         alert.cancel(); //cancel the alert dialog
         txtSignalType.setText(""); //can be deleted it's only for debugging
-        cancelDetectionAlertStatusNotification();
+        NotificationHelper.cancelDetectionAlertStatusNotification(getApplicationContext());
 
         // Clean the technology on disk
         SharedPreferences sp = getSettingsObject();
@@ -1076,26 +1058,26 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     public void onAlertSpoofDetectedSignal(){
         onAlertChoice(1);
-        locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
-        activateSpoofingStatusNotification(); //activates the notification for the spoofing process
+        locationFinder.blockMicOrSpoof();
+        NotificationHelper.activateSpoofingStatusNotification(getApplicationContext()); //activates the notification for the spoofing process
     }
 
     public void onAlertSpoofThisTime(){
         onAlertChoice(2);
-        locationFinder.blockMicOrSpoof(); //start scanning again
-        activateScanningStatusNotification(); //activates the notification for the scanning process
+        locationFinder.blockMicOrSpoof();
+        NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
     }
 
     public void onAlertDismissAlways(){
         onAlertChoice(0);
         detector.startScanning(); //start scanning again
-        activateScanningStatusNotification(); //activates the notification for the scanning process
+        NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
     }
 
     public void onAlertDismissThisTime(){
         onAlertChoice(2);
         detector.startScanning(); //start scanning again
-        activateScanningStatusNotification(); //activates the notification for the scanning process
+        NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
     }
 
     public void onFirstOpeningShowWelcome(){
