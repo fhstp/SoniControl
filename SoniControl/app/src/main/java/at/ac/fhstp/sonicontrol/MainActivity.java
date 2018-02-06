@@ -325,16 +325,18 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         }
         else {
-            Intent service = new Intent(MainActivity.this, SoniService.class);
-            if (!SoniService.IS_SERVICE_RUNNING) {
-                service.setAction(ServiceConstants.ACTION.STARTFOREGROUND_ACTION);
-                SoniService.IS_SERVICE_RUNNING = true;
-            }
-            startService(service);
-
-            setGUIStateStarted();
+            startService();
             startDetection();
         }
+    }
+
+    private void startService() {
+        Intent service = new Intent(this.getApplicationContext(), SoniService.class);
+        if (!SoniService.IS_SERVICE_RUNNING) {
+            service.setAction(ServiceConstants.ACTION.STARTFOREGROUND_ACTION);
+            SoniService.IS_SERVICE_RUNNING = true;
+        }
+        startService(service);
     }
 
     private void showRequestPermissionExplanation() {
@@ -368,6 +370,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     for (int i = 0; i < permissions.length; i++) {
                         if (Manifest.permission.RECORD_AUDIO.equals(permissions[i])) {
                             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                                startService();
                                 startDetection();
                             }
                             else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
@@ -911,30 +914,22 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void startDetection(){
-        runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-                SharedPreferences settings = getSettingsObject(); //get the settings
-                saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
+        SharedPreferences settings = getSettingsObject(); //get the settings
+        saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
-                if(saveJsonFile) {
-                    if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
-                        jsonMan.createJsonFile(); //create a JSON file
-                    }
-                    if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
-                        jsonMan.createSaveFolder(); //create a folder for the audio files
-                    }
-                }
-
-
-
-                cancelOnHoldStatusNotification(); //cancel the onHold notification
-                activateScanningStatusNotification(); //start the scanning-status notification
-                detector.startScanning(); //start scanning for signals
-                btnStart.setEnabled(false); //disable the start button
-                btnStop.setEnabled(true); //enable the stop button
+        if(saveJsonFile) {
+            if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
+                jsonMan.createJsonFile(); //create a JSON file
+            }
+            if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
+                jsonMan.createSaveFolder(); //create a folder for the audio files
+            }
         }
-        });
+
+        cancelOnHoldStatusNotification(); //cancel the onHold notification
+        activateScanningStatusNotification(); //start the scanning-status notification
+        setGUIStateStarted();
+        detector.startScanning(); //start scanning for signals
     }
 
     /***
@@ -959,25 +954,33 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void setGUIStateStopped() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnStart.setBackgroundColor(0XFFAAAAAA);
+                btnStart.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+                btnStop.setBackgroundColor(0XFFD4D4D4);
+                btnStop.setImageResource(R.drawable.ic_pause_blue_48dp);
 
-        btnStart.setBackgroundColor(0XFFAAAAAA);
-        btnStart.setImageResource(R.drawable.ic_play_arrow_white_48dp);
-        btnStop.setBackgroundColor(0XFFD4D4D4);
-        btnStop.setImageResource(R.drawable.ic_pause_blue_48dp);
-
-        btnStart.setEnabled(true); //enable the start button again
-        btnStop.setEnabled(false); //disable the stop button
+                btnStart.setEnabled(true); //enable the start button again
+                btnStop.setEnabled(false); //disable the stop button
+            }
+        });
     }
 
     public void setGUIStateStarted() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnStart.setBackgroundColor(0XFFD4D4D4);
+                btnStart.setImageResource(R.drawable.ic_play_arrow_blue_48dp);
+                btnStop.setBackgroundColor(0XFFAAAAAA);
+                btnStop.setImageResource(R.drawable.ic_pause_white_48dp);
 
-        btnStart.setBackgroundColor(0XFFD4D4D4);
-        btnStart.setImageResource(R.drawable.ic_play_arrow_blue_48dp);
-        btnStop.setBackgroundColor(0XFFAAAAAA);
-        btnStop.setImageResource(R.drawable.ic_pause_white_48dp);
-
-        btnStart.setEnabled(false); //enable the start button again
-        btnStop.setEnabled(true); //disable the stop button
+                btnStart.setEnabled(false); //enable the start button again
+                btnStop.setEnabled(true); //disable the stop button
+            }
+        });
     }
 
     public void openStoredLocations(){
