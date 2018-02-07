@@ -41,8 +41,9 @@ public class SoniService extends Service {
         if (ServiceConstants.ACTION.STARTFOREGROUND_ACTION.equals(intent.getAction())) {
             Log.i(LOG_TAG, "Received Start Foreground Intent ");
             showNotification();
+            SoniService.IS_SERVICE_RUNNING = true;
             Toast.makeText(this, "Service Started!", Toast.LENGTH_SHORT).show();
-
+/*
             threadPool.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -58,9 +59,10 @@ public class SoniService extends Service {
                     }
                 }
             });
-
+*/
         } else if (ServiceConstants.ACTION.STOPFOREGROUND_ACTION.equals(intent.getAction())) {
             Log.i(LOG_TAG, "Received Stop Foreground Intent");
+            SoniService.IS_SERVICE_RUNNING = false;
             stopForeground(true);
             stopSelf();
         }

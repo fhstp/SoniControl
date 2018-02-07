@@ -319,12 +319,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     private void startService() {
-        Intent service = new Intent(this.getApplicationContext(), SoniService.class);
         if (!SoniService.IS_SERVICE_RUNNING) {
+            Intent service = new Intent(this.getApplicationContext(), SoniService.class);
             service.setAction(ServiceConstants.ACTION.STARTFOREGROUND_ACTION);
-            SoniService.IS_SERVICE_RUNNING = true;
+            startService(service);
         }
-        startService(service);
     }
 
     private void showRequestPermissionExplanation() {
