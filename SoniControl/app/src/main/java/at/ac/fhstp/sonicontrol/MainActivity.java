@@ -240,12 +240,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     private void onBtnExitClick(View v) {
-        Intent service = new Intent(MainActivity.this, SoniService.class);
         if (SoniService.IS_SERVICE_RUNNING) {
+            Intent service = new Intent(MainActivity.this, SoniService.class);
             service.setAction(ServiceConstants.ACTION.STOPFOREGROUND_ACTION);
-            SoniService.IS_SERVICE_RUNNING = false;
+            startService(service);
         }
-        startService(service);
+        else {
+            NotificationHelper.cancelOnHoldStatusNotification();
+        }
         
         // Reset state
         SharedPreferences sp = getSettingsObject();
@@ -265,7 +267,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 */
         NotificationHelper.cancelDetectionAlertStatusNotification(getApplicationContext());
 
-        detector.pause(); // stop scanning
+        detector.stopIO(); // release audio resources from the scanner
         Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
         spoof.stopSpoofingComplete(); //stop the whole spoofing process
         MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
