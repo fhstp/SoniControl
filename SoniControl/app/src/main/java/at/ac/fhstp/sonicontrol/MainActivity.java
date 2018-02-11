@@ -406,7 +406,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
+        saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
+
         if(!(isGPSEnabled && gpsEnabled) && !(isNetworkEnabled && networkEnabled)){
+            btnAlertSpoof.setEnabled(false);
+            btnAlertDismissAlways.setEnabled(false);
+        }else if(!saveJsonFile){
             btnAlertSpoof.setEnabled(false);
             btnAlertDismissAlways.setEnabled(false);
         }else{
