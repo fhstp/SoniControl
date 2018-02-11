@@ -35,6 +35,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -73,6 +76,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     AlertDialog alert;
     TextView txtSignalType;
+    TextView txtAlertDate;
     Technology sigType;
     View view;
 
@@ -176,6 +180,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         alert = openScanner.create(); //create the AlertDialog
 
         txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
+        txtAlertDate = (TextView)view.findViewById(R.id.txtAlertDate);
 
         btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
         btnAlertDismissAlways.setOnClickListener(new View.OnClickListener(){
@@ -430,6 +435,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     private Runnable displayAlert = new Runnable() {
         public void run() {
+            txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + getTimeAndDateForAlert());
             alert.show(); //open the alert
         }
     };
@@ -1225,6 +1231,16 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         Toast toast = Toast.makeText(MainActivity.this, "Location was not found", Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER,0,0);
         toast.show();
+    }
+
+    public String getTimeAndDateForAlert(){
+        Long currentTime = Calendar.getInstance().getTimeInMillis();
+        SimpleDateFormat rightFormat = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat leftFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String dateLeft = String.valueOf(leftFormat.format(currentTime));
+        String dateRight = String.valueOf(rightFormat.format(currentTime));
+        String dateString = dateRight + " - " + dateLeft;
+        return dateString;
     }
 
 }

@@ -61,4 +61,5 @@
     <string name="toast_location_is_on">Location is enabled</string>
     <string name="alert_location_is_off_checkbox_text">Don\'t ask again</string>
     <string name="settings_reset_settings">Reset all settings to default</string>
+    <string name="alert_detection_date">Detected at:</string>
 </resources>
