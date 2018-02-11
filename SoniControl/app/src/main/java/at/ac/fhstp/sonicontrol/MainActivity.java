@@ -16,6 +16,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -403,7 +404,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         boolean networkEnabled = settings.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
         locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        if(!gpsEnabled&&!networkEnabled||!isNetworkEnabled){
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if(!(isGPSEnabled && gpsEnabled) && !(isNetworkEnabled && networkEnabled)){
             btnAlertSpoof.setEnabled(false);
             btnAlertDismissAlways.setEnabled(false);
         }else{
@@ -1159,25 +1162,38 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        if(!isNetworkEnabled) {
-            final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(this);
-            deleteJsonDialog.setTitle("Turn on Location")
-                    .setMessage("To use store detections please turn on your location! 'Phone Settings', will lead you to your settings, where you can activate the location!")
-                    .setCancelable(false)
-                    .setPositiveButton("Phone Settings", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            alertLocation.cancel();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert);
-            alertLocation = deleteJsonDialog.show();
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+        boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
+
+        if (!(isGPSEnabled && locationTrackGps) && !(isNetworkEnabled && locationTrackNet)) {
+            activateAlertNoLocationEnabled();
+        }else {
+            Toast toast = Toast.makeText(MainActivity.this, R.string.toast_location_is_on, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
         }
+    }
+
+    public void activateAlertNoLocationEnabled() {
+        final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(this);
+        deleteJsonDialog.setTitle(R.string.alert_location_is_off_title)
+                .setMessage(R.string.alert_location_is_off_message)
+                .setCancelable(true)
+                .setPositiveButton(R.string.alert_location_is_off_positive, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton(R.string.alert_location_is_off_negative, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertLocation.cancel();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_info);
+        alertLocation = deleteJsonDialog.show();
     }
 
 }

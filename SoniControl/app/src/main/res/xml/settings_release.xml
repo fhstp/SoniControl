@@ -11,6 +11,7 @@
             android:key="etprefLocationRadius"
             android:selectAllOnFocus="true"
             android:singleLine="true"
+            android:inputType="number"
             android:title="Location Radius (metre)" />
         <CheckBoxPreference
             android:defaultValue="true"
