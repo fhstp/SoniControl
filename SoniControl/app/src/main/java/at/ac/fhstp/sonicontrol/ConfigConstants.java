@@ -6,6 +6,8 @@ public final class ConfigConstants {
     public static final String DIR_NAME_SAVED_RECORDINGS = "/detected-files";
 
     public static final String SETTING_CONTINOUS_SPOOFING = "cbprefContinuousSpoof";
+    public static final boolean SETTING_CONTINOUS_SPOOFING_DEFAULT = false;
+    public static final String PREFERENCE_RESET_PREFERENCES = "resetPreferences";
     public static final String PREFERENCE_DELETE_JSON = "deleteJson";
     public static final String SETTING_LOCATION_RADIUS = "etprefLocationRadius";
     public static final String SETTING_LOCATION_RADIUS_DEFAULT = "30";
@@ -45,5 +47,8 @@ public final class ConfigConstants {
     public static final int DETECTION_ALERT_STATUS_NOTIFICATION_ID = 5;
 
     public static String EXTRA_TECHNOLOGY_DETECTED = "at.ac.fhstp.sonicontrol.TECHNOLOGY_DETECTED";
+
+    public static String SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN = "cbAlertLocationDontAskAgain";
+    public static boolean SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT = false;
 
 }

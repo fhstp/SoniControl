@@ -59,4 +59,5 @@
     <string name="alert_location_is_off_positive">Phone Settings</string>
     <string name="alert_location_is_off_negative">Not now</string>
     <string name="toast_location_is_on">Location is enabled</string>
+    <string name="alert_location_is_off_checkbox_text">Don\'t ask again</string>
 </resources>
