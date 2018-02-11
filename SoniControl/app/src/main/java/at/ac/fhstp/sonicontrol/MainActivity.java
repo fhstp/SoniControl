@@ -1053,6 +1053,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
         }
         if(saveJsonFile&&!locationTrack){
+            showNoLocationToast();
             double[] noLocation = new double[2];
             noLocation[0] = 0;
             noLocation[1] = 0;
@@ -1218,6 +1219,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         if (!skipMessage) {
             alertLocation = activateLocationDialog.show();
         }
+    }
+
+    public void showNoLocationToast(){
+        Toast toast = Toast.makeText(MainActivity.this, "Location was not found", Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER,0,0);
+        toast.show();
     }
 
 }
