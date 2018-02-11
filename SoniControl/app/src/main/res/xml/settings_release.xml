@@ -48,14 +48,14 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:inputType="number"
-        android:title="Pulse Duration (ms)" />
+        android:title="Pulse duration (ms)" />
     <EditTextPreference
         android:defaultValue="0"
         android:key="etprefPauseDuration"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:inputType="number"
-        android:title="Pause Duration (ms)" />
+        android:title="Pause duration (ms)" />
     <EditTextPreference
         android:defaultValue="10"
         android:key="etprefBandwidth"
@@ -75,5 +75,5 @@
     </PreferenceCategory>
     <Preference
         android:key="resetPreferences"
-        android:title="Reset all preferences to default"></Preference>
+        android:title="@string/settings_reset_settings"></Preference>
 </PreferenceScreen>
