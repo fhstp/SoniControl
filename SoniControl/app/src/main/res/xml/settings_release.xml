@@ -73,4 +73,7 @@
             android:singleLine="true"
             android:title="Blocking duration in minutes" />
     </PreferenceCategory>
+    <Preference
+        android:key="resetPreferences"
+        android:title="Reset all preferences to default"></Preference>
 </PreferenceScreen>
