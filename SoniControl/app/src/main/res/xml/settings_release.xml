@@ -30,13 +30,13 @@
             android:key="cbprefMicBlock"
             android:title="Use microphone for blocking" />
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="cbprefJsonSave"
-            android:title="Save detections in JSON file" />
-        <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbAlertLocationDontAskAgain"
             android:title="Don't show alert for activating location" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbprefJsonSave"
+            android:title="Save detections in JSON file" />
         <Preference
             android:key="deleteJson"
             android:title="Clear detections of JSON file"></Preference>
@@ -73,7 +73,9 @@
             android:singleLine="true"
             android:title="Blocking duration in minutes" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Expert settings - RESET">
     <Preference
         android:key="resetPreferences"
         android:title="@string/settings_reset_settings"></Preference>
+    </PreferenceCategory>
 </PreferenceScreen>
