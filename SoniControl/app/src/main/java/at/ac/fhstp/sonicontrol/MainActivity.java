@@ -1239,7 +1239,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SimpleDateFormat leftFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dateLeft = String.valueOf(leftFormat.format(currentTime));
         String dateRight = String.valueOf(rightFormat.format(currentTime));
-        String dateString = dateRight + " - " + dateLeft;
+        String dateString = " " + dateRight + " - " + dateLeft;
         return dateString;
     }
 
