@@ -2,7 +2,6 @@ package at.ac.fhstp.sonicontrol;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -16,7 +15,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -37,13 +35,11 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import android.preference.Preference;
 import android.provider.Settings;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
@@ -1060,7 +1056,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
         }
         if(saveJsonFile&&!locationTrack){
-            showNoLocationToast();
+            showToastOnNoLocation();
             double[] noLocation = new double[2];
             noLocation[0] = 0;
             noLocation[1] = 0;
@@ -1096,6 +1092,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     public void onAlertSpoofDetectedSignal(){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE);
+        showToastOnNoLocation();
+        checkForActivatedLocation();
         locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
         activateSpoofingStatusNotification(); //activates the notification for the spoofing process
     }
@@ -1108,6 +1106,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     public void onAlertDismissAlways(){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE);
+        showToastOnNoLocation();
+        checkForActivatedLocation();
         detector.startScanning(); //start scanning again
         activateScanningStatusNotification(); //activates the notification for the scanning process
     }
@@ -1182,12 +1182,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
         boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
-        if (!(isGPSEnabled && locationTrackGps) && !(isNetworkEnabled && locationTrackNet)) {
-            activateAlertNoLocationEnabled();
-        }else {
-            Toast toast = Toast.makeText(MainActivity.this, R.string.toast_location_is_on, Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER,0,0);
-            toast.show();
+
+        if(locationTrackGps || locationTrackNet){
+            if(!isGPSEnabled && locationTrackGps){
+                activateAlertNoLocationEnabled();
+            }else if(!isNetworkEnabled && locationTrackNet){
+                activateAlertNoLocationEnabled();
+            }else{
+                Toast toast = Toast.makeText(MainActivity.this, R.string.toast_location_is_on, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+            }
         }
     }
 
@@ -1229,10 +1234,30 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
     }
 
-    public void showNoLocationToast(){
-        Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER,0,0);
-        toast.show();
+    public void showToastOnNoLocation(){
+        locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+        boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
+
+        if(locationTrackGps || locationTrackNet){
+            if(!isGPSEnabled && locationTrackGps){
+                Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }else if(!isNetworkEnabled && locationTrackNet){
+                Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }
+        }else{
+            Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
     }
 
     public String getTimeAndDateForAlert(){
