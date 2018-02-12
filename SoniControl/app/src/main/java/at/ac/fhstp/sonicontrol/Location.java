@@ -67,11 +67,13 @@ public class Location {
             locationData = new GPSTracker(main); //get a gpstracker for the location finding
         }
         longitude = locationData.getLongitude(); //get the longitude
-
         latitude = locationData.getLatitude(); //get the latitude
+
 
         positionLatest[0] = longitude; //save the longitude in the positionLatest variable
         positionLatest[1] = latitude; //save the latitude in the positionLatest variable
+
+
 
         addressLine = locationData.getAddressLine(main);
 
@@ -105,7 +107,7 @@ public class Location {
 
                 fileUrl = array[6]; //get file from json and save in fileUrl variable
 
-                if(Integer.valueOf(array[4]) == 1){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
+                if(Integer.valueOf(array[4]) == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
                     shouldBeSpoofed = true;
                 }else{
                     shouldBeSpoofed = false;
