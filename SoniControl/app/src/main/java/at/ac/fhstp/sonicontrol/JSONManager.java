@@ -90,12 +90,12 @@ public class JSONManager {
             JSONArray jArray;
             if(position[0]==0&&position[1]==0) {
                 jArray = jObjectResult.getJSONArray(JSON_ARRAY_UNKNOWN_SIGNALS);
-                if(spoof==2){
-                    spoof=0;
-                }
-            }else if(spoof==2){
+                //if(spoof==2){
+                spoof=ConfigConstants.DETECTION_TYPE_THIS_TIME;
+                //}
+            }else if(spoof==ConfigConstants.DETECTION_TYPE_THIS_TIME){
                 jArray = jObjectResult.getJSONArray(JSON_ARRAY_DISMISSED_SIGNALS);
-                spoof=0;
+                //spoof=0;
             }else{
                 jArray = jObjectResult.getJSONArray(JSON_ARRAY_SIGNALS); //get the jsonarray with the signals
             }
@@ -259,10 +259,10 @@ public class JSONManager {
 
     public void setShouldBeSpoofedInStoredLoc(double[] position, String signalType, int spoofStatus) {
         int shouldBeSpoofed = spoofStatus;
-        if(shouldBeSpoofed == 1){ //if spoofStatus is 1 change it to 0
-            shouldBeSpoofed = 0;
-        }else if(shouldBeSpoofed == 0){ //if spoofStatus is 0 change it to 1
-            shouldBeSpoofed = 1;
+        if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if spoofStatus is 1 change it to 0
+            shouldBeSpoofed = ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE;
+        }else if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){ //if spoofStatus is 0 change it to 1
+            shouldBeSpoofed = ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE;
         }
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json-file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);

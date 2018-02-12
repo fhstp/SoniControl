@@ -895,13 +895,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
             JSONManager jsonMan = new JSONManager(this);
             if (saveJsonFile && locationTrack) {
-                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), technology.toString(), 1, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
             }
             if (saveJsonFile && !locationTrack) {
                 double[] noLocation = new double[2];
                 noLocation[0] = 0;
                 noLocation[1] = 0;
-                jsonMan.addJsonObject(noLocation, technology.toString(), 1, this.getResources().getString(R.string.addressData));
+                jsonMan.addJsonObject(noLocation, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, this.getResources().getString(R.string.addressData));
             }
 
             locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
@@ -1056,6 +1056,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         boolean locationTrack = checkJsonAndLocationPermissions()[1];
 
         if(saveJsonFile && locationTrack) {
+            Log.d("SearchForJson", "addWithLoc");
             jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
         }
         if(saveJsonFile&&!locationTrack){
@@ -1063,6 +1064,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             double[] noLocation = new double[2];
             noLocation[0] = 0;
             noLocation[1] = 0;
+            Log.d("SearchForJson", "addWithoutLoc");
             jsonMan.addJsonObject(noLocation, sigType.toString(), spoofDecision, getString(R.string.noAddressForJsonFile));
         }
         alert.cancel(); //cancel the alert dialog
@@ -1093,25 +1095,25 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void onAlertSpoofDetectedSignal(){
-        onAlertChoice(1);
+        onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE);
         locationFinder.blockMicOrSpoof(); //try to get the microphone access for choosing the blocking method
         activateSpoofingStatusNotification(); //activates the notification for the spoofing process
     }
 
     public void onAlertSpoofThisTime(){
-        onAlertChoice(2);
+        onAlertChoice(ConfigConstants.DETECTION_TYPE_THIS_TIME);
         locationFinder.blockMicOrSpoof(); //start scanning again
         activateScanningStatusNotification(); //activates the notification for the scanning process
     }
 
     public void onAlertDismissAlways(){
-        onAlertChoice(0);
+        onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE);
         detector.startScanning(); //start scanning again
         activateScanningStatusNotification(); //activates the notification for the scanning process
     }
 
     public void onAlertDismissThisTime(){
-        onAlertChoice(2);
+        onAlertChoice(ConfigConstants.DETECTION_TYPE_THIS_TIME);
         detector.startScanning(); //start scanning again
         activateScanningStatusNotification(); //activates the notification for the scanning process
     }
@@ -1228,7 +1230,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void showNoLocationToast(){
-        Toast toast = Toast.makeText(MainActivity.this, "Location was not found", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER,0,0);
         toast.show();
     }

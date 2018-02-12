@@ -51,4 +51,8 @@ public final class ConfigConstants {
     public static String SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN = "cbAlertLocationDontAskAgain";
     public static boolean SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT = false;
 
+    public static int DETECTION_TYPE_ALWAYS_DISMISSED_HERE = 0;
+    public static int DETECTION_TYPE_ALWAYS_BLOCKED_HERE = 1;
+    public static int DETECTION_TYPE_THIS_TIME = 2;
+
 }
