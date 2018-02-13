@@ -48,11 +48,17 @@ public class JSONManager {
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
         Log.d("Text Data", byteArrayOutputStream.toString());
+
+        JSONObject jObject = null; //new json-object with the outputstream
+        JSONArray jArray =null;
         try {
-            JSONObject jObject = new JSONObject(
-                    byteArrayOutputStream.toString()); //new json-object with the outputstream
+            jObject = new JSONObject(byteArrayOutputStream.toString());
             JSONObject jObjectResult = jObject.getJSONObject(JSON_LIST_NAME); //get the jsonobject "items"
-            JSONArray jArray = jObjectResult.getJSONArray(JSON_ARRAY_SIGNALS); //get the jsonarray with the signals
+            jArray = jObjectResult.getJSONArray(JSON_ARRAY_SIGNALS); //get the jsonarray with the signals
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (jArray != null) {
             String lon = ""; //longitude
             String lat = ""; //latidude
             String tech = ""; //technology
@@ -61,20 +67,22 @@ public class JSONManager {
             String address = ""; //addressLine
             String url = ""; //fileUrl
             for (int i = 0; i < jArray.length(); i++) { //go through the array
-                lon = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LONGITUDE); //save longitude
-                lat = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LATITUDE); //save latitude
-                tech = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_TECHNOLOGY); //save technology
-                lastDet = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LAST_DETECTION); //save spoofingStatus
-                spoof = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_SPOOFING_STATUS); //save spoofingStatus
-                address = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_ADDRESS); //save spoofingStatus
-                url = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_URL); //save fileUrl
-                Log.d("Longitude", lon);
-                Log.d("Latitude", lat);
-                Log.d("Technology", tech);
-                data.add(new String[] { lon, lat, tech, lastDet, spoof, address, url }); //add every data of one array-index in the data-list
+                try {
+                    lon = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LONGITUDE); //save longitude
+                    lat = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LATITUDE); //save latitude
+                    tech = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_TECHNOLOGY); //save technology
+                    lastDet = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LAST_DETECTION); //save spoofingStatus
+                    spoof = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_SPOOFING_STATUS); //save spoofingStatus
+                    address = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_ADDRESS); //save spoofingStatus
+                    url = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_URL); //save fileUrl
+                    Log.d("Longitude", lon);
+                    Log.d("Latitude", lat);
+                    Log.d("Technology", tech);
+                    data.add(new String[]{lon, lat, tech, lastDet, spoof, address, url}); //add every data of one array-index in the data-list
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return data;
     }
@@ -351,27 +359,31 @@ public class JSONManager {
         }
     }
 
-    private ByteArrayOutputStream getByteArrayOutputStreamWithJsonData(File jsonFile){
+    private ByteArrayOutputStream getByteArrayOutputStreamWithJsonData(File jsonFile) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         FileInputStream inputStream = null;
+        int ctr;
         try{
             inputStream = new FileInputStream(jsonFile);
-        }
-        catch(IOException ioex){
-            ioex.printStackTrace();
-        }
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        int ctr;
-        try {
             ctr = inputStream.read(); //read the inputstream of the file
             while (ctr != -1) {
                 byteArrayOutputStream.write(ctr);
                 ctr = inputStream.read();
             }
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        catch(IOException ioex){
+            ioex.printStackTrace();
+        }
+        finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         return byteArrayOutputStream;
     }
 }

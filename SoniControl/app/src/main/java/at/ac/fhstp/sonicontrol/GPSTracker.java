@@ -91,7 +91,6 @@ public class GPSTracker extends Service implements LocationListener {
                                 this,
                                 main.uiHandler.getLooper()
                         );
-
                         if (locationManager != null) {
                             location = locationManager.getLastKnownLocation(provider_info);
                             updateGPSCoordinates();
@@ -164,13 +163,13 @@ public class GPSTracker extends Service implements LocationListener {
     public String getAddressLine(Context context) {
         List<Address> addresses = getGeocoderAddress(context);
 
-        if (addresses != null && addresses.size() > 0) {
+        if (addresses != null && !addresses.isEmpty()) {
             Address address = addresses.get(0);
             String addressLine = address.getAddressLine(0);
 
             return addressLine;
         } else {
-            return null;
+            return getString(R.string.json_detections_unknown_address);
         }
     }
 
