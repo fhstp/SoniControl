@@ -27,20 +27,29 @@
             android:visibility="invisible" />
 
         <Button
-            android:id="@+id/btnSpoof"
+            android:id="@+id/btnBlockThisTime"
             android:layout_width="309dp"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/btnPlay"
             android:layout_alignStart="@+id/btnPlay"
             android:layout_below="@+id/btnPlay"
+            android:text="@string/alertDialog_option_jam_this_time" />
+
+        <Button
+            android:id="@+id/btnSpoof"
+            android:layout_width="308dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/btnBlockThisTime"
+            android:layout_alignStart="@+id/btnBlockThisTime"
+            android:layout_below="@+id/btnBlockThisTime"
             android:text="@string/alertDialog_option_jam_always_here" />
 
         <Button
             android:id="@+id/btnDismissThisTime"
             android:layout_width="308dp"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/btnSpoof"
-            android:layout_alignStart="@+id/btnSpoof"
+            android:layout_alignEnd="@+id/btnBlockThisTime"
+            android:layout_alignRight="@+id/btnBlockThisTime"
             android:layout_below="@+id/btnSpoof"
             android:text="@string/alertDialog_option_dismiss_this_time" />
 
@@ -48,20 +57,10 @@
             android:id="@+id/btnDismissAlwaysHere"
             android:layout_width="308dp"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/btnSpoof"
-            android:layout_alignRight="@+id/btnSpoof"
+            android:layout_alignLeft="@+id/btnBlockThisTime"
+            android:layout_alignStart="@+id/btnBlockThisTime"
             android:layout_below="@+id/btnDismissThisTime"
             android:text="@string/alertDialog_option_dismiss_always_here" />
-
-        <Button
-            android:id="@+id/btnBlockThisTime"
-            android:layout_width="308dp"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/btnDismissAlwaysHere"
-            android:layout_alignStart="@+id/btnDismissAlwaysHere"
-            android:layout_below="@+id/btnDismissThisTime"
-            android:layout_marginTop="46dp"
-            android:text="@string/alertDialog_option_jam_this_time" />
 
         <TextView
             android:id="@+id/txtSignalType"
@@ -96,7 +95,7 @@
             android:id="@+id/txtAlertDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/btnBlockThisTime"
+            android:layout_below="@+id/btnDismissAlwaysHere"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="17dp" />
 
