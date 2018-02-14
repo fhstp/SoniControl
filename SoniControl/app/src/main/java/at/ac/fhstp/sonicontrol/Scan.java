@@ -33,6 +33,8 @@ public class Scan {
     private boolean paused = false; // Is the Scan paused ?
     private Technology lastDetectedTechnology = null;
 
+    private boolean consistentState = true; // Allows to detect wrong termination of the app
+
     private Scan(){
     }
 
@@ -107,7 +109,7 @@ public class Scan {
         locFinder = Location.getInstanceLoc(); //get an instance of location
         jsonMan = new JSONManager(main);
 
-        if (paused) {
+        if (paused && consistentState) {
             Log.d(TAG, "Resume scanning");
             resume();
         }
@@ -115,6 +117,8 @@ public class Scan {
             Log.d(TAG, "startScanning");
             MainActivity.threadPool.execute(scanRun);
         }
+        consistentState = true; // Handles wrong termination of the app
+
         // Stores the app state : SCANNING
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
         SharedPreferences.Editor ed = sp.edit();
@@ -132,7 +136,12 @@ public class Scan {
 
     public void pause() {
         paused = true;
-        Pause();
+        int result = Pause();
+
+        if (result == -1) {
+            // We are in an inconsistent state, audioIO was not initialized. Might be needed to restart...
+            consistentState = false;
+        }
     }
 
     public void resume() {
@@ -153,7 +162,7 @@ public class Scan {
     private native float GetAndroidOut1();
     private native int GetAndroidOut2();
     private native boolean GetBackgroundModelUpdating();
-    private native void Pause();
+    private native int Pause();
     private native void Resume();
     private native void StopIO();
 }

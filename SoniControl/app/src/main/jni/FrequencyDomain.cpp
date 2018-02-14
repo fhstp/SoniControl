@@ -85,7 +85,7 @@ static int counter = 0; //increments in every loop (without exception), helps to
 static JavaVM* jvm = 0;
 static jobject jniScan = 0; // GlobalRef
 
-static void pauseIO();
+static int pauseIO();
 static void stopIO();
 
 static int advanceSampleArray()
@@ -414,15 +414,24 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     SuperpoweredCPU::setSustainedPerformanceMode(true);
 }
 
-static void pauseIO() {
-    // onBackground only sets internals->foreground = false;
-    // Which stops the queues only when you use the output, so I also stop manually
-    audioIO->onBackground();
-    audioIO->stop();
+static int pauseIO() {
+    // Check if the app got in an inconsistent state
+    if (audioIO != NULL) {
+        // onBackground only sets internals->foreground = false;
+        // Which stops the queues only when you use the output, so I also stop manually
+        audioIO->onBackground();
+        audioIO->stop();
+        return 0;
+    }
+    else {
+        return -1;
+    }
 }
 
 static void resumeIO() {
-    audioIO->onForeground(); // Starts the queues again
+    if (audioIO != NULL) { // Safety check to avoid a crash, but should never be needed
+        audioIO->onForeground(); // Starts the queues again
+    }
 }
 
 static void stopIO() {
@@ -481,8 +490,8 @@ extern "C" JNIEXPORT jboolean Java_at_ac_fhstp_sonicontrol_Scan_GetBackgroundMod
     return backgroundModelUpdating;
 }
 
-extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
-    pauseIO();
+extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+    return pauseIO();
 }
 
 extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
