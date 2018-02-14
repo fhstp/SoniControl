@@ -138,13 +138,13 @@ public class MicCapture {
                 locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access
             } else {
                 // Note: It is okay to update notification from a worker thread, see : https://stackoverflow.com/a/15803726/5232306
-                main.cancelSpoofingStatusNotification();
-                main.activateScanningStatusNotification();
+                //main.cancelSpoofingStatusNotification();
+                NotificationHelper.activateScanningStatusNotification(main.getApplicationContext());
                 detector.startScanning(); //start scanning again
             }
         } else {
-            main.cancelSpoofingStatusNotification();
-            main.activateScanningStatusNotification();
+            //main.cancelSpoofingStatusNotification();
+            NotificationHelper.activateScanningStatusNotification(main.getApplicationContext());
             detector.startScanning(); //start scanning again
         }
     }

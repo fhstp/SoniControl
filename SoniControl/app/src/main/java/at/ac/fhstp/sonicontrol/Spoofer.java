@@ -211,8 +211,8 @@ public class Spoofer {
 
     private void startScanningAgain(){
         setInstanceNull(); //set the NoiseGenerator instance to null
-        main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
-        main.activateScanningStatusNotification(); //activate the scanning status notification
+        //main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
+        NotificationHelper.activateScanningStatusNotification(main.getApplicationContext()); //activate the scanning status notification
         detector.getTheOldSpoofer(Spoofer.this); //update the spoofer object in the detector
         detector.startScanning(); //start scanning again
         //Handled with stopped variable ? spoofHandler.removeCallbacks(spoofRun); //reset handler

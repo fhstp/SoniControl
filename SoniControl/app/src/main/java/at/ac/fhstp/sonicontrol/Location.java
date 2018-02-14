@@ -138,8 +138,8 @@ public class Location {
             /*if (!main.getBackgroundStatus()) { //if the app is not in the background
                 main.cancelDetectionNotification(); //cancel the detection notification
             }*/
-            main.cancelScanningStatusNotification(); //cancel the scanning status notification
-            main.activateSpoofingStatusNotification(); //activate the spoofing status notification
+            //main.cancelScanningStatusNotification(); //cancel the scanning status notification
+            NotificationHelper.activateSpoofingStatusNotification(main.getApplicationContext()); //activate the spoofing status notification
 
             boolean locationTrack = main.checkJsonAndLocationPermissions()[1];
             boolean saveJsonFile = main.checkJsonAndLocationPermissions()[0];
@@ -290,8 +290,8 @@ public class Location {
         if(isNewSignal){ //if its a new signal
             Log.d("Location", "I am a new Signal");
             detectedSignalPosition = position; //save the new signal as the detected Position
-            main.cancelScanningStatusNotification();
-            main.activateDetectionAlertStatusNotification(signalType);
+            //main.cancelScanningStatusNotification();
+            NotificationHelper.activateDetectionAlertStatusNotification(main.getApplicationContext(), signalType);
             /*if(main.getBackgroundStatus()) { //if the app is in the background
                 main.activateDetectionNotification(); //activate the detection notification
             }*/

@@ -20,7 +20,7 @@
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 
 //SUPERPOWERED FFT VARIABLES
-static SuperpoweredAndroidAudioIO *audioIO;
+static SuperpoweredAndroidAudioIO *audioIO = NULL;
 static SuperpoweredFrequencyDomain *frequencyDomain;
 static float *magnitudeLeft, *magnitudeRight, *phaseLeft, *phaseRight, *inputBufferFloat;
 
@@ -487,6 +487,10 @@ extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv * __unu
 
 extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
     resumeIO();
+}
+
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_StopIO(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+    stopIO();
 }
 
 /* SettingsActivity does not exist in the full app

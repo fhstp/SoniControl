@@ -102,7 +102,7 @@ public class Scan {
             }
         }
 
-        savedFileUrl = main.getExternalFilesDir(null) + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
+        savedFileUrl = main.getFilesDir() + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
 
         locFinder = Location.getInstanceLoc(); //get an instance of location
         jsonMan = new JSONManager(main);
@@ -140,6 +140,13 @@ public class Scan {
         Resume();
     }
 
+    /**
+     * Will delete the audioIO object, thus releasing audio resources
+     */
+    public void stopIO() {
+        StopIO();
+    }
+
     // ------
     // Native functions to find in jni/FrequencyDomain.cpp
     private native void FrequencyDomain(int samplerate, int buffersize);
@@ -148,4 +155,5 @@ public class Scan {
     private native boolean GetBackgroundModelUpdating();
     private native void Pause();
     private native void Resume();
+    private native void StopIO();
 }
