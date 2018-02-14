@@ -4,6 +4,10 @@ SoniControl is a novel technology for the recognition and masking of acoustic tr
 
 ## Getting Started
 
+* User documentation: 
+
+* Developer documentation: 
+
 The project was developed using Android Studio 3.
 
 ### Prerequisites
@@ -13,6 +17,7 @@ In order to compile the project, you will need to download the [Superpowered SDK
 ## Credits
 
 * Audio by [Superpowered](http://www.superpowered.com/)
+* Material Icons, which are under [Apache License Version 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
 ## Contributing
 
