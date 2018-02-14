@@ -13,6 +13,7 @@ import android.media.AudioTrack;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -33,6 +34,9 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
+import android.preference.Preference;
+import android.provider.Settings;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
@@ -118,6 +122,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     public Handler uiHandler = new Handler(Looper.getMainLooper());
 
     SharedPreferences sharedPref;
+
+    AlertDialog alertLocation = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -316,6 +322,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
         else {
             startService();
+            checkForActivatedLocation();
             startDetection();
         }
     }
@@ -360,6 +367,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                         if (Manifest.permission.RECORD_AUDIO.equals(permissions[i])) {
                             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                                 startService();
+                                checkForActivatedLocation();
                                 startDetection();
                             }
                             else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
@@ -396,6 +404,20 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         if(preventiveSpoof) {
             NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
             usedBlockingMethod = locationFinder.blockMicOrSpoof();
+        }
+
+        boolean gpsEnabled = settings.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+        boolean networkEnabled = settings.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
+        locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if(!(isGPSEnabled && gpsEnabled) && !(isNetworkEnabled && networkEnabled)){
+            btnAlertSpoof.setEnabled(false);
+            btnAlertDismissAlways.setEnabled(false);
+        }else{
+            btnAlertSpoof.setEnabled(true);
+            btnAlertDismissAlways.setEnabled(true);
         }
 
         sigType = signalType; //set the technology variable to the latest detected one
@@ -1135,5 +1157,43 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         });
     }*/
+
+    public void checkForActivatedLocation(){
+        locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+        boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
+
+        if (!(isGPSEnabled && locationTrackGps) && !(isNetworkEnabled && locationTrackNet)) {
+            activateAlertNoLocationEnabled();
+        }else {
+            Toast toast = Toast.makeText(MainActivity.this, R.string.toast_location_is_on, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+        }
+    }
+
+    public void activateAlertNoLocationEnabled() {
+        final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(this);
+        deleteJsonDialog.setTitle(R.string.alert_location_is_off_title)
+                .setMessage(R.string.alert_location_is_off_message)
+                .setCancelable(true)
+                .setPositiveButton(R.string.alert_location_is_off_positive, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton(R.string.alert_location_is_off_negative, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertLocation.cancel();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_info);
+        alertLocation = deleteJsonDialog.show();
+    }
 
 }

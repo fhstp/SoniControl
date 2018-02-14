@@ -53,4 +53,10 @@
     <string name="alert_no_json_file_title">No JSON file</string>
     <string name="alert_no_json_file_negative">Cancel</string>
     <string name="alert_no_json_file_positive">Save data in JSON file</string>
+    <string name="alert_location_is_off_message">To save locations where ultrasonic communications were detected, you need to turn on location.
+        \nYou can turn on Location in \'Phone Settings\'</string>
+    <string name="alert_location_is_off_title">Location is off</string>
+    <string name="alert_location_is_off_positive">Phone Settings</string>
+    <string name="alert_location_is_off_negative">Not now</string>
+    <string name="toast_location_is_on">Location is enabled</string>
 </resources>
