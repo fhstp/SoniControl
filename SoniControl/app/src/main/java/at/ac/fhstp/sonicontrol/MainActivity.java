@@ -87,6 +87,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     AlertDialog alert;
     TextView txtSignalType;
     TextView txtAlertDate;
+    TextView txtNoLocation;
     Technology sigType;
     View view;
 
@@ -195,6 +196,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
         txtAlertDate = (TextView)view.findViewById(R.id.txtAlertDate);
+        txtNoLocation = (TextView)view.findViewById(R.id.txtNoLocation);
 
         btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
         btnAlertDismissAlways.setOnClickListener(new View.OnClickListener(){
@@ -444,9 +446,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         if(!(isGPSEnabled && gpsEnabled) && !(isNetworkEnabled && networkEnabled)){
             btnAlertSpoof.setEnabled(false);
             btnAlertDismissAlways.setEnabled(false);
+            txtNoLocation.setText(R.string.on_alert_no_location_message);
         }else if(!saveJsonFile){
             btnAlertSpoof.setEnabled(false);
             btnAlertDismissAlways.setEnabled(false);
+            txtNoLocation.setText(R.string.on_alert_no_location_message);
         }else{
             btnAlertSpoof.setEnabled(true);
             btnAlertDismissAlways.setEnabled(true);

@@ -85,4 +85,5 @@
     <string name="json_detections_unknown_address">Unknown address</string>
     <string name="alert_microphone_already_used_title">Microphone is already in use</string>
     <string name="alert_microphone_already_used_message">We could not start scanning, the microphone is already used by another app.</string>
+    <string name="on_alert_no_location_message">Please activate location if you want to be able to save detections.</string>
 </resources>

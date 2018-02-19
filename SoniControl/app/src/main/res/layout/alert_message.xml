@@ -52,7 +52,7 @@
             android:layout_alignLeft="@+id/btnPlay"
             android:layout_alignStart="@+id/btnPlay"
             android:layout_below="@+id/btnPlay"
-            android:text="@string/alertDialog_option_jam_this_time" />
+            android:text="@string/alertDialog_option_jam_this_time"/>
 
         <Button
             android:id="@+id/btnSpoof"
@@ -111,10 +111,20 @@
             android:layout_marginRight="15dp"/>
 
         <TextView
-            android:id="@+id/txtAlertDate"
+            android:id="@+id/txtNoLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/btnDismissAlwaysHere"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="17dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
+
+        <TextView
+            android:id="@+id/txtAlertDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtNoLocation"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="17dp" />
 
