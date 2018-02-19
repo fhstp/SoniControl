@@ -213,14 +213,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-            onAlertSpoofDetectedSignal();
+            onAlertBlockAlways();
             }
         });
 
         btnAlertSpoofThisTime = (Button) view.findViewById(R.id.btnBlockThisTime);
         btnAlertSpoofThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                onAlertSpoofThisTime();
+                onAlertBlockThisTime();
             }
         });
 
@@ -343,9 +343,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         }
         else {
-            startService();
-            checkForActivatedLocation();
-            startDetection();
+            if(locationFinder.validateMicAvailability()){
+                startService();
+                checkForActivatedLocation();
+                startDetection();
+            }else{
+                activateNoMicrophoneAccessAlertDialog();
+            }
         }
     }
 
@@ -407,6 +411,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     for (int i = 0; i < permissions.length; i++) {
                         if (Manifest.permission.ACCESS_FINE_LOCATION.equals(permissions[i])) {
                             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                                //TODO Multithreading
                                 locationFinder.requestGPSUpdates();
                             }
                             else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
@@ -1110,7 +1115,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         txtSignalType.setText(sigType.toString()); //can be deleted it's only for debugging
     }
 
-    public void onAlertSpoofDetectedSignal(){
+    public void onAlertBlockAlways(){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE);
         showToastOnNoLocation();
         checkForActivatedLocation();
@@ -1118,7 +1123,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext()); //activates the notification for the spoofing process
     }
 
-    public void onAlertSpoofThisTime(){
+    public void onAlertBlockThisTime(){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_THIS_TIME);
         locationFinder.blockMicOrSpoof();
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
@@ -1288,6 +1293,20 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         String dateRight = String.valueOf(rightFormat.format(currentTime));
         String dateString = " " + dateRight + " - " + dateLeft;
         return dateString;
+    }
+
+    public void activateNoMicrophoneAccessAlertDialog(){
+        final AlertDialog.Builder activateLocationDialog = new AlertDialog.Builder(this);
+        activateLocationDialog.setTitle(R.string.alert_microphone_already_used_title)
+                .setMessage(R.string.alert_microphone_already_used_message)
+                .setCancelable(true)
+                .setNeutralButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+        activateLocationDialog.show();
     }
 
 }

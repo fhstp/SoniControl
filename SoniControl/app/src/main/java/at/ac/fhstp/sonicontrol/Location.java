@@ -222,7 +222,7 @@ public class Location {
     }
 
 
-    private boolean validateMicAvailability(){
+    public boolean validateMicAvailability(){
         Boolean available = true; //helpboolean for the availability of the microphone
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);  //set the thread to urgent for audio
 
