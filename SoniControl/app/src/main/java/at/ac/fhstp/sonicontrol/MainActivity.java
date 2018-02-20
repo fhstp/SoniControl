@@ -298,6 +298,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 */
         NotificationHelper.cancelDetectionAlertStatusNotification(getApplicationContext());
 
+        locationFinder.removeGPSUpdates();
+
         detector.stopIO(); // release audio resources from the scanner
         Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
         spoof.stopSpoofingComplete(); //stop the whole spoofing process

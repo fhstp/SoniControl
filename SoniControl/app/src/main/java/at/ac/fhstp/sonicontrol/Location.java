@@ -333,4 +333,14 @@ public class Location {
             locationData.requestGPSUpdates();
         }
     }
+
+    public void removeGPSUpdates(){
+        if (locationData == null) {
+            // Will call requestLocationUpdates
+            locationData = new GPSTracker(main);
+        }
+        else {
+            locationData.removeGPSUpdates();
+        }
+    }
 }

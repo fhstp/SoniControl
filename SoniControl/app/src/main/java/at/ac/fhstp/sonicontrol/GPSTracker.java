@@ -308,4 +308,8 @@ public class GPSTracker extends Service implements LocationListener {
             );
         }
     }
+
+    public void removeGPSUpdates(){
+        locationManager.removeUpdates(this);
+    }
 }
