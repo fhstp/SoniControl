@@ -31,7 +31,7 @@ public final class ConfigConstants {
     public static final String SETTING_LOCATION_RADIUS = "etprefLocationRadius";
     public static final String SETTING_LOCATION_RADIUS_DEFAULT = "30";
     public static final String SETTING_PULSE_DURATION = "etprefPulseDuration";
-    public static final String SETTING_PULSE_DURATION_DEFAULT = "1000";
+    public static final String SETTING_PULSE_DURATION_DEFAULT = "4000";
     public static final String SETTING_PAUSE_DURATION = "etprefPauseDuration";
     public static final String SETTING_PAUSE_DURATION_DEFAULT = "0";
     public static final String SETTING_BANDWIDTH = "etprefBandwidth";

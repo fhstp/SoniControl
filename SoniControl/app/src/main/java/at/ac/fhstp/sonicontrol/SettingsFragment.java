@@ -180,7 +180,7 @@ public class SettingsFragment extends PreferenceFragment {
         prefPulseDur.setTitle(prefPulseDurStr);
 
         Preference prefPauseDur = findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
-        int pauseDuration = Integer.valueOf(prefPulseDur.getSharedPreferences().getString(prefPulseDur.getKey(), ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT));
+        int pauseDuration = Integer.valueOf(prefPauseDur.getSharedPreferences().getString(prefPauseDur.getKey(), ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT));
         String prefPauseDurStr = String.format("Pause duration (%d ms)", pauseDuration);
         prefPauseDur.setTitle(prefPauseDurStr);
 
