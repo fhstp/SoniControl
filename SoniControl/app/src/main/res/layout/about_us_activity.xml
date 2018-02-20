@@ -38,7 +38,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="16dp"
-        android:autoLink="web"
+        android:autoLink="web|email"
         android:linksClickable="true"
         android:text="@string/aboutUsProject"
         android:textColor="@android:color/black" />

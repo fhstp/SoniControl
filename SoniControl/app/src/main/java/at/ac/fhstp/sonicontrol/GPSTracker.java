@@ -148,7 +148,6 @@ public class GPSTracker extends Service implements LocationListener {
         {
             e.printStackTrace();
             Log.e(TAG, "Impossible to connect to LocationManager", e);
-            // TODO: Add a Toast or Snackbar ?
             main.displayToast(getResources().getString(R.string.toastMessageNoGeocoderConnection), Toast.LENGTH_LONG);
         }
     }
