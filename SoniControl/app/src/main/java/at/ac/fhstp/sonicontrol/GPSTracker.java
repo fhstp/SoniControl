@@ -71,7 +71,6 @@ public class GPSTracker extends Service implements LocationListener {
 
 
     public void initGPSTracker() {
-
         try {
             //main.displayToast("I am in initGPS", Toast.LENGTH_LONG);
             locationManager = (LocationManager) main.getApplicationContext().getSystemService(LOCATION_SERVICE);
@@ -96,38 +95,32 @@ public class GPSTracker extends Service implements LocationListener {
                 provider_info_network = LocationManager.NETWORK_PROVIDER;
             }
 
-            if (!provider_info_network.isEmpty()) {
-                int status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
+            int status = 0;
+            if (!provider_info_network.isEmpty() || !provider_info_gps.isEmpty()) {
+                status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
                         Manifest.permission.ACCESS_FINE_LOCATION);
                 if (status != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(
                             main,
                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                             ConfigConstants.REQUEST_GPS_PERMISSION);
-                } else {
-                    locationManager.requestLocationUpdates(
-                            provider_info_network,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                            this,
-                            main.uiHandler.getLooper()
-                    );
-                    if (locationManager != null) {
-                        location = locationManager.getLastKnownLocation(provider_info_network);
-                        updateGPSCoordinates();
-                    }
                 }
-            }
+                else {
+                    if (!provider_info_network.isEmpty()) {
+                        locationManager.requestLocationUpdates(
+                                provider_info_network,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                                this,
+                                main.uiHandler.getLooper()
+                        );
+                        if (locationManager != null) {
+                            location = locationManager.getLastKnownLocation(provider_info_network);
+                            updateGPSCoordinates();
+                        }
+                    }
 
-            if (!provider_info_gps.isEmpty()) {
-                int status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION);
-                if (status != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(
-                            main,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            ConfigConstants.REQUEST_GPS_PERMISSION);
-                } else {
+                    if (!provider_info_gps.isEmpty()) {
                         locationManager.requestLocationUpdates(
                                 provider_info_gps,
                                 MIN_TIME_BW_UPDATES,
@@ -139,10 +132,9 @@ public class GPSTracker extends Service implements LocationListener {
                             location = locationManager.getLastKnownLocation(provider_info_gps);
                             updateGPSCoordinates();
                         }
+                    }
                 }
             }
-
-
         }
         catch (Exception e)
         {

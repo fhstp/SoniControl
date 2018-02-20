@@ -408,7 +408,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
             case ConfigConstants.REQUEST_GPS_PERMISSION:{
                 if (grantResults.length == 0) {
-                    Toast.makeText(MainActivity.this, R.string.toastLocationAccessDenied, Toast.LENGTH_LONG).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, R.string.toastLocationAccessDenied, Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
                 else {
                     for (int i = 0; i < permissions.length; i++) {
@@ -417,7 +422,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                                 locationFinder.requestGPSUpdates();
                             }
                             else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                                Toast.makeText(MainActivity.this, R.string.toastLocationAccessDenied, Toast.LENGTH_LONG).show();
+                                runOnUiThread(new Runnable() {
+                                      @Override
+                                      public void run() {
+                                          Toast.makeText(MainActivity.this, R.string.toastLocationAccessDenied, Toast.LENGTH_LONG).show();
+                                      }
+                                });
                             }
                         }
                     }
@@ -443,7 +453,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
-        if(!(isGPSEnabled && gpsEnabled) && !(isNetworkEnabled && networkEnabled)){
+        int status = ActivityCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if((!(isGPSEnabled && gpsEnabled) && !(isNetworkEnabled && networkEnabled)) || status != PackageManager.PERMISSION_GRANTED){
             btnAlertSpoof.setEnabled(false);
             btnAlertDismissAlways.setEnabled(false);
             txtNoLocation.setText(R.string.on_alert_no_location_message);
@@ -1202,8 +1215,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
         boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
+        int status = ActivityCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
         if(locationTrackGps || locationTrackNet){
-            if((!isGPSEnabled && locationTrackGps)&&(!isNetworkEnabled && locationTrackNet)){
+            if((!(isGPSEnabled && locationTrackGps) && !(isNetworkEnabled && locationTrackNet)) || status != PackageManager.PERMISSION_GRANTED){
                 activateAlertNoLocationEnabled();
             }else{
                 Toast toast = Toast.makeText(MainActivity.this, R.string.toast_location_is_on, Toast.LENGTH_LONG);
@@ -1260,8 +1276,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
         boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
+        int status = ActivityCompat.checkSelfPermission(this.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+
         if(locationTrackGps || locationTrackNet){
-            if((!isGPSEnabled && locationTrackGps)&&(!isNetworkEnabled && locationTrackNet)){
+            if((!(isGPSEnabled && locationTrackGps) && !(isNetworkEnabled && locationTrackNet)) || status != PackageManager.PERMISSION_GRANTED){
                 Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
