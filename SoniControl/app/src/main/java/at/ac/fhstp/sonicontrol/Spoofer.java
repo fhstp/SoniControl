@@ -32,8 +32,6 @@ import java.util.concurrent.TimeUnit;
 public class Spoofer {
 
     static Spoofer instance;
-    //private Handler spoofHandler = new Handler();
-    //private Runnable spoofRun;
 
     int helpCounter = 0;
 
@@ -73,8 +71,7 @@ public class Spoofer {
     public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, Technology sigType){  //initialize the Scan with a main object
         this.main = main;
 
-        // TODO: init() probably should be called only once.
-        // TODO: Here we create a new NoiseGenerator object every time we want to spoof ?!
+        // TODO: init() could be called only once. We create a new NoiseGenerator object every time we want to spoof.
 
         this.genNoise = new NoiseGenerator(main);
         this.playingGlobal = playingGlobal;
@@ -188,7 +185,6 @@ public class Spoofer {
             setInstanceNull(); //set the instance of the spoofer null
         }
         if(audioTrack != null){ //if there is an audioplayer
-            //Handled with stopped variable ? spoofHandler.removeCallbacks(spoofRun); //reset the handler of the spoofer
             audioTrack.stop(); //stop playing
             audioTrack.release(); //release the player resources
             audioTrack = null; //set the player to null
@@ -230,21 +226,18 @@ public class Spoofer {
 
     private void startScanningAgain(){
         setInstanceNull(); //set the NoiseGenerator instance to null
-        //main.cancelSpoofingStatusNotification(); //cancel the spoofing status notification
         NotificationHelper.activateScanningStatusNotification(main.getApplicationContext()); //activate the scanning status notification
         detector.getTheOldSpoofer(Spoofer.this); //update the spoofer object in the detector
         detector.startScanning(); //start scanning again
-        //Handled with stopped variable ? spoofHandler.removeCallbacks(spoofRun); //reset handler
     }
 
     private void setSpoofingNoiseToNullAndTryGettingMicAccessAgain(){
-        // TODO: Keep the generated noise in case of reuse ? Not sure what our strategy should be regarding resource management
+        // TODO: Keep the generated noise in case of reuse ?
         genNoise.setGeneratedPlayerToNull(); //set the noiseplayer to null
         audioTrack.release(); //release the player resources
         audioTrack = null; //set the player to null
         genNoise = null; //set the the noisegenerator object to null
         setInstanceNull(); //set the NoiseGenerator instance to null
         locFinder.blockMicOrSpoof(); //try again to get access to the microphone and then choose the spoofing method
-        //Handled with stopped variable ? spoofHandler.removeCallbacks(spoofRun); //reset the handler
     }
 }

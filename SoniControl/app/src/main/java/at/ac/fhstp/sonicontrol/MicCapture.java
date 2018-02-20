@@ -121,15 +121,15 @@ public class MicCapture {
                 if (logLong < (blockingTime * 60)/*i<2*/) {
                     startCapturing(); //start the capture again
                 }
-                // TODO: Should this else redirect somewhere else ? (MainActivity ?)
+                // TODO: Should this else redirect to some controller ? (MainActivity ?)
                 else {
-                    executeRoutineAfterExpiredTimme();
+                    executeRoutineAfterExpiredTime();
                 }
             }
         }
     };
 
-    public void executeRoutineAfterExpiredTimme(){
+    public void executeRoutineAfterExpiredTime(){
         SharedPreferences sharedPref = main.getSettingsObject();
         //Log.d("Capture", "I captured the microphonesignal!");
         startTime = 0;
@@ -151,8 +151,7 @@ public class MicCapture {
             distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
             //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
             locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the settings for the locationdistance
-            // TODO: Check if we are thread safe
-            // TODO: Are we sure that a spoofer / scan is not already on ?
+            // TODO: Check if we are thread safe. Are we sure that a spoofer / scan is not already on ?
             if (distance < locationRadius) { //if in distance
                 locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access
             } else {

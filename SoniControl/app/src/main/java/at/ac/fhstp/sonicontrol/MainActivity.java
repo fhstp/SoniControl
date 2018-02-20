@@ -171,7 +171,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         mainIsMain = this;
 
-        //TODO: This should be ran only at first start...
+        //TODO: This should be ran only at first start, maybe move it to the Service or Application.
         detector = Scan.getInstance(); //Get Scan-object if no object is available yet make a new one
         detector.init(MainActivity.this); //initialize the detector with the main method
         detector.setDetectionListener(this); // MainActivity will be notified of detections (calls onDetection)
@@ -328,9 +328,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.RECORD_AUDIO)) {
 
-                // TODO: Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
                 Toast toast = Toast.makeText(MainActivity.this, R.string.permissionRequestExplanation, Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
@@ -417,7 +414,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     for (int i = 0; i < permissions.length; i++) {
                         if (Manifest.permission.ACCESS_FINE_LOCATION.equals(permissions[i])) {
                             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                                //TODO Multithreading
                                 locationFinder.requestGPSUpdates();
                             }
                             else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
@@ -737,12 +733,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
                 Intent intent = getIntent();
                 if (intent.hasExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED)) {
-                    // TODO: THIS IS ONE OF THE LAST EDGE CASES TO SOLVE
-                    // The intent extra is not removed after dismissing the alert,
-                    // so going to another activity and coming back triggers this code again,
-                    // leading to a crash.
-                    //TODO: Try not to use the intent extra, directly the "lastDetectedTechnology"
-
+                    //TODO: We might use directly the "lastDetectedTechnology", not using Extras ?
 
                     Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
                     if (technology != null) {
@@ -755,9 +746,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                         activateAlert(sigType);
                     }
                     else {
-                        // TODO: THIS IS ONE OF THE LAST EDGE CASES TO SOLVE
-                        // EDIT: Seems to work as is.
-
                         // in case the Activity was destroyed
                         String storedTechnology = sp.getString("lastDetectedTechnology", null);
                         if (storedTechnology != null) {
@@ -779,7 +767,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 }
                 else {
                     NotificationHelper.activateScanningStatusNotification(getApplicationContext());
-                    // TODO: ?
                 }
                 break;
             default:
@@ -828,9 +815,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     protected void onDestroy() {
         super.onDestroy();
 
-        // TODO: Release resources not released yet in onStop()
+        // TODO: Release resources... But this should not be called as long as our Service runs.
         // Maybe threads, microphone, ... ?
-        //threadPool.shutdownNow();
+        // threadPool.shutdownNow();
     }
 
     public static MainActivity getMainIsMain(){
@@ -1301,7 +1288,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         activateLocationDialog.setTitle(R.string.alert_microphone_already_used_title)
                 .setMessage(R.string.alert_microphone_already_used_message)
                 .setCancelable(true)
-                .setNeutralButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                     }

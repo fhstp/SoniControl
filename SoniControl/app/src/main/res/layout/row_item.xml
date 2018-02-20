@@ -68,7 +68,6 @@
             android:text="Android 6.0"
             android:textColor="@android:color/black" />
     -->
-    <!-- TODO LAT UND LANG ÜBEREINANDER, und mit json fillen-->
 
 
     <LinearLayout
