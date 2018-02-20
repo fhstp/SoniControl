@@ -286,7 +286,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         ed.remove(ConfigConstants.PREFERENCES_APP_STATE);
         // Clean the technology on disk
         ed.remove("lastDetectedTechnology");
-        ed.apply();
+        // Note: this is blocking the thread, but we want to be sure that it gets persisted.
         ed.commit();
 /*
         NotificationHelper.mNotificationManager.cancelAll(); //cancel all notifications
