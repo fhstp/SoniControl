@@ -38,6 +38,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -349,6 +350,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 startService();
                 checkForActivatedLocation();
                 startDetection();
+                isLocationEnabled(this);
             }else{
                 activateNoMicrophoneAccessAlertDialog();
             }
@@ -1211,11 +1213,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
         boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
-
         if(locationTrackGps || locationTrackNet){
-            if(!isGPSEnabled && locationTrackGps){
-                activateAlertNoLocationEnabled();
-            }else if(!isNetworkEnabled && locationTrackNet){
+            if((!isGPSEnabled && locationTrackGps)&&(!isNetworkEnabled && locationTrackNet)){
                 activateAlertNoLocationEnabled();
             }else{
                 Toast toast = Toast.makeText(MainActivity.this, R.string.toast_location_is_on, Toast.LENGTH_LONG);
@@ -1273,11 +1272,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
         if(locationTrackGps || locationTrackNet){
-            if(!isGPSEnabled && locationTrackGps){
-                Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
-            }else if(!isNetworkEnabled && locationTrackNet){
+            if((!isGPSEnabled && locationTrackGps)&&(!isNetworkEnabled && locationTrackNet)){
                 Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
@@ -1313,4 +1308,27 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         activateLocationDialog.show();
     }
 
+
+    public static boolean isLocationEnabled(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        }else{
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+
+
+    }
 }

@@ -61,7 +61,8 @@ public class GPSTracker extends Service implements LocationListener {
     private static final long MIN_TIME_BW_UPDATES = 1000 * 5 * 1;
 
     protected LocationManager locationManager;
-    private String provider_info = "";
+    private String provider_info_gps = "";
+    private String provider_info_network = "";
 
     public GPSTracker(MainActivity main) {
         this.main = main;
@@ -86,15 +87,39 @@ public class GPSTracker extends Service implements LocationListener {
             if (isGPSEnabled && locationTrackGps) {
                 this.isGPSTrackingEnabled = true;
                 Log.d(TAG, "Application use GPS Service");
-                provider_info = LocationManager.GPS_PROVIDER;
-            } else if (isNetworkEnabled && locationTrackNet) {
+                provider_info_gps = LocationManager.GPS_PROVIDER;
+            }
+            if (isNetworkEnabled && locationTrackNet) {
                 //this.isGPSTrackingEnabled = true;
                 this.isNetworkEnabled = true;
                 Log.d(TAG, "Application use Network State to get GPS coordinates");
-                provider_info = LocationManager.NETWORK_PROVIDER;
+                provider_info_network = LocationManager.NETWORK_PROVIDER;
             }
 
-            if (!provider_info.isEmpty()) {
+            if (!provider_info_network.isEmpty()) {
+                int status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
+                        Manifest.permission.ACCESS_FINE_LOCATION);
+                if (status != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(
+                            main,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            ConfigConstants.REQUEST_GPS_PERMISSION);
+                } else {
+                    locationManager.requestLocationUpdates(
+                            provider_info_network,
+                            MIN_TIME_BW_UPDATES,
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                            this,
+                            main.uiHandler.getLooper()
+                    );
+                    if (locationManager != null) {
+                        location = locationManager.getLastKnownLocation(provider_info_network);
+                        updateGPSCoordinates();
+                    }
+                }
+            }
+
+            if (!provider_info_gps.isEmpty()) {
                 int status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
                         Manifest.permission.ACCESS_FINE_LOCATION);
                 if (status != PackageManager.PERMISSION_GRANTED) {
@@ -104,18 +129,20 @@ public class GPSTracker extends Service implements LocationListener {
                             ConfigConstants.REQUEST_GPS_PERMISSION);
                 } else {
                         locationManager.requestLocationUpdates(
-                                provider_info,
+                                provider_info_gps,
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES,
                                 this,
                                 main.uiHandler.getLooper()
                         );
                         if (locationManager != null) {
-                            location = locationManager.getLastKnownLocation(provider_info);
+                            location = locationManager.getLastKnownLocation(provider_info_gps);
                             updateGPSCoordinates();
                         }
                 }
             }
+
+
         }
         catch (Exception e)
         {
@@ -261,12 +288,24 @@ public class GPSTracker extends Service implements LocationListener {
      */
     @SuppressLint("MissingPermission")
     public void requestGPSUpdates() {
-        locationManager.requestLocationUpdates(
-                provider_info,
-                MIN_TIME_BW_UPDATES,
-                MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                this,
-                main.uiHandler.getLooper()
-        );
+
+        if(!provider_info_gps.isEmpty()) {
+            locationManager.requestLocationUpdates(
+                    provider_info_gps,
+                    MIN_TIME_BW_UPDATES,
+                    MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                    this,
+                    main.uiHandler.getLooper()
+            );
+        }
+        if(!provider_info_network.isEmpty()) {
+            locationManager.requestLocationUpdates(
+                    provider_info_network,
+                    MIN_TIME_BW_UPDATES,
+                    MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                    this,
+                    main.uiHandler.getLooper()
+            );
+        }
     }
 }
