@@ -35,7 +35,7 @@ public final class ConfigConstants {
     public static final String SETTING_PAUSE_DURATION = "etprefPauseDuration";
     public static final String SETTING_PAUSE_DURATION_DEFAULT = "0";
     public static final String SETTING_BANDWIDTH = "etprefBandwidth";
-    public static final String SETTING_BANDWIDTH_DEFAULT = "1";
+    public static final String SETTING_BANDWIDTH_DEFAULT = "10";
     public static final String SETTING_BLOCKING_DURATION = "etprefSpoofDuration";
     public static final String SETTING_BLOCKING_DURATION_DEFAULT = "1";
     public static final String SETTING_GPS = "cbprefGpsUse";

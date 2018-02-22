@@ -36,6 +36,20 @@ public class SettingsFragment extends PreferenceFragment {
     AlertDialog alertDelete = null;
     AlertDialog alertReset = null;
 
+    private CheckBoxPreference cbContinuousSpoofing;
+    private CheckBoxPreference cbGPSUse;
+    private CheckBoxPreference cbNetworkUse;
+    private CheckBoxPreference cbMicrophone;
+    private CheckBoxPreference cbSaveJson;
+    private CheckBoxPreference cbPreventiveSpoofing;
+    private CheckBoxPreference cbAlertLocationDontAsk;
+    private EditTextPreference etLocationRadius;
+    private EditTextPreference etPulseDuration;
+    private EditTextPreference etPauseDuration;
+    private EditTextPreference etBandwidth;
+    private EditTextPreference etBlockingDuration;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +60,19 @@ public class SettingsFragment extends PreferenceFragment {
 
         nextMain = main.getMainIsMain();
         jsonMan = new JSONManager(nextMain);
+
+        cbContinuousSpoofing = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_CONTINOUS_SPOOFING);
+        cbGPSUse = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_GPS);
+        cbNetworkUse = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_NETWORK_USE);
+        cbMicrophone = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING);
+        cbSaveJson = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE);
+        cbPreventiveSpoofing = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_PREVENTIVE_SPOOFING);
+        cbAlertLocationDontAsk = (CheckBoxPreference) findPreference(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN);
+        etLocationRadius = (EditTextPreference) findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
+        etPulseDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_PULSE_DURATION);
+        etPauseDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
+        etBandwidth = (EditTextPreference) findPreference(ConfigConstants.SETTING_BANDWIDTH);
+        etBlockingDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
 
         Preference pref = findPreference(ConfigConstants.PREFERENCE_DELETE_JSON);
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -98,6 +125,21 @@ public class SettingsFragment extends PreferenceFragment {
                                 editor.putBoolean(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN,ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT);
                                 editor.apply();
                                 editor.commit();
+
+                                cbContinuousSpoofing.setChecked(ConfigConstants.SETTING_CONTINOUS_SPOOFING_DEFAULT);
+                                cbGPSUse.setChecked(ConfigConstants.SETTING_GPS_DEFAULT);
+                                cbNetworkUse.setChecked(ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
+                                cbMicrophone.setChecked(ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING_DEFAULT);
+                                cbSaveJson.setChecked(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
+                                cbPreventiveSpoofing.setChecked(ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
+                                cbAlertLocationDontAsk.setChecked(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT);
+                                etLocationRadius.setText(ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT);
+                                etPulseDuration.setText(ConfigConstants.SETTING_PULSE_DURATION_DEFAULT);
+                                etPauseDuration.setText(ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT);
+                                etBandwidth.setText(ConfigConstants.SETTING_BANDWIDTH_DEFAULT);
+                                etBlockingDuration.setText(ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT);
+                                
+                                resetEditTextPreferenceTexts();
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -169,35 +211,7 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onStart() {
         super.onStart();
-        Preference prefLocRad = findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
-        int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT));
-        String prefLocRadStr = String.format("Location radius (%d metres)", locationRadius);
-        prefLocRad.setTitle(prefLocRadStr);
-
-        Preference prefPulseDur = findPreference(ConfigConstants.SETTING_PULSE_DURATION);
-        int pulsingDuration = Integer.valueOf(prefPulseDur.getSharedPreferences().getString(prefPulseDur.getKey(), ConfigConstants.SETTING_PULSE_DURATION_DEFAULT));
-        String prefPulseDurStr = String.format("Pulse duration (%d ms)", pulsingDuration);
-        prefPulseDur.setTitle(prefPulseDurStr);
-
-        Preference prefPauseDur = findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
-        int pauseDuration = Integer.valueOf(prefPauseDur.getSharedPreferences().getString(prefPauseDur.getKey(), ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT));
-        String prefPauseDurStr = String.format("Pause duration (%d ms)", pauseDuration);
-        prefPauseDur.setTitle(prefPauseDurStr);
-
-        Preference prefBandwidth = findPreference(ConfigConstants.SETTING_BANDWIDTH);
-        int bandwidth = Integer.valueOf(prefBandwidth.getSharedPreferences().getString(prefBandwidth.getKey(), ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
-        String prefBandwidthStr = String.format("Bandwidth (%d Hz)", bandwidth);
-        prefBandwidth.setTitle(prefBandwidthStr);
-
-        Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
-        int blockingDuration = Integer.valueOf(prefBlockingDuration.getSharedPreferences().getString(prefBlockingDuration.getKey(), ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT));
-        if(blockingDuration==1) {
-            String prefBlockingDurationStr = String.format("Blocking duration (%d minute)", blockingDuration);
-            prefBlockingDuration.setTitle(prefBlockingDurationStr);
-        }else{
-            String prefBlockingDurationStr = String.format("Blocking duration (%d minutes)", blockingDuration);
-            prefBlockingDuration.setTitle(prefBlockingDurationStr);
-        }
+        resetEditTextPreferenceTexts();
     }
 
     @Override
@@ -231,5 +245,35 @@ public class SettingsFragment extends PreferenceFragment {
         */
     }
 
+    private void resetEditTextPreferenceTexts(){
+        Preference prefLocRad = findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
+        int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT));
+        String prefLocRadStr = String.format("Location radius (%d metres)", locationRadius);
+        prefLocRad.setTitle(prefLocRadStr);
 
+        Preference prefPulseDur = findPreference(ConfigConstants.SETTING_PULSE_DURATION);
+        int pulsingDuration = Integer.valueOf(prefPulseDur.getSharedPreferences().getString(prefPulseDur.getKey(), ConfigConstants.SETTING_PULSE_DURATION_DEFAULT));
+        String prefPulseDurStr = String.format("Pulse duration (%d ms)", pulsingDuration);
+        prefPulseDur.setTitle(prefPulseDurStr);
+
+        Preference prefPauseDur = findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
+        int pauseDuration = Integer.valueOf(prefPauseDur.getSharedPreferences().getString(prefPauseDur.getKey(), ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT));
+        String prefPauseDurStr = String.format("Pause duration (%d ms)", pauseDuration);
+        prefPauseDur.setTitle(prefPauseDurStr);
+
+        Preference prefBandwidth = findPreference(ConfigConstants.SETTING_BANDWIDTH);
+        int bandwidth = Integer.valueOf(prefBandwidth.getSharedPreferences().getString(prefBandwidth.getKey(), ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
+        String prefBandwidthStr = String.format("Bandwidth (%d Hz)", bandwidth);
+        prefBandwidth.setTitle(prefBandwidthStr);
+
+        Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
+        int blockingDuration = Integer.valueOf(prefBlockingDuration.getSharedPreferences().getString(prefBlockingDuration.getKey(), ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT));
+        if(blockingDuration==1) {
+            String prefBlockingDurationStr = String.format("Blocking duration (%d minute)", blockingDuration);
+            prefBlockingDuration.setTitle(prefBlockingDurationStr);
+        }else{
+            String prefBlockingDurationStr = String.format("Blocking duration (%d minutes)", blockingDuration);
+            prefBlockingDuration.setTitle(prefBlockingDurationStr);
+        }
+    }
 }
