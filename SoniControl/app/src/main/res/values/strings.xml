@@ -90,4 +90,12 @@
     <string name="alert_microphone_already_used_title">Microphone is already in use</string>
     <string name="alert_microphone_already_used_message">We could not start scanning, the microphone is already used by another app.</string>
     <string name="on_alert_no_location_message">Please activate location if you want to be able to save detections.</string>
+    <string name="action_reset_settings_message">Do you want to reset all settings?</string>
+    <string name="action_reset_settings_title">Reset Settings</string>
+    <string name="settings_location_radius_title">Location radius (%s metres)</string>
+    <string name="settings_pulse_duration_title">Pulse duration (%s ms)</string>
+    <string name="settings_pause_duration_title">Pause duration (%s ms)</string>
+    <string name="settings_bandwidth_title">Bandwidth (%s Hz)</string>
+    <string name="settings_blocking_duration_singular">Blocking duration (%s minute)</string>
+    <string name="settings_blocking_duration_plural">Blocking duration (%s minutes)</string>
 </resources>

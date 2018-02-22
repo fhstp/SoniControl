@@ -104,8 +104,8 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 final AlertDialog.Builder resetSettingsDialog = new AlertDialog.Builder(getActivity());
-                resetSettingsDialog.setTitle("Reset Settings")
-                        .setMessage("Do you want to reset all settings?")
+                resetSettingsDialog.setTitle(R.string.action_reset_settings_title)
+                        .setMessage(R.string.action_reset_settings_message)
                         .setCancelable(false)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
@@ -138,7 +138,7 @@ public class SettingsFragment extends PreferenceFragment {
                                 etPauseDuration.setText(ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT);
                                 etBandwidth.setText(ConfigConstants.SETTING_BANDWIDTH_DEFAULT);
                                 etBlockingDuration.setText(ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT);
-                                
+
                                 resetEditTextPreferenceTexts();
                             }
                         })
@@ -156,7 +156,7 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefLocRad = findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
         prefLocRad.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String prefLocRadStr = String.format("Location radius (%s metres)", String.valueOf(newValue));
+                String prefLocRadStr = String.format(getString(R.string.settings_location_radius_title), String.valueOf(newValue));
                 prefLocRad.setTitle(prefLocRadStr);
                 //Log.d("MyApp", "Pref " + preference.getKey() + " " + newValue.toString());
                 //Log.d("testfortest",String.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)));
@@ -167,7 +167,7 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefPulseDur = findPreference(ConfigConstants.SETTING_PULSE_DURATION);
         prefPulseDur.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String prefPulseDurStr = String.format("Pulse duration (%s ms)", String.valueOf(newValue));
+                String prefPulseDurStr = String.format(getString(R.string.settings_pulse_duration_title), String.valueOf(newValue));
                 prefPulseDur.setTitle(prefPulseDurStr);
                 return true;
             }
@@ -176,7 +176,7 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefPauseDur = findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
         prefPauseDur.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String prefPauseDurStr = String.format("Pause duration (%s ms)", String.valueOf(newValue));
+                String prefPauseDurStr = String.format(getString(R.string.settings_pause_duration_title), String.valueOf(newValue));
                 prefPauseDur.setTitle(prefPauseDurStr);
                 return true;
             }
@@ -185,7 +185,7 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefBandwidth = findPreference(ConfigConstants.SETTING_BANDWIDTH);
         prefBandwidth.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String prefBandwidthStr = String.format("Bandwidth (%s Hz)", String.valueOf(newValue));
+                String prefBandwidthStr = String.format(getString(R.string.settings_bandwidth_title), String.valueOf(newValue));
                 prefBandwidth.setTitle(prefBandwidthStr);
                 return true;
             }
@@ -195,10 +195,10 @@ public class SettingsFragment extends PreferenceFragment {
         prefBlockingDuration.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 if(Integer.valueOf((String)newValue)==1) {
-                    String prefBlockingDurationStr = String.format("Location radius (%s minute)", String.valueOf(newValue));
+                    String prefBlockingDurationStr = String.format(getString(R.string.settings_blocking_duration_singular), String.valueOf(newValue));
                     prefBlockingDuration.setTitle(prefBlockingDurationStr);
                 }else{
-                    String prefBlockingDurationStr = String.format("Location radius (%s minutes)", String.valueOf(newValue));
+                    String prefBlockingDurationStr = String.format(getString(R.string.settings_blocking_duration_plural), String.valueOf(newValue));
                     prefBlockingDuration.setTitle(prefBlockingDurationStr);
                 }
                 return true;
@@ -248,31 +248,31 @@ public class SettingsFragment extends PreferenceFragment {
     private void resetEditTextPreferenceTexts(){
         Preference prefLocRad = findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
         int locationRadius = Integer.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT));
-        String prefLocRadStr = String.format("Location radius (%d metres)", locationRadius);
+        String prefLocRadStr = String.format(getString(R.string.settings_location_radius_title), String.valueOf(locationRadius));
         prefLocRad.setTitle(prefLocRadStr);
 
         Preference prefPulseDur = findPreference(ConfigConstants.SETTING_PULSE_DURATION);
         int pulsingDuration = Integer.valueOf(prefPulseDur.getSharedPreferences().getString(prefPulseDur.getKey(), ConfigConstants.SETTING_PULSE_DURATION_DEFAULT));
-        String prefPulseDurStr = String.format("Pulse duration (%d ms)", pulsingDuration);
+        String prefPulseDurStr = String.format(getString(R.string.settings_pulse_duration_title), String.valueOf(pulsingDuration));
         prefPulseDur.setTitle(prefPulseDurStr);
 
         Preference prefPauseDur = findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
         int pauseDuration = Integer.valueOf(prefPauseDur.getSharedPreferences().getString(prefPauseDur.getKey(), ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT));
-        String prefPauseDurStr = String.format("Pause duration (%d ms)", pauseDuration);
+        String prefPauseDurStr = String.format(getString(R.string.settings_pause_duration_title), String.valueOf(pauseDuration));
         prefPauseDur.setTitle(prefPauseDurStr);
 
         Preference prefBandwidth = findPreference(ConfigConstants.SETTING_BANDWIDTH);
         int bandwidth = Integer.valueOf(prefBandwidth.getSharedPreferences().getString(prefBandwidth.getKey(), ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
-        String prefBandwidthStr = String.format("Bandwidth (%d Hz)", bandwidth);
+        String prefBandwidthStr = String.format(getString(R.string.settings_bandwidth_title), String.valueOf(bandwidth));
         prefBandwidth.setTitle(prefBandwidthStr);
 
         Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
         int blockingDuration = Integer.valueOf(prefBlockingDuration.getSharedPreferences().getString(prefBlockingDuration.getKey(), ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT));
         if(blockingDuration==1) {
-            String prefBlockingDurationStr = String.format("Blocking duration (%d minute)", blockingDuration);
+            String prefBlockingDurationStr = String.format(getString(R.string.settings_blocking_duration_singular), String.valueOf(blockingDuration));
             prefBlockingDuration.setTitle(prefBlockingDurationStr);
         }else{
-            String prefBlockingDurationStr = String.format("Blocking duration (%d minutes)", blockingDuration);
+            String prefBlockingDurationStr = String.format(getString(R.string.settings_blocking_duration_plural), String.valueOf(blockingDuration));
             prefBlockingDuration.setTitle(prefBlockingDurationStr);
         }
     }
