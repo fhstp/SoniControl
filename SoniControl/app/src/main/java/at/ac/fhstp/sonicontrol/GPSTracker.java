@@ -75,6 +75,9 @@ public class GPSTracker extends Service implements LocationListener {
             //main.displayToast("I am in initGPS", Toast.LENGTH_LONG);
             locationManager = (LocationManager) main.getApplicationContext().getSystemService(LOCATION_SERVICE);
 
+            Location locationNetwork = null;
+            Location locationGPS = null;
+
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -115,8 +118,8 @@ public class GPSTracker extends Service implements LocationListener {
                                 main.uiHandler.getLooper()
                         );
                         if (locationManager != null) {
-                            location = locationManager.getLastKnownLocation(provider_info_network);
-                            updateGPSCoordinates();
+                            locationNetwork = locationManager.getLastKnownLocation(provider_info_network);
+                            //updateGPSCoordinates();
                         }
                     }
 
@@ -129,10 +132,31 @@ public class GPSTracker extends Service implements LocationListener {
                                 main.uiHandler.getLooper()
                         );
                         if (locationManager != null) {
-                            location = locationManager.getLastKnownLocation(provider_info_gps);
-                            updateGPSCoordinates();
+                            locationGPS = locationManager.getLastKnownLocation(provider_info_gps);
+                            //updateGPSCoordinates();
                         }
                     }
+
+                    if(isBetterLocation(locationNetwork,locationGPS)){
+                        location = locationNetwork;
+                        updateGPSCoordinates();
+                    }
+                    /*
+                    if(locationManager != null){
+                        if(locationGPS == null) {
+                            location = locationNetwork;
+                            updateGPSCoordinates();
+                        }else if(locationNetwork == null) {
+                            location = locationGPS;
+                            updateGPSCoordinates();
+                        }else if(locationNetwork.getAccuracy() < locationGPS.getAccuracy()){
+                            location = locationNetwork;
+                            updateGPSCoordinates();
+                        }else if(locationGPS.getAccuracy() < locationNetwork.getAccuracy()){
+                            location = locationGPS;
+                            updateGPSCoordinates();
+                        }
+                    }*/
                 }
             }
         }
@@ -254,7 +278,35 @@ public class GPSTracker extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+        /*Location locationNetwork = null;
+        Location locationGPS = null;
+        int status = 0;
+        if (!provider_info_network.isEmpty() || !provider_info_gps.isEmpty()) {
+            status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION);
+            if (status != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        main,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        ConfigConstants.REQUEST_GPS_PERMISSION);
+            } else {
+                if(locationManager != null) {
+                    if (!provider_info_network.isEmpty()) {
+                        locationGPS = locationManager.getLastKnownLocation(provider_info_gps);
+                        updateGPSCoordinates();
+                    }
+                    if (!provider_info_network.isEmpty()) {
+                        locationNetwork = locationManager.getLastKnownLocation(provider_info_network);
+                        updateGPSCoordinates();
+                    }
+                }*/
 
+                if(isBetterLocation(location,this.location)){
+                    this.location = location;
+                   //updateGPSCoordinates();
+                }
+            /*}
+        }*/
     }
 
     @Override
@@ -302,5 +354,56 @@ public class GPSTracker extends Service implements LocationListener {
 
     public void removeGPSUpdates(){
         locationManager.removeUpdates(this);
+    }
+
+
+    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
+        }
+
+        // Check whether the new location fix is newer or older
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > MIN_TIME_BW_UPDATES;
+        boolean isSignificantlyOlder = timeDelta < -MIN_TIME_BW_UPDATES;
+        boolean isNewer = timeDelta > 0;
+
+        // If it's been more than two minutes since the current location, use the new location
+        // because the user has likely moved
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be worse
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        // Check if the old and new location are from the same provider
+        boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                currentBestLocation.getProvider());
+
+        // Determine location quality using a combination of timeliness and accuracy
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            return true;
+        }
+        return false;
+    }
+
+    /** Checks whether two providers are the same */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
     }
 }

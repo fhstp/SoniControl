@@ -145,12 +145,17 @@ public class MicCapture {
                     if (locationTrackGps || locationTrackNet) {
             locationTrack = true;
         }
-        if(locationTrack||(locFinder.getDetectedDBEntry()[0]==0&&locFinder.getDetectedDBEntry()[1]==0)) {
+        if(/*locationTrack||*/(locFinder.getDetectedDBEntry()[0]!=0&&locFinder.getDetectedDBEntry()[1]!=0)) {
             positionLatest = locFinder.getLocation(); //get the latest position
             positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
             distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
             //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
             locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the settings for the locationdistance
+            Log.d("Distance", Double.toString(distance));
+            Log.d("LatestPosition", Double.toString(positionLatest[0]));
+            Log.d("LatestPosition", Double.toString(positionLatest[1]));
+            Log.d("OldPosition", Double.toString(positionOld[0]));
+            Log.d("OldPosition", Double.toString(positionOld[1]));
             // TODO: Check if we are thread safe. Are we sure that a spoofer / scan is not already on ?
             if (distance < locationRadius) { //if in distance
                 locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access
