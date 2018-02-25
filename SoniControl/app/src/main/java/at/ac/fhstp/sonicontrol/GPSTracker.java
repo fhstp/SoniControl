@@ -56,6 +56,8 @@ public class GPSTracker extends Service implements LocationListener {
     double latitude;
     double longitude;
 
+    Location savedLocationOnDetection;
+
     int geocoderMaxResults = 1;
     private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 3.0f;
     private static final long MIN_TIME_BW_UPDATES = 1000 * 5 * 1;
@@ -139,6 +141,9 @@ public class GPSTracker extends Service implements LocationListener {
 
                     if(isBetterLocation(locationNetwork,locationGPS)){
                         location = locationNetwork;
+                        updateGPSCoordinates();
+                    }else{
+                        location = locationGPS;
                         updateGPSCoordinates();
                     }
                     /*
@@ -405,5 +410,17 @@ public class GPSTracker extends Service implements LocationListener {
             return provider2 == null;
         }
         return provider1.equals(provider2);
+    }
+
+    public void saveDetectedLocation(){
+        savedLocationOnDetection = location;
+    }
+
+    public double[] getDetectedLocation(){
+        double[] savedLocation = new double[2];
+        savedLocation[0] = savedLocationOnDetection.getLongitude();
+        savedLocation[1] = savedLocationOnDetection.getLatitude();
+
+        return savedLocation;
     }
 }

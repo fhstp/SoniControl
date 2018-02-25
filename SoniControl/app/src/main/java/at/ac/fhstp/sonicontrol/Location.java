@@ -138,6 +138,9 @@ public class Location {
     }
 
     public double[] getDetectedDBEntry(){
+        if(positionLatest[0]==detectedSignalPosition[0]&&positionLatest[1]==detectedSignalPosition[1]){
+            detectedSignalPosition = locationData.getDetectedLocation();
+        }
         return detectedSignalPosition;
     }
 
@@ -338,5 +341,9 @@ public class Location {
         if (locationData != null) {
             locationData.removeGPSUpdates();
         }
+    }
+
+    public void saveLocationGPSTrackerObject(){
+        locationData.saveDetectedLocation();
     }
 }
