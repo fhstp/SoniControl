@@ -7,13 +7,19 @@ The project website of the SoniControl project with all published results and re
 
 ## Getting Started
 
+* The folder "SoniControl" contains the code for the Android SoniControl app.
+
+* The folder "SoniControl_Octave" contains the prototypes developed during the SoniControl project using GNU Octave.
+
+### Documentation
+
 * User documentation available on our website: [sonicontrol.fhstp.ac.at/documentation](http://sonicontrol.fhstp.ac.at/documentation)
 
 * Developer documentation available on our website: [sonicontrol.fhstp.ac.at/documentation](http://sonicontrol.fhstp.ac.at/documentation)
 
-The project was developed using Android Studio 3.
-
 ### Prerequisites
+
+* The project was developed using Android Studio 3.
 
 * In order to compile the project, you will need to download the [Superpowered SDK](http://superpowered.com/), and link to it in the local.properties file (at the root of the Android Studio project)
 e.g. : superpowered.dir=[some_path]/SuperpoweredSDK/Superpowered
