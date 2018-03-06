@@ -13,9 +13,9 @@ The project website of the SoniControl project with all published results and re
 
 ### Documentation
 
-* User documentation available on our website: [sonicontrol.fhstp.ac.at/documentation](http://sonicontrol.fhstp.ac.at/documentation)
+* User documentation available on our website: [sonicontrol.fhstp.ac.at/documentation](http://sonicontrol.fhstp.ac.at/wp-content/uploads/2017/07/sonicontrol_user_doc.pdf)
 
-* Developer documentation available on our website: [sonicontrol.fhstp.ac.at/documentation](http://sonicontrol.fhstp.ac.at/documentation)
+* Developer documentation available on our website: [sonicontrol.fhstp.ac.at/documentation](http://sonicontrol.fhstp.ac.at/wp-content/uploads/2017/07/sonicontrol_developer_doc_and-architecture_public.pdf)
 
 ### Prerequisites
 
