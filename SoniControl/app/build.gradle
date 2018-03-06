@@ -11,8 +11,8 @@ android {
         applicationId "at.ac.fhstp.sonicontrol"
         minSdkVersion 16 // more than 95% of all active Android devices (mid 2017)
         targetSdkVersion 25
-        versionCode 6
-        versionName "0.9.4-alpha"
+        versionCode 7
+        versionName "0.9.5-alpha"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
