@@ -36,7 +36,8 @@
         android:textAlignment="textEnd"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/black"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:gravity="end" />
 
 
     <TextView
@@ -124,7 +125,7 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:text="SpoofingStatus"
-        android:textAlignment="viewStart"
+        android:textAlignment="center"
         android:textColor="@android:color/black"
         android:layout_alignBaseline="@+id/technologyName"
         android:layout_alignBottom="@+id/technologyName"

@@ -98,4 +98,6 @@
     <string name="settings_bandwidth_title">Bandwidth (%s Hz)</string>
     <string name="settings_blocking_duration_singular">Blocking duration (%s minute)</string>
     <string name="settings_blocking_duration_plural">Blocking duration (%s minutes)</string>
+    <string name="stored_detections_will_be_blocked">will be blocked</string>
+    <string name="stored_detections_will_be_ignored">will be ignored</string>
 </resources>

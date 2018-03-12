@@ -66,10 +66,10 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
 
         String spoofingStatus;
         if(Integer.valueOf(singleArrayItem[4])==1){
-            spoofingStatus = "Will be spoofed!";
+            spoofingStatus = getContext().getString(R.string.stored_detections_will_be_blocked);
             customView.setBackgroundColor(0xFFE39B26);
         }else {
-            spoofingStatus = "Will not be spoofed!";
+            spoofingStatus = getContext().getString(R.string.stored_detections_will_be_ignored);
             customView.setBackgroundColor(0x00ffffff);
         }
         txtSpoofingStatus.setText(spoofingStatus);
