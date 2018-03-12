@@ -52,16 +52,16 @@ public class SoniService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        Log.i(LOG_TAG, "Task removed!!!");
+        //Log.i(LOG_TAG, "Task removed!!!");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (ServiceConstants.ACTION.STARTFOREGROUND_ACTION.equals(intent.getAction())) {
-            Log.i(LOG_TAG, "Received Start Foreground Intent ");
+            //Log.i(LOG_TAG, "Received Start Foreground Intent ");
             showNotification();
             SoniService.IS_SERVICE_RUNNING = true;
-            Toast.makeText(this, "Service Started!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Service Started!", Toast.LENGTH_SHORT).show();
 /*
             threadPool.execute(new Runnable() {
                 @Override
@@ -80,7 +80,7 @@ public class SoniService extends Service {
             });
 */
         } else if (ServiceConstants.ACTION.STOPFOREGROUND_ACTION.equals(intent.getAction())) {
-            Log.i(LOG_TAG, "Received Stop Foreground Intent");
+            //Log.i(LOG_TAG, "Received Stop Foreground Intent");
             SoniService.IS_SERVICE_RUNNING = false;
             stopForeground(true);
             stopSelf();
@@ -116,8 +116,8 @@ public class SoniService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(LOG_TAG, "In onDestroy");
-        Toast.makeText(this, "Service Destroyed!", Toast.LENGTH_SHORT).show();
+        //Log.i(LOG_TAG, "In onDestroy");
+        //Toast.makeText(this, "Service Destroyed!", Toast.LENGTH_SHORT).show();
         keepPrintingAliveness = false;
     }
 

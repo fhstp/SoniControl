@@ -728,7 +728,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             state = StateEnum.fromString(stateString);
         }
         catch (IllegalArgumentException e) {
-            Log.d(TAG, "onResume: " + e.getMessage());
+            //Log.d(TAG, "onResume: " + e.getMessage());
             state = StateEnum.ON_HOLD;
         }
 
@@ -767,13 +767,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                                 lastDetectedTechnology = Technology.fromString(storedTechnology);
                             }
                             catch (IllegalArgumentException e) {
-                                Log.d(TAG, "onResume: " + e.getMessage());
+                                //Log.d(TAG, "onResume: " + e.getMessage());
                             }
                             if (lastDetectedTechnology != null) {
                                 activateAlert(lastDetectedTechnology);
                             }
                             else {
-                                Log.d(TAG, "onResume: Technology not stored correctly ?");
+                                //Log.d(TAG, "onResume: Technology not stored correctly ?");
                             }
                         }
                     }
@@ -878,7 +878,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     private void checkTechnologyAndDoAccordingly(Technology detectedTechnology){
         if(detectedTechnology == null) {
             // This case should not happen
-            Log.d(TAG, "checkTechnologyAndDoAccordingly: detectedTechnology is null !?");
+           //Log.d(TAG, "checkTechnologyAndDoAccordingly: detectedTechnology is null !?");
         }
         else {
             switch (detectedTechnology) {
@@ -889,7 +889,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 case PRONTOLY:
                     handleSignal(Technology.PRONTOLY);
                 case UNKNOWN:
-                    Log.d("Detected", "Unknown ultrasonic signal");
+                    //Log.d("Detected", "Unknown ultrasonic signal");
                     handleSignal(Technology.UNKNOWN);
             }
         }
@@ -915,7 +915,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             /*if (!this.getBackgroundStatus()) { //if the app is not in the background
                 this.cancelDetectionNotification(); //cancel the detection notification
             }*/
-            Log.d("Spoof", "I spoof oontinuous");
+            //Log.d("Spoof", "I spoof oontinuous");
             if (locationTrack) {
                 locationFinder.setPositionForContinuousSpoofing(lastPosition); //set the position for distance calculation to the latest position
             }
@@ -1063,7 +1063,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class); //redirect to the settings activity
         startActivityForResult(myIntent, 0);
         String uniqueID = UUID.randomUUID().toString();
-        Log.d("UUID", uniqueID);
+        //Log.d("UUID", uniqueID);
     }
 
     public void displayToast(final String toastText,final int duration){
@@ -1086,7 +1086,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         boolean locationTrack = checkJsonAndLocationPermissions()[1];
 
         if(saveJsonFile && locationTrack) {
-            Log.d("SearchForJson", "addWithLoc");
+            //Log.d("SearchForJson", "addWithLoc");
             jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
         }
         if(saveJsonFile&&!locationTrack){
@@ -1094,7 +1094,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             double[] noLocation = new double[2];
             noLocation[0] = 0;
             noLocation[1] = 0;
-            Log.d("SearchForJson", "addWithoutLoc");
+            //Log.d("SearchForJson", "addWithoutLoc");
             jsonMan.addJsonObject(noLocation, sigType.toString(), spoofDecision, getString(R.string.noAddressForJsonFile));
         }
         alert.cancel(); //cancel the alert dialog
@@ -1165,7 +1165,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     public void checkFirstRunForWelcomeShowing() {
         SharedPreferences sp = getSettingsObject();
         boolean isFirstRun = sp.getBoolean("isFirstRun", true);
-        Log.d("I am in First run", String.valueOf(isFirstRun));
+        //Log.d("I am in First run", String.valueOf(isFirstRun));
         if (isFirstRun){
             onFirstOpeningShowWelcome();
             sp

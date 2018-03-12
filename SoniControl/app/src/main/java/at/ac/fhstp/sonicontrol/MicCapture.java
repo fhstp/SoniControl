@@ -86,7 +86,7 @@ public class MicCapture {
 
     private Runnable captRun = new Runnable() {
         public void run() {
-            Log.d("MicCapture", "captRun stopped : " + String.valueOf(stopped));
+            //Log.d("MicCapture", "captRun stopped : " + String.valueOf(stopped));
             if (stopped) {
                 // Reinitialize everything, could be in a function.
                 startTime = 0;
@@ -114,7 +114,7 @@ public class MicCapture {
                 stopTime = Calendar.getInstance().getTimeInMillis();
                 Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
                 String logTime = String.valueOf(logLong);
-                Log.d("HowLongBlocked",logTime);
+                //Log.d("HowLongBlocked",logTime);
                 int blockingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
 
 
@@ -151,11 +151,11 @@ public class MicCapture {
             distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
             //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
             locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the settings for the locationdistance
-            Log.d("Distance", Double.toString(distance));
+            /*Log.d("Distance", Double.toString(distance));
             Log.d("LatestPosition", Double.toString(positionLatest[0]));
             Log.d("LatestPosition", Double.toString(positionLatest[1]));
             Log.d("OldPosition", Double.toString(positionOld[0]));
-            Log.d("OldPosition", Double.toString(positionOld[1]));
+            Log.d("OldPosition", Double.toString(positionOld[1]));*/
             // TODO: Check if we are thread safe. Are we sure that a spoofer / scan is not already on ?
             if (distance < locationRadius) { //if in distance
                 locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access

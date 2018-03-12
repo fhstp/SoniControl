@@ -119,10 +119,10 @@ public class Location {
             locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //save the radius of the location in metres
             if(distance<locationRadius && array[2].equals(signalType.toString())){ //if in the location and the technologie is the same
                 isNewSignal = false; //no new signal
-                Log.d(TAG, "Longitude: " + array[0]);
-                Log.d(TAG, "Latitude : " + array[1]);
-                Log.d(TAG, "Technology : " + array[2]);
-                Log.d(TAG, "ShouldSpoof : " + array[4]);
+                //Log.d(TAG, "Longitude: " + array[0]);
+                //Log.d(TAG, "Latitude : " + array[1]);
+                //Log.d(TAG, "Technology : " + array[2]);
+                //Log.d(TAG, "ShouldSpoof : " + array[4]);
 
                 fileUrl = array[6]; //get file from json and save in fileUrl variable
 
@@ -156,7 +156,7 @@ public class Location {
         JSONManager jsonMan = new JSONManager(main);
         jsonMan.setLatestDate(position, signalTech); //update the date in the json-file at the detected position
         if(shouldBeSpoofed){ //if it should be spoofed
-            Log.d("Location", "I should be spoofed");
+            //Log.d("Location", "I should be spoofed");
             /*if (!main.getBackgroundStatus()) { //if the app is not in the background
                 main.cancelDetectionNotification(); //cancel the detection notification
             }*/
@@ -168,7 +168,7 @@ public class Location {
 
             blockMicOrSpoof(); //try get the microphone access for choosing the blocking method
         }else { //if it should not be spoofed
-            Log.d("Location", "I shouldn't be spoofed");
+            //Log.d("Location", "I shouldn't be spoofed");
             /*if (!main.getBackgroundStatus()) { //if the app is not in the background
                 main.cancelDetectionNotification(); //cancel the detection notification
             }*/
@@ -203,16 +203,16 @@ public class Location {
         micBlockPref = sharedPref.getBoolean(ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING, ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING_DEFAULT); //save the radius of the location in metres
         if(micBlockPref) {
             if (!validateMicAvailability()) { //if we don't have access to the microphone
-                Log.d("MicAcc", "I don't have MicAccess");
+                //Log.d("MicAcc", "I don't have MicAccess");
                 blockBySpoofing();
                 usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_SPOOFER;
             } else {
-                Log.d("MicAcc", "I have MicAccess");
+                //Log.d("MicAcc", "I have MicAccess");
                 usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_MICROPHONE;
                 blockMicrophone();
             }
         }else{
-            Log.d("MicAcc", "I don't have MicAccess");
+            //Log.d("MicAcc", "I don't have MicAccess");
             blockBySpoofing();
             usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_SPOOFER;
         }
@@ -310,7 +310,7 @@ public class Location {
 
     public void decideIfNewSignalOrNot(boolean isNewSignal, double[] positionDBEntry, boolean shouldBeSpoofed, double[] position){
         if(isNewSignal){ //if its a new signal
-            Log.d("Location", "I am a new Signal");
+            //Log.d("Location", "I am a new Signal");
             detectedSignalPosition = position; //save the new signal as the detected Position
             //main.cancelScanningStatusNotification();
             NotificationHelper.activateDetectionAlertStatusNotification(main.getApplicationContext(), signalType);
@@ -320,7 +320,7 @@ public class Location {
             main.activateAlert(signalType); //open the alert dialog with the found technology
 
         }else{
-            Log.d("Location", "I am not a new Signal");
+            //Log.d("Location", "I am not a new Signal");
             detectedSignalPosition = positionDBEntry; //save the position from the json-file
             shouldDBEntrySpoofed(shouldBeSpoofed,positionDBEntry); //check the spoofed status from the json-file
 

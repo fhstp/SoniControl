@@ -90,13 +90,13 @@ public class GPSTracker extends Service implements LocationListener {
 
             if (isGPSEnabled && locationTrackGps) {
                 this.isGPSTrackingEnabled = true;
-                Log.d(TAG, "Application use GPS Service");
+                //Log.d(TAG, "Application use GPS Service");
                 provider_info_gps = LocationManager.GPS_PROVIDER;
             }
             if (isNetworkEnabled && locationTrackNet) {
                 //this.isGPSTrackingEnabled = true;
                 this.isNetworkEnabled = true;
-                Log.d(TAG, "Application use Network State to get GPS coordinates");
+                //Log.d(TAG, "Application use Network State to get GPS coordinates");
                 provider_info_network = LocationManager.NETWORK_PROVIDER;
             }
 

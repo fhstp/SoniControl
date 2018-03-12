@@ -66,7 +66,7 @@ public class JSONManager {
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
-        Log.d("Text Data", byteArrayOutputStream.toString());
+        //Log.d("Text Data", byteArrayOutputStream.toString());
 
         JSONObject jObject = null; //new json-object with the outputstream
         JSONArray jArray =null;
@@ -94,9 +94,9 @@ public class JSONManager {
                     spoof = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_SPOOFING_STATUS); //save spoofingStatus
                     address = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_ADDRESS); //save spoofingStatus
                     url = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_URL); //save fileUrl
-                    Log.d("Longitude", lon);
-                    Log.d("Latitude", lat);
-                    Log.d("Technology", tech);
+                    //Log.d("Longitude", lon);
+                    //Log.d("Latitude", lat);
+                    //Log.d("Technology", tech);
                     data.add(new String[]{lon, lat, tech, lastDet, spoof, address, url}); //add every data of one array-index in the data-list
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -143,7 +143,7 @@ public class JSONManager {
 
             try {
                 FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //get the json file
-                Log.d("TryJsonSave", "I am saved");
+                //Log.d("TryJsonSave", "I am saved");
                 file.write( jObject.toString() ); //write the new entry into the file
                 file.flush();
                 file.close();
@@ -207,10 +207,10 @@ public class JSONManager {
     public boolean checkIfJsonFileIsAvailable(){
         File file = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //"make" a new file where the file normally should be
         if(file.exists()){ //if it exists
-            Log.d("Filecheck","The file is here");
+            //Log.d("Filecheck","The file is here");
             return true;
         }else{
-            Log.d("Filecheck","here is no file");
+           // Log.d("Filecheck","here is no file");
             return false;
         }
     }
@@ -245,7 +245,7 @@ public class JSONManager {
         locationFinder = Location.getInstanceLoc();
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-        Log.d("Text Data", byteArrayOutputStream.toString());
+        //Log.d("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -271,7 +271,7 @@ public class JSONManager {
             }
             try {
                 FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //write the newly created json-object into the new json file
-                Log.d("TryJsonSave", "I am saved");
+                //Log.d("TryJsonSave", "I am saved");
                 file.write( jObject.toString() );
                 file.flush();
                 file.close();
@@ -294,7 +294,7 @@ public class JSONManager {
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json-file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
-        Log.d("Text Data", byteArrayOutputStream.toString());
+        //Log.d("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -318,7 +318,7 @@ public class JSONManager {
             }
             try {
                 FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //write the json-object into the new json file
-                Log.d("TryJsonSave", "I am saved");
+                //Log.d("TryJsonSave", "I am saved");
                 file.write( jObject.toString() );
                 file.flush();
                 file.close();
@@ -336,7 +336,7 @@ public class JSONManager {
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json-file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
-        Log.d("Text Data", byteArrayOutputStream.toString());
+        //Log.d("Text Data", byteArrayOutputStream.toString());
         try {
             JSONObject jObject = new JSONObject(
                     byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -365,7 +365,7 @@ public class JSONManager {
                 jObjectResult.remove(JSON_ARRAY_SIGNALS); //remove the whole old json-array
                 jObjectResult.put(JSON_ARRAY_SIGNALS,jArrayWithoutDeletedEntry); //put in the new json-array
                 FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //write the json-object into the new json file
-                Log.d("TryJsonSave", "I am deleted");
+                //Log.d("TryJsonSave", "I am deleted");
                 file.write( jObject.toString() );
                 file.flush();
                 file.close();

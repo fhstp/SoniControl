@@ -84,7 +84,7 @@ public class Scan {
             mainDetectionListener.onDetection(lastDetectedTechnology);
         }
         else {
-            Log.d(TAG, "notifyDetectionListeners: lastDetectedTechnology is null");
+            //Log.d(TAG, "notifyDetectionListeners: lastDetectedTechnology is null");
         }
     }
 
@@ -98,7 +98,7 @@ public class Scan {
             lastDetectedTechnology = Technology.fromString(technology);
         }
         catch (IllegalArgumentException e) {
-            Log.d(TAG, "detectedSignal: " + e.getMessage());
+            //Log.d(TAG, "detectedSignal: " + e.getMessage());
             lastDetectedTechnology = Technology.UNKNOWN;
         }
         paused = true;
@@ -129,11 +129,11 @@ public class Scan {
         jsonMan = new JSONManager(main);
 
         if (paused && consistentState) {
-            Log.d(TAG, "Resume scanning");
+            //Log.d(TAG, "Resume scanning");
             resume();
         }
         else { // Most probably only the first call
-            Log.d(TAG, "startScanning");
+            //Log.d(TAG, "startScanning");
             MainActivity.threadPool.execute(scanRun);
         }
         consistentState = true; // Handles wrong termination of the app

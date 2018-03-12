@@ -68,7 +68,7 @@ public class NoiseGenerator {
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
         lastSignalTechDetected = signalType;
         //If Clauses only for Debug
-         Log.d("Generator", "I generated a whitenoisesignal to spoof " + signalType.toString());
+         //Log.d("Generator", "I generated a whitenoisesignal to spoof " + signalType.toString());
 
         generatedWhitenoisePlayer = generateWhitenoisePlayer(signalType); //get the generated whitenoise for spoofing
     }
