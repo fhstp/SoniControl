@@ -139,13 +139,27 @@ public class GPSTracker extends Service implements LocationListener {
                         }
                     }
 
-                    if(isBetterLocation(locationNetwork,locationGPS)){
+                    //Log.d("NetworkLoc", String.valueOf(locationNetwork));
+                    //Log.d("GPSLoc", String.valueOf(locationGPS));
+                    if(locationNetwork==null){
+                        //Log.d("GPS", "Yes");
+                        location = locationGPS;
+                        updateGPSCoordinates();
+                    }else if(locationGPS==null){
+                        //Log.d("Network", "Yes");
                         location = locationNetwork;
                         updateGPSCoordinates();
                     }else{
-                        location = locationGPS;
-                        updateGPSCoordinates();
+                        //Log.d("Will test", "Yes");
+                        if(isBetterLocation(locationNetwork,locationGPS)){
+                            location = locationNetwork;
+                            updateGPSCoordinates();
+                        }else{
+                            location = locationGPS;
+                            updateGPSCoordinates();
+                        }
                     }
+
                     /*
                     if(locationManager != null){
                         if(locationGPS == null) {
@@ -305,7 +319,6 @@ public class GPSTracker extends Service implements LocationListener {
                         updateGPSCoordinates();
                     }
                 }*/
-
                 if(isBetterLocation(location,this.location)){
                     this.location = location;
                    //updateGPSCoordinates();
@@ -367,7 +380,7 @@ public class GPSTracker extends Service implements LocationListener {
             // A new location is always better than no location
             return true;
         }
-
+        //Log.d("Locationchange", String.valueOf(location));
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - currentBestLocation.getTime();
         boolean isSignificantlyNewer = timeDelta > MIN_TIME_BW_UPDATES;
@@ -418,8 +431,15 @@ public class GPSTracker extends Service implements LocationListener {
 
     public double[] getDetectedLocation(){
         double[] savedLocation = new double[2];
-        savedLocation[0] = savedLocationOnDetection.getLongitude();
-        savedLocation[1] = savedLocationOnDetection.getLatitude();
+        //Log.d("DetectedLocation", String.valueOf(savedLocationOnDetection));
+        if(savedLocationOnDetection == null){
+            savedLocation[0] = 0.0;
+            savedLocation[1] = 0.0;
+
+        }else{
+            savedLocation[0] = savedLocationOnDetection.getLongitude();
+            savedLocation[1] = savedLocationOnDetection.getLatitude();
+        }
 
         return savedLocation;
     }
