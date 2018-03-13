@@ -1223,9 +1223,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             if((!(isGPSEnabled && locationTrackGps) && !(isNetworkEnabled && locationTrackNet)) || status != PackageManager.PERMISSION_GRANTED){
                 activateAlertNoLocationEnabled();
             }else{
-                Toast toast = Toast.makeText(MainActivity.this, R.string.toast_location_is_on, Toast.LENGTH_LONG);
+                /*Toast toast = Toast.makeText(MainActivity.this, R.string.toast_location_is_on, Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER,0,0);
-                toast.show();
+                toast.show();*/
             }
         }
     }

@@ -362,13 +362,13 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             // double check if it's all ok
             int getEnvStat = jvm->GetEnv((void **)&jniEnv, JNI_VERSION_1_6);
             if (getEnvStat == JNI_EDETACHED) {
-                LOGD("GetEnv: not attached");
+                //LOGD("GetEnv: not attached");
                 if (jvm->AttachCurrentThread(&jniEnv, NULL) != 0) {
                     LOGD("Failed to attach");
                 }
-                LOGD("Attached thread from audio callback");
+                //LOGD("Attached thread from audio callback");
             } else if (getEnvStat == JNI_OK) {
-                LOGD("Audio callback thread already attached ");
+                //LOGD("Audio callback thread already attached ");
             } else if (getEnvStat == JNI_EVERSION) {
                 LOGD("GetEnv: version not supported");
             }
