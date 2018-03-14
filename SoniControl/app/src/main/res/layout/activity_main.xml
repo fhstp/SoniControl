@@ -54,7 +54,7 @@
         android:layout_alignStart="@+id/btnPlay"
         android:layout_alignTop="@+id/btnSettings"
         android:background="@android:color/darker_gray"
-        android:src="@drawable/button_stop" />
+        android:src="@drawable/ic_pause_white_48dp" />
 
     <ImageButton
         android:id="@+id/btnExit"
