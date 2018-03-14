@@ -56,6 +56,7 @@ public class BaseActivity extends AppCompatActivity {
                 break;
             case R.id.open_privacy_policy:
                 openPrivacyPolicy();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
