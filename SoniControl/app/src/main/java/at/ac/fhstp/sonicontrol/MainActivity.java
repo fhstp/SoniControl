@@ -442,7 +442,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         preventiveSpoof = settings.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
         if(preventiveSpoof) {
             NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
-            usedBlockingMethod = locationFinder.blockMicOrSpoof();
+            if (usedBlockingMethod == null) {
+                usedBlockingMethod = locationFinder.blockMicOrSpoof();
+            }
         }
 
         boolean gpsEnabled = settings.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
@@ -732,19 +734,54 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             state = StateEnum.ON_HOLD;
         }
 
+        Intent intent = getIntent();
         switch (state) {
             case ON_HOLD:
                 NotificationHelper.activateOnHoldStatusNotification(getApplicationContext());
                 setGUIStateStopped();
                 break;
             case JAMMING:
-                NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
                 setGUIStateStarted();
+                NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
+
+                if (intent.hasExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED)) {
+                    //TODO: We might use directly the "lastDetectedTechnology", not using Extras ?
+
+                    Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
+                    if (technology != null) {
+                        activateAlert(technology);
+                        intent.removeExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
+                    }
+                }
+                else if (detectionPendingIntent != null) {
+                    if (sigType != null) {
+                        activateAlert(sigType);
+                    }
+                    else {
+                        // in case the Activity was destroyed
+                        String storedTechnology = sp.getString("lastDetectedTechnology", null);
+                        if (storedTechnology != null) {
+                            Technology lastDetectedTechnology = null;
+                            try {
+                                lastDetectedTechnology = Technology.fromString(storedTechnology);
+                            }
+                            catch (IllegalArgumentException e) {
+                                //Log.d(TAG, "onResume: " + e.getMessage());
+                            }
+                            if (lastDetectedTechnology != null) {
+                                activateAlert(lastDetectedTechnology);
+                            }
+                            else {
+                                //Log.d(TAG, "onResume: Technology not stored correctly ?");
+                            }
+                        }
+                    }
+                }
+
                 break;
             case SCANNING:
                 setGUIStateStarted();
 
-                Intent intent = getIntent();
                 if (intent.hasExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED)) {
                     //TODO: We might use directly the "lastDetectedTechnology", not using Extras ?
 

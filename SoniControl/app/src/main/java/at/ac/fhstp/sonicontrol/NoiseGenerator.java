@@ -322,8 +322,13 @@ public class NoiseGenerator {
     }
 
     public void setGeneratedPlayerToNull(){
-        generatedWhitenoisePlayer.release(); //release the player resources
-        audioTrack.release(); //release the player resources
+        if(generatedWhitenoisePlayer!=null){
+            generatedWhitenoisePlayer.release();
+        } //release the player resources
+        /*if(audioTrack!=null){
+            audioTrack.release();
+        } //release the player resources
+        */
         generatedWhitenoisePlayer = null; //set the player to null
         audioTrack = null; //set the player to null
     }
