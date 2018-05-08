@@ -430,7 +430,7 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     normalizedSpectrogram.resize(normalizedSpectrogramSize);
     currentBackgroundModel.resize(normalizedSpectrogramSize);
 
-    SuperpoweredCPU::setSustainedPerformanceMode(true);
+    SuperpoweredCPU::setSustainedPerformanceMode(false);
 }
 
 static int pauseIO() {
