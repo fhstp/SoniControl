@@ -59,8 +59,10 @@ public class GPSTracker extends Service implements LocationListener {
     Location savedLocationOnDetection;
 
     int geocoderMaxResults = 1;
-    private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 3.0f;
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 5 * 1;
+    // Need to find a compromise between accuracy of the position to spoof at the right place,
+    // and not consuming too much battery
+    private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 15.0f; // 15m
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 10; // 10min
 
     protected LocationManager locationManager;
     private String provider_info_gps = "";
