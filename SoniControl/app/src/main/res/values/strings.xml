@@ -100,4 +100,19 @@
     <string name="settings_blocking_duration_plural">Blocking duration (%s minutes)</string>
     <string name="stored_detections_will_be_blocked">will be blocked</string>
     <string name="stored_detections_will_be_ignored">will be ignored</string>
+    <string name="settings_category_jammer">Expert settings - Jammer</string>
+    <string name="settings_category">Settings</string>
+    <string name="settings_category_expert">Expert settings - RESET</string>
+    <string name="settings_title_json_save">Save detections in JSON file</string>
+    <string name="settings_title_clear_detections">Clear detections of JSON file</string>
+    <string name="settings_title_dont_ask">Don\'t ask for activating location</string>
+    <string name="settings_title_microphone_for_blocking">Use microphone for blocking</string>
+    <string name="settings_title_preventive_blocking">Preventive blocking</string>
+    <string name="settings_title_network_location">Use network connection for location</string>
+    <string name="settings_title_gps_location">Use GPS for location</string>
+    <string name="settings_title_pulse_duration">Pulse duration (ms)</string>
+    <string name="settings_title_pause_duration">Pause duration (ms)</string>
+    <string name="settings_title_bandwidth">Bandwidth</string>
+    <string name="settings_title_blocking_duration">Blocking duration in minutes</string>
+    <string name="settings_title_location_radius">Location radius (metre)</string>
 </resources>
