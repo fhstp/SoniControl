@@ -19,7 +19,7 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Settings">
+    <PreferenceCategory android:title="@string/settings_category">
 
         <CheckBoxPreference
             android:defaultValue="false"
@@ -35,32 +35,32 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefGpsUse"
-            android:title="Use GPS for location" />
+            android:title="@string/settings_title_gps_location" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefNetworkUse"
-            android:title="Use network connection for location" />
+            android:title="@string/settings_title_network_location" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbprefPreventiveSpoofing"
-            android:title="Preventive blocking" />
+            android:title="@string/settings_title_preventive_blocking" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefMicBlock"
-            android:title="Use microphone for blocking" />
+            android:title="@string/settings_title_microphone_for_blocking" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbAlertLocationDontAskAgain"
-            android:title="Don't ask for activating location" />
+            android:title="@string/settings_title_dont_ask" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefJsonSave"
-            android:title="Save detections in JSON file" />
+            android:title="@string/settings_title_json_save" />
         <Preference
             android:key="deleteJson"
-            android:title="Clear detections of JSON file"></Preference>
+            android:title="@string/settings_title_clear_detections"></Preference>
     </PreferenceCategory>
-    <PreferenceCategory android:title="Expert settings - Jammer">
+    <PreferenceCategory android:title="@string/settings_category_jammer">
     <EditTextPreference
         android:defaultValue="4000"
         android:key="etprefPulseDuration"
@@ -92,7 +92,7 @@
             android:singleLine="true"
             android:title="@string/settings_title_blocking_duration" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Expert settings - RESET">
+    <PreferenceCategory android:title="@string/settings_category_expert">
     <Preference
         android:key="resetPreferences"
         android:title="@string/settings_reset_settings"></Preference>
