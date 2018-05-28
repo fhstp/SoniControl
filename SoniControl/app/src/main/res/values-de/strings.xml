@@ -1,0 +1,118 @@
+<!--
+  ~ Copyright (c) 2018. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+  ~
+  ~ This file is part of SoniControl app.
+  ~
+  ~     SoniControl app is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     SoniControl app is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with SoniControl app.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="app_name">SoniControl</string>
+    <string name="spoofOnEachLoc">An jedem Ort blockieren</string>
+    <string name="addressData">Nicht verfügbar</string>
+    <string name="deleteJsonAlertTitle">Alle erkannten Signale löschen</string>
+    <string name="deleteJsonAlertMessage">Sind sie sicher, dass sie die JSON-Datei löschen wollen?<!--and the detected audio files?--></string>
+    <string name="StatusNotificationSpoofingTitle">SoniControl</string>
+    <string name="StatusNotificationSpoofingMesssage">Blockiere Ultraschallkommunikation</string>
+    <string name="StatusNotificationDetectionAlertTitle">SoniControl</string>
+    <string name="StatusNotificationDetectionAlertMessage">Ultraschallsignal erkannt!</string>
+    <string name="StatusNotificationOnHoldTitle">SoniControl</string>
+    <string name="StatusNotificationOnHoldMessage">Pausiert</string>
+    <string name="StatusNotificationScanningTitle">SoniControl</string>
+    <string name="StatusNotificationScanningMessage">Suche nach Ultraschallsignalen</string>
+    <string name="NotificationDetectionTitle">SoniControl</string>
+    <string name="NotificationDetectionMessage">Ultraschallsignal erkannt!</string>
+    <string name="ButtonStopSignal">Stopp</string>
+    <string name="ButtonPlaySignal">Start</string>
+    <string name="DeleteJsonAlertTitle">Erkannten Signaleintrag löschen</string>
+    <string name="DeleteJsonAlertMessage">Sind sie sich sicher, dass sie den erkannten Signaleintrag löschen wollen?</string>
+    <string name="noAddressForJsonFile">Nicht verfügbar</string>
+    <string name="NoSignalDiscoveredAndSavedYet">Sie haben noch keine Ultraschallsignale gefunden!</string>
+    <string name="permissionRequestExplanation">Die App braucht für die Nutzung die Berechtigung des Mikrofons. Ohne dieser kann die App keine Ultraschallsignale erkennen.</string>
+    <string name="toastLocationAccessDenied">Keine Berechtigung für Standortzugriff</string>
+    <string name="aboutUsProject">Neuartige Technologien wie Silverpush bauen auf Ultraschalltönen auf, um Informationen auszutauschen. Immer mehr unserer Geräte kommunizieren über diesen unhörbaren Kommunikationskanal. Die Ultraschallkommunikation ermöglicht es, Geräte zu koppeln, Informationen auszutauschen, aber auch BenutzerInnen und deren Verhalten über mehrere Geräte hinweg zu verfolgen, ähnlich wie bei Cookies im Web. Jedes Gerät mit einem Mikrofon und einem Lautsprecher ist in der Lage, Ultraschallinformationen zu senden und zu empfangen. Dieser unhörbare und versteckte Datentransfer ist den AnwenderInnen in der Regel nicht bekannt.
+\n\nSoniControl ist die erste Firewall, die Ultraschallaktivitäten erkennt, Sie umgehend benachrichtigt und die Informationen bei Bedarf blockiert und so hilft, Ihre Privatsphäre zu schützen.
+\n\nDas Projekt SoniControl wurde finanziell unterstützt von der Internet Privatstiftung Netidee (http://www.netidee.at) und wurde im Rahmen eines Forschungsprojekts im Institut für Creative\Media/Technologies an der Fachhochschule St. Pölten entwickelt (http://sonicontrol.fhstp.ac.at). Das Projekt ist Open Source unter GNU Lizenz.
+\n\nDatenschutzerklärung: SoniControl sendet keine Daten von Nutzern an andere Orte und funktioniert komplett offline. Alle Daten werden lokal gespeichert. SoniControl braucht Zugriff auf das Mikrofon, um Ultraschallsignale erkennen zu können (alle hörbaren Geräusche werden herausgefiltert). Weiters braucht die App den Standortzugriff, falls NutzerInnen Ultraschallsignale von einem bestimmten Ort permanent blockieren möchten (z.B. ein Audiobeacon in einem Geschäft).
+\n\nBei Fragen, Bugs, Ideen, kontaktieren Sie uns bitte direkt unter http://sonicontrol.fhstp.ac.at/#contact oder der Email-Adresse sonicontrol@fhstp.ac.at.</string>
+    <string name="toastMessageNoGeocoderConnection">Der Standort konnte nicht ermittelt werden</string>
+    <string name="aboutUsInfo"></string>
+    <string name="alertDialog_option_jam_always_here">Hier immer blockieren</string>
+    <string name="alertDialog_option_dismiss_this_time">Dieses Mal ignorieren</string>
+    <string name="alertDialog_option_dismiss_always_here">Hier immer ignorieren</string>
+    <string name="alertDialog_option_jam_this_time">Dieses Mal blockieren</string>
+    <string name="alertDialog_text_ultrasonic_signal_detected">Ein Ultraschallsignal wurde erkannt. \nWählen Sie eine der Optionen um fortzufahren.</string>
+    <string name="alertDialog_option_play">Abspielen</string>
+    <string name="storedLocationActivityTitle">Erkannte Signale</string>
+    <string name="SettingsActivityTitle">Einstellungen</string>
+    <string name="AboutUsActivityTitle">Über Uns</string>
+    <string name="creditsText">Credits \n\n Audio by Superpowered (http://www.superpowered.com/)\n\nMaterial-Icons wurden verwendet. Diese stehen unter der Lizenz "Apache License Version 2.0"(https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
+    <string name="privacy_policy_menuItem">Datenschutzerklärung</string>
+    <string name="about_us_menuItem">Über Uns</string>
+    <string name="instructions_menuItem">Anleitung</string>
+    <string name="help_menuItem">Hilfe</string>
+    <string name="privacy_policy_text">Datenerhebung und Datenverarbeitung:\n\n
+- Wir verwenden das Mikrofon um Geräusche aufzunehmen, aber verarbeiten nur den Ultraschallbereich, wir verwerfen alle Daten unter 17kHz.\n\n
+- Geräusche werden in Echtzeit auf dem Smartphone verarbeitet. Die Daten werden nicht über das Web geschickt und auch nicht am Smartphone gespeichert.\n\n
+- Erkannte Signale werden lokal in einer JSON Datei gespeichert. Gespeichert werden Zeit und Ort (wenn vom Nutzer erlaubt). Der Nutzer kann diese Datei jederzeit über die Einstellungen löschen.\n\n
+- Wenn vom Nutzer erlaubt, überprüfen wir die Position des Nutzers in bestimmten Zeitabständen und teilen ihm mit, ob er einen Bereich betritt, wo er schon einmal eine Ultraschallnachricht entdeckt hat.
+    </string>
+    <string name="privacy_policy_label">Datenschutzerklärung</string>
+    <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
+    <string name="instructionsText">Willkommen zur SoniControl Firewall.\n\nSonicontrol scannt nach Ultraschallnachrichten von anderen Smarphones oder Audiobeacons in der Umgebung und benachrichtigt Sie wenn eine Nachricht erkannt wurde. Sie können dann auswählen, ob diese Nachricht blockiert werden soll (auch zukünftig an diesem Ort) oder ob sie durchgelassen werden soll. \n\nSoniControl braucht die Mikrofonberechtigung, um ordnungsgemäß arbeiten zu können und braucht weiters die Standortfreigabe (optional), um den Ort zu einer erkannten Nachricht speichern zu können. \n\nWir versenden keine Daten von Ihrem Smartphone und speichern auch keine privaten, sensiblen Daten.\n\nUm den Scanvorgang zu starten, müssen Sie den Startbutton antippen.</string>
+    <string name="instructionsTitle">Anleitung</string>
+    <string name="alert_no_json_file_message">Um erkannte Ultraschallsignale zu speichern/anzuzeigen, müssen Sie die Einstellung \'In JSON Datei speichern\' ankreuzen.</string>
+    <string name="alert_no_json_file_title">Keine JSON Datei</string>
+    <string name="alert_no_json_file_negative">Abbrechen</string>
+    <string name="alert_no_json_file_positive">In JSON Datei speichern</string>
+    <string name="alert_location_is_off_message">Um erkannte Ultraschallsignale zu speichern, müssen Sie den Standort freigeben und aktivieren.
+        \nSie können den Standort in den \'Smartphone Einstellungen\' freigeben und aktivieren</string>
+    <string name="alert_location_is_off_title">Standortfreigabe ist nicht aktiviert.</string>
+    <string name="alert_location_is_off_positive">Smartphone Einstellungen</string>
+    <string name="alert_location_is_off_negative">Nicht jetzt</string>
+    <string name="toast_location_is_on">Standortfreigabe ist aktiviert.</string>
+    <string name="alert_location_is_off_checkbox_text">Nicht mehr nachfragen</string>
+    <string name="settings_reset_settings">Alle Einstellungen der App zurücksetzen</string>
+    <string name="alert_detection_date">Erkannt um:</string>
+    <string name="toast_no_location_text">Standort wurde nicht gefunden. Daher konnte das letzte erkannte Signal nicht gespeichert werden.</string>
+    <string name="json_detections_unknown_address">Unbekannte Adresse</string>
+    <string name="alert_microphone_already_used_title">Das Mikrofon wird bereits von einer anderen Anwendung verwendet</string>
+    <string name="alert_microphone_already_used_message">Wir konnten die Erkennung nicht starten, da das Mikrofon schon von einer anderen App verwendet wird.</string>
+    <string name="on_alert_no_location_message">Bitte aktivieren Sie die Standortfreigabe, um erkannte Ultraschallsignale verortet zu speichern.</string>
+    <string name="action_reset_settings_message">Wollen Sie alle Einstellungen zurücksetzen?</string>
+    <string name="action_reset_settings_title">Einstellungen zurücksetzen</string>
+    <string name="settings_location_radius_title">Blockierradius (%s Meter)</string>
+    <string name="settings_pulse_duration_title">Pulsdauer (%s ms)</string>
+    <string name="settings_pause_duration_title">Stoppdauer (%s ms)</string>
+    <string name="settings_bandwidth_title">Bandbreite (%s Hz)</string>
+    <string name="settings_blocking_duration_singular">Blockierdauer (%s Minute)</string>
+    <string name="settings_blocking_duration_plural">Blockierdauer (%s Minuten)</string>
+    <string name="stored_detections_will_be_blocked">wird blockiert</string>
+    <string name="stored_detections_will_be_ignored">wird ignoriert</string>
+    <string name="settings_category_jammer">Experteneinstellungen - Blockiervorgang</string>
+    <string name="settings_category">Einstellungen</string>
+    <string name="settings_category_expert">Experteneinstellungen - Zurücksetzen</string>
+    <string name="settings_title_json_save">Signale in JSON Datei speichern</string>
+    <string name="settings_title_clear_detections">Alle Signale in der JSON Datei löschen</string>
+    <string name="settings_title_dont_ask">Nicht nach Standortfreigabe fragen</string>
+    <string name="settings_title_microphone_for_blocking">Mikrofon zum Blockieren verwenden</string>
+    <string name="settings_title_preventive_blocking">Präventiv blockieren</string>
+    <string name="settings_title_network_location">Netzwerk zur Standortermittlung verwenden</string>
+    <string name="settings_title_gps_location">GPS zur Standortermittlung verwenden</string>
+    <string name="settings_title_pulse_duration">Pulsdauer (ms)</string>
+    <string name="settings_title_pause_duration">Stoppdauer (ms)</string>
+    <string name="settings_title_bandwidth">Bandbreite</string>
+    <string name="settings_title_blocking_duration">Blockierdauer in Minuten</string>
+    <string name="settings_title_location_radius">Blockierradius (Meter)</string>
+</resources>

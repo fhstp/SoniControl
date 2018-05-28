@@ -31,7 +31,7 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:inputType="number"
-            android:title="Location radius (metre)" />
+            android:title="@string/settings_title_location_radius" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefGpsUse"
@@ -67,21 +67,21 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:inputType="number"
-        android:title="Pulse duration (ms)" />
+        android:title="@string/settings_title_pulse_duration" />
     <EditTextPreference
         android:defaultValue="0"
         android:key="etprefPauseDuration"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:inputType="number"
-        android:title="Pause duration (ms)" />
+        android:title="@string/settings_title_pause_duration" />
     <EditTextPreference
         android:defaultValue="10"
         android:key="etprefBandwidth"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:inputType="number"
-        android:title="Bandwidth" />
+        android:title="@string/settings_title_bandwidth" />
         <EditTextPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
             android:key="etprefSpoofDuration"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="Blocking duration in minutes" />
+            android:title="@string/settings_title_blocking_duration" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Expert settings - RESET">
     <Preference
