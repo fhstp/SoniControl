@@ -156,6 +156,9 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefLocRad = findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
         prefLocRad.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if(newValue.toString().trim().equals("")){
+                    return false;
+                }
                 String prefLocRadStr = String.format(getString(R.string.settings_location_radius_title), String.valueOf(newValue));
                 prefLocRad.setTitle(prefLocRadStr);
                 //Log.d("MyApp", "Pref " + preference.getKey() + " " + newValue.toString());
@@ -167,6 +170,9 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefPulseDur = findPreference(ConfigConstants.SETTING_PULSE_DURATION);
         prefPulseDur.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if(newValue.toString().trim().equals("")){
+                    return false;
+                }
                 String prefPulseDurStr = String.format(getString(R.string.settings_pulse_duration_title), String.valueOf(newValue));
                 prefPulseDur.setTitle(prefPulseDurStr);
                 return true;
@@ -176,6 +182,9 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefPauseDur = findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
         prefPauseDur.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if(newValue.toString().trim().equals("")){
+                    return false;
+                }
                 String prefPauseDurStr = String.format(getString(R.string.settings_pause_duration_title), String.valueOf(newValue));
                 prefPauseDur.setTitle(prefPauseDurStr);
                 return true;
@@ -185,6 +194,9 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefBandwidth = findPreference(ConfigConstants.SETTING_BANDWIDTH);
         prefBandwidth.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if(newValue.toString().trim().equals("")){
+                    return false;
+                }
                 String prefBandwidthStr = String.format(getString(R.string.settings_bandwidth_title), String.valueOf(newValue));
                 prefBandwidth.setTitle(prefBandwidthStr);
                 return true;
@@ -194,6 +206,9 @@ public class SettingsFragment extends PreferenceFragment {
         final Preference prefBlockingDuration = findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
         prefBlockingDuration.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if(newValue.toString().trim().equals("")){
+                    return false;
+                }
                 if(Integer.valueOf((String)newValue)==1) {
                     String prefBlockingDurationStr = String.format(getString(R.string.settings_blocking_duration_singular), String.valueOf(newValue));
                     prefBlockingDuration.setTitle(prefBlockingDurationStr);
