@@ -63,7 +63,6 @@ public class SoniService extends Service {
         if(intent == null){
             Intent service = new Intent(getApplicationContext(), SoniService.class);
             service.setAction(ServiceConstants.ACTION.STOPFOREGROUND_ACTION);
-            startService(service);
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             SharedPreferences.Editor ed = sp.edit();
             ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
