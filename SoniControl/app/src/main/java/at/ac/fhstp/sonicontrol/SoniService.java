@@ -23,11 +23,14 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.concurrent.Executors;
@@ -57,7 +60,15 @@ public class SoniService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (ServiceConstants.ACTION.STARTFOREGROUND_ACTION.equals(intent.getAction())) {
+        if(intent == null){
+            Intent service = new Intent(getApplicationContext(), SoniService.class);
+            service.setAction(ServiceConstants.ACTION.STOPFOREGROUND_ACTION);
+            startService(service);
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            SharedPreferences.Editor ed = sp.edit();
+            ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+            ed.apply();
+        }else if (ServiceConstants.ACTION.STARTFOREGROUND_ACTION.equals(intent.getAction())) {
             //Log.i(LOG_TAG, "Received Start Foreground Intent ");
             showNotification();
             SoniService.IS_SERVICE_RUNNING = true;
