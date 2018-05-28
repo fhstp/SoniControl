@@ -61,12 +61,18 @@ public class SoniService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(intent == null){
+
             Intent service = new Intent(getApplicationContext(), SoniService.class);
             service.setAction(ServiceConstants.ACTION.STOPFOREGROUND_ACTION);
+
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             SharedPreferences.Editor ed = sp.edit();
             ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
             ed.apply();
+
+            SoniService.IS_SERVICE_RUNNING = false;
+            stopForeground(true);
+            stopSelf();
         }else if (ServiceConstants.ACTION.STARTFOREGROUND_ACTION.equals(intent.getAction())) {
             //Log.i(LOG_TAG, "Received Start Foreground Intent ");
             showNotification();
