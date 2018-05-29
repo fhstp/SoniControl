@@ -945,9 +945,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         if (locationTrack) {
             lastPosition = locationFinder.getLocation(); //get the latest position
+            locationFinder.saveLocationGPSTrackerObject();
         }
 
-        locationFinder.saveLocationGPSTrackerObject();
+
         if (this.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)) { //check if the settings are set to continous spoofing
             /*if (!this.getBackgroundStatus()) { //if the app is not in the background
                 this.cancelDetectionNotification(); //cancel the detection notification
