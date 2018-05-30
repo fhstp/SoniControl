@@ -47,7 +47,7 @@ See the list of [contributors](http://sonicontrol.fhstp.ac.at/#team) who partici
 
 ## License
 
-This project is licensed under the GNU General Public License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU General Public License - see the [LICENSE.md](LICENSE.md) file for details. Please also see the [Superpowered license](Superpowered_license.md).
 
 ## Acknowledgments
 
