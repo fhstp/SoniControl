@@ -459,23 +459,40 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
         if((!(isGPSEnabled && gpsEnabled) && !(isNetworkEnabled && networkEnabled)) || status != PackageManager.PERMISSION_GRANTED){
-            btnAlertSpoof.setEnabled(false);
-            btnAlertDismissAlways.setEnabled(false);
-            txtNoLocation.setText(R.string.on_alert_no_location_message);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    btnAlertSpoof.setEnabled(false);
+                    btnAlertDismissAlways.setEnabled(false);
+                    txtNoLocation.setText(R.string.on_alert_no_location_message);
+                }
+            });
         }else if(!saveJsonFile){
-            btnAlertSpoof.setEnabled(false);
-            btnAlertDismissAlways.setEnabled(false);
-            txtNoLocation.setText(R.string.on_alert_no_location_message);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    btnAlertSpoof.setEnabled(false);
+                    btnAlertDismissAlways.setEnabled(false);
+                    txtNoLocation.setText(R.string.alert_no_json_file_message);
+                }
+            });
         }else{
-            btnAlertSpoof.setEnabled(true);
-            btnAlertDismissAlways.setEnabled(true);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    btnAlertSpoof.setEnabled(true);
+                    btnAlertDismissAlways.setEnabled(true);
+                    txtNoLocation.setText("");
+                }
+            });
         }
 
         sigType = signalType; //set the technology variable to the latest detected one
 
         boolean activityExists = settings.getBoolean("active", false);
         if (activityExists) {
-            uiHandler.post(displayAlert);
+            runOnUiThread(displayAlert);
+            //uiHandler.post(displayAlert); NOTE: runOnUiThread will execute code directly, not post
         }
     }
 
