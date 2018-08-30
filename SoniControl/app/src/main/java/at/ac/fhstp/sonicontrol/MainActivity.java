@@ -1292,39 +1292,39 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void activateAlertNoLocationEnabled() {
-        final AlertDialog.Builder activateLocationDialog = new AlertDialog.Builder(this);
-        LayoutInflater locationAlertInflater = LayoutInflater.from(this);
-        View cbLocationAlertLayout = locationAlertInflater.inflate(R.layout.alert_checkbox, null);
-        final CheckBox dontShowAgain = (CheckBox)cbLocationAlertLayout.findViewById(R.id.cbDontAskAgain);
-        activateLocationDialog.setView(cbLocationAlertLayout);
-        activateLocationDialog.setTitle(R.string.alert_location_is_off_title)
-                .setMessage(R.string.alert_location_is_off_message)
-                .setCancelable(true)
-                .setPositiveButton(R.string.alert_location_is_off_positive, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (dontShowAgain.isChecked()) {
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putBoolean(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN, true);
-                            editor.apply();
-                        }
-                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton(R.string.alert_location_is_off_negative, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (dontShowAgain.isChecked()) {
-                            SharedPreferences.Editor editor = sharedPref.edit();
-                            editor.putBoolean(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN, true);
-                            editor.apply();
-                        }
-                        alertLocation.cancel();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_info);
-
         boolean skipMessage = sharedPref.getBoolean(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN, ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT);
         if (!skipMessage) {
+            final AlertDialog.Builder activateLocationDialog = new AlertDialog.Builder(this);
+            LayoutInflater locationAlertInflater = LayoutInflater.from(this);
+            View cbLocationAlertLayout = locationAlertInflater.inflate(R.layout.alert_checkbox, null);
+            final CheckBox dontShowAgain = (CheckBox)cbLocationAlertLayout.findViewById(R.id.cbDontAskAgain);
+            activateLocationDialog.setView(cbLocationAlertLayout);
+            activateLocationDialog.setTitle(R.string.alert_location_is_off_title)
+                    .setMessage(R.string.alert_location_is_off_message)
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.alert_location_is_off_positive, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (dontShowAgain.isChecked()) {
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putBoolean(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN, true);
+                                editor.apply();
+                            }
+                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton(R.string.alert_location_is_off_negative, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (dontShowAgain.isChecked()) {
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.putBoolean(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN, true);
+                                editor.apply();
+                            }
+                            alertLocation.cancel();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_info);
+
             alertLocation = activateLocationDialog.show();
         }
     }
