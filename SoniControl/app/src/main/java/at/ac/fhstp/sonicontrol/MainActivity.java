@@ -1142,10 +1142,16 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         if(saveJsonFile && locationTrack) {
             //Log.d("SearchForJson", "addWithLoc");
-            jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+            double[] detectedSignalPosition = locationFinder.getDetectedDBEntry();
+            jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+            if (detectedSignalPosition[0] == 0 && detectedSignalPosition[1] == 0) {
+                Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }
         }
         if(saveJsonFile&&!locationTrack){
-            showToastOnNoLocation();
+            //showToastOnNoLocation(); NOTE: Already shown in the Always options
             double[] noLocation = new double[2];
             noLocation[0] = 0;
             noLocation[1] = 0;
