@@ -276,7 +276,7 @@ public class NoiseGenerator {
                     break;
                 case UNKNOWN:
                     reader = new BufferedReader(new InputStreamReader(main.getAssets().open("unknown-frequencies.txt"), "UTF-8"));
-                    bandWidth = 2250;
+                    bandWidth = 1500;
                     break;
             }
 
