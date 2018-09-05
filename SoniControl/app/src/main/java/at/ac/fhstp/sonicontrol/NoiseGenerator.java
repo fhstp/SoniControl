@@ -229,14 +229,24 @@ public class NoiseGenerator {
                     complexSignal[(int)l] = 0.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0 mirrored to the doubled winLenSamples size
                 }
             }
+            for (int k = 0; k < whiteNoiseBands.length-2; k++) {
+                for (double l = cutoffFreqDownIdx[k]; l <= cutoffFreqUpIdx[k]; l++) {
+                    complexSignal[(int)l] = 10000.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0
+                }
+                int helpSamples = winLenSamples * 2;
+                for (double l = helpSamples-cutoffFreqUpIdx[k]; l <= helpSamples-cutoffFreqDownIdx[k]; l++) {
+                    complexSignal[(int)l] = 10000.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0 mirrored to the doubled winLenSamples size
+                }
+            }
         }
 
-        for (int i = 0; i < complexSignal.length - 1; i++) {
+        /*for (int i = 0; i < complexSignal.length - 1; i++) {
             complexSignal[i] = complexSignal[i] * (-1); //invert all algebraic signs
         }
 
         mFFT.complexForward(complexSignal); //make the fft on the inverted signal
-
+*/
+        mFFT.complexInverse(complexSignal,false);
         return complexSignal; //return the signal with the complex values
 
     }
