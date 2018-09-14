@@ -135,7 +135,7 @@ public class NotificationHelper {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            importance = mNotificationManagerOreoAbove.IMPORTANCE_HIGH;
+            importance = mNotificationManagerOreoAbove.IMPORTANCE_DEFAULT;
             mChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, name, importance);
         }
 
@@ -279,7 +279,7 @@ public class NotificationHelper {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            importance = mNotificationManagerOreoAbove.IMPORTANCE_HIGH;
+            importance = mNotificationManagerOreoAbove.IMPORTANCE_DEFAULT;
             mChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, name, importance);
         }
 
@@ -345,7 +345,7 @@ public class NotificationHelper {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            importance = mNotificationManagerOreoAbove.IMPORTANCE_HIGH;
+            importance = mNotificationManagerOreoAbove.IMPORTANCE_DEFAULT;
             mChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, name, importance);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
