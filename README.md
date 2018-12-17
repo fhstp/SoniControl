@@ -39,6 +39,7 @@ Please feel free to open Issues, submit Pull Requests, or just send us feedback 
 
 * Recognition of the detected signal
 * Record the signal and play it back in the audible range
+* Visualize the detected signal
 
 
 ## Authors
