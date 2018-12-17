@@ -208,16 +208,13 @@ public class Location {
         micBlockPref = sharedPref.getBoolean(ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING, ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING_DEFAULT); //save the radius of the location in metres
         if(micBlockPref) {
             if (!validateMicAvailability()) { //if we don't have access to the microphone
-                //Log.d("MicAcc", "I don't have MicAccess");
                 blockBySpoofing();
                 usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_SPOOFER;
             } else {
-                //Log.d("MicAcc", "I have MicAccess");
                 usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_MICROPHONE;
                 blockMicrophone();
             }
         }else{
-            //Log.d("MicAcc", "I don't have MicAccess");
             blockBySpoofing();
             usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_SPOOFER;
         }
