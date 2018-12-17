@@ -395,9 +395,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     for (int i = 0; i < permissions.length; i++) {
                         if (Manifest.permission.RECORD_AUDIO.equals(permissions[i])) {
                             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                                startService();
-                                checkForActivatedLocation();
-                                startDetection();
+                                if(locationFinder.validateMicAvailability()){
+                                    startService();
+                                    checkForActivatedLocation();
+                                    startDetection();
+                                }else{
+                                    activateNoMicrophoneAccessAlertDialog();
+                                }
                             }
                             else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                                 showRequestPermissionExplanation();
