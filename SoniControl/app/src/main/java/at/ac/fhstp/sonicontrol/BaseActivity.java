@@ -70,7 +70,8 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void openHelp(){
-        Uri uri = Uri.parse("http://sonicontrol.fhstp.ac.at/wp-content/uploads/2017/07/sonicontrol_user_doc.pdf"); // missing 'http://' will cause crashed
+        //TODO: add data type to give the users the choice of the viewer they want to use
+        Uri uri = Uri.parse("https://sonicontrol.fhstp.ac.at/wp-content/uploads/2017/07/sonicontrol_user_doc.pdf"); // missing 'http://' will cause crash
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
     }
