@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -45,9 +45,6 @@ public class NotificationHelper {
     public static final String NOTIFICATION_STATUS_CHANNEL_ID = "2";
     private static final String NOTIFICATION_DETECTION_CHANNEL_ID = "1";
 
-    public static NotificationManagerCompat mNotificationManager;
-    public static NotificationManager mNotificationManagerOreoAbove;
-
     private static NotificationCompat.Builder spoofingStatusBuilder;
     private static NotificationCompat.Builder detectionAlertStatusBuilder;
     private static NotificationCompat.Builder onHoldStatusBuilder;
@@ -61,11 +58,6 @@ public class NotificationHelper {
     private static boolean spoofingStatusNotitificationFirstBuild = true;
     private static boolean onHoldStatusNotitificationFirstBuild = true;
     private static boolean scanningStatusNotitificationFirstBuild = true;
-
-    private static CharSequence name = "SoniChannel";// The user-visible name of the channel.
-    public static int importance;
-    public static NotificationChannel mChannel;
-
 
     private static PendingIntent getPendingIntentDetectionFlagUpdateCurrent(Context context, Technology technology) {
         Intent resultIntent = new Intent(context, MainActivity.class); //the intent is still the main-activity
@@ -127,46 +119,50 @@ public class NotificationHelper {
                 PendingIntent.FLAG_NO_CREATE);
     }
 
+    /**
+     * Creates the status notification channel for Android O and above. Ignored on older versions.
+     * @param context
+     */
+    private static void createStatusNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManagerOreoAbove = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            int channelImportance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel statusChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, context.getString(R.string.statusChannelName), channelImportance);
+            notificationManagerOreoAbove.createNotificationChannel(statusChannel);
+        }
+    }
+
+    /**
+     * Creates the detection notification channel for Android O and above. Ignored on older versions.
+     * @param context
+     */
+    private static void createDetectionNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManagerOreoAbove = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            int channelImportance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel detectionChannel = new NotificationChannel(NOTIFICATION_DETECTION_CHANNEL_ID, context.getString(R.string.detectionChannelName), channelImportance);
+            notificationManagerOreoAbove.createNotificationChannel(detectionChannel);
+        }
+    }
+
     private static void initSpoofingStatusNotification(Context context){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        }else {
-            mNotificationManager = NotificationManagerCompat.from(context);
-        }
+        createStatusNotificationChannel(context);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            importance = mNotificationManagerOreoAbove.IMPORTANCE_DEFAULT;
-            mChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, name, importance);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            spoofingStatusBuilder = //create a builder for the detection notification
-                    new NotificationCompat.Builder(context, NOTIFICATION_STATUS_CHANNEL_ID)
-                            .setSmallIcon(R.drawable.hearing_block) //adding the icon
-                            .setContentTitle(context.getString(R.string.StatusNotificationSpoofingTitle)) //adding the title
-                            .setContentText(context.getString(R.string.StatusNotificationSpoofingMesssage)) //adding the text
-                            //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
-                            .setOngoing(true); //it's canceled when tapped on it
-        }else {
-            spoofingStatusBuilder = //create a builder for the detection notification
-                    new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.hearing_block) //adding the icon
-                            .setContentTitle(context.getString(R.string.StatusNotificationSpoofingTitle)) //adding the title
-                            .setContentText(context.getString(R.string.StatusNotificationSpoofingMesssage)) //adding the text
-                            //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
-                            .setOngoing(true); //it's canceled when tapped on it
-        }
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            spoofingStatusBuilder.setChannelId(NOTIFICATION_STATUS_CHANNEL_ID);
-        }
+        // Notification Channel Id is ignored for Android pre O (26).
+        spoofingStatusBuilder =
+                new NotificationCompat.Builder(context, NOTIFICATION_STATUS_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.hearing_block) //adding the icon
+                        .setContentTitle(context.getString(R.string.StatusNotificationSpoofingTitle)) //adding the title
+                        .setContentText(context.getString(R.string.StatusNotificationSpoofingMesssage)) //adding the text
+                        .setPriority(NotificationCompat.PRIORITY_LOW) // Required for Android 7.1 and lower
+                        //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
+                        .setOngoing(true); //it's canceled when tapped on it
 
         PendingIntent resultPendingIntent = getPendingIntentStatusFlagUpdateCurrent(context);
 
         spoofingStatusBuilder.setContentIntent(resultPendingIntent);
 
-        notificationSpoofingStatus = spoofingStatusBuilder.build(); //build the notiviation
+        notificationSpoofingStatus = spoofingStatusBuilder.build(); //build the notification
     }
 
     public static void activateSpoofingStatusNotification(Context context){
@@ -174,68 +170,26 @@ public class NotificationHelper {
             initSpoofingStatusNotification(context); //initialize the notification
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove.createNotificationChannel(mChannel);
-            mNotificationManagerOreoAbove.notify(NOTIFICATION_STATUS_ID, notificationSpoofingStatus);
-        }else {
-            mNotificationManager.notify(NOTIFICATION_STATUS_ID, notificationSpoofingStatus); //activate the notification with the notification itself and its id
-        }
+        getNotificationManager(context).notify(NOTIFICATION_STATUS_ID, notificationSpoofingStatus); //activate the notification with the notification itself and its id
 
         spoofingStatusNotitificationFirstBuild = false; //notification is created
     }
 
-    public static void cancelSpoofingStatusNotification(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove.cancel(NOTIFICATION_STATUS_ID);
-        }else{
-            mNotificationManager.cancel(NOTIFICATION_STATUS_ID); //Cancel the notification with the help of the id
-        }
-
-    }
-
     private static void initDetectionAlertStatusNotification(Context context, Technology technology){
+        createDetectionNotificationChannel(context);
+
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        }else {
-            mNotificationManager = NotificationManagerCompat.from(context);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            importance = mNotificationManagerOreoAbove.IMPORTANCE_HIGH;
-            mChannel = new NotificationChannel(NOTIFICATION_DETECTION_CHANNEL_ID, name, importance);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            detectionAlertStatusBuilder = //create a builder for the detection notification
-                    new NotificationCompat.Builder(context, NOTIFICATION_DETECTION_CHANNEL_ID)
-                            .setSmallIcon(R.drawable.hearing_found)
-                            .setContentTitle(context.getString(R.string.StatusNotificationDetectionAlertTitle))
-                            .setContentText(context.getString(R.string.StatusNotificationDetectionAlertMessage))
-                            //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
-                            .setOngoing(true) // cannot be dismissed
-                            .setPriority(Notification.PRIORITY_HIGH)
-                            //Now canceled in activateALert() .setAutoCancel(true) //it's canceled when tapped on it
-                            .setSound(alarmSound);
-        }else {
-            detectionAlertStatusBuilder = //create a builder for the detection notification
-                    new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.hearing_found)
-                            .setContentTitle(context.getString(R.string.StatusNotificationDetectionAlertTitle))
-                            .setContentText(context.getString(R.string.StatusNotificationDetectionAlertMessage))
-                            //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
-                            .setOngoing(true) // cannot be dismissed
-                            .setPriority(Notification.PRIORITY_HIGH)
-                            //Now canceled in activateALert() .setAutoCancel(true) //it's canceled when tapped on it
-                            .setSound(alarmSound);
-        }
-
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            detectionAlertStatusBuilder.setChannelId(NOTIFICATION_DETECTION_CHANNEL_ID);
-        }
+        detectionAlertStatusBuilder = //create a builder for the detection notification
+                new NotificationCompat.Builder(context, NOTIFICATION_DETECTION_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.hearing_found)
+                        .setContentTitle(context.getString(R.string.StatusNotificationDetectionAlertTitle))
+                        .setContentText(context.getString(R.string.StatusNotificationDetectionAlertMessage))
+                        //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
+                        .setOngoing(true) // cannot be dismissed
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        //Now canceled in activateALert() .setAutoCancel(true) //it's canceled when tapped on it
+                        .setSound(alarmSound);
 
         PendingIntent resultPendingIntent = getPendingIntentDetectionFlagUpdateCurrent(context, technology);
 
@@ -247,23 +201,11 @@ public class NotificationHelper {
     public static void activateDetectionAlertStatusNotification(Context context, Technology technology){
         initDetectionAlertStatusNotification(context, technology); //initialize the notification
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove.createNotificationChannel(mChannel);
-            mNotificationManagerOreoAbove.notify(NOTIFICATION_DETECTION_ID, notificationDetectionAlertStatus);
-        }else {
-            mNotificationManager.notify(NOTIFICATION_DETECTION_ID, notificationDetectionAlertStatus); //activate the notification with the notification itself and its id
-        }
-
-
-
+        getNotificationManager(context).notify(NOTIFICATION_DETECTION_ID, notificationDetectionAlertStatus); //activate the notification with the notification itself and its id
     }
 
     public static void cancelDetectionAlertStatusNotification(Context context){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove.cancel(NOTIFICATION_DETECTION_ID);
-        }else{
-            mNotificationManager.cancel(NOTIFICATION_DETECTION_ID); //Cancel the notification with the help of the id Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-        }
+        getNotificationManager(context).cancel(NOTIFICATION_DETECTION_ID); //Cancel the notification with the help of the id Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
 
         // Cancel the linked pending intent
         PendingIntent resultPendingIntent = getPendingIntentDetectionFlagNoCreate(context);
@@ -272,46 +214,22 @@ public class NotificationHelper {
     }
 
     private static void initOnHoldStatusNotification(Context context){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        }else {
-            mNotificationManager = NotificationManagerCompat.from(context);
-        }
+        createStatusNotificationChannel(context);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            importance = mNotificationManagerOreoAbove.IMPORTANCE_DEFAULT;
-            mChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, name, importance);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            onHoldStatusBuilder = //create a builder for the detection notification
-                    new NotificationCompat.Builder(context, NOTIFICATION_STATUS_CHANNEL_ID)
-                            .setSmallIcon(R.drawable.hearing_pause) //adding the icon
-                            .setContentTitle(context.getString(R.string.StatusNotificationOnHoldTitle)) //adding the title
-                            .setContentText(context.getString(R.string.StatusNotificationOnHoldMessage)) //adding the text
-                            //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
-                            .setOngoing(true); //it's canceled when tapped on it
-        }else {
-            onHoldStatusBuilder = //create a builder for the detection notification
-                    new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.hearing_pause) //adding the icon
-                            .setContentTitle(context.getString(R.string.StatusNotificationOnHoldTitle)) //adding the title
-                            .setContentText(context.getString(R.string.StatusNotificationOnHoldMessage)) //adding the text
-                            //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
-                            .setOngoing(true); //it's canceled when tapped on it
-        }
-
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            onHoldStatusBuilder.setChannelId(NOTIFICATION_STATUS_CHANNEL_ID);
-        }
+        onHoldStatusBuilder = //create a builder for the detection notification
+                new NotificationCompat.Builder(context, NOTIFICATION_STATUS_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.hearing_pause) //adding the icon
+                        .setContentTitle(context.getString(R.string.StatusNotificationOnHoldTitle)) //adding the title
+                        .setContentText(context.getString(R.string.StatusNotificationOnHoldMessage)) //adding the text
+                        .setPriority(NotificationCompat.PRIORITY_LOW) // Required for Android 7.1 and lower
+                        //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
+                        .setOngoing(true); //it's canceled when tapped on it
 
         PendingIntent resultPendingIntent = getPendingIntentStatusFlagUpdateCurrent(context);
 
         onHoldStatusBuilder.setContentIntent(resultPendingIntent);
 
-        notificationOnHoldStatus = onHoldStatusBuilder.build(); //build the notiviation
+        notificationOnHoldStatus = onHoldStatusBuilder.build(); //build the notification
     }
 
     public static void activateOnHoldStatusNotification(Context context){
@@ -319,57 +237,26 @@ public class NotificationHelper {
             initOnHoldStatusNotification(context); //initialize the notification
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove.createNotificationChannel(mChannel);
-            mNotificationManagerOreoAbove.notify(NOTIFICATION_STATUS_ID, notificationOnHoldStatus);
-        }else {
-            mNotificationManager.notify(NOTIFICATION_STATUS_ID, notificationOnHoldStatus); //activate the notification with the notification itself and its id
-        }
+        getNotificationManager(context).notify(NOTIFICATION_STATUS_ID, notificationOnHoldStatus); //activate the notification with the notification itself and its id
+
         onHoldStatusNotitificationFirstBuild = false; //notification is created
     }
 
-    public static void cancelOnHoldStatusNotification(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove.cancel(NOTIFICATION_STATUS_ID);
-        }else{
-            mNotificationManager.cancel(NOTIFICATION_STATUS_ID); //Cancel the notification with the help of the id
-        }
-
+    public static void cancelStatusNotification(Context context){
+        getNotificationManager(context).cancel(NOTIFICATION_STATUS_ID); //Cancel the notification with the help of the id
     }
 
     public static Notification initScanningStatusNotification(Context context){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        }else {
-            mNotificationManager = NotificationManagerCompat.from(context);
-        }
+        createStatusNotificationChannel(context);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            importance = mNotificationManagerOreoAbove.IMPORTANCE_DEFAULT;
-            mChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, name, importance);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            scanningStatusBuilder = //create a builder for the detection notification
-                    new NotificationCompat.Builder(context, NOTIFICATION_STATUS_CHANNEL_ID)
-                            .setSmallIcon(R.drawable.ic_hearing_white_48dp) //adding the icon
-                            .setContentTitle(context.getString(R.string.StatusNotificationScanningTitle)) //adding the title
-                            .setContentText(context.getString(R.string.StatusNotificationScanningMessage)) //adding the text
-                            //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
-                            .setOngoing(true); //it's canceled when tapped on it
-        }else {
-            scanningStatusBuilder = //create a builder for the detection notification
-                    new NotificationCompat.Builder(context)
-                            .setSmallIcon(R.drawable.ic_hearing_white_48dp) //adding the icon
-                            .setContentTitle(context.getString(R.string.StatusNotificationScanningTitle)) //adding the title
-                            .setContentText(context.getString(R.string.StatusNotificationScanningMessage)) //adding the text
-                            //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
-                            .setOngoing(true); //it's canceled when tapped on it
-        }
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            scanningStatusBuilder.setChannelId(NOTIFICATION_STATUS_CHANNEL_ID);
-        }
+        scanningStatusBuilder = //create a builder for the detection notification
+                new NotificationCompat.Builder(context, NOTIFICATION_STATUS_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.ic_hearing_white_48dp) //adding the icon
+                        .setContentTitle(context.getString(R.string.StatusNotificationScanningTitle)) //adding the title
+                        .setContentText(context.getString(R.string.StatusNotificationScanningMessage)) //adding the text
+                        .setPriority(NotificationCompat.PRIORITY_LOW) // Required for Android 7.1 and lower
+                        //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
+                        .setOngoing(true); //it's canceled when tapped on it
 
         PendingIntent resultPendingIntent = getPendingIntentStatusFlagUpdateCurrent(context);
 
@@ -384,22 +271,12 @@ public class NotificationHelper {
             initScanningStatusNotification(context); //initialize the notification
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove.createNotificationChannel(mChannel);
-            mNotificationManagerOreoAbove.notify(NOTIFICATION_STATUS_ID, notificationScanningStatus);
-        }else {
-            mNotificationManager.notify(NOTIFICATION_STATUS_ID, notificationScanningStatus); //activate the notification with the notification itself and its id
-        }
+        getNotificationManager(context).notify(NOTIFICATION_STATUS_ID, notificationScanningStatus); //activate the notification with the notification itself and its id
 
         scanningStatusNotitificationFirstBuild = false; //notification is created
     }
 
-    public static void cancelScanningStatusNotification(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManagerOreoAbove.cancel(NOTIFICATION_STATUS_ID);
-        }else{
-            mNotificationManager.cancel(NOTIFICATION_STATUS_ID); //Cancel the notification with the help of the id
-        }
+    private static NotificationManagerCompat getNotificationManager(Context context) {
+        return NotificationManagerCompat.from(context.getApplicationContext());
     }
-
 }

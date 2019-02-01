@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -39,7 +39,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -266,7 +265,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         // savedInstanceState will be null unless there is a configuration change
         if(savedInstanceState == null) {
         }
-        NotificationHelper.mNotificationManager = NotificationManagerCompat.from(getApplicationContext());
         getUpdatedSettings(); //get the settings
     }
 
@@ -277,7 +275,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             startService(service);
         }
         else {
-            NotificationHelper.cancelOnHoldStatusNotification();
+            NotificationHelper.cancelStatusNotification(MainActivity.this);
         }
         
         // Reset state
@@ -520,203 +518,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             micBlock.stopMicCapturingComplete();
         }
     }
-/*
-    public void initDetectionNotification(){
-        detectionBuilder = //create a builder for the detection notification
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.hearing_found) //adding the icon
-                        .setContentTitle(getString(R.string.NotificationDetectionTitle)) //adding the title
-                        .setContentText(getString(R.string.NotificationDetectionMessage)) //adding the text
-                        .setOngoing(true) //can't be canceled
-                        .setPriority(Notification.PRIORITY_HIGH) //high priority in the notification system
-                        .setCategory(Notification.CATEGORY_STATUS)
-                        .setAutoCancel(true); //it's canceled when tapped on it
 
-        Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
 
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                this,
-                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
-                resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
-
-        detectionBuilder.setContentIntent(resultPendingIntent);
-
-        notificationDetection = detectionBuilder.build(); //build the notiviation
-
-    }
-
-    public void activateDetectionNotification(){
-        if(detectionNotitificationFirstBuild){ //if it's the first time that it's built
-            initDetectionNotification(); //initialize the notification
-        }
-        mNotificationManager.notify(detectionNotificationId, notificationDetection); //activate the notification with the notification itself and its id
-        detectionNotitificationFirstBuild = false; //notification is created
-    }
-
-    public void cancelDetectionNotification(){
-        mNotificationManager.cancel(detectionNotificationId); //Cancel the notification with the help of the id
-    }
-*/
-/*
-    private void initSpoofingStatusNotification(){
-        spoofingStatusBuilder = //create a builder for the detection notification
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.hearing_block) //adding the icon
-                        .setContentTitle(getString(R.string.StatusNotificationSpoofingTitle)) //adding the title
-                        .setContentText(getString(R.string.StatusNotificationSpoofingMesssage)) //adding the text
-                        //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
-                        .setOngoing(true); //it's canceled when tapped on it
-
-        Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                this,
-                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
-                resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        spoofingStatusBuilder.setContentIntent(resultPendingIntent);
-
-        notificationSpoofingStatus = spoofingStatusBuilder.build(); //build the notiviation
-    }
-
-    public void activateSpoofingStatusNotification(){
-        if(spoofingStatusNotitificationFirstBuild){ //if it's the first time that it's built
-            initSpoofingStatusNotification(); //initialize the notification
-        }
-        mNotificationManager.notify(spoofingStatusNotificationId, notificationSpoofingStatus); //activate the notification with the notification itself and its id
-        spoofingStatusNotitificationFirstBuild = false; //notification is created
-    }
-
-    public void cancelSpoofingStatusNotification(){
-        mNotificationManager.cancel(spoofingStatusNotificationId); //Cancel the notification with the help of the id
-    }
-
-    private void initDetectionAlertStatusNotification(Technology technology){
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        detectionAlertStatusBuilder = //create a builder for the detection notification
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.hearing_found)
-                        .setContentTitle(getString(R.string.StatusNotificationDetectionAlertTitle))
-                        .setContentText(getString(R.string.StatusNotificationDetectionAlertMessage))
-                        //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
-                        .setOngoing(true) // cannot be dismissed
-                        .setPriority(Notification.PRIORITY_HIGH)
-                        //Now canceled in activateALert() .setAutoCancel(true) //it's canceled when tapped on it
-                        .setSound(alarmSound);
-
-        Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        resultIntent.putExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED, technology);
-
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                this,
-                MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
-                resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);//Now canceled in activateALert()  | PendingIntent.FLAG_ONE_SHOT);
-
-        detectionAlertStatusBuilder.setContentIntent(resultPendingIntent);
-
-        notificationDetectionAlertStatus = detectionAlertStatusBuilder.build(); //build the notiviation
-    }
-
-    public void activateDetectionAlertStatusNotification(Technology technology){
-        initDetectionAlertStatusNotification(technology); //initialize the notification
-
-        mNotificationManager.notify(detectionAlertStatusNotificationId, notificationDetectionAlertStatus); //activate the notification with the notification itself and its id
-
-    }
-
-    public void cancelDetectionAlertStatusNotification(){
-        mNotificationManager.cancel(detectionAlertStatusNotificationId); //Cancel the notification with the help of the id Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-        // Cancel the linked pending intent
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                this,
-                MainActivity.NOTIFICATION_DETECTION_REQUEST_CODE,
-                resultIntent,
-                PendingIntent.FLAG_NO_CREATE);
-        resultPendingIntent.cancel();
-    }
-
-    private void initOnHoldStatusNotification(){
-        onHoldStatusBuilder = //create a builder for the detection notification
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.hearing_pause) //adding the icon
-                        .setContentTitle(getString(R.string.StatusNotificationOnHoldTitle)) //adding the title
-                        .setContentText(getString(R.string.StatusNotificationOnHoldMessage)) //adding the text
-                        //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
-                        .setOngoing(true); //it's canceled when tapped on it
-
-        Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                this,
-                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
-                resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        onHoldStatusBuilder.setContentIntent(resultPendingIntent);
-
-        notificationOnHoldStatus = onHoldStatusBuilder.build(); //build the notiviation
-    }
-
-    public void activateOnHoldStatusNotification(){
-        if(onHoldStatusNotitificationFirstBuild){ //if it's the first time that it's built
-            initOnHoldStatusNotification(); //initialize the notification
-        }
-        mNotificationManager.notify(onHoldStatusNotificationId, notificationOnHoldStatus); //activate the notification with the notification itself and its id
-        onHoldStatusNotitificationFirstBuild = false; //notification is created
-    }
-
-    public void cancelOnHoldStatusNotification(){
-        mNotificationManager.cancel(onHoldStatusNotificationId); //Cancel the notification with the help of the id
-    }
-
-    private void initScanningStatusNotification(){
-        scanningStatusBuilder = //create a builder for the detection notification
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_hearing_white_48dp) //adding the icon
-                        .setContentTitle(getString(R.string.StatusNotificationScanningTitle)) //adding the title
-                        .setContentText(getString(R.string.StatusNotificationScanningMessage)) //adding the text
-                        //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
-                        .setOngoing(true); //it's canceled when tapped on it
-
-        Intent resultIntent = new Intent(this, MainActivity.class); //the intent is still the main-activity
-
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                this,
-                MainActivity.NOTIFICATION_STATUS_REQUEST_CODE,
-                resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        scanningStatusBuilder.setContentIntent(resultPendingIntent);
-
-        notificationScanningStatus = scanningStatusBuilder.build(); //build the notiviation
-    }
-
-    public void activateScanningStatusNotification(){
-        if(scanningStatusNotitificationFirstBuild){ //if it's the first time that it's built
-            initScanningStatusNotification(); //initialize the notification
-        }
-        mNotificationManager.notify(scanningStatusNotificationId, notificationScanningStatus); //activate the notification with the notification itself and its id
-        scanningStatusNotitificationFirstBuild = false; //notification is created
-    }
-
-    public void cancelScanningStatusNotification(){
-        mNotificationManager.cancel(scanningStatusNotificationId); //Cancel the notification with the help of the id
-    }
-*/
     public SharedPreferences getSettingsObject(){
         if (sharedPref == null)
             sharedPref = PreferenceManager.getDefaultSharedPreferences(this); //get the object with the settings
@@ -1033,7 +836,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         }
 
-        //NotificationHelper.cancelOnHoldStatusNotification(); //cancel the onHold notification
+        //NotificationHelper.cancelStatusNotification(); //cancel the onHold notification
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //start the scanning-status notification
         setGUIStateStarted();
         detector.startScanning(); //start scanning for signals

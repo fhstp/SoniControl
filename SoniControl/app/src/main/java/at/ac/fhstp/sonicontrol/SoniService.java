@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -105,25 +105,6 @@ public class SoniService extends Service {
     }
 
     private void showNotification() {
-        NotificationHelper.mNotificationManager = NotificationManagerCompat.from(getApplicationContext());
-/*
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.setAction(ServiceConstants.ACTION.MAIN_ACTION);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
-
-        Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle("SoniControl Firewall")
-                .setTicker("SoniControl Firewall")
-                .setContentText("The Firewall has started.")
-                .setSmallIcon(R.drawable.ic_hearing_white_48dp)
-                .setContentIntent(pendingIntent)
-                .setOngoing(true).build();
-*/
-
-
         startForeground(NotificationHelper.NOTIFICATION_STATUS_ID,
                 NotificationHelper.initScanningStatusNotification(getApplicationContext()));
 
