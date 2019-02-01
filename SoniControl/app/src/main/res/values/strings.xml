@@ -47,7 +47,6 @@
         \n\nPrivacy statement: SoniControl does not send any data from the users to other places and works even completely offline. All program data are stored locally on the phone. SoniControl requires microphone access to listen to the ultrasonic channel (all hearable information is filtered out). It further requires location information if the user wants the app to block ultrasonic communication permanently at a certain location (e.g. near to an audio beacon mounted next to some building).
         \n\nIn case of questions, bugs, ideas, please contact us directly under http://sonicontrol.fhstp.ac.at/#contact or sonicontrol@fhstp.ac.at.</string>
     <string name="toastMessageNoGeocoderConnection">Not able to access location</string>
-    <string name="aboutUsInfo"></string>
     <string name="alertDialog_option_jam_always_here">Block always here</string>
     <string name="alertDialog_option_dismiss_this_time">Ignore this time</string>
     <string name="alertDialog_option_dismiss_always_here">Ignore always here</string>
@@ -115,4 +114,6 @@
     <string name="settings_title_bandwidth">Bandwidth</string>
     <string name="settings_title_blocking_duration">Blocking duration in minutes</string>
     <string name="settings_title_location_radius">Location radius (metre)</string>
+    <string name="statusChannelName">App status channel</string>
+    <string name="detectionChannelName">Signal detection channel</string>
 </resources>

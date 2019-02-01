@@ -47,7 +47,6 @@
 \n\nDatenschutzerklärung: SoniControl sendet keine Daten von Nutzern an andere Orte und funktioniert komplett offline. Alle Daten werden lokal gespeichert. SoniControl braucht Zugriff auf das Mikrofon, um Ultraschallsignale erkennen zu können (alle hörbaren Geräusche werden herausgefiltert). Weiters braucht die App den Standortzugriff, falls NutzerInnen Ultraschallsignale von einem bestimmten Ort permanent blockieren möchten (z.B. ein Audiobeacon in einem Geschäft).
 \n\nBei Fragen, Bugs, Ideen, kontaktieren Sie uns bitte direkt unter http://sonicontrol.fhstp.ac.at/#contact oder der Email-Adresse sonicontrol@fhstp.ac.at.</string>
     <string name="toastMessageNoGeocoderConnection">Der Standort konnte nicht ermittelt werden</string>
-    <string name="aboutUsInfo"></string>
     <string name="alertDialog_option_jam_always_here">Hier immer blockieren</string>
     <string name="alertDialog_option_dismiss_this_time">Dieses Mal ignorieren</string>
     <string name="alertDialog_option_dismiss_always_here">Hier immer ignorieren</string>
@@ -115,4 +114,6 @@
     <string name="settings_title_bandwidth">Bandbreite</string>
     <string name="settings_title_blocking_duration">Blockierdauer in Minuten</string>
     <string name="settings_title_location_radius">Blockierradius (Meter)</string>
+    <string name="statusChannelName">App-Status Kanal</string>
+    <string name="detectionChannelName">Signalerkennung Kanal</string>
 </resources>

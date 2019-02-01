@@ -59,9 +59,6 @@ public class NotificationHelper {
     private static boolean onHoldStatusNotitificationFirstBuild = true;
     private static boolean scanningStatusNotitificationFirstBuild = true;
 
-    private static CharSequence channelName = "SoniChannel";// The user-visible name of the channel.
-
-
     private static PendingIntent getPendingIntentDetectionFlagUpdateCurrent(Context context, Technology technology) {
         Intent resultIntent = new Intent(context, MainActivity.class); //the intent is still the main-activity
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -130,7 +127,7 @@ public class NotificationHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManagerOreoAbove = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             int channelImportance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel statusChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, channelName, channelImportance);
+            NotificationChannel statusChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, context.getString(R.string.statusChannelName), channelImportance);
             notificationManagerOreoAbove.createNotificationChannel(statusChannel);
         }
     }
@@ -143,7 +140,7 @@ public class NotificationHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManagerOreoAbove = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             int channelImportance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel detectionChannel = new NotificationChannel(NOTIFICATION_DETECTION_CHANNEL_ID, channelName, channelImportance);
+            NotificationChannel detectionChannel = new NotificationChannel(NOTIFICATION_DETECTION_CHANNEL_ID, context.getString(R.string.detectionChannelName), channelImportance);
             notificationManagerOreoAbove.createNotificationChannel(detectionChannel);
         }
     }
