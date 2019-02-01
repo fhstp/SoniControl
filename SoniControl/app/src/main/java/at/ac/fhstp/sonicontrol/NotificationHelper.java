@@ -126,7 +126,7 @@ public class NotificationHelper {
     private static void createStatusNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManagerOreoAbove = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            int channelImportance = NotificationManager.IMPORTANCE_DEFAULT;
+            int channelImportance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel statusChannel = new NotificationChannel(NOTIFICATION_STATUS_CHANNEL_ID, context.getString(R.string.statusChannelName), channelImportance);
             notificationManagerOreoAbove.createNotificationChannel(statusChannel);
         }
@@ -154,7 +154,7 @@ public class NotificationHelper {
                         .setSmallIcon(R.drawable.hearing_block) //adding the icon
                         .setContentTitle(context.getString(R.string.StatusNotificationSpoofingTitle)) //adding the title
                         .setContentText(context.getString(R.string.StatusNotificationSpoofingMesssage)) //adding the text
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Required for Android 7.1 and lower
+                        .setPriority(NotificationCompat.PRIORITY_LOW) // Required for Android 7.1 and lower
                         //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
                         .setOngoing(true); //it's canceled when tapped on it
 
@@ -221,7 +221,7 @@ public class NotificationHelper {
                         .setSmallIcon(R.drawable.hearing_pause) //adding the icon
                         .setContentTitle(context.getString(R.string.StatusNotificationOnHoldTitle)) //adding the title
                         .setContentText(context.getString(R.string.StatusNotificationOnHoldMessage)) //adding the text
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Required for Android 7.1 and lower
+                        .setPriority(NotificationCompat.PRIORITY_LOW) // Required for Android 7.1 and lower
                         //Requires API 21 .setCategory(Notification.CATEGORY_STATUS)
                         .setOngoing(true); //it's canceled when tapped on it
 
@@ -254,7 +254,7 @@ public class NotificationHelper {
                         .setSmallIcon(R.drawable.ic_hearing_white_48dp) //adding the icon
                         .setContentTitle(context.getString(R.string.StatusNotificationScanningTitle)) //adding the title
                         .setContentText(context.getString(R.string.StatusNotificationScanningMessage)) //adding the text
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Required for Android 7.1 and lower
+                        .setPriority(NotificationCompat.PRIORITY_LOW) // Required for Android 7.1 and lower
                         //Requires API 21 .setCategory(Notification.CATEGORY_SERVICE)
                         .setOngoing(true); //it's canceled when tapped on it
 
