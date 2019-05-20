@@ -37,8 +37,8 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +57,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import android.provider.Settings;
+
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
@@ -226,10 +227,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         });
 
-        btnAlertStart = (Button) view.findViewById(R.id.btnPlay); //button of the alert for playing the found signal with fs/3
+        btnAlertStart = (Button) view.findViewById(R.id.btnReplay); //button of the alert for playing the found signal with fs/3
         btnAlertStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-            onAlertPlayDetectedSignal();
+            //onAlertPlayDetectedSignal();
             }
         });
 
@@ -1208,4 +1209,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
 
     }
+
+
 }

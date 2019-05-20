@@ -188,7 +188,7 @@ public class Location {
         return (distance*1000);
     }
 
-    private void blockBySpoofing() {
+        private void blockBySpoofing() {
         boolean playingGlobal = true; //the global play status is now true after the start
         boolean playingHandler = true; //helpboolean for switching the playstatus in the puslinghandler
         spoof = Spoofer.getInstance(); //get an instance of the spoofer

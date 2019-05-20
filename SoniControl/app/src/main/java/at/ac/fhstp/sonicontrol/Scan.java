@@ -127,7 +127,6 @@ public class Scan {
 
         locFinder = Location.getInstanceLoc(); //get an instance of location
         jsonMan = new JSONManager(main);
-
         if (paused && consistentState) {
             //Log.d(TAG, "Resume scanning");
             resume();
