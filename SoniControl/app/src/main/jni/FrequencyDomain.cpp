@@ -229,6 +229,23 @@ static void resetMedianBuffer() {
     std::fill(medianBuffer.begin(), medianBuffer.end(), 0);
 }
 
+
+static jfloatArray* getJavaReorderedBufferHistory(JNIEnv * jniEnv){
+
+    int numberOfBufferHistoryItems = medianBufferSizeItems * bufferSizeSmpl;
+    int bufferHistorySize = numberOfBufferHistoryItems * sizeof(bufferHistory);
+    float *container = (float*)malloc(bufferHistorySize);
+    if(bufferHistoryIndex==0){
+        memcpy(container, bufferHistory, bufferHistorySize);
+    }else{
+        memcpy(container, bufferHistory+bufferHistoryIndex, bufferHistorySize-bufferHistoryIndex*sizeof(bufferHistory));
+        memcpy(container+numberOfBufferHistoryItems-bufferHistoryIndex, bufferHistory, bufferHistoryIndex*sizeof(bufferHistory));
+    }
+    jfloatArray bufferHistoryArray = jniEnv->NewFloatArray(medianBufferSizeItems * bufferSizeSmpl);
+    jniEnv->SetFloatArrayRegion(bufferHistoryArray, 0, medianBufferSizeItems * bufferSizeSmpl, bufferHistory);
+    return &bufferHistoryArray;
+}
+
 // This is called periodically by the media server.
 static bool audioProcessing(void * __unused clientdata, short int *audioInputOutput, int numberOfSamples, int __unused samplerate) {
     SuperpoweredShortIntToFloat(audioInputOutput, inputBufferFloat, (unsigned int)numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.
@@ -343,6 +360,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
              * */
 
 
+
             /* 2. make an FFT over the entire buffer.
              * 3. Perform recognition of the individual technologies
              * ??? Is there a 4. ???
@@ -375,12 +393,15 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
             // Construct a String
             jstring technologyString = jniEnv->NewStringUTF("Unknown");
+
+
+            jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistory(jniEnv));
             // First get the class that contains the method you need to call
             jclass scanClass = jniEnv->GetObjectClass(jniScan);
             // Get the method that you want to call
-            jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;)V");
+            jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;[F)V");
             // Call the method on the object
-            jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString);
+            jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString, bufferHistoryArray);
 
             if (jniEnv->ExceptionCheck()) {
                 jniEnv->ExceptionDescribe();

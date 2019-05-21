@@ -93,7 +93,8 @@ public class Scan {
      * Note: This is called from the native code every time there is a detection
      * @param technology String corresponding to a Technology Enum value
      */
-    public void detectedSignal(String technology) {
+    public void detectedSignal(String technology, float[] bufferHistory) {
+        float[] bufferHistoryArray = bufferHistory;
         try {
             lastDetectedTechnology = Technology.fromString(technology);
         }
