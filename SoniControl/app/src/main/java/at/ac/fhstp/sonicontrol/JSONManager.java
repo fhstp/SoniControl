@@ -117,10 +117,12 @@ public class JSONManager {
             JSONArray jArray;
             if(position[0]==0&&position[1]==0) {
                 jArray = jObjectResult.getJSONArray(JSON_ARRAY_UNKNOWN_SIGNALS);
-                //if(spoof==2){
-                spoof=ConfigConstants.DETECTION_TYPE_THIS_TIME;
-                //}
-            }else if(spoof==ConfigConstants.DETECTION_TYPE_THIS_TIME){
+                if(spoof==ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){
+                    spoof=ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME;
+                }else if(spoof==ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){
+                    spoof=ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME;
+                }
+            }else if(spoof==ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME || spoof==ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME){
                 jArray = jObjectResult.getJSONArray(JSON_ARRAY_DISMISSED_SIGNALS);
                 //spoof=0;
             }else{

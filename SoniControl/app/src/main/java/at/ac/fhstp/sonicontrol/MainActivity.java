@@ -491,6 +491,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
 
         sigType = signalType; //set the technology variable to the latest detected one
+        txtSignalType.setText(getString(R.string.gui_technology) + " " + sigType.toString()); //can be deleted it's only for debugging
 
         boolean activityExists = settings.getBoolean("active", false);
         if (activityExists) {
@@ -990,7 +991,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             btnAlertStart.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
             isSignalPlayerGenerated = false; //now there is no player anymore so it's false
         }
-        txtSignalType.setText(sigType.toString()); //can be deleted it's only for debugging
     }
 
     public void onAlertBlockAlways(){
@@ -1002,7 +1002,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void onAlertBlockThisTime(){
-        onAlertChoice(ConfigConstants.DETECTION_TYPE_THIS_TIME);
+        onAlertChoice(ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME);
         locationFinder.blockMicOrSpoof();
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
     }
@@ -1016,7 +1016,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void onAlertDismissThisTime(){
-        onAlertChoice(ConfigConstants.DETECTION_TYPE_THIS_TIME);
+        onAlertChoice(ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME);
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
     }
