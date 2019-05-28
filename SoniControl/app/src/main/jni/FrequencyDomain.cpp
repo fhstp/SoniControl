@@ -39,6 +39,10 @@
 #include <sstream>
 #include <cstring>
 
+#include <iostream>
+#include <vector>
+#include <numeric>
+
 #include <chrono>
 #define  LOG_TAG    "FrequencyDomain"
 
@@ -464,7 +468,7 @@ static void stopIO() {
 }
 
 static void startIO() {
-    audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmpl * 2); // Start audio input/output.
+    audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
 
 extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
@@ -473,7 +477,7 @@ extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIE
     jniScan = javaEnvironment->NewGlobalRef(obj); // Keep a global reference to the Scan activity
 
     initFrequencyDomain(sampleRateJava, bufferSizeSmplJava);
-    audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmplJava * 2); // Start audio input/output.
+    audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
 
 // Update Median Buffer size and buffer history (detection time) after update from SettingsActivity
