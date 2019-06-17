@@ -30,7 +30,7 @@ import java.util.List;
 public class Scan {
     private static final String TAG = "Scan";
     public interface DetectionListener {
-        public void onDetection(Technology technology);
+        public void onDetection(Technology technology, float[] stereoRawData);
     }
     //private List<DetectionListener> detectionListeners = new ArrayList<>();
     private DetectionListener mainDetectionListener = null;
@@ -76,12 +76,12 @@ public class Scan {
         this.mainDetectionListener = listener;
     }
 
-    public void notifyDetectionListeners() {
-        if (lastDetectedTechnology != null) {
+    public void notifyDetectionListeners(Technology technology, float[] bufferHistory) {
+        if (technology != null) {
             /*for(DetectionListener listener: detectionListeners) {
                 listener.onDetection(lastDetectedTechnology);
             }*/
-            mainDetectionListener.onDetection(lastDetectedTechnology);
+            mainDetectionListener.onDetection(technology, bufferHistory);
         }
         else {
             //Log.d(TAG, "notifyDetectionListeners: lastDetectedTechnology is null");
@@ -103,7 +103,7 @@ public class Scan {
             lastDetectedTechnology = Technology.UNKNOWN;
         }
         paused = true;
-        notifyDetectionListeners();
+        notifyDetectionListeners(lastDetectedTechnology, bufferHistory);
     }
 
     private Runnable scanRun = new Runnable() {

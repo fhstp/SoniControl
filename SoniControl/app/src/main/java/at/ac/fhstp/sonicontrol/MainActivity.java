@@ -728,34 +728,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     @Override
-    public void onDetection(final Technology technology) {
+    public void onDetection(final Technology detectedTechnology, float[] bufferHistory) {
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                checkTechnologyAndDoAccordingly(technology);
+                handleSignal(detectedTechnology);
+                //HERE start a worker ? Asynctask ? Or directly in handleSignal for now ? (after checking if we should block anyways)
             }
         });
-    }
-
-
-    private void checkTechnologyAndDoAccordingly(Technology detectedTechnology){
-        if(detectedTechnology == null) {
-            // This case should not happen
-           //Log.d(TAG, "checkTechnologyAndDoAccordingly: detectedTechnology is null !?");
-        }
-        else {
-            switch (detectedTechnology) {
-                case GOOGLE_NEARBY:
-                    handleSignal(Technology.GOOGLE_NEARBY);
-                case LISNR:
-                    handleSignal(Technology.LISNR);
-                case PRONTOLY:
-                    handleSignal(Technology.PRONTOLY);
-                case UNKNOWN:
-                    //Log.d("Detected", "Unknown ultrasonic signal");
-                    handleSignal(Technology.UNKNOWN);
-            }
-        }
     }
 
     private void handleSignal(Technology technology) {
@@ -774,7 +754,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             locationFinder.saveLocationGPSTrackerObject();
         }
 
-
+        // Checks if the user prefers to block every location
         if (this.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)) { //check if the settings are set to continous spoofing
             //Log.d("Spoof", "I spoof oontinuous");
             if (locationTrack) {
@@ -1191,9 +1171,27 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
             return !TextUtils.isEmpty(locationProviders);
         }
-
-
     }
 
+    public void onSpectrum(float[][] spectrum) {
+        /*if (spectrum == null) {
+            spectrogramView.setFFTResolution(0);
+            Log.w("TAG", "Received a null spectrum.");
+            return;
+        }
+        spectrogramView.setFFTResolution(spectrum[0].length);
+        Log.d(TAG, "fft resolution: " + String.valueOf(spectrum[0].length));
+
+        if (popup.visible) {
+            spectrogramView.setHistoryBuffer(spectrum);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // Update spectrogram
+                    spectrogramView.invalidate();
+                }
+            });
+        }*/
+    }
 
 }
