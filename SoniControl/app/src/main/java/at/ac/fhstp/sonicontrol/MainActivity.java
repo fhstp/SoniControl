@@ -776,14 +776,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
 
         if (this.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)) { //check if the settings are set to continous spoofing
-            /*if (!this.getBackgroundStatus()) { //if the app is not in the background
-                this.cancelDetectionNotification(); //cancel the detection notification
-            }*/
             //Log.d("Spoof", "I spoof oontinuous");
             if (locationTrack) {
                 locationFinder.setPositionForContinuousSpoofing(lastPosition); //set the position for distance calculation to the latest position
             }
-            //NotificationHelper.cancelScanningStatusNotification(); //cancel the scanning-status notification
             NotificationHelper.activateSpoofingStatusNotification(getApplicationContext()); //activate the spoofing-status notification
 
             saveJsonFile = this.checkJsonAndLocationPermissions()[0];
@@ -800,26 +796,16 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
 
             locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
-            //resetHandler(); // Should be handled by the cpp (just stop scanning)
         } else {
             if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
-                /*if (this.getBackgroundStatus()) { //if the app is in the background
-                    this.activateDetectionNotification(); //activate the notification for a detection
-                }*/
-                //NotificationHelper.cancelScanningStatusNotification(); //cancel the scanning-status notification
                 NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology);
                 this.activateAlert(technology); //open the alert dialog
             } else {
                 if (locationTrack) {
                     locationFinder.checkExistingLocationDB(lastPosition, technology); //if a JSON file is available we check if the signal is a new one with position and technologytype
                 } else {
-                    /*if (this.getBackgroundStatus()) { //if the app is in the background
-                        this.activateDetectionNotification(); //activate the notification for a detection
-                    }*/
-                    //NotificationHelper.cancelScanningStatusNotification(); //cancel the scanning-status notification
                     NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology); //activate the onHold-status notification
                     this.activateAlert(technology); //open the alert dialog
-                    //resetHandler(); // Should be handled by the cpp (just stop scanning)
                 }
             }
         }
@@ -838,7 +824,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         }
 
-        //NotificationHelper.cancelStatusNotification(); //cancel the onHold notification
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //start the scanning-status notification
         setGUIStateStarted();
         detector.startScanning(); //start scanning for signals
