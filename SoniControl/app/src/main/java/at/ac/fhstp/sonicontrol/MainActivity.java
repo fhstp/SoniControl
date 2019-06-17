@@ -776,17 +776,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
 
             locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
-        } else {
-            if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
+        } else { // The user does not prefer to block every location
+            if (locationTrack && jsonMan.checkIfJsonFileIsAvailable()) { // If the user allowed location and has a JSON file
+                locationFinder.checkExistingLocationDB(lastPosition, technology); // Check our detection DB and follow user (stored) preference if it is not a new location
+            }
+            else {
+                // First compute the spectrum
+                //TODO: Spectrum
+
+                // Notify the user
                 NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology);
                 this.activateAlert(technology); //open the alert dialog
-            } else {
-                if (locationTrack) {
-                    locationFinder.checkExistingLocationDB(lastPosition, technology); //if a JSON file is available we check if the signal is a new one with position and technologytype
-                } else {
-                    NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology); //activate the onHold-status notification
-                    this.activateAlert(technology); //open the alert dialog
-                }
             }
         }
     }
