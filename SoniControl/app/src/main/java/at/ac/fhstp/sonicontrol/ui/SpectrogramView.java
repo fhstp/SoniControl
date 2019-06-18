@@ -27,6 +27,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -86,6 +87,15 @@ public class SpectrogramView extends View {
     public void setCutoffFrequency(int cutoffFrequency) {
         this.cutoffFrequency = cutoffFrequency;
         cutoffFrequencyViz  = cutoffFrequency - frequencyOffsetForSpectrogram;
+        if (cutoffFrequencyViz < 0)
+            cutoffFrequencyViz = 0;
+    }
+
+    public void setUpperCutoffFrequency(int upperCutoffFrequency) {
+        this.upperCutoffFrequency = upperCutoffFrequency;
+        upperCutoffFrequencyViz  = upperCutoffFrequency + frequencyOffsetForSpectrogram;
+        if (cutoffFrequencyViz > samplingRate / 2)
+            cutoffFrequencyViz = samplingRate / 2;
     }
 
     /**
@@ -167,10 +177,6 @@ public class SpectrogramView extends View {
         //Always overwrite the previous spectrogram
         pos = 0;
 
-        // Should be defined according to the values from the settings (same for the FFT resolution)
-        //binSizeinHz = samplingRate/ (magnitudes.length/2);
-        //cutoffFrequencyIdx = Math.round(cutoffFrequency / binSizeinHz);
-
         int[] colors = null;
         String colorScale = Misc.getPreference(activity, "color_scale", "Fire");
         if (colorScale.equals("Grey"))     colors = colorGrey;
@@ -183,7 +189,7 @@ public class SpectrogramView extends View {
         int rWidth = width-wColor-wFrequency;
         int strokeWidth;
         if (onlyShowUpperFrequencies) {
-            strokeWidth = 4; // 4 for an overlapFactor of 8.
+            strokeWidth = 20; // 4 for an overlapFactor of 8.
         }
         else {
             strokeWidth = 1; // With no overlap : 1 for the whole range of frequencies, 10 or 20 for the upper frequencies
@@ -197,15 +203,16 @@ public class SpectrogramView extends View {
         // Update buffer bitmap
         //paint.setColor(Color.GREEN);
         //this.canvas.drawLine(pos%rWidth, 0, pos%rWidth, height, paint);
+        //Log.d("draw", "onlyShowUpperFrequencies " + onlyShowUpperFrequencies);
         for (int winStart=0; winStart < historyBuffer.length; winStart++) {
-//TODO: Replace the array copy by a direct access to relative position in historyBuffer
             System.arraycopy(historyBuffer[winStart], 0, magnitudes, 0, fftResolution);
 
             for (int i = 0; i < height; i++) {
                 float j;
                 if (onlyShowUpperFrequencies) {
                     // Displays only upper frequencies
-                    j = getValueFromRelativePosition((float) (height - i) / height, cutoffFrequencyViz, upperCutoffFrequency, logFrequency);
+                    j = getValueFromRelativePosition((float) (height - i) / height, cutoffFrequencyViz, upperCutoffFrequencyViz, logFrequency);
+                    //Log.d("draw: ", "j:" + j + " . i:" + i + " . height:" + height + " . cutoffFrequency:" + cutoffFrequency + " . upperCutoffFrequency:" + upperCutoffFrequency);
                 }
                 else {
                     // Version that displays the whole range of frquencies
@@ -213,6 +220,9 @@ public class SpectrogramView extends View {
                 }
 
                 j /= samplingRate / 2;
+                //TODO: Rescale or ask for the whole array
+
+                //Log.d("draw", "j:" + j + " . magnitudes.length:" + magnitudes.length);
                 float mag = magnitudes[(int) (j * magnitudes.length)];
                 float db = (float) Math.max(0, -20 * Math.log10(mag));
                 int c = getInterpolatedColor(colors, db * 0.009f);

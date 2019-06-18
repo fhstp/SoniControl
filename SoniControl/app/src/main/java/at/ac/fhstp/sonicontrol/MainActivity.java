@@ -59,6 +59,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import android.provider.Settings;
 
 
+import at.ac.fhstp.sonicontrol.ui.SpectrogramView;
+import at.ac.fhstp.sonicontrol.utils.HammingWindow;
+import at.ac.fhstp.sonicontrol.utils.Misc;
+
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
@@ -86,6 +90,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     JSONManager jsonMan;
 
     AlertDialog alert;
+    private SpectrogramView spectrogramView;
     TextView txtSignalType;
     TextView txtAlertDate;
     TextView txtNoLocation;
@@ -166,6 +171,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
         jsonMan = new JSONManager(this);
 
+        // Used by SpectrogramView
+        Misc.setAttribute("activity", this);
 
         setContentView(R.layout.activity_main);
 
@@ -267,6 +274,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         if(savedInstanceState == null) {
         }
         getUpdatedSettings(); //get the settings
+
+        // Initialize spectrogram view.
+        spectrogramView = (SpectrogramView) findViewById(R.id.spectrogram_view);
+        spectrogramView.setSamplingRate(ConfigConstants.SCAN_SAMPLE_RATE);
+        spectrogramView.setFFTResolution(ConfigConstants.SCAN_BUFFER_SIZE / 2);
+
+        spectrogramView.setCutoffFrequency(ConfigConstants.SPECTROGRAM_LOWER_CUTOFF_FREQUENCY);
+        spectrogramView.setUpperCutoffFrequency(ConfigConstants.SPECTROGRAM_UPPER_CUTOFF_FREQUENCY);
     }
 
     private void onBtnExitClick(View v) {
@@ -728,17 +743,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     @Override
-    public void onDetection(final Technology detectedTechnology, float[] bufferHistory) {
+    public void onDetection(final Technology detectedTechnology, final float[] bufferHistory) {
+        // Should we start this as an AsyncTask already ?
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                handleSignal(detectedTechnology);
-                //HERE start a worker ? Asynctask ? Or directly in handleSignal for now ? (after checking if we should block anyways)
+                handleSignal(detectedTechnology, bufferHistory);
             }
         });
     }
 
-    private void handleSignal(Technology technology) {
+    private void handleSignal(Technology technology, float[] bufferHistory) {
         // Stores the technology on disk in case the Activity was destroyed
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
@@ -781,14 +796,125 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 locationFinder.checkExistingLocationDB(lastPosition, technology); // Check our detection DB and follow user (stored) preference if it is not a new location
             }
             else {
-                // First compute the spectrum
-                //TODO: Spectrum
+                //TODO: HERE start a worker ? Asynctask ?
+
+                // Compute the spectrum
+                Log.d("handleSignal", "Start computing spectrogram");
+                float[][] spectrum = computeSpectrum(bufferHistory);
+                // Update spectrum
+                onSpectrum(spectrum);
+                Log.d("handleSignal", "Done computing spectrogram, will show alert");
 
                 // Notify the user
                 NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology);
                 this.activateAlert(technology); //open the alert dialog
             }
         }
+    }
+
+    private float[][] computeSpectrum(float[] bufferHistory) {
+        // Convert from stereo to mono
+        float[] bufferHistoryMono = new float[bufferHistory.length / 2];
+        for (int i = 0, counter = 0; i < bufferHistory.length; i += 2, counter++) {
+            bufferHistoryMono[counter] = (bufferHistory[i] + bufferHistory[i+1]) / 2;
+        }
+
+        // Spectrogram / Recognition parameters
+        //float winLenForSpectrogram = 46.44; //ms
+        //winLenForSpectrogramInSamples = Math.round(Fs * (float) winLenForSpectrogram/1000);
+        int winLenForSpectrogramInSamples = ConfigConstants.SCAN_BUFFER_SIZE;
+        int Fs = ConfigConstants.SCAN_SAMPLE_RATE;
+        int overlapFactor = ConfigConstants.SPECTROGRAM_OVERLAP_FACTOR;
+
+        if (winLenForSpectrogramInSamples % 2 != 0) {
+            winLenForSpectrogramInSamples ++; // Make sure winLenForSpectrogramInSamples is even
+        }
+        int nbWinLenForSpectrogram = Math.round(overlapFactor * (float) bufferHistoryMono.length / (float) winLenForSpectrogramInSamples);
+
+
+        int lowerCutoffFrequency = ConfigConstants.SPECTROGRAM_LOWER_CUTOFF_FREQUENCY; // Defined in the CPP, should it be a setting ?
+        int upperCutoffFrequency = ConfigConstants.SPECTROGRAM_UPPER_CUTOFF_FREQUENCY;
+
+        int lowerCutoffFrequencyIdx = (int)((float)lowerCutoffFrequency/(float)Fs*(float)winLenForSpectrogramInSamples);// + 1;
+        int upperCutoffFrequencyIdx = (int)((float)upperCutoffFrequency/(float)Fs*(float)winLenForSpectrogramInSamples);// + 1;
+
+        Log.d("computeSpectrum", "Creating historyBufferDouble");
+        double[][] historyBufferDouble = new double[nbWinLenForSpectrogram][winLenForSpectrogramInSamples];
+        for(int j = 0; j<historyBufferDouble.length;j++ ) {
+            int helpArrayCounter = 0;
+
+            for (int i = (j/overlapFactor)*winLenForSpectrogramInSamples + ((j%overlapFactor) * winLenForSpectrogramInSamples/overlapFactor); i < bufferHistoryMono.length && i < (1 + j/overlapFactor)*winLenForSpectrogramInSamples + ((j%overlapFactor) * winLenForSpectrogramInSamples/overlapFactor); i++) {
+                historyBufferDouble[j][helpArrayCounter] = (double) bufferHistoryMono[i];
+                helpArrayCounter++;
+            }
+        }
+        HammingWindow hammWin = new HammingWindow(winLenForSpectrogramInSamples);
+        DoubleFFT_1D mFFT = new DoubleFFT_1D(winLenForSpectrogramInSamples);
+        /*int normalizedSpectrogramSize = upperCutoffFrequencyIdx - lowerCutoffFrequencyIdx; // No +1 as we start with index 0
+        double[][] historyBufferDoubleAbsolute = new double[nbWinLenForSpectrogram][normalizedSpectrogramSize];
+        float[][] historyBufferFloatNormalized = new float[nbWinLenForSpectrogram][normalizedSpectrogramSize];*/
+        double[][] historyBufferDoubleAbsolute = new double[nbWinLenForSpectrogram][winLenForSpectrogramInSamples / 2];
+        float[][] historyBufferFloatNormalized = new float[nbWinLenForSpectrogram][historyBufferDoubleAbsolute[0].length];
+
+        double highPassFftSum = 0;
+        int helpCounter;
+        for(int j = 0; j<historyBufferDoubleAbsolute.length;j++ ) {
+            Log.d("computeSpectrum", "Iteration : " + j);
+            // n is even [DONE on winLenForSpectrogramInSamples]
+            Log.d("computeSpectrum", "Applying Hamming window");
+            hammWin.applyWindow(historyBufferDouble[j]);
+
+            Log.d("computeSpectrum", "Applying FFT");
+            mFFT.realForward(historyBufferDouble[j]);
+
+            // Get absolute value of the complex FFT result (only upper frequencies)
+            helpCounter = 0;
+            //highPassFftSum = 0;
+            Log.d("computeSpectrum", "Compute absolute and sum, lowerCutoffFrequencyIdx " + lowerCutoffFrequencyIdx + " upperCutoffFrequencyIdx " + upperCutoffFrequencyIdx);
+            //for (int l = 2 * lowerCutoffFrequencyIdx; l < 2 * upperCutoffFrequencyIdx; l += 2) {
+            for (int l = 0; l < historyBufferDouble[0].length; l += 2) {
+                // Start at 2 times lowerCutoffFrequencyIdx to skip values (real and complex) under the ultrasound threshold
+                // Increment by 2 to always get the real value
+
+                double absolute = 0;
+                if (l >= 2 * lowerCutoffFrequencyIdx && l < 2 * upperCutoffFrequencyIdx) {
+                    absolute = getComplexAbsolute(historyBufferDouble[j][l], historyBufferDouble[j][l + 1]);
+                }
+                // Logarithmizing does not seem to improve the visualization
+                /*double log = 0.0000001;
+                if(absolute != 0) {
+                    log = Math.log(absolute);
+                }*/
+                historyBufferDoubleAbsolute[j][helpCounter] = absolute;
+                highPassFftSum += absolute;
+                helpCounter++;
+            }
+        }
+
+        // Normalize over the whole spectrum as it seems to give better results than over each column
+        //[NOTE: In previous experiments as well (see SoniTalk) it looked like results are better
+        // with a normalization over the whole spectrum, maybe because of the overlap]
+        for(int j = 0; j < historyBufferFloatNormalized.length; j++) {
+            Log.d("computeSpectrum", "Normalizing");
+            for (int l = 0; l < historyBufferDoubleAbsolute[j].length; l++) {
+                float normalized = 0.0000001f;
+                if (highPassFftSum != 0 && historyBufferDoubleAbsolute[j][l] != 0) {
+                    normalized = (float) (historyBufferDoubleAbsolute[j][l] / highPassFftSum);
+                } // Else all the values are 0 so we do not really care ?
+                historyBufferFloatNormalized[j][l] = normalized;
+            }
+        }
+        return historyBufferFloatNormalized;
+    }
+
+    /**
+     * Calculates an absolute value of a complex number
+     * @param real
+     * @param imaginary
+     * @return the absolute value of the real and imaginary parts passed
+     */
+    public static double getComplexAbsolute(double real, double imaginary) {
+        return Math.sqrt(real*real + (imaginary*imaginary));
     }
 
     public void startDetection(){
@@ -1174,7 +1300,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void onSpectrum(float[][] spectrum) {
-        /*if (spectrum == null) {
+        if (spectrum == null) {
             spectrogramView.setFFTResolution(0);
             Log.w("TAG", "Received a null spectrum.");
             return;
@@ -1182,7 +1308,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         spectrogramView.setFFTResolution(spectrum[0].length);
         Log.d(TAG, "fft resolution: " + String.valueOf(spectrum[0].length));
 
-        if (popup.visible) {
+        if (true /*popup.isVisible()*/) {
             spectrogramView.setHistoryBuffer(spectrum);
             runOnUiThread(new Runnable() {
                 @Override
@@ -1191,7 +1317,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     spectrogramView.invalidate();
                 }
             });
-        }*/
+        }
     }
 
 }
