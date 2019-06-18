@@ -234,7 +234,7 @@ static void resetMedianBuffer() {
 }
 
 
-static jfloatArray* getJavaReorderedBufferHistory(JNIEnv * jniEnv){
+static jfloatArray *getJavaReorderedBufferHistory(JNIEnv *jniEnv, int numberOfSamples) {
 
     int numberOfBufferHistoryItems = medianBufferSizeItems * bufferSizeSmpl;
     int bufferHistorySize = numberOfBufferHistoryItems * sizeof(bufferHistory);
@@ -242,11 +242,11 @@ static jfloatArray* getJavaReorderedBufferHistory(JNIEnv * jniEnv){
     if(bufferHistoryIndex==0){
         memcpy(container, bufferHistory, bufferHistorySize);
     }else{
-        memcpy(container, bufferHistory+bufferHistoryIndex, bufferHistorySize-bufferHistoryIndex*sizeof(bufferHistory));
-        memcpy(container+numberOfBufferHistoryItems-bufferHistoryIndex, bufferHistory, bufferHistoryIndex*sizeof(bufferHistory));
+        memcpy(container, bufferHistory+bufferHistoryIndex*numberOfSamples, bufferHistorySize-bufferHistoryIndex*numberOfSamples*sizeof(bufferHistory));
+        memcpy(container+numberOfBufferHistoryItems-bufferHistoryIndex*numberOfSamples, bufferHistory, bufferHistoryIndex*numberOfSamples*sizeof(bufferHistory));
     }
     jfloatArray bufferHistoryArray = jniEnv->NewFloatArray(medianBufferSizeItems * bufferSizeSmpl);
-    jniEnv->SetFloatArrayRegion(bufferHistoryArray, 0, medianBufferSizeItems * bufferSizeSmpl, bufferHistory);
+    jniEnv->SetFloatArrayRegion(bufferHistoryArray, 0, medianBufferSizeItems * bufferSizeSmpl, container);
     return &bufferHistoryArray;
 }
 
@@ -399,7 +399,8 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             jstring technologyString = jniEnv->NewStringUTF("Unknown");
 
 
-            jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistory(jniEnv));
+            jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistory(jniEnv,
+                                                                             numberOfSamples));
             // First get the class that contains the method you need to call
             jclass scanClass = jniEnv->GetObjectClass(jniScan);
             // Get the method that you want to call
