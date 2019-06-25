@@ -60,7 +60,7 @@ public final class ConfigConstants {
     // Spectrogram constants
     public static final int SPECTROGRAM_OVERLAP_FACTOR = 4;
     public static final int SPECTROGRAM_LOWER_CUTOFF_FREQUENCY = 16800;
-    public static final int SPECTROGRAM_UPPER_CUTOFF_FREQUENCY = 20000;
+    public static final int SPECTROGRAM_UPPER_CUTOFF_FREQUENCY = 21000;
 
 
     public static final int REQUEST_GPS_PERMISSION = 1337;

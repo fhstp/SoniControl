@@ -85,11 +85,12 @@ static int medianBufferSizeItems; // {IS SET} the length of the ideque medianBuf
 //SONICONTROL DETECTION PARAMETERS
 static float bufferSizeInMs; //the size of one sampleSet in MS. About 46.44ms for a 2048 samples buffer.
 static int backgroundModelBufferSizeInSec = 10; //is int equivalent to {specs.detector.backgroundBufferSize}
-static float medianBufferSizeInSec = 1.5f; // in seconds, this is the "size" in ms of the float* bufferHistory and the ideque medianBuffer
+static float medianBufferSizeInSec = 2.5f; // in seconds, this is the "size" in ms of the float* bufferHistory and the ideque medianBuffer
 static float cutoffFrequency=16800.0f; //fq above this treshold will be used in detection
 static float decisionThreshold=0.5f; // defines how many values in the ideque medianBuffer have to be 1 so that that a detection is registered
 static float decisionThresholdNearby = 3.5; //the decision threshold for nearby signals. If the RMS Energy in the Nearby band is N-times higher than in the neighboring bands above and beneath, then declare a nearby detection.
 static float decisionThresholdNearbyAC = 0.05; //the recognition threshold for nearby based on autocorrelation
+static int percentSilenceAfterDetection = 10;
 
 // Detector control variables
 static bool detection = false; //becomes one, if the current frame is above the decision threshold
@@ -220,10 +221,35 @@ static void addDetectionToMedianBuffer(bool detected)
     medianBuffer.push_back(erg);
 }
 
+/**
+ * Returns true if a signal is detected. A signal is detected if at least half of the medianBuffer
+ * values are detections, AND if some (percentage of) silence is following the detection (we want to
+ * capture the whole message to display it later).
+ * @return If a signal was detected
+ */
 static bool isSignalDetected()
 {
+    /*int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
+    return sum > (int) ceil(medianBufferSizeItems / 2);*/
+    bool messageIsOver = false;
     int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
-    return sum > (int) ceil(medianBufferSizeItems / 2);
+    if (sum > (int) ceil(medianBufferSizeItems / 2)) {
+        int postMessageSum = 0;
+        int postMessageNbItems = (int) medianBufferSizeItems * percentSilenceAfterDetection / 100.0;
+        if (postMessageNbItems > 0 && postMessageNbItems != medianBufferSizeItems) {
+            for (int i = medianBuffer.size() - 1; i > medianBuffer.size() - postMessageNbItems; i--) {
+                postMessageSum += medianBuffer[i];
+            }
+            if (postMessageSum < (int) ceil(
+                    postMessageNbItems / 4)) { // At least 75% of the post message time is non detection
+                messageIsOver = true;
+            }
+        }
+        else { // Either percentSilenceAfterDetection is zero, or it is 100%
+            messageIsOver = true;
+        }
+    }
+    return messageIsOver;
 }
 
 /***
@@ -308,6 +334,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             // if backgroundBuffer and medianBuffer are full, start with the actual detection:
             if(counter > backgroundModelBufferSizeItems + medianBufferSizeItems) {
                  //Are there more detections than non-detection in the buffer, then declare a detection (--> median over the past medianBufferSizeItems buffer-based detections)
+                 //See function documentation, now also require the detection to be over.
                 if(isSignalDetected()) {
                     detectionAfterMedian = 1;
                 }
