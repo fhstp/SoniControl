@@ -857,6 +857,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         float[][] historyBufferFloatNormalized = new float[nbWinLenForSpectrogram][historyBufferDoubleAbsolute[0].length];
 
         double highPassFftSum = 0;
+        double minValue = Double.MAX_VALUE;
+        double maxValue = Double.MIN_VALUE;
         int helpCounter;
         for(int j = 0; j<historyBufferDoubleAbsolute.length;j++ ) {
             Log.d("computeSpectrum", "Iteration : " + j);
@@ -880,13 +882,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 if (l >= 2 * lowerCutoffFrequencyIdx && l < 2 * upperCutoffFrequencyIdx) {
                     absolute = getComplexAbsolute(historyBufferDouble[j][l], historyBufferDouble[j][l + 1]);
                 }
-                // Logarithmizing does not seem to improve the visualization
+                // Logarithmizing does not seem to improve the visualization because it is done by the visualization class.
                 /*double log = 0.0000001;
                 if(absolute != 0) {
                     log = Math.log(absolute);
                 }*/
                 historyBufferDoubleAbsolute[j][helpCounter] = absolute;
                 highPassFftSum += absolute;
+                if (absolute > maxValue)
+                    maxValue = absolute;
+                else if (absolute < minValue)
+                    minValue = absolute;
                 helpCounter++;
             }
         }
@@ -897,9 +903,22 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         for(int j = 0; j < historyBufferFloatNormalized.length; j++) {
             Log.d("computeSpectrum", "Normalizing");
             for (int l = 0; l < historyBufferDoubleAbsolute[j].length; l++) {
-                float normalized = 0.0000001f;
+                float normalized = 0;// = 0.0000001f;
                 if (highPassFftSum != 0 && historyBufferDoubleAbsolute[j][l] != 0) {
+                    /*
+                    // Reduce noise
                     normalized = (float) (historyBufferDoubleAbsolute[j][l] / highPassFftSum);
+                    minValue = minValue / highPassFftSum;
+                    maxValue = maxValue / highPassFftSum;
+                    // Shift values to [0;1]
+                    normalized = (float) ((normalized - minValue) / (maxValue - minValue));
+                    */
+
+                    normalized = (float) ((historyBufferDoubleAbsolute[j][l] - minValue) / (maxValue - minValue));
+                    int workaroundFactor = 3; // Reduce the impact of dividing by the whole highPassFftSum even though values were normalized to [0;1] right before
+                    normalized = (float) (workaroundFactor * normalized / highPassFftSum);
+
+
                 } // Else all the values are 0 so we do not really care ?
                 historyBufferFloatNormalized[j][l] = normalized;
             }
