@@ -260,8 +260,7 @@ static void resetMedianBuffer() {
 }
 
 
-static jfloatArray *getJavaReorderedBufferHistory(JNIEnv *jniEnv, int numberOfSamples) {
-
+static jfloatArray *getJavaReorderedBufferHistoryMono(JNIEnv *jniEnv, int numberOfSamples) {
     int numberOfBufferHistoryItems = medianBufferSizeItems * bufferSizeSmpl;
     int bufferHistorySize = numberOfBufferHistoryItems * sizeof(bufferHistory);
     float *container = (float*)malloc(bufferHistorySize);
@@ -271,8 +270,19 @@ static jfloatArray *getJavaReorderedBufferHistory(JNIEnv *jniEnv, int numberOfSa
         memcpy(container, bufferHistory+bufferHistoryIndex*numberOfSamples, bufferHistorySize-bufferHistoryIndex*numberOfSamples*sizeof(bufferHistory));
         memcpy(container+numberOfBufferHistoryItems-bufferHistoryIndex*numberOfSamples, bufferHistory, bufferHistoryIndex*numberOfSamples*sizeof(bufferHistory));
     }
-    jfloatArray bufferHistoryArray = jniEnv->NewFloatArray(medianBufferSizeItems * bufferSizeSmpl);
-    jniEnv->SetFloatArrayRegion(bufferHistoryArray, 0, medianBufferSizeItems * bufferSizeSmpl, container);
+
+    float *containerMono = (float*)malloc(bufferHistorySize/2);
+    for (int i = 0, counter = 0; i < numberOfBufferHistoryItems; i += 2, counter++) {
+        //containerMono[counter] = (bufferHistory[i] + bufferHistory[i+1]) / 2;
+        *(containerMono + counter) =(*(container + i) + *(container + i + 1)) / 2;
+    }
+    free(container);
+    
+    jfloatArray bufferHistoryArray = jniEnv->NewFloatArray(numberOfBufferHistoryItems/2);
+    jniEnv->SetFloatArrayRegion(bufferHistoryArray, 0, numberOfBufferHistoryItems/2, containerMono);
+
+    free(containerMono);
+
     return &bufferHistoryArray;
 }
 
@@ -426,8 +436,8 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             jstring technologyString = jniEnv->NewStringUTF("Unknown");
 
 
-            jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistory(jniEnv,
-                                                                             numberOfSamples));
+            jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistoryMono(jniEnv,
+                                                                                 numberOfSamples));
             // First get the class that contains the method you need to call
             jclass scanClass = jniEnv->GetObjectClass(jniScan);
             // Get the method that you want to call

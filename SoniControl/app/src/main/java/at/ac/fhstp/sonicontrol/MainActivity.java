@@ -813,11 +813,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     private float[][] computeSpectrum(float[] bufferHistory) {
+        float[] bufferHistoryMono = bufferHistory;
+        /*
         // Convert from stereo to mono
         float[] bufferHistoryMono = new float[bufferHistory.length / 2];
         for (int i = 0, counter = 0; i < bufferHistory.length; i += 2, counter++) {
             bufferHistoryMono[counter] = (bufferHistory[i] + bufferHistory[i+1]) / 2;
         }
+        */
 
         // Spectrogram / Recognition parameters
         //float winLenForSpectrogram = 46.44; //ms
