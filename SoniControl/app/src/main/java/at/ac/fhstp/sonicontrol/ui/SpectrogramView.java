@@ -189,7 +189,7 @@ public class SpectrogramView extends View {
         int rWidth = width-wColor-wFrequency;
         int strokeWidth;
         if (onlyShowUpperFrequencies) {
-            strokeWidth = 9; // 4 for an overlapFactor of 8.
+            strokeWidth = 6; // 4 for an overlapFactor of 8.
         }
         else {
             strokeWidth = 1; // With no overlap : 1 for the whole range of frequencies, 10 or 20 for the upper frequencies

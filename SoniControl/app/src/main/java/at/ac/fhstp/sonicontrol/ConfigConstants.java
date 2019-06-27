@@ -57,8 +57,10 @@ public final class ConfigConstants {
     public static final boolean SETTING_PREVENTIVE_SPOOFING_DEFAULT = false;
     public static final int SCAN_BUFFER_SIZE = 2048; //2048 is 46.440ms //2205 is 50 ms (5x 441)
 
+
     // Spectrogram constants
-    public static final int SPECTROGRAM_OVERLAP_FACTOR = 4;
+    public static final int VIZ_FFT_SIZE = 4096; //2048 is 46.440ms //2205 is 50 ms (5x 441)
+    public static final int SPECTROGRAM_OVERLAP_FACTOR = 8;
     public static final int SPECTROGRAM_LOWER_CUTOFF_FREQUENCY = 16800;
     public static final int SPECTROGRAM_UPPER_CUTOFF_FREQUENCY = 21000;
 

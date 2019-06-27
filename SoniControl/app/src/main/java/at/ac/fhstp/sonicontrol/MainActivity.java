@@ -825,7 +825,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         // Spectrogram / Recognition parameters
         //float winLenForSpectrogram = 46.44; //ms
         //winLenForSpectrogramInSamples = Math.round(Fs * (float) winLenForSpectrogram/1000);
-        int winLenForSpectrogramInSamples = ConfigConstants.SCAN_BUFFER_SIZE;
+        int winLenForSpectrogramInSamples = ConfigConstants.VIZ_FFT_SIZE;
         int Fs = ConfigConstants.SCAN_SAMPLE_RATE;
         int overlapFactor = ConfigConstants.SPECTROGRAM_OVERLAP_FACTOR;
 
@@ -906,9 +906,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         for(int j = 0; j < historyBufferFloatNormalized.length; j++) {
             Log.d("computeSpectrum", "Normalizing");
             for (int l = 0; l < historyBufferDoubleAbsolute[j].length; l++) {
-                float normalized = 0;// = 0.0000001f;
+                float normalized = 0.00001f;
                 if (highPassFftSum != 0 && historyBufferDoubleAbsolute[j][l] != 0) {
-                    /*
+/*
                     // Reduce noise
                     normalized = (float) (historyBufferDoubleAbsolute[j][l] / highPassFftSum);
                     minValue = minValue / highPassFftSum;
@@ -917,8 +917,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     normalized = (float) ((normalized - minValue) / (maxValue - minValue));
                     */
 
+                    // Shift values to [0;1]
                     normalized = (float) ((historyBufferDoubleAbsolute[j][l] - minValue) / (maxValue - minValue));
-                    int workaroundFactor = 3; // Reduce the impact of dividing by the whole highPassFftSum even though values were normalized to [0;1] right before
+
+                    int workaroundFactor = 4; // Reduce the impact of dividing by the whole highPassFftSum
+                    // Noise reduction / "Dimming"
                     normalized = (float) (workaroundFactor * normalized / highPassFftSum);
 
 
