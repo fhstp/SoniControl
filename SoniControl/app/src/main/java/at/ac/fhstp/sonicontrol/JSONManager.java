@@ -40,7 +40,6 @@ public class JSONManager {
     MainActivity main;
     private Scan detector;
     private Location locationFinder;
-    ArrayList<String[]> data = new ArrayList<String[]>();
 
     private File fileDir;
 
@@ -63,6 +62,7 @@ public class JSONManager {
     }
 
     public ArrayList<String[]> getJsonData(){
+        ArrayList<String[]> data = new ArrayList<String[]>();
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
@@ -135,6 +135,60 @@ public class JSONManager {
             addArray.put(JSON_ARRAY_SIGNAL_LATITUDE, position[1]); //add the latitude to the new object
             addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY, technology); //add the technology to the new object
             addArray.put(JSON_ARRAY_SIGNAL_LAST_DETECTION, returnDateString()); //add the last_detection to the new object
+            addArray.put(JSON_ARRAY_SIGNAL_SPOOFING_STATUS, spoof); //add the spoofing status to the new object
+            addArray.put(JSON_ARRAY_SIGNAL_ADDRESS, address); //add the addressline of the found signal
+            detector = Scan.getInstance(); //get an instance of the scan
+            String fileUrl = detector.getDetectedFileUrl(); //get the url from the scan
+            addArray.put(JSON_ARRAY_SIGNAL_URL, ""); //add the url to the new object
+
+            jArray.put(addArray); //add the created object to the json array
+
+            main.sendDetection(position[0], position[1], 0, technology, returnDateString(), spoof, 2);
+
+            try {
+                FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //get the json file
+                //Log.d("TryJsonSave", "I am saved");
+                file.write( jObject.toString() ); //write the new entry into the file
+                file.flush();
+                file.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addImportedJsonObject(double[] position, String technology, int spoof, String address, String timestamp){
+        File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
+        ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
+
+        try {
+            JSONObject jObject = new JSONObject(
+                    byteArrayOutputStream.toString()); //new json-object with the outputstream
+            JSONObject jObjectResult = jObject.getJSONObject(JSON_LIST_NAME); //get the jsonobject "items"
+            JSONArray jArray;
+            if(position[0]==0&&position[1]==0) {
+                jArray = jObjectResult.getJSONArray(JSON_ARRAY_UNKNOWN_SIGNALS);
+                if(spoof==ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){
+                    spoof=ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME;
+                }else if(spoof==ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){
+                    spoof=ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME;
+                }
+            }else if(spoof==ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME || spoof==ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME){
+                jArray = jObjectResult.getJSONArray(JSON_ARRAY_DISMISSED_SIGNALS);
+                //spoof=0;
+            }else{
+                jArray = jObjectResult.getJSONArray(JSON_ARRAY_SIGNALS); //get the jsonarray with the signals
+            }
+
+            JSONObject addArray = new JSONObject(); //new json-object
+
+            addArray.put(JSON_ARRAY_SIGNAL_LONGITUDE, position[0]); //add the longitude to the new object
+            addArray.put(JSON_ARRAY_SIGNAL_LATITUDE, position[1]); //add the latitude to the new object
+            addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY, technology); //add the technology to the new object
+            addArray.put(JSON_ARRAY_SIGNAL_LAST_DETECTION, timestamp); //add the last_detection to the new object
             addArray.put(JSON_ARRAY_SIGNAL_SPOOFING_STATUS, spoof); //add the spoofing status to the new object
             addArray.put(JSON_ARRAY_SIGNAL_ADDRESS, address); //add the addressline of the found signal
             detector = Scan.getInstance(); //get an instance of the scan
@@ -238,6 +292,15 @@ public class JSONManager {
         SimpleDateFormat leftFormat = new SimpleDateFormat("yyyy-MM-dd"); //get the date formatted
         String dateLeft = String.valueOf(leftFormat.format(currentTime));
         String dateRight = String.valueOf(rightFormat.format(currentTime));
+        String dateString = dateLeft + "T" + dateRight + "Z";
+        return dateString;
+    }
+
+    public String returnDateStringFromAlert(Long time){
+        SimpleDateFormat rightFormat = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat leftFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String dateLeft = String.valueOf(leftFormat.format(time));
+        String dateRight = String.valueOf(rightFormat.format(time));
         String dateString = dateLeft + "T" + dateRight + "Z";
         return dateString;
     }

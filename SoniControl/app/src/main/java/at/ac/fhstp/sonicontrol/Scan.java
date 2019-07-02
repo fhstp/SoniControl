@@ -21,9 +21,14 @@ package at.ac.fhstp.sonicontrol;
 
 import android.content.SharedPreferences;
 import android.location.LocationManager;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +99,19 @@ public class Scan {
      * @param technology String corresponding to a Technology Enum value
      */
     public void detectedSignal(String technology, float[] bufferHistory) {
-        float[] bufferHistoryArray = bufferHistory;
+        float[] bufferHistoryFloatArray = bufferHistory;
+        float[] bufferHistoryFloatArrayMono = null;
+        int maxValueIndex = 0;
+        for(int i=0;i<bufferHistoryFloatArray.length/2;i++){
+            bufferHistoryFloatArrayMono = ArrayUtils.add(bufferHistoryFloatArrayMono, bufferHistoryFloatArray[i*2]);
+            if(Math.max(bufferHistoryFloatArrayMono[maxValueIndex],bufferHistoryFloatArrayMono[i])==bufferHistoryFloatArrayMono[i]){
+                maxValueIndex=i;
+            }
+        }
+        //SignalConverter.writeToCSV(bufferHistoryFloatArrayMono, main.getApplicationContext());
+
+        SignalConverter.writeWAVHeaderToFile(bufferHistoryFloatArrayMono, main.getApplicationContext(), maxValueIndex);
+
         try {
             lastDetectedTechnology = Technology.fromString(technology);
         }
