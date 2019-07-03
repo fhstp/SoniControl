@@ -22,10 +22,6 @@ package at.ac.fhstp.sonicontrol;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Scan {
     private static final String TAG = "Scan";
@@ -93,8 +89,12 @@ public class Scan {
      * Note: This is called from the native code every time there is a detection
      * @param technology String corresponding to a Technology Enum value
      */
-    public void detectedSignal(String technology, float[] bufferHistory) {
-        float[] bufferHistoryArray = bufferHistory;
+    public void detectedSignal(String technology, float[] bufferHistory, int maxValueIndex) {
+        float[] bufferHistoryFloatArrayMono = bufferHistory;
+        //SignalConverter.writeToCSV(bufferHistoryFloatArrayMono, main.getApplicationContext());
+
+        SignalConverter.writeWAVHeaderToFile(bufferHistoryFloatArrayMono, main.getApplicationContext(), maxValueIndex);
+
         try {
             lastDetectedTechnology = Technology.fromString(technology);
         }

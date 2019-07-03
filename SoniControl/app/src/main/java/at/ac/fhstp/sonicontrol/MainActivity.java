@@ -49,6 +49,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
@@ -63,11 +64,22 @@ import at.ac.fhstp.sonicontrol.ui.SpectrogramView;
 import at.ac.fhstp.sonicontrol.utils.HammingWindow;
 import at.ac.fhstp.sonicontrol.utils.Misc;
 
+import at.ac.fhstp.sonicontrol.rest.Detection;
+import at.ac.fhstp.sonicontrol.rest.RESTController;
+import at.ac.fhstp.sonicontrol.rest.SoniControlAPI;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
 public class MainActivity extends BaseActivity implements Scan.DetectionListener {
-    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION/*, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE*/};
+    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET/*, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE*/};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
 
     private static final String TAG = "MainActivity";
@@ -864,18 +876,18 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         double maxValue = Double.MIN_VALUE;
         int helpCounter;
         for(int j = 0; j<historyBufferDoubleAbsolute.length;j++ ) {
-            Log.d("computeSpectrum", "Iteration : " + j);
+            //Log.d("computeSpectrum", "Iteration : " + j);
             // n is even [DONE on winLenForSpectrogramInSamples]
-            Log.d("computeSpectrum", "Applying Hamming window");
+            //Log.d("computeSpectrum", "Applying Hamming window");
             hammWin.applyWindow(historyBufferDouble[j]);
 
-            Log.d("computeSpectrum", "Applying FFT");
+            //Log.d("computeSpectrum", "Applying FFT");
             mFFT.realForward(historyBufferDouble[j]);
 
             // Get absolute value of the complex FFT result (only upper frequencies)
             helpCounter = 0;
             //highPassFftSum = 0;
-            Log.d("computeSpectrum", "Compute absolute and sum, lowerCutoffFrequencyIdx " + lowerCutoffFrequencyIdx + " upperCutoffFrequencyIdx " + upperCutoffFrequencyIdx);
+            //Log.d("computeSpectrum", "Compute absolute and sum, lowerCutoffFrequencyIdx " + lowerCutoffFrequencyIdx + " upperCutoffFrequencyIdx " + upperCutoffFrequencyIdx);
             //for (int l = 2 * lowerCutoffFrequencyIdx; l < 2 * upperCutoffFrequencyIdx; l += 2) {
             for (int l = 0; l < historyBufferDouble[0].length; l += 2) {
                 // Start at 2 times lowerCutoffFrequencyIdx to skip values (real and complex) under the ultrasound threshold
@@ -903,8 +915,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         // Normalize over the whole spectrum as it seems to give better results than over each column
         //[NOTE: In previous experiments as well (see SoniTalk) it looked like results are better
         // with a normalization over the whole spectrum, maybe because of the overlap]
+        Log.d("computeSpectrum", "Normalizing");
         for(int j = 0; j < historyBufferFloatNormalized.length; j++) {
-            Log.d("computeSpectrum", "Normalizing");
             for (int l = 0; l < historyBufferDoubleAbsolute[j].length; l++) {
                 float normalized = 0.00001f;
                 if (highPassFftSum != 0 && historyBufferDoubleAbsolute[j][l] != 0) {
@@ -1344,5 +1356,65 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             });
         }
     }
+    public void sendDetection(final double longitude, final double latitude, final int technologyid, final String technology, final String timestamp, final int spoofDecision, final int amplitude) {
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                final SoniControlAPI restService = RESTController.getRetrofitInstance().create(SoniControlAPI.class);
+                String filename = timestamp.replace(":","");
+                String audiodata = "detection-"+technology+"-"+filename+".wav";
 
+                restService.shareDetetion(longitude, latitude, spoofDecision, technologyid, technology, amplitude, timestamp, audiodata).enqueue(new Callback<Detection>() {
+                    @Override
+                    public void onResponse(Call<Detection> call, Response<Detection> response) {
+                        if(response.isSuccessful()) {
+                            Log.i(TAG, "post submitted to API." + response.body().toString());
+                            sendAudioData(restService, technology, timestamp);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Detection> call, Throwable t) {
+                        Log.e(TAG, "Unable to submit post to API." + t);
+                    }
+                });
+            }
+        });
+    }
+
+    public void sendAudioData(SoniControlAPI restservice, String technology, String timestamp){
+        File fileOld = new File(getApplicationContext().getFilesDir(), "detection.wav");
+        String filename = timestamp.replace(":","");
+        File fileNew = new File(getApplicationContext().getFilesDir(), "detection-"+technology+"-"+filename+".wav");
+        fileOld.renameTo(fileNew);
+
+        //Log.d("MediaType", MediaType.parse(getContentResolver().getType(Uri.fromFile(fileOld))).toString());
+        Log.d("MediaType", MediaType.parse("audio/*").toString());
+
+        RequestBody requestFile =
+                RequestBody.create(
+                        MediaType.parse(("audio/*")),
+                        fileNew
+                );
+
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("audio", fileNew.getName(), requestFile);
+
+        RequestBody description =
+                RequestBody.create(
+                        okhttp3.MultipartBody.FORM, "detection-"+technology+"-"+filename);
+
+        restservice.uploadAudioFile(body, description).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call,
+                                   Response<ResponseBody> response) {
+                Log.d("Upload", "success");
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Upload error:", t.getMessage());
+            }
+        });
+    }
 }

@@ -255,6 +255,26 @@ public class GPSTracker extends Service implements LocationListener {
         }
     }
 
+    public String getAddressFromPoint(double latitude, double longitude, Context context){
+        Geocoder geocoder = new Geocoder(context, Locale.ENGLISH);
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, this.geocoderMaxResults);
+
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                String addressLine = address.getAddressLine(0);
+
+                return addressLine;
+            } else {
+                return main.getApplicationContext().getString(R.string.json_detections_unknown_address);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Impossible to connect to Geocoder", e);
+        }
+        return main.getApplicationContext().getString(R.string.json_detections_unknown_address);
+    }
+
 
     public String getLocality(Context context) {
         List<Address> addresses = getGeocoderAddress(context);
@@ -444,5 +464,28 @@ public class GPSTracker extends Service implements LocationListener {
         }
 
         return savedLocation;
+    }
+
+    public double[] getLocationFromAddress(String strAddress, Context context){
+
+        Geocoder geocoder = new Geocoder(context, Locale.ENGLISH);
+        List<Address> address = null;
+        double[] position = new double[2];
+        try {
+            address = geocoder.getFromLocationName(strAddress,5);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (address==null) {
+            return null;
+        }
+        Address location=address.get(0);
+        location.getLatitude();
+        location.getLongitude();
+
+        position[1]= (double) (location.getLatitude() * 1E6);
+        position[0]= (double) (location.getLongitude() * 1E6);
+
+        return position;
     }
 }

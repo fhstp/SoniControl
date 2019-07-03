@@ -20,105 +20,112 @@
 package at.ac.fhstp.sonicontrol;
 
 
+import android.content.Context;
+import android.media.AudioRecord;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class SignalConverter {
 
-    public void rawToWave(final File rawFile, final File waveFile) throws IOException {
-        byte[] rawData = new byte[(int) rawFile.length()];
-        DataInputStream input = null;
+    public static void writeToCSV(float[] dataArray, Context context){
+        FileWriter writer = null;
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString();
+        File myDir = new File(root+ "/detection.csv");
         try {
-            input = new DataInputStream(new FileInputStream(rawFile));
-            input.read(rawData);
-        } finally {
-            if (input != null) {
-                input.close();
-            }
+            writer = new FileWriter(myDir);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        DataOutputStream output = null;
+        for (int j = 0; j < dataArray.length; j++) {
+            try {
+                writer.append(String.valueOf(dataArray[j]));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                writer.append("\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         try {
-            output = new DataOutputStream(new FileOutputStream(waveFile));
-            // WAVE header
-            // see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
-            writeString(output, "RIFF"); // chunk id
-            writeInt(output, 36 + rawData.length); // chunk size
-            writeString(output, "WAVE"); // format
-            writeString(output, "fmt "); // subchunk 1 id
-            writeInt(output, 16); // subchunk 1 size
-            writeShort(output, (short) 1); // audio format (1 = PCM)
-            writeShort(output, (short) 1); // number of channels
-            writeInt(output, 44100); // sample rate
-            final int RECORDER_SAMPLERATE = 44100;
-            writeInt(output, RECORDER_SAMPLERATE * 2); // byte rate
-            writeShort(output, (short) 2); // block align
-            writeShort(output, (short) 16); // bits per sample
-            writeString(output, "data"); // subchunk 2 id
-            writeInt(output, rawData.length); // subchunk 2 size
-            // Audio data (conversion big endian -> little endian)
-            short[] shorts = new short[rawData.length / 2];
-            ByteBuffer.wrap(rawData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
-            ByteBuffer bytes = ByteBuffer.allocate(shorts.length * 2);
-            for (short s : shorts) {
-                bytes.putShort(s);
-            }
-
-            output.write(fullyReadFileToBytes(rawFile));
-        } finally {
-            if (output != null) {
-                output.close();
-            }
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    byte[] fullyReadFileToBytes(File f) throws IOException {
-        int size = (int) f.length();
-        byte bytes[] = new byte[size];
-        byte tmpBuff[] = new byte[size];
-        FileInputStream fis= new FileInputStream(f);
+    public static void writeWAVHeaderToFile(/*byte[] rawdata, */float[] rawFloat, Context context, int maxValueIndex) {
+        RandomAccessFile randomAccessWriter = null;
         try {
+            randomAccessWriter = new RandomAccessFile(context.getFilesDir()+ "/detection.wav", "rw");
+            Log.d("writeWAVHeaderToFile", context.getFilesDir()+ "/detection.wav");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
-            int read = fis.read(bytes, 0, size);
-            if (read < size) {
-                int remain = size - read;
-                while (remain > 0) {
-                    read = fis.read(tmpBuff, 0, remain);
-                    System.arraycopy(tmpBuff, 0, bytes, size - remain, read);
-                    remain -= read;
-                }
+        short nChannels = 1;
+        int sampleRate = 44100;
+        short bSamples = 32;
+        int payloadSize = rawFloat.length*4;
+        try {
+            randomAccessWriter.setLength(0); // Set file length to 0, to prevent unexpected behavior in case the file already existed
+            randomAccessWriter.writeBytes("RIFF");
+            randomAccessWriter.writeInt(Integer.reverseBytes(72+payloadSize));
+            randomAccessWriter.writeBytes("WAVE");
+            randomAccessWriter.writeBytes("fmt ");
+            randomAccessWriter.writeInt(Integer.reverseBytes(16)); // Sub-chunk size, 16 for PCM
+            randomAccessWriter.writeShort(Short.reverseBytes((short) 3)); // AudioFormat, 1 for PCM
+            randomAccessWriter.writeShort(Short.reverseBytes(nChannels)); // Number of channels, 1 for mono, 2 for stereo
+            randomAccessWriter.writeInt(Integer.reverseBytes(sampleRate)); // Sample rate
+            randomAccessWriter.writeInt(Integer.reverseBytes(sampleRate*bSamples*nChannels/8)); // Byte rate, SampleRate*NumberOfChannels*BitsPerSample/8
+            randomAccessWriter.writeShort(Short.reverseBytes((short)(nChannels * bSamples / 8))); // Block align, NumberOfChannels*BitsPerSample/8
+            randomAccessWriter.writeShort(Short.reverseBytes(bSamples)); // Bits per sample
+            randomAccessWriter.writeBytes("fact");
+            randomAccessWriter.writeInt(Integer.reverseBytes(4));
+            randomAccessWriter.writeInt(Integer.reverseBytes(payloadSize/(bSamples/8)));
+            randomAccessWriter.writeBytes("PEAK");
+            randomAccessWriter.writeInt(Integer.reverseBytes(16));
+            randomAccessWriter.writeInt(Integer.reverseBytes(1));
+            Log.d("SignalConverter", String.valueOf((int) Math.floor((float)System.currentTimeMillis()/1000)));
+            randomAccessWriter.writeInt(Integer.reverseBytes((int) Math.floor((float)System.currentTimeMillis()/1000))); //current timestamp in seconds
+            //randomAccessWriter.writeInt(Integer.reverseBytes(1024434463));
+            randomAccessWriter.writeInt(Integer.reverseBytes(Float.floatToIntBits(rawFloat[maxValueIndex])));
+            randomAccessWriter.writeInt(Integer.reverseBytes(maxValueIndex));//index of max value of float array
+            randomAccessWriter.writeBytes("data");
+            randomAccessWriter.writeInt(Integer.reverseBytes(payloadSize));
+
+            for(int i = 0; i< rawFloat.length;i++){
+                randomAccessWriter.writeInt(Integer.reverseBytes(Float.floatToIntBits(rawFloat[i])));
             }
-        }  catch (IOException e){
-            throw e;
+            //randomAccessWriter.write(rawdata, 0, payloadSize);
+        } catch (Exception e) {
+            if (e.getMessage() != null) {
+                Log.e("SignalConverter", e.getMessage());
+            } else {
+                Log.e("SignalConverter", "Unknown error occured in prepare()");
+            }
         } finally {
-            fis.close();
-        }
-
-        return bytes;
-    }
-
-    private void writeInt(final DataOutputStream output, final int value) throws IOException {
-        output.write(value >> 0);
-        output.write(value >> 8);
-        output.write(value >> 16);
-        output.write(value >> 24);
-    }
-
-    private void writeShort(final DataOutputStream output, final short value) throws IOException {
-        output.write(value >> 0);
-        output.write(value >> 8);
-    }
-
-    private void writeString(final DataOutputStream output, final String value) throws IOException {
-        for (int i = 0; i < value.length(); i++) {
-            output.write(value.charAt(i));
+            try {
+                randomAccessWriter.close(); // Remove prepared file
+            } catch (IOException e) {
+                Log.e("SignalConverter", "I/O exception occured while closing output file");
+            }
         }
     }
-
 }

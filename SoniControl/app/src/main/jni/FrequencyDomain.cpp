@@ -50,6 +50,7 @@ static float *magnitudeLeft, *magnitudeRight, *phaseLeft, *phaseRight, *inputBuf
 //ANDROID OUTPUTS
 static float androidOut1;
 static float androidOut2;
+static int maxValueIndex; // Maximum amplitude in the bufferHistory (needed to create a wav)
 
 //HIGHPASS FILTERING
 static float binSizeinHz; //{IS SET} what range of HZ does one Bin occupy
@@ -272,9 +273,12 @@ static jfloatArray *getJavaReorderedBufferHistoryMono(JNIEnv *jniEnv, int number
     }
 
     float *containerMono = (float*)malloc(bufferHistorySize/2);
+    maxValueIndex = 0;
     for (int i = 0, counter = 0; i < numberOfBufferHistoryItems; i += 2, counter++) {
-        //containerMono[counter] = (bufferHistory[i] + bufferHistory[i+1]) / 2;
         *(containerMono + counter) =(*(container + i) + *(container + i + 1)) / 2;
+        if(*(containerMono + maxValueIndex) < *(containerMono + counter)) {
+            maxValueIndex=counter;
+        }
     }
     free(container);
     
@@ -436,14 +440,18 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             jstring technologyString = jniEnv->NewStringUTF("Unknown");
 
 
+            // This also updates the global maxValueIndex
             jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistoryMono(jniEnv,
                                                                                  numberOfSamples));
             // First get the class that contains the method you need to call
             jclass scanClass = jniEnv->GetObjectClass(jniScan);
             // Get the method that you want to call
-            jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;[F)V");
+            jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;[FI)V");
             // Call the method on the object
-            jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString, bufferHistoryArray);
+            jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString, bufferHistoryArray, maxValueIndex);
+            //TODO: Are we suppose to delete references on our side or is detaching enough ?
+            //jniEnv->DeleteLocalRef(bufferHistoryArray);
+            //jniEnv->DeleteLocalRef(technologyString);
 
             if (jniEnv->ExceptionCheck()) {
                 jniEnv->ExceptionDescribe();
@@ -496,7 +504,7 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     SuperpoweredCPU::setSustainedPerformanceMode(false);
 }
 
-static int pauseIO() {
+int pauseIO() {
     // Check if the app got in an inconsistent state
     if (audioIO != NULL) {
         // onBackground only sets internals->foreground = false;
@@ -516,7 +524,7 @@ static void resumeIO() {
     }
 }
 
-static void stopIO() {
+void stopIO() {
     delete(audioIO);
 }
 
@@ -560,11 +568,11 @@ static void createNewDetectionsDequeAndSamplesBuffer()
     medianBuffer.resize(medianBufferSizeItems);
 }
 
-extern "C" JNIEXPORT float Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut1(JNIEnv *__unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT jfloat JNICALL Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut1(JNIEnv *__unused javaEnvironment, jobject __unused obj){
     return androidOut1;
 }
 
-extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut2(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT jint JNICALL Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut2(JNIEnv * __unused javaEnvironment, jobject __unused obj){
     return  androidOut2;
 }
 
@@ -572,7 +580,7 @@ extern "C" JNIEXPORT jboolean Java_at_ac_fhstp_sonicontrol_Scan_GetBackgroundMod
     return backgroundModelUpdating;
 }
 
-extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+extern "C" JNIEXPORT jint JNICALL Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
     return pauseIO();
 }
 
