@@ -232,7 +232,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         });
 
-        btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
+        btnAlertSpoof = (Button) view.findViewById(R.id.btnBlockAlways); //button of the alert for starting the spoofing process after finding a signal
         btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
             onAlertBlockAlways();
