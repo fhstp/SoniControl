@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -15,6 +15,12 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with SoniControl app.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *     Additional permission under GNU GPL version 3 section 7
+ *     If you modify SoniControl app, or any covered work, by linking or combining it
+ *     with Superpowered (or a modified version of that library), containing parts
+ *     covered by the terms of Superpowered's license, the licensors of SoniControl app
+ *     grant you additional permission to convey the resulting work.
  */
 
 #include <jni.h>
