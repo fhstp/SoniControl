@@ -81,42 +81,6 @@
         app:layout_constraintStart_toEndOf="@id/btnReplay"
         app:layout_constraintTop_toTopOf="@id/btnReplay" />
 
-    <Button
-        android:id="@+id/btnBlockThisTime"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="@string/alertDialog_option_jam_this_time"
-        app:layout_constraintEnd_toStartOf="@id/btnDismissThisTime"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBlockAlways" />
-
-    <Button
-        android:id="@+id/btnBlockAlways"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="@string/alertDialog_option_jam_always_here"
-        app:layout_constraintEnd_toStartOf="@id/btnDismissAlwaysHere"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtProceed" />
-
-    <Button
-        android:id="@+id/btnDismissThisTime"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="@string/alertDialog_option_dismiss_this_time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnBlockThisTime"
-        app:layout_constraintTop_toBottomOf="@+id/btnDismissAlwaysHere" />
-
-    <Button
-        android:id="@+id/btnDismissAlwaysHere"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="@string/alertDialog_option_dismiss_always_here"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnBlockAlways"
-        app:layout_constraintTop_toBottomOf="@+id/txtProceed" />
-
     <TextView
         android:id="@+id/txtSignalType"
         android:layout_width="0dp"
@@ -143,6 +107,42 @@
         app:layout_constraintTop_toBottomOf="@+id/txtSignalType"
         app:layout_constraintBottom_toTopOf="@id/btnBlockAlways"/>
 
+    <Button
+        android:id="@+id/btnBlockAlways"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_jam_always_here"
+        app:layout_constraintEnd_toStartOf="@id/btnDismissAlwaysHere"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnBlockThisTime" />
+
+    <Button
+        android:id="@+id/btnDismissAlwaysHere"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_dismiss_always_here"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnBlockAlways"
+        app:layout_constraintBottom_toTopOf="@id/btnDismissThisTime" />
+
+    <Button
+        android:id="@+id/btnBlockThisTime"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_jam_this_time"
+        app:layout_constraintEnd_toStartOf="@id/btnDismissThisTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/txtNoLocation"/>
+
+    <Button
+        android:id="@+id/btnDismissThisTime"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_dismiss_this_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnBlockThisTime"
+        app:layout_constraintBottom_toTopOf="@id/txtNoLocation"/>
+
     <TextView
         android:id="@+id/txtNoLocation"
         android:layout_width="0dp"
@@ -152,7 +152,7 @@
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnBlockThisTime" />
+        app:layout_constraintBottom_toTopOf="@id/txtAlertDate" />
 
     <TextView
         android:id="@+id/txtAlertDate"
@@ -163,6 +163,6 @@
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtNoLocation" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
