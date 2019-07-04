@@ -279,7 +279,7 @@ public class SpectrogramView extends View {
         } else {
             if (onlyShowUpperFrequencies) {
                 //To get a scale only for upper frequencies
-                for (int i=cutoffFrequencyViz + frequencyOffsetForSpectrogram; i < upperCutoffFrequencyViz; i+=500) {
+                for (int i=cutoffFrequencyViz + frequencyOffsetForSpectrogram; i < upperCutoffFrequencyViz - 500; i+=500) {
                     //canvas.drawText(" "+i/1000.0f, rWidth + wColor, height*(1f-(float) (i-cutoffFrequency)/((samplingRate/2)-cutoffFrequency)), paint);
                     canvas.drawText("" + i / 1000.0f, rWidth + wColor, height * (1f - getRelativePosition(i, cutoffFrequencyViz, upperCutoffFrequencyViz, logFrequency)), paint);
                 }
