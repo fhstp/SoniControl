@@ -51,7 +51,7 @@
     <string name="alertDialog_option_dismiss_this_time">Ignore this time</string>
     <string name="alertDialog_option_dismiss_always_here">Ignore always here</string>
     <string name="alertDialog_option_jam_this_time">Block this time</string>
-    <string name="alertDialog_text_ultrasonic_signal_detected">Ultrasonic signal detected. \nSelect one of the options below to proceed</string>
+    <string name="alertDialog_text_ultrasonic_signal_detected">Ultrasonic signal detected.</string>
     <string name="alertDialog_option_play">Play</string>
     <string name="storedLocationActivityTitle">Detected signals</string>
     <string name="SettingsActivityTitle">Settings</string>
@@ -117,4 +117,5 @@
     <string name="statusChannelName">App status channel</string>
     <string name="detectionChannelName">Signal detection channel</string>
     <string name="gui_technology">Technology: </string>
+    <string name="how_to_proceed">How to proceed?</string>
 </resources>
