@@ -73,6 +73,8 @@ public final class ConfigConstants {
     public static final int DETECTION_NOTIFICATION_ID = 4;
     public static final int DETECTION_ALERT_STATUS_NOTIFICATION_ID = 5;
 
+    public static final String LAST_DETECTED_TECHNOLOGY_SHARED_PREF = "lastDetectedTechnology";
+    public static final String LAST_DETECTED_DATE_SHARED_PREF = "lastDetectedDateAndTime";
     public static String EXTRA_TECHNOLOGY_DETECTED = "at.ac.fhstp.sonicontrol.TECHNOLOGY_DETECTED";
 
     public static String SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN = "cbAlertLocationDontAskAgain";

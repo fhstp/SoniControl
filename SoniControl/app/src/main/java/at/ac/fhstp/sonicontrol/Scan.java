@@ -26,7 +26,7 @@ import android.preference.PreferenceManager;
 public class Scan {
     private static final String TAG = "Scan";
     public interface DetectionListener {
-        public void onDetection(Technology technology, float[] stereoRawData);
+        public void onDetection(Technology technology, float[] stereoRawData, int maxValueIndex);
     }
     //private List<DetectionListener> detectionListeners = new ArrayList<>();
     private DetectionListener mainDetectionListener = null;
@@ -72,12 +72,12 @@ public class Scan {
         this.mainDetectionListener = listener;
     }
 
-    public void notifyDetectionListeners(Technology technology, float[] bufferHistory) {
+    public void notifyDetectionListeners(Technology technology, float[] bufferHistory, int maxValueIndex) {
         if (technology != null) {
             /*for(DetectionListener listener: detectionListeners) {
                 listener.onDetection(lastDetectedTechnology);
             }*/
-            mainDetectionListener.onDetection(technology, bufferHistory);
+            mainDetectionListener.onDetection(technology, bufferHistory, maxValueIndex);
         }
         else {
             //Log.d(TAG, "notifyDetectionListeners: lastDetectedTechnology is null");
@@ -93,8 +93,6 @@ public class Scan {
         float[] bufferHistoryFloatArrayMono = bufferHistory;
         //SignalConverter.writeToCSV(bufferHistoryFloatArrayMono, main.getApplicationContext());
 
-        SignalConverter.writeWAVHeaderToFile(bufferHistoryFloatArrayMono, main.getApplicationContext(), maxValueIndex);
-
         try {
             lastDetectedTechnology = Technology.fromString(technology);
         }
@@ -103,7 +101,7 @@ public class Scan {
             lastDetectedTechnology = Technology.UNKNOWN;
         }
         paused = true;
-        notifyDetectionListeners(lastDetectedTechnology, bufferHistory);
+        notifyDetectionListeners(lastDetectedTechnology, bufferHistory, maxValueIndex);
     }
 
     private Runnable scanRun = new Runnable() {

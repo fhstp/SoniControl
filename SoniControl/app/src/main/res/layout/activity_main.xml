@@ -84,12 +84,6 @@
         android:background="@android:color/darker_gray"
         android:src="@drawable/ic_settings_white_48dp" />
 
-    <at.ac.fhstp.sonicontrol.ui.SpectrogramView
-        android:id="@+id/spectrogram_view"
-        android:layout_width="fill_parent"
-        android:layout_height="337dp"
-        android:layout_marginTop="24dp"
-        android:layout_below="@id/btnExit"/>
 
 </RelativeLayout>
 </ScrollView>
