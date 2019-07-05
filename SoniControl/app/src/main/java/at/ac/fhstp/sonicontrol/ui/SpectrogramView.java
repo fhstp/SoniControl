@@ -268,7 +268,8 @@ public class SpectrogramView extends View {
         float ratio = 0.7f*getResources().getDisplayMetrics().density;
         paint.setTextSize(12f*ratio);
         paint.setColor(Color.BLACK);
-        canvas.drawRect(rWidth + wColor, 0, width, height, paint);
+        // Uncomment "rWidth + wColor" to only draw the content of the buffer, keep "pos" to draw the rest of the space available in black.
+        canvas.drawRect(pos/*rWidth + wColor*/, 0, width, height, paint);
         paint.setColor(Color.WHITE);
         canvas.drawText("kHz", rWidth + wColor, 12*ratio, paint);
         if (logFrequency) {
