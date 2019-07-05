@@ -92,7 +92,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnReplay"
         app:layout_constraintBottom_toTopOf="@id/txtProceed"
-        tools:text="Technology" />
+        tools:text="@string/gui_technology" />
 
     <TextView
         android:id="@+id/txtProceed"

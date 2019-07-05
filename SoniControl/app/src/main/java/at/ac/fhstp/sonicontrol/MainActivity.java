@@ -729,19 +729,24 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology);
                 this.activateAlert(technology); //open the alert dialog
 
-                //TODO: HERE start a worker ? Asynctask ?
+                //TODO: HERE start a worker ? Asynctask ? (we are already in a separated Thread though)
 
                 // Compute the spectrum
                 Log.d("handleSignal", "Start computing spectrogram");
                 alert.setSpectrum(computeSpectrum(bufferHistory)); // TODO: Call onSpectrum on return !!!
                 Log.d("handleSignal", "Done computing spectrogram, will show it in the alert if still open");
                 // Update spectrum
-                onSpectrum();
+                //onSpectrum(); This is already called in setSpectrum
+
             }
         }
 
         //TODO: Should this be done in all cases ? When ? (do we send detections automatically if user agreed?)
         SignalConverter.writeWAVHeaderToFile(bufferHistory, getApplicationContext(), maxValueIndex);
+    }
+
+    public void onSpectrum() {
+        alert.onSpectrum();
     }
 
     private float[][] computeSpectrum(float[] bufferHistory) {
@@ -1272,9 +1277,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
     }
 
-    public void onSpectrum() {
-        alert.onSpectrum();
-    }
     public void sendDetection(final double longitude, final double latitude, final int technologyid, final String technology, final String timestamp, final int spoofDecision, final int amplitude) {
         threadPool.execute(new Runnable() {
             @Override

@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import at.ac.fhstp.sonicontrol.ConfigConstants;
 import at.ac.fhstp.sonicontrol.R;
+import at.ac.fhstp.sonicontrol.SignalConverter;
 import at.ac.fhstp.sonicontrol.Technology;
 
 
@@ -95,6 +96,9 @@ public class DetectionDialogFragment extends DialogFragment {
         spectrogramView.setUpperCutoffFrequency(ConfigConstants.SPECTROGRAM_UPPER_CUTOFF_FREQUENCY);
 
         //TODO: If spectrum available show it, else make it gone and/or show a loading symbol (progressbar ?)
+        if (lastDetectedSpectrum != null) {
+            onSpectrum();
+        }
         //spectrogramView.setVisibility(View.GONE);
 
 
