@@ -24,6 +24,7 @@ public final class ConfigConstants {
     public static final String JSON_FILENAME = "soni.json";
     public static final String DIR_NAME_SAVED_RECORDINGS = "/detected-files";
 
+    // Settings shared preferences keys
     public static final String SETTING_CONTINOUS_SPOOFING = "cbprefContinuousSpoof";
     public static final boolean SETTING_CONTINOUS_SPOOFING_DEFAULT = false;
     public static final String PREFERENCE_RESET_PREFERENCES = "resetPreferences";
@@ -48,21 +49,35 @@ public final class ConfigConstants {
     public static final boolean SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT = true;
     public static final String USED_BLOCKING_METHOD_SPOOFER = "Spoofer";
     public static final String USED_BLOCKING_METHOD_MICROPHONE = "Microphone";
+    public static String SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN = "cbAlertLocationDontAskAgain";
+    public static boolean SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT = false;
+    public static final String SETTING_PREVENTIVE_SPOOFING = "cbprefPreventiveSpoofing";
+    public static final boolean SETTING_PREVENTIVE_SPOOFING_DEFAULT = false;
+
+    // Other SharedPreferences keys
+    public static final String BUFFER_HISTORY_FILENAME = "bufferHistory.raw";
+    public static final String BUFFER_HISTORY_LENGTH_SHARED_PREF = "bufferHistoryLength";
+    public static final String MAX_VALUE_INDEX_SHARED_PREF = "bufferHistoryMaxValueIndex";
+    public static final String LAST_DETECTED_TECHNOLOGY_SHARED_PREF = "lastDetectedTechnology";
+    public static final String LAST_DETECTED_DATE_SHARED_PREF = "lastDetectedDateAndTime";
+    public static String EXTRA_TECHNOLOGY_DETECTED = "at.ac.fhstp.sonicontrol.TECHNOLOGY_DETECTED";
 
     public final static String PREFERENCES_APP_STATE = "PREFERENCES_APP_STATE";
 
-    // Scan constants
+    // Scan parameters
     public static final int SCAN_SAMPLE_RATE = 44100;
-    public static final String SETTING_PREVENTIVE_SPOOFING = "cbprefPreventiveSpoofing";
-    public static final boolean SETTING_PREVENTIVE_SPOOFING_DEFAULT = false;
     public static final int SCAN_BUFFER_SIZE = 2048; //2048 is 46.440ms //2205 is 50 ms (5x 441)
 
-
-    // Spectrogram constants
+    // Spectrogram parameters
     public static final int VIZ_FFT_SIZE = 4096; //2048 is 46.440ms //2205 is 50 ms (5x 441)
     public static final int SPECTROGRAM_OVERLAP_FACTOR = 8;
     public static final int SPECTROGRAM_LOWER_CUTOFF_FREQUENCY = 16800;
     public static final int SPECTROGRAM_UPPER_CUTOFF_FREQUENCY = 21000;
+
+    // Bandpass / Highpass filtering parameters
+    public static final int BANDPASS_FILTER_ORDER = 8;
+    public static final double BANDPASS_CENTER_FREQUENCY = SPECTROGRAM_LOWER_CUTOFF_FREQUENCY + (SPECTROGRAM_UPPER_CUTOFF_FREQUENCY - SPECTROGRAM_LOWER_CUTOFF_FREQUENCY) / 2;
+    public static final double BANDPASS_WIDTH = 100 + (SPECTROGRAM_UPPER_CUTOFF_FREQUENCY - SPECTROGRAM_LOWER_CUTOFF_FREQUENCY) / 2; // The bandpass is rather sharp
 
 
     public static final int REQUEST_GPS_PERMISSION = 1337;
@@ -73,15 +88,6 @@ public final class ConfigConstants {
     public static final int DETECTION_NOTIFICATION_ID = 4;
     public static final int DETECTION_ALERT_STATUS_NOTIFICATION_ID = 5;
 
-    public static final String LAST_DETECTED_TECHNOLOGY_SHARED_PREF = "lastDetectedTechnology";
-    public static final String LAST_DETECTED_DATE_SHARED_PREF = "lastDetectedDateAndTime";
-    public static final String BUFFER_HISTORY_LENGTH_SHARED_PREF = "bufferHistoryLength";
-    public static final String BUFFER_HISTORY_FILENAME = "bufferHistory.raw";
-    public static final String MAX_VALUE_INDEX_SHARED_PREF = "bufferHistoryMaxValueIndex";
-    public static String EXTRA_TECHNOLOGY_DETECTED = "at.ac.fhstp.sonicontrol.TECHNOLOGY_DETECTED";
-
-    public static String SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN = "cbAlertLocationDontAskAgain";
-    public static boolean SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT = false;
 
     public static int DETECTION_TYPE_ALWAYS_DISMISSED_HERE = 0;
     public static int DETECTION_TYPE_ALWAYS_BLOCKED_HERE = 1;

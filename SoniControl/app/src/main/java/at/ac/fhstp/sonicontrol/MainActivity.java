@@ -70,6 +70,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import uk.me.berndporr.iirj.Butterworth;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
@@ -685,6 +686,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     private void handleSignal(Technology technology, float[] bufferHistory, int maxValueIndex) {
         Log.d("handleSignal", "Start to handle signal");
+        bufferHistory = highPassFilter(bufferHistory);
+
         // Stores the technology on disk in case the Activity was destroyed
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
@@ -694,7 +697,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         ed.putInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, maxValueIndex);
         ed.apply();
 
-        // TODO: Move to the specific cases where the bufferHistory will be needed.
+        // TODO: Move to the specific cases where the bufferHistory will be needed ?
         alert.setSpectrum(null); // Reset the visualization
         synchronized (SignalConverter.class) {
             // Write bufferHistory to file (we are already in a separated Thread)
@@ -761,6 +764,24 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         //TODO: Should this be done in all cases ? When ? (do we send detections automatically if user agreed?)
         SignalConverter.writeWAVHeaderToFile(bufferHistory, getApplicationContext(), maxValueIndex);
+    }
+
+    private float[] highPassFilter(float[] bufferHistory) {
+        Log.d("highPassFilter", "Start high pass filtering");
+
+        float[] highPassedArray = new float[bufferHistory.length];
+
+        Butterworth butterworthUp = new Butterworth();
+        int bandPassFilterOrder = ConfigConstants.BANDPASS_FILTER_ORDER;
+        double Fs = ConfigConstants.SCAN_SAMPLE_RATE;
+        double centerFrequencyBandPass = ConfigConstants.BANDPASS_CENTER_FREQUENCY;
+        double bandpassWidth = ConfigConstants.BANDPASS_WIDTH;
+        butterworthUp.bandPass(bandPassFilterOrder, Fs, centerFrequencyBandPass, bandpassWidth);
+        for(int i = 0; i < bufferHistory.length; i++) {
+            highPassedArray[i] = (float) butterworthUp.filter(bufferHistory[i]);
+        }
+        Log.d("highPassFilter", "Done high pass filtering");
+        return highPassedArray;
     }
 
     public void startDetection(){
