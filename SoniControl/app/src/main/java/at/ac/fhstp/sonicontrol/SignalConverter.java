@@ -21,25 +21,88 @@ package at.ac.fhstp.sonicontrol;
 
 
 import android.content.Context;
-import android.media.AudioRecord;
 import android.os.Environment;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 
 public class SignalConverter {
+
+    public static void writeFloatArray(float[] floatArray, String filePath) {
+        Log.d("writeFloatBuffer", filePath);
+        RandomAccessFile randomAccessWriter = null;
+        try {
+            randomAccessWriter = new RandomAccessFile(filePath, "rw");
+            Log.d("writeFloatBuffer", "File created");
+
+            FileChannel outChannel = randomAccessWriter.getChannel();
+
+            //one float 4 bytes
+            ByteBuffer buf = ByteBuffer.allocate(4*floatArray.length);
+            buf.clear();
+            buf.asFloatBuffer().put(floatArray);
+
+            outChannel.write(buf);
+
+            outChannel.close();
+            Log.d("writeFloatBuffer", "File written");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (randomAccessWriter != null) {
+                try {
+                    randomAccessWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static float[] readFloatArray(String filePath, int arrayLength) {
+        RandomAccessFile randomAccessReader = null;
+        try {
+            randomAccessReader = new RandomAccessFile(filePath, "r");
+
+            float[] floatArray = new float[arrayLength];
+
+            FileChannel inChannel = randomAccessReader.getChannel();
+            ByteBuffer buf_in = ByteBuffer.allocate(arrayLength*4);
+            buf_in.clear();
+
+            inChannel.read(buf_in);
+
+            buf_in.rewind();
+            buf_in.asFloatBuffer().get(floatArray);
+
+            inChannel.close();
+
+            return floatArray;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (randomAccessReader != null) {
+                try {
+                    randomAccessReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
 
     public static void writeToCSV(float[] dataArray, Context context){
         FileWriter writer = null;

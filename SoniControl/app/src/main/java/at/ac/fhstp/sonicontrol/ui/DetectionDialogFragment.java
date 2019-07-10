@@ -1,7 +1,6 @@
 package at.ac.fhstp.sonicontrol.ui;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,11 +19,11 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import at.ac.fhstp.sonicontrol.ConfigConstants;
 import at.ac.fhstp.sonicontrol.R;
-import at.ac.fhstp.sonicontrol.SignalConverter;
 import at.ac.fhstp.sonicontrol.Technology;
 
 
@@ -45,6 +44,7 @@ public class DetectionDialogFragment extends DialogFragment {
 
     float[][] lastDetectedSpectrum = null;
     public SpectrogramView spectrogramView;
+    public ProgressBar progressBar;
 
     public Button btnAlertReplay;
     public Button btnAlertBlockAlways;
@@ -83,10 +83,10 @@ public class DetectionDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity currentActivity = getActivity();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
-        builder.setCancelable(false); // User has to choose an option for the detected signal
+        AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity/*, R.style.Theme_Design_Light*/);
 
         View view = currentActivity.getLayoutInflater().inflate(R.layout.alert_message, null);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         // Initialize spectrogram view.
         spectrogramView = (SpectrogramView) view.findViewById(R.id.spectrogram_view);
@@ -97,9 +97,13 @@ public class DetectionDialogFragment extends DialogFragment {
 
         //TODO: If spectrum available show it, else make it gone and/or show a loading symbol (progressbar ?)
         if (lastDetectedSpectrum != null) {
-            onSpectrum();
+            //onSpectrum();
+            progressBar.setVisibility(View.INVISIBLE);
         }
-        //spectrogramView.setVisibility(View.GONE);
+        else {
+            spectrogramView.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
 
         txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
@@ -159,7 +163,8 @@ public class DetectionDialogFragment extends DialogFragment {
         // Should be executed after initialization of all buttons AND before setting the view
         setupButtonState(currentActivity);
         builder.setView(view);
-        //builder.setTitle(R.string.alertDialog_text_ultrasonic_signal_detected);
+        builder.setCancelable(false); // User has to choose an option for the detected signal
+        builder.setTitle(R.string.alertDialog_text_ultrasonic_signal_detected);
         return builder.create();
     }
 
@@ -243,9 +248,9 @@ public class DetectionDialogFragment extends DialogFragment {
 
     public void setSpectrum(float[][] spectrum) {
         lastDetectedSpectrum = spectrum;
-        if (spectrogramView != null) {
+        /*if (spectrogramView != null) {
             onSpectrum();
-        }
+        }*/
     }
 
     public void onSpectrum() {

@@ -34,7 +34,8 @@
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/placeholderSpectrogram"
@@ -56,6 +57,17 @@
         app:layout_constraintTop_toBottomOf="@id/placeholderSpectrogram"
         />
 
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.ProgressBar.Small.Inverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="@id/spectrogram_view"
+        app:layout_constraintEnd_toEndOf="@id/spectrogram_view"
+        app:layout_constraintStart_toStartOf="@id/spectrogram_view"
+        app:layout_constraintTop_toTopOf="@id/spectrogram_view"
+        tools:visibility="invisible" />
 
     <Button
         android:id="@+id/btnReplay"

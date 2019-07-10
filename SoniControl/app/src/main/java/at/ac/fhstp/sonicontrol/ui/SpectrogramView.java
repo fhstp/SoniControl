@@ -174,6 +174,11 @@ public class SpectrogramView extends View {
      */
     @Override
     public void onDraw(Canvas canvas) {
+        // Do not draw anything if we do not have data.
+        if (fftResolution == 0) {
+            return;
+        }
+
         //Always overwrite the previous spectrogram
         pos = 0;
 
