@@ -423,7 +423,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
 
     public void activateAlert(Technology signalType) {
-        Log.d("activateAlert", "Will activate alert dialog");
+        Log.d("activateAlert", "Will activate alert dialog if activity exists.");
 
         SharedPreferences settings = getSettingsObject(); //get the settings
         preventiveSpoof = settings.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
@@ -446,9 +446,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         public void run() {
             //alert.getDialog().show(); //open the alert
 
-            alert.show(getSupportFragmentManager(), "DetectionDialogFragment");
-//            alert.txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + getTimeAndDateForAlert());
-//            alert.txtSignalType.setText(getString(R.string.gui_technology) + " " + sigType.toString()); //can be deleted it's only for debugging
+            if (!alert.isAdded()) {
+                alert.show(getSupportFragmentManager(), "DetectionDialogFragment");
+            }
+//          alert.txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + getTimeAndDateForAlert());
+//          alert.txtSignalType.setText(getString(R.string.gui_technology) + " " + sigType.toString()); //can be deleted it's only for debugging
             detectionAsyncTask = new DetectionAsyncTask(alert).execute(getApplicationContext()/*bufferHistory*/);
         }
     };
@@ -699,11 +701,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         // TODO: Move to the specific cases where the bufferHistory will be needed ?
         alert.setSpectrum(null); // Reset the visualization
-        synchronized (SignalConverter.class) {
-            // Write bufferHistory to file (we are already in a separated Thread)
-            // It will be read when the alert is actually shown.
-            SignalConverter.writeFloatArray(bufferHistory, this.getFilesDir() + File.separator + ConfigConstants.BUFFER_HISTORY_FILENAME);
-        }
+        // Write bufferHistory to file (we are already in a separated Thread)
+        // It will be read when the alert is actually shown.
+        SignalConverter.writeFloatArray(bufferHistory, this.getFilesDir() + File.separator + ConfigConstants.BUFFER_HISTORY_FILENAME);
 
         boolean locationTrack;
         locationFinder.saveSignalTypeForLater(technology);

@@ -165,7 +165,7 @@ public class SignalConverter {
             randomAccessWriter.writeBytes("PEAK");
             randomAccessWriter.writeInt(Integer.reverseBytes(16));
             randomAccessWriter.writeInt(Integer.reverseBytes(1));
-            Log.d("SignalConverter", String.valueOf((int) Math.floor((float)System.currentTimeMillis()/1000)));
+            //Log.d("SignalConverter", String.valueOf((int) Math.floor((float)System.currentTimeMillis()/1000)));
             randomAccessWriter.writeInt(Integer.reverseBytes((int) Math.floor((float)System.currentTimeMillis()/1000))); //current timestamp in seconds
             //randomAccessWriter.writeInt(Integer.reverseBytes(1024434463));
             randomAccessWriter.writeInt(Integer.reverseBytes(Float.floatToIntBits(rawFloat[maxValueIndex])));
@@ -177,6 +177,7 @@ public class SignalConverter {
                 randomAccessWriter.writeInt(Integer.reverseBytes(Float.floatToIntBits(rawFloat[i])));
             }
             //randomAccessWriter.write(rawdata, 0, payloadSize);
+            Log.d("writeWAVHeaderToFile", "Done writing audio");
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 Log.e("SignalConverter", e.getMessage());

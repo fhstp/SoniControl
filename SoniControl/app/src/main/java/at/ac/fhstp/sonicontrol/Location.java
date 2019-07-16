@@ -305,7 +305,7 @@ public class Location {
         catch (IOException ex){
             ex.printStackTrace();
         }
-        AudioTrack sigPlayer = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,noiseByteArray.length,AudioTrack.MODE_STATIC); //create a new player with the byte array
+        AudioTrack sigPlayer = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,noiseByteArray.length,AudioTrack.MODE_STATIC); //create a new player with the byte array
         sigPlayer.write(noiseByteArray, 0, noiseByteArray.length); //write the byte array into the player
         return sigPlayer;
     }

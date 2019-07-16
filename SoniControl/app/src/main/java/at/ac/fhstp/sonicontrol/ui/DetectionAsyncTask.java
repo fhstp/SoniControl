@@ -51,11 +51,9 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
             return false;
         }
         else {
-            float[] bufferHistory = null;
-            synchronized (SignalConverter.class) {
-                Log.d("DetectionTask", "Start readingBufferHistory");
-                bufferHistory = SignalConverter.readFloatArray(context.getFilesDir() + File.separator + ConfigConstants.BUFFER_HISTORY_FILENAME, bufferHistoryLength);
-            }
+            Log.d("DetectionTask", "Start readingBufferHistory");
+            float[] bufferHistory = SignalConverter.readFloatArray(context.getFilesDir() + File.separator + ConfigConstants.BUFFER_HISTORY_FILENAME, bufferHistoryLength);
+
             if (bufferHistory != null) {
                 // Compute the spectrum
                 Log.d("DetectionTask", "Start computing spectrogram");
