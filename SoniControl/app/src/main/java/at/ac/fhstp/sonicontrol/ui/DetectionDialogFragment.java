@@ -81,6 +81,9 @@ public class DetectionDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // Note: It should be safe to have the dialog cancellable (it would call dismissThisTime())
+        setCancelable(false); // User has to choose an option for the detected signal
+
         final FragmentActivity currentActivity = getActivity();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity/*, R.style.Theme_Design_Light*/);
@@ -163,7 +166,6 @@ public class DetectionDialogFragment extends DialogFragment {
         // Should be executed after initialization of all buttons AND before setting the view
         setupButtonState(currentActivity);
         builder.setView(view);
-        builder.setCancelable(false); // User has to choose an option for the detected signal
         builder.setTitle(R.string.alertDialog_text_ultrasonic_signal_detected);
         return builder.create();
     }
@@ -243,7 +245,9 @@ public class DetectionDialogFragment extends DialogFragment {
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
 
-        // Forward cancellation? (can we cancel?)
+        //Log.d(TAG, "onCancel : Will dismiss this time.");
+        //Note: Currently the dialog is not cancellable. This is a safety in case it would be.
+        listener.onAlertDismissThisTime(DetectionDialogFragment.this);
     }
 
     public void setSpectrum(float[][] spectrum) {

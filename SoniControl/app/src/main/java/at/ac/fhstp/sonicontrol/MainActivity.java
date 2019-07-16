@@ -810,7 +810,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.activateOnHoldStatusNotification(getApplicationContext()); //activate only the onHold-status notification again
         detector.pause(); // stop scanning
         if (alert.getDialog() != null) {
-            alert.getDialog().cancel();
+            alert.getDialog().dismiss();
         }
         Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
         spoof.stopSpoofingComplete(); //stop the whole spoofing process
@@ -927,7 +927,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             //Log.d("SearchForJson", "addWithoutLoc");
             jsonMan.addJsonObject(noLocation, sigType.toString(), spoofDecision, getString(R.string.noAddressForJsonFile));
         }
-        alert.getDialog().cancel(); //cancel the alert dialog
+        //TODO: Dismiss instead of cancel ?
+        alert.getDialog().dismiss(); //cancel the alert dialog
         //alert.txtSignalType.setText(""); //can be deleted it's only for debugging
         NotificationHelper.cancelDetectionAlertStatusNotification(getApplicationContext());
 
