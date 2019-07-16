@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioTrack;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -50,6 +51,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
@@ -133,7 +135,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     boolean isSignalPlayerGenerated;
 
-    AudioTrack sigPlayer;
+    MediaPlayer sigPlayer;
 
     boolean saveJsonFile;
     String usedBlockingMethod;
@@ -633,6 +635,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     @Override
     protected void onStop() {
         super.onStop();
+
+        if (sigPlayer != null ) {
+            sigPlayer.release(); //release the resources of the player
+            sigPlayer = null; //set the player variable to null
+            isSignalPlayerGenerated = false; //now there is no player anymore so it's false
+            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+        }
     }
 
     @Override
@@ -937,6 +946,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SharedPreferences.Editor ed = sp.edit();
         ed.remove(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF);
         ed.apply();
+
+        if (sigPlayer != null ) {
+            sigPlayer.release(); //release the resources of the player
+            sigPlayer = null; //set the player variable to null
+            isSignalPlayerGenerated = false; //now there is no player anymore so it's false
+        }
     }
 
 
@@ -950,15 +965,23 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     public void onAlertPlayDetectedSignal(DialogFragment dialog){
         if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
             alert.btnAlertReplay.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
-            sigPlayer = locationFinder.generatePlayer(); //create a new player
+            sigPlayer = this.generatePlayer(this.getApplicationContext(), dialog); //create a new player
             isSignalPlayerGenerated = true; //player is generated so it's true
-            sigPlayer.play(); //start the player
+            sigPlayer.start();//play(); //start the player
         }else if(sigPlayer!=null && isSignalPlayerGenerated){ //if a player for the signal is created and the boolean for generating is true
-            sigPlayer.stop(); //stop the player
-            sigPlayer.release(); //release the resources of the player
-            sigPlayer = null; //set the player variable to null
-            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
-            isSignalPlayerGenerated = false; //now there is no player anymore so it's false
+            if (sigPlayer.isPlaying()) {
+                sigPlayer.stop(); //stop the player
+                alert.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+            }
+            else {
+                try {
+                    sigPlayer.prepare();
+                    sigPlayer.start();
+                    alert.btnAlertReplay.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
+                } catch (IOException e) {
+                    Log.e(TAG, "onAlertPlayDetectedSignal, mediaPlayer prepare() failed: " + e.getMessage());
+                }
+            }
         }
     }
 
@@ -994,6 +1017,50 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
     }
     // END DetectionDialogListener methods ----------
+
+
+    public static MediaPlayer generatePlayer(Context context, final DialogFragment dialog){
+        File file = new File(context.getFilesDir(), "detection.wav");
+        Uri uri = Uri.fromFile(file);
+        MediaPlayer mediaPlayer = MediaPlayer.create(context, uri);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.stop();
+                DetectionDialogFragment detectionDialog = (DetectionDialogFragment) dialog;
+                detectionDialog.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+            }
+        });
+        return mediaPlayer;
+        /*
+        noiseByteArray = new byte[(int) file.length()]; //size & length of the file
+        InputStream is = null;
+        try{
+            is = new FileInputStream(file);
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+        }
+        BufferedInputStream bis = new BufferedInputStream(is, 44100);
+        DataInputStream dis = new DataInputStream(bis);
+
+        int i = 0;
+        try {
+            while (dis.available() > 0) {
+                noiseByteArray[i] = dis.readByte(); //read every entry of the data input stream into the new byte array
+                i++;
+            }
+
+            dis.close();
+        }
+        catch (IOException ex){
+            ex.printStackTrace();
+        }
+        AudioTrack sigPlayer = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_FLOAT,noiseByteArray.length,AudioTrack.MODE_STATIC); //create a new player with the byte array
+        sigPlayer.write(noiseByteArray, 0, noiseByteArray.length); //write the byte array into the player
+        return sigPlayer;
+        */
+    }
 
     public void onFirstOpeningShowWelcome(){
         new AlertDialog.Builder(this).setTitle(R.string.instructionsTitle).setMessage(R.string.instructionsText)

@@ -276,40 +276,6 @@ public class Location {
         return (rad * 180.0 / Math.PI);
     }
 
-
-
-    public AudioTrack generatePlayer(){
-        //TODO: Will be solved after we get the correct links, now it would have to be restructured for getting it from the ressources
-        //File file = new File("/storage/emulated/0/DCIM/lisnr_test4.wav"); //get the audio file //not working dynamically now because no dynamic links
-        File file = new File(main.getApplicationContext().getFilesDir(), "detection.wav");
-        noiseByteArray = new byte[(int) file.length()]; //size & length of the file
-        InputStream is = null;
-        try{
-            is = new FileInputStream(file);
-        }
-        catch(IOException ex){
-            ex.printStackTrace();
-        }
-        BufferedInputStream bis = new BufferedInputStream(is, 44100);
-        DataInputStream dis = new DataInputStream(bis);
-
-        int i = 0;
-        try {
-            while (dis.available() > 0) {
-                noiseByteArray[i] = dis.readByte(); //read every entry of the data input stream into the new byte array
-                i++;
-            }
-
-            dis.close();
-        }
-        catch (IOException ex){
-            ex.printStackTrace();
-        }
-        AudioTrack sigPlayer = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT,noiseByteArray.length,AudioTrack.MODE_STATIC); //create a new player with the byte array
-        sigPlayer.write(noiseByteArray, 0, noiseByteArray.length); //write the byte array into the player
-        return sigPlayer;
-    }
-
     public void saveSignalTypeForLater(Technology sigType){
         this.signalType = sigType;
     }

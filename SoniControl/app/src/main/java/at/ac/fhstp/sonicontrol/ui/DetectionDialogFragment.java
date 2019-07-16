@@ -144,7 +144,7 @@ public class DetectionDialogFragment extends DialogFragment {
 
         btnAlertReplay.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                //listener.onAlertPlayDetectedSignal(DetectionDialogFragment.this);
+                listener.onAlertPlayDetectedSignal(DetectionDialogFragment.this);
             }
         });
 
