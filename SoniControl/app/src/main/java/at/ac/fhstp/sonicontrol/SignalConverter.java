@@ -35,6 +35,10 @@ import java.nio.channels.FileChannel;
 public class SignalConverter {
 
     public static void writeFloatArray(float[] floatArray, String filePath) {
+        writeFloatArray(floatArray, filePath, false);
+    }
+
+    public static void writeFloatArray(float[] floatArray, String filePath, boolean shouldAppend) {
         Log.d("writeFloatBuffer", filePath);
         RandomAccessFile randomAccessWriter = null;
         try {
@@ -42,6 +46,9 @@ public class SignalConverter {
             Log.d("writeFloatBuffer", "File created");
 
             FileChannel outChannel = randomAccessWriter.getChannel();
+            if (shouldAppend) {
+                outChannel.position(randomAccessWriter.length());
+            }
 
             //one float 4 bytes
             ByteBuffer buf = ByteBuffer.allocate(4*floatArray.length);
@@ -52,6 +59,47 @@ public class SignalConverter {
 
             outChannel.close();
             Log.d("writeFloatBuffer", "File written");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (randomAccessWriter != null) {
+                try {
+                    randomAccessWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private static void writeIntArray(int[] intArray, String filepath) {
+        writeIntArray(intArray, filepath, false);
+    }
+
+    public static void writeIntArray(int[] intArray, String filePath, boolean shouldAppend) {
+        Log.d("writeIntArray", filePath);
+        RandomAccessFile randomAccessWriter = null;
+        try {
+            randomAccessWriter = new RandomAccessFile(filePath, "rw");
+            Log.d("writeIntArray", "File created");
+
+            FileChannel outChannel = randomAccessWriter.getChannel();
+            if (shouldAppend) {
+                outChannel.position(randomAccessWriter.length());
+            }
+
+            //one float 4 bytes
+            ByteBuffer buf = ByteBuffer.allocate(4*intArray.length);
+            buf.clear();
+            buf.asIntBuffer().put(intArray);
+
+            outChannel.write(buf);
+
+            outChannel.close();
+            Log.d("writeIntArray", "File written");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -135,9 +183,10 @@ public class SignalConverter {
 
     public static void writeWAVHeaderToFile(/*byte[] rawdata, */float[] rawFloat, Context context, int maxValueIndex) {
         RandomAccessFile randomAccessWriter = null;
+        String filepath = context.getFilesDir()+ "/detection.wav";
         try {
-            randomAccessWriter = new RandomAccessFile(context.getFilesDir()+ "/detection.wav", "rw");
-            Log.d("writeWAVHeaderToFile", context.getFilesDir()+ "/detection.wav");
+            randomAccessWriter = new RandomAccessFile(filepath, "rw");
+            Log.d("writeWAVHeaderToFile", filepath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -173,11 +222,12 @@ public class SignalConverter {
             randomAccessWriter.writeBytes("data");
             randomAccessWriter.writeInt(Integer.reverseBytes(payloadSize));
 
+            /*
             for(int i = 0; i< rawFloat.length;i++){
                 randomAccessWriter.writeInt(Integer.reverseBytes(Float.floatToIntBits(rawFloat[i])));
             }
+            */
             //randomAccessWriter.write(rawdata, 0, payloadSize);
-            Log.d("writeWAVHeaderToFile", "Done writing audio");
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 Log.e("SignalConverter", e.getMessage());
@@ -191,5 +241,12 @@ public class SignalConverter {
                 Log.e("SignalConverter", "I/O exception occured while closing output file");
             }
         }
+
+        int[] intArray = new int[rawFloat.length];
+        for(int i = 0; i< rawFloat.length;i++){
+            intArray[i] = Integer.reverseBytes(Float.floatToIntBits(rawFloat[i]));
+        }
+        writeIntArray(intArray, filepath, true);
+        Log.d("writeWAVHeaderToFile", "Done writing audio");
     }
 }
