@@ -770,9 +770,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 this.activateAlert(technology); //open the alert dialog if the app is visible
             }
         }
-
-        //TODO: Should this be done in all cases ? When ? (do we send detections automatically if user agreed?)
-        SignalConverter.writeWAVHeaderToFile(bufferHistory, getApplicationContext(), maxValueIndex);
     }
 
     private float[] highPassFilter(float[] bufferHistory) {

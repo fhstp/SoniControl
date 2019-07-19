@@ -92,6 +92,16 @@ public class DetectionDialogFragment extends DialogFragment {
         View view = currentActivity.getLayoutInflater().inflate(R.layout.alert_message, null);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
+        txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
+        txtAlertDate = (TextView)view.findViewById(R.id.txtAlertDate);
+        txtNoLocation = (TextView)view.findViewById(R.id.txtNoLocation);
+
+        btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
+        btnAlertDismissThisTime = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
+        btnAlertBlockAlways = (Button) view.findViewById(R.id.btnBlockAlways); //button of the alert for starting the spoofing process after finding a signal
+        btnAlertBlockThisTime = (Button) view.findViewById(R.id.btnBlockThisTime);
+        btnAlertReplay = (Button) view.findViewById(R.id.btnReplay); //button of the alert for playing the found signal with fs/3
+
         // Initialize spectrogram view.
         spectrogramView = (SpectrogramView) view.findViewById(R.id.spectrogram_view);
         spectrogramView.setSamplingRate(ConfigConstants.SCAN_SAMPLE_RATE);
@@ -104,22 +114,15 @@ public class DetectionDialogFragment extends DialogFragment {
         if (lastDetectedSpectrum != null) {
             //onSpectrum();
             progressBar.setVisibility(View.INVISIBLE);
+            btnAlertReplay.setEnabled(true);
         }
         else {
             spectrogramView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
+            btnAlertReplay.setEnabled(false);
         }
 
-
-        txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
-        txtAlertDate = (TextView)view.findViewById(R.id.txtAlertDate);
-        txtNoLocation = (TextView)view.findViewById(R.id.txtNoLocation);
-
-        btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
-        btnAlertDismissThisTime = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
-        btnAlertBlockAlways = (Button) view.findViewById(R.id.btnBlockAlways); //button of the alert for starting the spoofing process after finding a signal
-        btnAlertBlockThisTime = (Button) view.findViewById(R.id.btnBlockThisTime);
-        btnAlertReplay = (Button) view.findViewById(R.id.btnReplay); //button of the alert for playing the found signal with fs/3
+        // OnClickListeners --------
 
         btnAlertDismissAlways.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -150,21 +153,6 @@ public class DetectionDialogFragment extends DialogFragment {
             }
         });
 
-        /*
-        builder.setTitle(permissionLevelQuestion)
-                .setItems(R.array.permission_level_texts,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch(which){
-                                    case 0:
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                        });
-*/
         // Should be executed after initialization of all buttons AND before setting the view
         setupButtonState(currentActivity);
         builder.setView(view);

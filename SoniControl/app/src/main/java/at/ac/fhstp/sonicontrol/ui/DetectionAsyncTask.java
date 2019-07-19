@@ -35,6 +35,8 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
                 dialog.progressBar.setVisibility(View.VISIBLE);
             if(dialog.spectrogramView != null)
                 dialog.spectrogramView.setVisibility(View.INVISIBLE);
+            if (dialog.btnAlertReplay != null)
+                dialog.btnAlertReplay.setEnabled(false);
         }
     }
 
@@ -61,6 +63,15 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
                 Log.d("DetectionTask", "Done computing spectrogram, will show it in the alert if still open");
                 // Update spectrum
                 //onSpectrum(); This is already called in setSpectrum
+
+                //TODO: Should this be done in all cases ? When ? (do we send detections automatically if user agreed?)
+                int maxValueIndex = sp.getInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, -1);
+                if (maxValueIndex == -1) {
+                    Log.e("DetectionTask", "maxValueIndex not stored ?!");
+                }
+                else {
+                    SignalConverter.writeWAVHeaderToFile(bufferHistory, context, maxValueIndex);
+                }
 
                 DetectionDialogFragment dialog = detectionDialogFragment.get();
                 if (dialog != null) {
@@ -93,9 +104,16 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
             // Do things like hide the progress bar or change a TextView
             DetectionDialogFragment dialog = detectionDialogFragment.get();
             if (dialog != null) {
-                dialog.progressBar.setVisibility(View.GONE);
-                dialog.spectrogramView.setVisibility(View.VISIBLE);
-                dialog.onSpectrum();
+                if (dialog.progressBar != null) {
+                    dialog.progressBar.setVisibility(View.GONE);
+                }
+                if(dialog.spectrogramView != null) {
+                    dialog.spectrogramView.setVisibility(View.VISIBLE);
+                    dialog.onSpectrum();
+                }
+                if (dialog.btnAlertReplay != null) {
+                    dialog.btnAlertReplay.setEnabled(true);
+                }
             }
         }
     }
