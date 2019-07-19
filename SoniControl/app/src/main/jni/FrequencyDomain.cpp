@@ -279,6 +279,8 @@ static jfloatArray *getJavaReorderedBufferHistoryMono(JNIEnv *jniEnv, int number
         if(*(containerMono + maxValueIndex) < *(containerMono + counter)) {
             maxValueIndex=counter;
         }
+
+        //TODO: Calculate amplitude of the signal ? (avg)
     }
     free(container);
     
