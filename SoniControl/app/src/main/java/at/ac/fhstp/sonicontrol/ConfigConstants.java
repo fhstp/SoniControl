@@ -75,9 +75,12 @@ public final class ConfigConstants {
     public static final int SPECTROGRAM_UPPER_CUTOFF_FREQUENCY = 21000;
 
     // Bandpass / Highpass filtering parameters
-    public static final int BANDPASS_FILTER_ORDER = 8;
-    public static final double BANDPASS_CENTER_FREQUENCY = SPECTROGRAM_LOWER_CUTOFF_FREQUENCY + (SPECTROGRAM_UPPER_CUTOFF_FREQUENCY - SPECTROGRAM_LOWER_CUTOFF_FREQUENCY) / 2;
-    public static final double BANDPASS_WIDTH = 100 + (SPECTROGRAM_UPPER_CUTOFF_FREQUENCY - SPECTROGRAM_LOWER_CUTOFF_FREQUENCY) / 2; // The bandpass is rather sharp
+    public static final int BANDPASS_FILTER_ORDER = 16;
+    public static final int HIGHPASS_OFFSET = 700;
+    public static final int HIGHPASS_CUTOFF_FREQUENCY = 16800 + HIGHPASS_OFFSET; //highpass is not sharp enough
+    public static final int BANDPASS_OFFSET = (SCAN_SAMPLE_RATE / 2) - SPECTROGRAM_UPPER_CUTOFF_FREQUENCY;
+    public static final double BANDPASS_CENTER_FREQUENCY = BANDPASS_OFFSET + SPECTROGRAM_LOWER_CUTOFF_FREQUENCY + (SPECTROGRAM_UPPER_CUTOFF_FREQUENCY - SPECTROGRAM_LOWER_CUTOFF_FREQUENCY) / 2;
+    public static final double BANDPASS_WIDTH = -1000+ 2*BANDPASS_OFFSET + SPECTROGRAM_UPPER_CUTOFF_FREQUENCY - SPECTROGRAM_LOWER_CUTOFF_FREQUENCY; // The bandpass is rather sharp
 
 
     public static final int REQUEST_GPS_PERMISSION = 1337;

@@ -782,7 +782,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         double Fs = ConfigConstants.SCAN_SAMPLE_RATE;
         double centerFrequencyBandPass = ConfigConstants.BANDPASS_CENTER_FREQUENCY;
         double bandpassWidth = ConfigConstants.BANDPASS_WIDTH;
-        butterworthUp.bandPass(bandPassFilterOrder, Fs, centerFrequencyBandPass, bandpassWidth);
+        //butterworthUp.bandPass(bandPassFilterOrder, Fs, centerFrequencyBandPass, bandpassWidth);
+        butterworthUp.highPass(bandPassFilterOrder, Fs, ConfigConstants.HIGHPASS_CUTOFF_FREQUENCY);
         for(int i = 0; i < bufferHistory.length; i++) {
             highPassedArray[i] = (float) butterworthUp.filter(bufferHistory[i]);
         }
