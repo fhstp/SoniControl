@@ -275,6 +275,7 @@ static jfloatArray *getJavaReorderedBufferHistoryMono(JNIEnv *jniEnv, int number
     float *containerMono = (float*)malloc(bufferHistorySize/2);
     maxValueIndex = 0;
     for (int i = 0, counter = 0; i < numberOfBufferHistoryItems; i += 2, counter++) {
+        // Is there an overflow risk ? (cast sum to double and back to float after dividing?)
         *(containerMono + counter) =(*(container + i) + *(container + i + 1)) / 2;
         if(*(containerMono + maxValueIndex) < *(containerMono + counter)) {
             maxValueIndex=counter;

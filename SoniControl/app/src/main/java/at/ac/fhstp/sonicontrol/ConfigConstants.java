@@ -71,17 +71,28 @@ public final class ConfigConstants {
     // Spectrogram parameters
     public static final int VIZ_FFT_SIZE = 4096; //2048 is 46.440ms //2205 is 50 ms (5x 441)
     public static final int SPECTROGRAM_OVERLAP_FACTOR = 8;
-    public static final int SPECTROGRAM_LOWER_CUTOFF_FREQUENCY = 16800;
-    public static final int SPECTROGRAM_UPPER_CUTOFF_FREQUENCY = 21000;
+    public static final int LOWER_CUTOFF_FREQUENCY = 16800; // ! Redefined in C++ for the detection. Lower limit for prontoly! All other technologies send above 18kHz
+    public static final int UPPER_CUTOFF_FREQUENCY = 21000; //Only visual as most phones cannot really use frequencies above 21000Hz, we might detect something higher.
 
     // Bandpass / Highpass filtering parameters
     public static final int BANDPASS_FILTER_ORDER = 16;
     public static final int HIGHPASS_OFFSET = 700;
     public static final int HIGHPASS_CUTOFF_FREQUENCY = 16800 + HIGHPASS_OFFSET; //highpass is not sharp enough
-    public static final int BANDPASS_OFFSET = (SCAN_SAMPLE_RATE / 2) - SPECTROGRAM_UPPER_CUTOFF_FREQUENCY;
-    public static final double BANDPASS_CENTER_FREQUENCY = BANDPASS_OFFSET + SPECTROGRAM_LOWER_CUTOFF_FREQUENCY + (SPECTROGRAM_UPPER_CUTOFF_FREQUENCY - SPECTROGRAM_LOWER_CUTOFF_FREQUENCY) / 2;
-    public static final double BANDPASS_WIDTH = -1000+ 2*BANDPASS_OFFSET + SPECTROGRAM_UPPER_CUTOFF_FREQUENCY - SPECTROGRAM_LOWER_CUTOFF_FREQUENCY; // The bandpass is rather sharp
+    public static final int BANDPASS_OFFSET = (SCAN_SAMPLE_RATE / 2) - UPPER_CUTOFF_FREQUENCY;
+    public static final double BANDPASS_CENTER_FREQUENCY = BANDPASS_OFFSET + LOWER_CUTOFF_FREQUENCY + (UPPER_CUTOFF_FREQUENCY - LOWER_CUTOFF_FREQUENCY) / 2;
+    public static final double BANDPASS_WIDTH = -1000+ 2*BANDPASS_OFFSET + UPPER_CUTOFF_FREQUENCY - LOWER_CUTOFF_FREQUENCY; // The bandpass is rather sharp
 
+    // Recognition parameters
+    public static final double DECISION_THRESHOLD_NEARBY = 3.5; //the decision threshold for nearby signals. If the RMS Energy in the Nearby band is N-times higher than in the neighboring bands above and beneath, then declare a nearby detection.
+    public static final double DECISION_THRESHOLD_NEARBY_AC = 0.05; //the recognition threshold for nearby based on autocorrelation
+
+    // Technology specifications
+    public static final double NEARBY_N_BANDS = 64;
+    public static final double NEARBY_BANDWIDTH = (20000.0-18500.0) / NEARBY_N_BANDS / 2.0; //unit Hz
+    public static final double LISNR_BANDWIDTH = 40; //unit Hz
+    public static final double PRONTOLY_BANDWIDTH = 10; //unit Hz
+    public static final double SHOPKICK_BANDWIDTH = 4; //unit Hz
+    public static final double SILVERPUSH_BANDWIDTH = 4; //unit Hz
 
     public static final int REQUEST_GPS_PERMISSION = 1337;
     //Notification ids

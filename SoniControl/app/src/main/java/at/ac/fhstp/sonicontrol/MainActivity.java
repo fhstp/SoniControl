@@ -248,8 +248,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         spectrogramView.setSamplingRate(ConfigConstants.SCAN_SAMPLE_RATE);
         spectrogramView.setFFTResolution(ConfigConstants.SCAN_BUFFER_SIZE / 2);
 
-        spectrogramView.setCutoffFrequency(ConfigConstants.SPECTROGRAM_LOWER_CUTOFF_FREQUENCY);
-        spectrogramView.setUpperCutoffFrequency(ConfigConstants.SPECTROGRAM_UPPER_CUTOFF_FREQUENCY);
+        spectrogramView.setCutoffFrequency(ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        spectrogramView.setUpperCutoffFrequency(ConfigConstants.UPPER_CUTOFF_FREQUENCY);
         */
     }
 

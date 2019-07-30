@@ -106,11 +106,11 @@ public class DetectionDialogFragment extends DialogFragment {
         spectrogramView = (SpectrogramView) view.findViewById(R.id.spectrogram_view);
         spectrogramView.setSamplingRate(ConfigConstants.SCAN_SAMPLE_RATE);
         spectrogramView.setFFTResolution(ConfigConstants.SCAN_BUFFER_SIZE / 2);
-        spectrogramView.setCutoffFrequency(ConfigConstants.SPECTROGRAM_LOWER_CUTOFF_FREQUENCY);
-        spectrogramView.setUpperCutoffFrequency(ConfigConstants.SPECTROGRAM_UPPER_CUTOFF_FREQUENCY);
+        spectrogramView.setCutoffFrequency(ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        spectrogramView.setUpperCutoffFrequency(ConfigConstants.UPPER_CUTOFF_FREQUENCY);
         Misc.setPreference(currentActivity, "color_scale", "Ice");
 
-        //TODO: If spectrum available show it, else make it gone and/or show a loading symbol (progressbar ?)
+        // If spectrum available show it, else make it invisible and show a loading symbol
         if (lastDetectedSpectrum != null) {
             //onSpectrum();
             progressBar.setVisibility(View.INVISIBLE);
@@ -162,10 +162,14 @@ public class DetectionDialogFragment extends DialogFragment {
 
     private void setTechnologyText(FragmentActivity currentActivity) {
         String storedTechnology = PreferenceManager.getDefaultSharedPreferences(currentActivity).getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, null);
-        if (storedTechnology != null) {
+        setTechnologyText(storedTechnology);
+    }
+
+    /*package-private*/void setTechnologyText(String technology) {
+        if (technology != null) {
             Technology lastDetectedTechnology = null;
             try {
-                lastDetectedTechnology = Technology.fromString(storedTechnology);
+                lastDetectedTechnology = Technology.fromString(technology);
             }
             catch (IllegalArgumentException e) {
                 //Log.d(TAG, "onResume: " + e.getMessage());
