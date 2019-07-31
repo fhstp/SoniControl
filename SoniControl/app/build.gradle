@@ -64,8 +64,9 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
-    implementation 'pl.edu.icm:JLargeArrays:1.6' // Better to have it here than in jar folder (see gitignore)
-    implementation 'com.jjoe64:graphview:4.2.1'
+    implementation 'edu.emory.mathcs:JTransforms:2.4' // Used for FFT (noise generation and recognition)
+    //Replaced by using JTransforms directly. implementation 'pl.edu.icm:JLargeArrays:1.6' // Better to have it here than in jar folder (see gitignore)
+    //Not used anymore? implementation 'com.jjoe64:graphview:4.2.1'
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:support-v4:28.0.0'
 

@@ -15,10 +15,10 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
 import at.ac.fhstp.sonicontrol.ConfigConstants;
-import at.ac.fhstp.sonicontrol.DoubleFFT_1D;
 import at.ac.fhstp.sonicontrol.SignalConverter;
 import at.ac.fhstp.sonicontrol.Technology;
 import at.ac.fhstp.sonicontrol.utils.HammingWindow;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 
 public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
     private static final String TAG = "DetectionAsyncTask";
@@ -355,10 +355,9 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
             for (int j = bandStartFreqIdx; j < bandEndFreqIdx; j++) {
                 if (fftSpectrum[j] > bandEnergy[i]) {
                     bandEnergy[i] = fftSpectrum[j];
-
-                    Log.d(TAG, "bandEnergy[" + i + "]: " + bandEnergy[i]);
                 }
             }
+            Log.d(TAG, "bandEnergy[" + i + "]: " + String.format("%.12f", bandEnergy[i]));
         }
 
         double[] offBandEnergy = new double[nOffBands];
@@ -387,6 +386,7 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
                 }
             }
             sumOffBandEnergy += offBandEnergy[i];
+            Log.d(TAG, "offBandEnergy[" + i + "]: " + String.format("%.12f", offBandEnergy[i]));
         }
 
         //get the highest quarter of the in band frequencies (in case not all are present)
