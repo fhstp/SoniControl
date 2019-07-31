@@ -17,6 +17,7 @@ import java.util.Arrays;
 import at.ac.fhstp.sonicontrol.ConfigConstants;
 import at.ac.fhstp.sonicontrol.SignalConverter;
 import at.ac.fhstp.sonicontrol.Technology;
+import at.ac.fhstp.sonicontrol.utils.Autocorrelation;
 import at.ac.fhstp.sonicontrol.utils.HammingWindow;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 
@@ -430,8 +431,51 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
      */
     private static double detectNearby(double[] fftSpectrum, int[] nearbyCenterFrequencies, int fs, int nSamples) {
         double score = 0.0;
-        double[] ac = null;
 
+        // Compute the spacing between center frequencies into centerFreqIdxDiff
+        int[] centerFreqIdx = new int[nearbyCenterFrequencies.length];
+        int[] centerFreqIdxDiffs = new int[centerFreqIdx.length - 1];
+        for (int i = 0; i < centerFreqIdx.length; i++) {
+            centerFreqIdx[i] = freq2idx((double) nearbyCenterFrequencies[i], fs, nSamples);
+            if (i > 0) {
+                centerFreqIdxDiffs[i-1] = centerFreqIdx[i] - centerFreqIdx[i-1];
+            }
+        }
+        Arrays.sort(centerFreqIdxDiffs);
+        int centerFreqIdxDiff = centerFreqIdxDiffs[centerFreqIdxDiffs.length/2]; // If the length is even we take the upper index (indexes cannot be split in two anyways).
+
+        // We work only on the relevant part of the spectrum (Nearby frequencies)
+        final int nbIdxOfInterest = centerFreqIdx.length; //centerFreqIdx[centerFreqIdx.length - 1] + 1 - centerFreqIdx[0];
+        double[] fftSpectrumOfInterest = new double[nbIdxOfInterest];
+        /*for (int i = centerFreqIdx[0]; i <= centerFreqIdx[centerFreqIdx.length - 1]; i++) {
+            fftSpectrumOfInterest[helpCounter] = fftSpectrum[i];
+        }
+        */
+        // IDE suggested to replace the loop with System.arraycopy:
+        if (nbIdxOfInterest >= 0)
+            System.arraycopy(fftSpectrum, centerFreqIdx[0], fftSpectrumOfInterest, 0, nbIdxOfInterest);
+
+        // We compute the autocorrelation for a frequency range (maxLag) of 5 Nearby center frequencies so that we can calculate the energy at these frequencies versus in between (18500,18524,18548,18571,18595)
+        int maxLag = centerFreqIdxDiff*5;
+        double[] ac = new double[maxLag];
+        Autocorrelation.bruteForceAutoCorrelation(fftSpectrumOfInterest, ac, maxLag);
+
+        // Normalize (first value is the max as it is 100% correlating)
+        for (int i = 1; i < maxLag; i++) {
+            ac[i] /= ac[0];
+        }
+        ac[0] = 1;
+
+        double inFrequencyScore  = ac[centerFreqIdxDiff] * ac[2*centerFreqIdxDiff] * ac[3*centerFreqIdxDiff] * ac[4*centerFreqIdxDiff];
+        double outFrequencyScore = ac[(int) Math.round(centerFreqIdxDiff*1.5)] * ac[(int) Math.round(centerFreqIdxDiff*2.5)] * ac[(int) Math.round(centerFreqIdxDiff*3.5)] * ac[(int) Math.round(centerFreqIdxDiff*4.5)];
+
+        Log.d(TAG, "inFrequencyScore: " + inFrequencyScore);
+        Log.d(TAG, "outFrequencyScore: " + outFrequencyScore);
+
+        if (inFrequencyScore > outFrequencyScore)
+            score = (inFrequencyScore-outFrequencyScore);
+        else
+            score = 0;
 
         return score;
     }
