@@ -486,7 +486,7 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         ac[0] = 1;
 
         double inFrequencyScore  = ac[centerFreqIdxDiff] * ac[2*centerFreqIdxDiff] * ac[3*centerFreqIdxDiff] * ac[4*centerFreqIdxDiff];
-        double outFrequencyScore = ac[(int) Math.round(centerFreqIdxDiff*1.5)] * ac[(int) Math.round(centerFreqIdxDiff*2.5)] * ac[(int) Math.round(centerFreqIdxDiff*3.5)] * ac[(int) Math.round(centerFreqIdxDiff*4.5)];
+        double outFrequencyScore = ac[(int) Math.floor(centerFreqIdxDiff*1.5)] * ac[(int) Math.floor(centerFreqIdxDiff*2.5)] * ac[(int) Math.floor(centerFreqIdxDiff*3.5)] * ac[(int) Math.floor(centerFreqIdxDiff*4.5)]; //round might give an index out of bound (e.g. if the diff is 1)
 
         Log.d(TAG, "inFrequencyScore: " + inFrequencyScore);
         Log.d(TAG, "outFrequencyScore: " + outFrequencyScore);
