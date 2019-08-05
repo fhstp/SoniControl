@@ -464,7 +464,7 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         int centerFreqIdxDiff = centerFreqIdxDiffs[centerFreqIdxDiffs.length/2]; // If the length is even we take the upper index (indexes cannot be split in two anyways).
 
         // We work only on the relevant part of the spectrum (Nearby frequencies)
-        final int nbIdxOfInterest = centerFreqIdx.length; //centerFreqIdx[centerFreqIdx.length - 1] + 1 - centerFreqIdx[0];
+        final int nbIdxOfInterest = centerFreqIdx[centerFreqIdx.length - 1] + 1 - centerFreqIdx[0];
         double[] fftSpectrumOfInterest = new double[nbIdxOfInterest];
         /*for (int i = centerFreqIdx[0]; i <= centerFreqIdx[centerFreqIdx.length - 1]; i++) {
             fftSpectrumOfInterest[helpCounter] = fftSpectrum[i];
