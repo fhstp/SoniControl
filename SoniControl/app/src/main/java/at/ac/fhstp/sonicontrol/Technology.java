@@ -31,7 +31,8 @@ public enum Technology {
     SIGNAL360("Signal360"),
     SHOPKICK("Shopkick"),
     UNKNOWN("Unknown"),
-    SILVERPUSH("Silverpush");
+    SILVERPUSH("Silverpush"),
+    SONITALK("SoniTalk");
 
     private String stringValue;
 
