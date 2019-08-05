@@ -334,38 +334,43 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
 
         // Recognition is hierarchical:
         // First check if the signal is a nearby message with the autocorrelation detector:
-        Log.d(TAG, "Compute score Nearby");
-        double scoreNearbyAC = detectNearby(historySignalFFT, nearbyCenterFrequencies, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory);
+        //Log.d(TAG, "Compute score Nearby");
+        //double scoreNearbyAC = detectNearby(historySignalFFT, nearbyCenterFrequencies, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory);
+        double scoreNearby = 0.0;
         double scoreLisnr = 0.0;
         double scoreProntoly = 0.0;
         double scoreShopkick = 0.0;
         double scoreSilverpush = 0.0;
-        if (scoreNearbyAC > ConfigConstants.DECISION_THRESHOLD_NEARBY_AC) {
+        double scoreSoniTalk = 0.0;
+        /*if (scoreNearbyAC > ConfigConstants.DECISION_THRESHOLD_NEARBY_AC) {
             recogResult = Technology.GOOGLE_NEARBY;
         }
-        else { //Second: try out all other technologies
-            Log.d(TAG, "Compute score Lisnr");
-            scoreLisnr = detectActivity(historySignalFFT, fftMax, lisnrCenterFrequencies, ConfigConstants.LISNR_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
-            Log.d(TAG, "Compute score Prontoly");
-            scoreProntoly = detectActivity(historySignalFFT, fftMax, prontolyCenterFrequencies, ConfigConstants.PRONTOLY_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
-            Log.d(TAG, "Compute score Shopkick");
-            scoreShopkick = detectActivity(historySignalFFT, fftMax, shopkickCenterFrequencies, ConfigConstants.SHOPKICK_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
-            Log.d(TAG, "Compute score Silverpush");
-            scoreSilverpush = detectActivity(historySignalFFT, fftMax, silverpushCenterFrequencies, ConfigConstants.SILVERPUSH_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        else { *///Second: try out all other technologies
+        Log.d(TAG, "Compute score Nearby");
+        scoreNearby = detectActivity(historySignalFFT, fftMax, nearbyCenterFrequencies, ConfigConstants.NEARBY_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        Log.d(TAG, "Compute score Lisnr");
+        scoreLisnr = detectActivity(historySignalFFT, fftMax, lisnrCenterFrequencies, ConfigConstants.LISNR_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        Log.d(TAG, "Compute score Prontoly");
+        scoreProntoly = detectActivity(historySignalFFT, fftMax, prontolyCenterFrequencies, ConfigConstants.PRONTOLY_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        Log.d(TAG, "Compute score Shopkick");
+        scoreShopkick = detectActivity(historySignalFFT, fftMax, shopkickCenterFrequencies, ConfigConstants.SHOPKICK_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        Log.d(TAG, "Compute score Silverpush");
+        scoreSilverpush = detectActivity(historySignalFFT, fftMax, silverpushCenterFrequencies, ConfigConstants.SILVERPUSH_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
 
-            double[] scores = {0, scoreLisnr, scoreProntoly, scoreShopkick, scoreSilverpush}; //the 0 stands for nearby
-            double maxScore = 0.0;
-            for (int i = 0; i < scores.length; i++) {
-                if (scores[i] > maxScore) {
-                    maxScore = scores[i];
-                    recogResult = technologies[i];
-                }
-                Log.d(TAG, "Score " + technologies[i].toString() + ": " + scores[i]);
+
+        double[] scores = {scoreNearby, scoreLisnr, scoreProntoly, scoreShopkick, scoreSilverpush, scoreSoniTalk}; //the 0 stands for nearby (in case of AC detection)
+        double maxScore = 0.0;
+        for (int i = 0; i < scores.length; i++) {
+            if (scores[i] > maxScore) {
+                maxScore = scores[i];
+                recogResult = technologies[i];
             }
-            if (maxScore < 1) { //no technology achieved a high score -> declare the message as unknown message
-                 recogResult = Technology.UNKNOWN;
-            }
+            Log.d(TAG, "Score " + technologies[i].toString() + ": " + scores[i]);
         }
+        if (maxScore < 1) { //no technology achieved a high score -> declare the message as unknown message
+             recogResult = Technology.UNKNOWN;
+        }
+        //}
 //
 //      %make some debug output:
 //    %  disp(['detected: ' num2str(techniques{recogResult}) ' message']);
