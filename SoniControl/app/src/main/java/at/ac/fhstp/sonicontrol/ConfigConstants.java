@@ -94,6 +94,7 @@ public final class ConfigConstants {
     public static final double SHOPKICK_BANDWIDTH = 4; //unit Hz
     public static final double SILVERPUSH_BANDWIDTH = 4; //unit Hz
     public static final double SONITALK_BANDWIDTH = 40; //unit Hz
+    public static final double SIGNAL360_BANDWIDTH = 40; //unit Hz
 
     public static final int REQUEST_GPS_PERMISSION = 1337;
     //Notification ids

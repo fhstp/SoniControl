@@ -329,9 +329,10 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         int[] shopkickCenterFrequencies = getCenterFrequencies(Technology.SHOPKICK, context);
         int[] silverpushCenterFrequencies = getCenterFrequencies(Technology.SILVERPUSH, context);
         int[] sonitalkCenterFrequencies = getCenterFrequencies(Technology.SONITALK, context);
+        int[] signal360CenterFrequencies = getCenterFrequencies(Technology.SIGNAL360, context);
 
         // 3. Perform recognition of the individual technologies
-        Technology[] technologies = {Technology.GOOGLE_NEARBY, Technology.LISNR, Technology.PRONTOLY, Technology.SHOPKICK, Technology.SILVERPUSH, Technology.SONITALK, Technology.UNKNOWN};
+        Technology[] technologies = {Technology.GOOGLE_NEARBY, Technology.LISNR, Technology.PRONTOLY, Technology.SHOPKICK, Technology.SILVERPUSH, Technology.SONITALK, Technology.SIGNAL360, Technology.UNKNOWN};
 
         // Recognition is hierarchical:
         // First check if the signal is a nearby message with the autocorrelation detector:
@@ -343,6 +344,7 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         double scoreShopkick = 0.0;
         double scoreSilverpush = 0.0;
         double scoreSoniTalk = 0.0;
+        double scoreSignal360 = 0.0;
         /*if (scoreNearbyAC > ConfigConstants.DECISION_THRESHOLD_NEARBY_AC) {
             recogResult = Technology.GOOGLE_NEARBY;
         }
@@ -359,9 +361,11 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         scoreSilverpush = detectActivity(historySignalFFT, fftMax, silverpushCenterFrequencies, ConfigConstants.SILVERPUSH_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
         Log.d(TAG, "Compute score SoniTalk");
         scoreSoniTalk = detectActivity(historySignalFFT, fftMax, sonitalkCenterFrequencies, ConfigConstants.SONITALK_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        Log.d(TAG, "Compute score Signal360");
+        scoreSignal360 = detectActivity(historySignalFFT, fftMax, signal360CenterFrequencies, ConfigConstants.SIGNAL360_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
 
 
-        double[] scores = {scoreNearby, scoreLisnr, scoreProntoly, scoreShopkick, scoreSilverpush, scoreSoniTalk}; //the 0 stands for nearby (in case of AC detection)
+        double[] scores = {scoreNearby, scoreLisnr, scoreProntoly, scoreShopkick, scoreSilverpush, scoreSoniTalk, scoreSignal360}; //the 0 stands for nearby (in case of AC detection)
         double maxScore = 0.0;
         for (int i = 0; i < scores.length; i++) {
             if (scores[i] > maxScore) {
