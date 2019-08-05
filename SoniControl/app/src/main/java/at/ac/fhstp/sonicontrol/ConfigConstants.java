@@ -92,7 +92,7 @@ public final class ConfigConstants {
     public static final double LISNR_BANDWIDTH = 40; //unit Hz
     public static final double PRONTOLY_BANDWIDTH = 10; //unit Hz
     public static final double SHOPKICK_BANDWIDTH = 4; //unit Hz
-    public static final double SILVERPUSH_BANDWIDTH = 4; //unit Hz
+    public static final double SILVERPUSH_BANDWIDTH = 20; //unit Hz
     public static final double SONITALK_BANDWIDTH = 40; //unit Hz
     public static final double SIGNAL360_BANDWIDTH = 40; //unit Hz
 
