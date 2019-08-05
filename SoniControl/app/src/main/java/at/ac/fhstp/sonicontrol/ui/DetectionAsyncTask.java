@@ -90,6 +90,12 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
                 // Update spectrum
                 //onSpectrum(); This is already called in setSpectrum
 
+
+                Log.d("DetectionTask", "Start computing recognition");
+                Technology detectedTechnology = computeRecognition(bufferHistory, context);
+                sp.edit().putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, detectedTechnology.toString()).apply();
+                Log.d("DetectionTask", "Done computing recognition");
+
                 //TODO: Should this be done in all cases ? When ? (do we send detections automatically if user agreed?)
                 int maxValueIndex = sp.getInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, -1);
                 if (maxValueIndex == -1) {
@@ -199,10 +205,10 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         double[][] historyBufferDoubleAbsolute = new double[nbWinLenForSpectrogram][winLenForSpectrogramInSamples / 2];
         float[][] historyBufferFloatNormalized = new float[nbWinLenForSpectrogram][historyBufferDoubleAbsolute[0].length];
 
-        // Recognition specific ---
-        double[] historySignalFFT = new double[historyBufferDoubleAbsolute[0].length];
+        // Recognition specific [using an avg of the VIZ spectrum]---
+        /*double[] historySignalFFT = new double[historyBufferDoubleAbsolute[0].length];
         Arrays.fill(historySignalFFT, 0.0);
-        // ---
+        */// ---
 
         double highPassFftSum = 0;
         double minValue = Double.MAX_VALUE;
@@ -236,8 +242,8 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
                     log = Math.log(absolute);
                 }*/
                 historyBufferDoubleAbsolute[j][helpCounter] = absolute;
-                // Recognition specific ---
-                historySignalFFT[helpCounter] = historySignalFFT[helpCounter] + absolute;
+                // Recognition specific [using an avg of the VIZ spectrum] ---
+                //historySignalFFT[helpCounter] = historySignalFFT[helpCounter] + absolute;
                 // ---
 
                 highPassFftSum += absolute;
@@ -250,8 +256,8 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
             }
         }
 
-        // Recognition specific ---
-        Log.d("computeSpectrum", "Start computing recognition");
+        // Recognition specific [using an avg of the VIZ spectrum] ---
+        /*Log.d("computeSpectrum", "Start computing recognition");
 
         int nSamplesHistory = historySignalFFT.length;
         // Averaging the STFT, if this does not give the same result as an FFT over the whole
@@ -265,7 +271,7 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         sp.edit().putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, detectedTechnology.toString()).apply();
         Log.d("computeSpectrum", "Done computing recognition");
-        // ---
+        */// ---
 
 
         // Normalize over the whole spectrum as it seems to give better results than over each column
@@ -299,6 +305,19 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         }
         Log.d("computeSpectrum", "Done normalizing, return");
         return historyBufferFloatNormalized;
+    }
+
+    private static Technology computeRecognition(float[] bufferHistory, Context context) {
+        double[] historySignalFFT = getFouriersCoeffiecients(bufferHistory);
+
+        double fftMax = 0;
+        for (int i = 0; i < historySignalFFT.length; i++) {
+            if (historySignalFFT[i] > fftMax) {
+                fftMax = historySignalFFT[i];
+            }
+        }
+
+        return computeRecognition(historySignalFFT, bufferHistory.length, fftMax, context);
     }
 
     private static Technology computeRecognition(double[] historySignalFFT, int nSamplesHistory, double fftMax, Context context) {
@@ -567,4 +586,29 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         return (int) Math.round(freq/fs*winLen);
     }
 
+    public static double[] getFouriersCoeffiecients(float[] rawAudio) {
+        HammingWindow hammWin = new HammingWindow(rawAudio.length);
+        DoubleFFT_1D mFFT = new DoubleFFT_1D(rawAudio.length);
+        double[] fftDouble = new double[rawAudio.length];
+        double[] fftAbsolute = new double[rawAudio.length / 2];
+
+        // Convert float array to double array
+        for (int i = 0; i < rawAudio.length; i++) {
+            fftDouble[i] = rawAudio[i];
+        }
+
+        hammWin.applyWindow(fftDouble);
+        mFFT.realForward(fftDouble);
+
+        // Get absolute value of the complex FFT result
+        int helpCounter = 0;
+        for (int l = 0; l < fftDouble.length; l += 2) {
+            // Increment by 2 to always get the real value
+            double absolute = getComplexAbsolute(fftDouble[l], fftDouble[l + 1]);
+            fftAbsolute[helpCounter] = absolute;
+            helpCounter++;
+        }
+
+        return fftAbsolute;
+    }
 }
