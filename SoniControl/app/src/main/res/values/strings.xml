@@ -116,6 +116,6 @@
     <string name="settings_title_location_radius">Location radius (metre)</string>
     <string name="statusChannelName">App status channel</string>
     <string name="detectionChannelName">Signal detection channel</string>
-    <string name="gui_technology">Technology: </string>
+    <string name="gui_technology">Estimated type:</string>
     <string name="how_to_proceed">How to proceed?</string>
 </resources>

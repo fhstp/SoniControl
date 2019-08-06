@@ -116,6 +116,6 @@
     <string name="settings_title_location_radius">Blockierradius (Meter)</string>
     <string name="statusChannelName">App-Status Kanal</string>
     <string name="detectionChannelName">Signalerkennung Kanal</string>
-    <string name="gui_technology">Technologie: </string>
+    <string name="gui_technology">Potenzieller Typ:</string>
     <string name="how_to_proceed">Wählen Sie eine der Optionen um fortzufahren.</string>
 </resources>

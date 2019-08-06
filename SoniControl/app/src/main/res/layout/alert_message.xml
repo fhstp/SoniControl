@@ -48,7 +48,7 @@
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/placeholderSpectrogram"
+        app:layout_constraintBottom_toTopOf="@+id/placeholderSpectrogram"
         tools:text="@string/gui_technology"
         android:layout_marginLeft="24dp" />
 
