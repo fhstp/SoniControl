@@ -77,7 +77,9 @@ public class MicCapture {
             instance = null; //set instance to null so that there is no miccapture anymore
         }
         if(recorder != null){
-            recorder.stop(); //stop the recorder
+            if (recorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+                recorder.stop(); //stop the recorder
+            }
             recorder.release(); //release the recorder resources
             // Now handled with the stopped variable ? captHandler.removeCallbacks(captRun); //reset the handler
             stopped = true;
