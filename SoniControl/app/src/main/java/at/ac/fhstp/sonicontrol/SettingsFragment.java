@@ -20,6 +20,7 @@
 package at.ac.fhstp.sonicontrol;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceFragment;
@@ -33,9 +34,8 @@ public class SettingsFragment extends PreferenceFragment {
 
     //TODO: remove references to Fragment and Activity
     static SettingsFragment settingsFragment;
-    MainActivity main = new MainActivity();
+    Context context;
     JSONManager jsonMan;
-    MainActivity nextMain;
     AlertDialog alertDelete = null;
     AlertDialog alertReset = null;
 
@@ -61,8 +61,9 @@ public class SettingsFragment extends PreferenceFragment {
 
         settingsFragment = this;
 
-        nextMain = main.getMainIsMain();
-        jsonMan = new JSONManager(nextMain);
+        context = getActivity().getApplicationContext();
+
+        jsonMan = new JSONManager(context);
 
         cbContinuousSpoofing = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_CONTINOUS_SPOOFING);
         cbGPSUse = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_GPS);
@@ -213,7 +214,7 @@ public class SettingsFragment extends PreferenceFragment {
 
     private void resetSettings() {
         // Reinitialize SharedPreferences values
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(nextMain.getApplicationContext());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, ConfigConstants.SETTING_CONTINOUS_SPOOFING_DEFAULT);
         editor.putBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
