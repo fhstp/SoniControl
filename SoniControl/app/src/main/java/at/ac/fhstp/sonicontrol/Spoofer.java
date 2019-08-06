@@ -185,7 +185,10 @@ public class Spoofer {
             setInstanceNull(); //set the instance of the spoofer null
         }
         if(audioTrack != null){ //if there is an audioplayer
-            audioTrack.stop(); //stop playing
+
+            if (audioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
+                audioTrack.stop(); //stop playing
+            }
             audioTrack.release(); //release the player resources
             audioTrack = null; //set the player to null
             // TODO: shouldnt we keep it in case we can reuse it ?
