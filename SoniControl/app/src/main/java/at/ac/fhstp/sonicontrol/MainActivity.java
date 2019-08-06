@@ -37,7 +37,6 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -74,7 +73,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     ImageButton btnSettings;
     ImageButton btnExit;
 
-    Button btnAlertStart;
+    Button btnAlertReplay;
     Button btnAlertSpoof;
     Button btnAlertDismissThisTime;
     Button btnAlertDismissAlways;
@@ -179,7 +178,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         locationFinder.init(MainActivity.this); //initialize the location-object with the main method
 
         btnStop = (ImageButton) findViewById(R.id.btnStop); //Main button for stopping the whole process
-        btnStart = (ImageButton) findViewById(R.id.btnPlay); //Main button for starting the whole process
+        btnStart = (ImageButton) findViewById(R.id.btnStart); //Main button for starting the whole process
         btnStorLoc = (ImageButton) findViewById(R.id.btnStorLoc); //button for getting into the storedLocations activity
         btnSettings = (ImageButton) findViewById(R.id.btnSettings); //button for getting into the settings activity
         btnExit = (ImageButton) findViewById(R.id.btnExit); //button for exiting the application
@@ -226,8 +225,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         });
 
-        btnAlertStart = (Button) view.findViewById(R.id.btnPlay); //button of the alert for playing the found signal with fs/3
-        btnAlertStart.setOnClickListener(new View.OnClickListener(){
+        btnAlertReplay = (Button) view.findViewById(R.id.btnPlay); //button of the alert for playing the found signal with fs/3
+        btnAlertReplay.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
             onAlertPlayDetectedSignal();
             }
@@ -978,7 +977,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     public void onAlertPlayDetectedSignal(){
         if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
-            btnAlertStart.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
+            btnAlertReplay.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
             sigPlayer = locationFinder.generatePlayer(); //create a new player
             isSignalPlayerGenerated = true; //player is generated so it's true
             sigPlayer.play(); //start the player
@@ -986,7 +985,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             sigPlayer.stop(); //stop the player
             sigPlayer.release(); //release the resources of the player
             sigPlayer = null; //set the player variable to null
-            btnAlertStart.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+            btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
             isSignalPlayerGenerated = false; //now there is no player anymore so it's false
         }
         txtSignalType.setText(sigType.toString()); //can be deleted it's only for debugging
