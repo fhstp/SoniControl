@@ -349,6 +349,10 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
             recogResult = Technology.GOOGLE_NEARBY;
         }
         else { *///Second: try out all other technologies
+        for (int i = 0; i < historySignalFFT.length; i++) {
+            historySignalFFT[i] = historySignalFFT[i] / fftMax; // divide by the maximum, so that the theoretical max value of the resulting score can be 1 (minimum = 0)
+        }
+
         Log.d(TAG, "Compute score Nearby");
         scoreNearby = detectActivity(historySignalFFT, fftMax, nearbyCenterFrequencies, ConfigConstants.NEARBY_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
         Log.d(TAG, "Compute score Lisnr");
@@ -375,7 +379,7 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
             Log.d(TAG, "Score " + technologies[i].toString() + ": " + scores[i]);
         }
         if (maxScore < 1) { //no technology achieved a high score -> declare the message as unknown message
-             recogResult = Technology.UNKNOWN;
+            recogResult = Technology.UNKNOWN;
         }
         //}
 //
@@ -389,10 +393,6 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
     private static double detectActivity(double[] fftSpectrum, double fftMax, int[] centerFreq, double bandwidth, int fs, int nSamples, int cutOffFrequency) {
         double score = 0.0;
 
-        for (int i = 0; i < fftSpectrum.length; i++) {
-            fftSpectrum[i] = fftSpectrum[i] / fftMax; // divide by the maximum, so that the theoretical max value of the resulting score can be 1 (minimum = 0)
-        }
-
         int nBands = centerFreq.length;
         //TODO: What happens if some frequencies are under the cutoff or above fs/2 ?
         int nOffBands = nBands + 1; // Starts at cutoff frequency and stops at the highest frequency
@@ -400,15 +400,15 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         double[] bandEnergy = new double[nBands];
         Arrays.fill(bandEnergy, 0.0);
         for (int i = 0; i < nBands; i++) {
-            int bandStartFreqIdx = freq2idx((centerFreq[i] - bandwidth), fs, nSamples);
-            int bandEndFreqIdx = freq2idx((centerFreq[i] + bandwidth), fs, nSamples);
+            int bandStartFreqIdx = freq2idx((centerFreq[i] - bandwidth/2.0), fs, nSamples);
+            int bandEndFreqIdx = freq2idx((centerFreq[i] + bandwidth/2.0), fs, nSamples);
 
             for (int j = bandStartFreqIdx; j < bandEndFreqIdx; j++) {
                 if (fftSpectrum[j] > bandEnergy[i]) {
                     bandEnergy[i] = fftSpectrum[j];
                 }
             }
-            Log.d(TAG, "bandEnergy[" + i + "]: " + String.format("%.12f", bandEnergy[i]));
+            Log.d(TAG, "bandEnergy[" + i + "] Idx in ["+bandStartFreqIdx+":"+bandEndFreqIdx+"]: " + String.format("%.12f", bandEnergy[i]));
         }
 
         double[] offBandEnergy = new double[nOffBands];
@@ -420,24 +420,28 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
 
             if (i == 0) {
                 bandStartFreqIdx = freq2idx(cutOffFrequency, fs, nSamples); //Starts at cutoffFrequency
-                bandEndFreqIdx = freq2idx(centerFreq[0] - bandwidth + 1, fs, nSamples); //add 1 to avoid overlap with the "on"-frequency bands
+                bandEndFreqIdx = freq2idx(centerFreq[0] - bandwidth/2.0, fs, nSamples) - 1; //remove 1 to avoid overlap with the "on"-frequency bands
             }
             else if (i == nOffBands-1) {
-                bandStartFreqIdx = freq2idx(centerFreq[centerFreq.length - 1] + bandwidth - 1, fs, nSamples); //remove 1 to avoid overlap with the "on"-frequency bands
+                bandStartFreqIdx = freq2idx(centerFreq[centerFreq.length - 1] + bandwidth/2.0, fs, nSamples) + 1; //add 1 to avoid overlap with the "on"-frequency bands
                 bandEndFreqIdx = freq2idx(Math.floor(fs/2) - 1, fs, nSamples); // Ends at the highest frequency possible
             }
             else {
-                bandStartFreqIdx = freq2idx((centerFreq[i-1] + bandwidth - 1), fs, nSamples); //remove 1 to avoid overlap with the "on"-frequency bands
-                bandEndFreqIdx = freq2idx((centerFreq[i] - bandwidth + 1), fs, nSamples); //add 1 to avoid overlap with the "on"-frequency bands
+                bandStartFreqIdx = freq2idx((centerFreq[i-1] + bandwidth/2.0), fs, nSamples) + 1; //add 1 to avoid overlap with the "on"-frequency bands
+                bandEndFreqIdx = freq2idx((centerFreq[i] - bandwidth/2.0), fs, nSamples) - 1; //remove 1 to avoid overlap with the "on"-frequency bands
             }
 
-            for (int j = bandStartFreqIdx; j < bandEndFreqIdx; j++) {
-                if (fftSpectrum[j] > offBandEnergy[i]) {
-                    offBandEnergy[i] = fftSpectrum[j];
-                }
-            }
+            int nbIdx = bandEndFreqIdx-bandStartFreqIdx+1;
+            double[] offBands = new double[nbIdx];
+
+            if (nbIdx >= 0)
+                System.arraycopy(fftSpectrum, bandStartFreqIdx, offBands, 0, nbIdx);
+
+            //Arrays.sort(offBands); // UNCOMMENT IF USING MEDIAN
+            offBandEnergy[i] = max(offBands);//Using the maximum gave the most interpretable results. //median(offBands);
+
             sumOffBandEnergy += offBandEnergy[i];
-            Log.d(TAG, "offBandEnergy[" + i + "]: " + String.format("%.12f", offBandEnergy[i]));
+            Log.d(TAG, "offBandEnergy[" + i + "] Idx in ["+bandStartFreqIdx+":"+bandEndFreqIdx+"]: " + String.format("%.12f", offBandEnergy[i]));
         }
 
         //get the highest quarter of the in band frequencies (in case not all are present)
@@ -625,5 +629,50 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         }
 
         return fftAbsolute;
+    }
+
+
+    /**
+     * Helper to get maximum value out of double array
+     * @param values array to get the max of
+     * @return the highest value of the array passed
+     */
+    public static double max(double[] values) {
+        double max = 0;
+        double helper;
+        for(int i = 0; i < values.length; i++){
+            helper = values[i];
+            if(helper > max){
+                max = helper;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * the array double[] m MUST BE SORTED
+     * @param m
+     * @return the mean of the array passed
+     */
+    public static double mean(double[] m) {
+        double sum = 0;
+        for (int i = 0; i < m.length; i++) {
+            sum += m[i];
+        }
+        return sum / m.length;
+    }
+
+    /**
+     * the array double[] m MUST BE SORTED
+     * @param m
+     * @return the median of the array passed
+     */
+    public static double median(double[] m) {
+        int middle = m.length/2;
+        if (m.length%2 == 1) {
+            return m[middle];
+        } else {
+            return (m[middle-1] + m[middle]) / 2.0;
+        }
     }
 }
