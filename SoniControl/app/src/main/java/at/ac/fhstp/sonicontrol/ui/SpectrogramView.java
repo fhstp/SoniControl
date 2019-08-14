@@ -51,6 +51,8 @@ public class SpectrogramView extends View {
 
     private float[] magnitudes;
     private float[][] historyBuffer;
+    private float maxBuffer;
+    private float minBuffer;
 
     private int fftResolution;
     private int historyBufferLength;
@@ -165,6 +167,26 @@ public class SpectrogramView extends View {
         historyBuffer = m;
         //System.arraycopy(m, 0, historyBuffer, 0, m.length);
         historyBufferLength = historyBuffer.length;
+
+        //storeMinMax(historyBuffer);
+    }
+
+    private void storeMinMax(float[][] historyBuffer) {
+        minBuffer = Float.MAX_VALUE;
+        maxBuffer = Float.MIN_VALUE;
+        for (int i = 0; i < historyBuffer.length; i++) {
+            for (int j = 0; j < historyBuffer[0].length; j++) {
+                float value = (float) (0.009 * Math.max(0, -20 * Math.log10(historyBuffer[i][j])));
+                if (value > maxBuffer)
+                    maxBuffer = value;
+                if (value < minBuffer)
+                    minBuffer = value;
+            }
+        }
+        if (minBuffer < 0)
+            minBuffer = 0;
+        Log.d("stretchContrastTo01", "minBuffer: " + minBuffer);
+        Log.d("stretchContrastTo01", "maxBuffer: " + maxBuffer);
     }
 
     /**
@@ -227,12 +249,17 @@ public class SpectrogramView extends View {
                 }
 
                 j /= samplingRate / 2;
-                //TODO: Rescale or ask for the whole array
+                // Currently requires the whole array
 
                 //Log.d("draw", "j:" + j + " . magnitudes.length:" + magnitudes.length);
                 float mag = magnitudes[(int) (j * magnitudes.length)];
                 float db = (float) Math.max(0, -20 * Math.log10(mag));
-                int c = getInterpolatedColor(colors, db * 0.009f);
+                float valueToVisualize = db * 0.009f;
+
+                // Improve contrast by stretching values to fill the [0;1] range
+                /*float contrastImprovedValue = stretchContrastTo01(valueToVisualize, minBuffer, maxBuffer);
+                */
+                int c = getInterpolatedColor(colors, valueToVisualize);//contrastImprovedValue);
                 paint.setColor(c);
                 int x = pos % rWidth;
                 int y = i;
@@ -299,6 +326,18 @@ public class SpectrogramView extends View {
             }
 
         }
+    }
+
+    private float stretchContrastTo01(float value, float min, float max) {
+        if (value < 0)
+            return 0;
+        int newMax = 1;
+        int newMin = 0;
+
+        //Log.d("stretchContrastTo01", "old: " + value);
+        float newValue = (value-min) * ((newMax-newMin) / (max-min)) + newMin;
+        //Log.d("stretchContrastTo01", "new: " + newValue);
+        return newValue;
     }
 
 
