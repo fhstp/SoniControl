@@ -57,7 +57,7 @@ static bool audioProcessing (
         int __unused samplerate     // sampling rate
 ) {
     player->setTempo(1.0, true); // Needed for the pitch shifting to work
-    player->setPitchShift(-12);
+    player->setPitchShift(-12); // Pitch shift one octave down
     if (player->process(floatBuffer, false, (unsigned int)numberOfFrames)) {
         SuperpoweredFloatToShortInt(floatBuffer, audio, (unsigned int)numberOfFrames);
         return true;
