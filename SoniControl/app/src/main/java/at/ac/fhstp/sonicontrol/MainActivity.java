@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -51,7 +50,6 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
@@ -96,6 +94,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     DetectionDialogFragment alert;
     AsyncTask detectionAsyncTask;
+    PitchShiftPlayer pitchShiftPlayer;
     //private SpectrogramView spectrogramView;
     Technology sigType;
     View view;
@@ -185,6 +184,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         detector = Scan.getInstance(); //Get Scan-object if no object is available yet make a new one
         detector.init(MainActivity.this); //initialize the detector with the main method
         detector.setDetectionListener(this); // MainActivity will be notified of detections (calls onDetection)
+        pitchShiftPlayer = new PitchShiftPlayer();
 
         locationFinder = Location.getInstanceLoc(); //Get LocationFinder-object if no object is available yet make a new one
         locationFinder.init(MainActivity.this); //initialize the location-object with the main method
@@ -261,6 +261,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
         else {
             NotificationHelper.cancelStatusNotification(MainActivity.this);
+        }
+
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.cleanup();
         }
         
         // Reset state
@@ -493,6 +497,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         isInBackground = false;
         checkFirstRunForWelcomeShowing();
 
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.onResume();
+        }
+
         PendingIntent detectionPendingIntent = NotificationHelper.getPendingIntentDetectionFlagNoCreate(getApplicationContext());
 
         // Store the app activeness and then check the state
@@ -623,6 +631,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         super.onPause();
         isInBackground = true;
 
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.onPause();
+        }
+
         // Store our shared preference
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
@@ -648,6 +660,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     protected void onDestroy() {
         super.onDestroy();
 
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.cleanup();
+        }
         // TODO: Release resources... But this should not be called as long as our Service runs.
         // Maybe threads, microphone, ... ?
         // threadPool.shutdownNow();
@@ -697,6 +712,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     private void handleSignal(Technology technology, float[] bufferHistory, int maxValueIndex) {
         Log.d("handleSignal", "Start to handle signal");
+        //Log.d("nb samples", "bufferHistory.length (mono): " + bufferHistory.length);
         bufferHistory = highPassFilter(bufferHistory);
 
         // Stores the technology on disk in case the Activity was destroyed
@@ -945,10 +961,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         ed.remove(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF);
         ed.apply();
 
+        // Releasing audio resources
         if (sigPlayer != null ) {
             sigPlayer.release(); //release the resources of the player
             sigPlayer = null; //set the player variable to null
             isSignalPlayerGenerated = false; //now there is no player anymore so it's false
+        }
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.cleanup();
         }
     }
 
@@ -961,6 +981,24 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     @Override
     public void onAlertPlayDetectedSignal(DialogFragment dialog){
+
+        if (pitchShiftPlayer == null) {
+            pitchShiftPlayer = new PitchShiftPlayer();
+        }
+        if (!isSignalPlayerGenerated) {
+            File file = new File (this.getApplicationContext().getFilesDir(), "detection.wav");
+            Log.d("onReplay", "file length: " + file.length());
+
+            pitchShiftPlayer.startAudio(ConfigConstants.SCAN_SAMPLE_RATE, 4410);
+            pitchShiftPlayer.openFile(file.getPath(), 0, (int) file.length());
+            isSignalPlayerGenerated = true;
+        }
+
+        pitchShiftPlayer.playPause();
+        int playPauseText = pitchShiftPlayer.isPlaying() ? R.string.ButtonStopSignal : R.string.ButtonPlaySignal;
+        alert.btnAlertReplay.setText(playPauseText); //set the button for playing/stopping
+
+/*
         if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
             alert.btnAlertReplay.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
             sigPlayer = this.generatePlayer(this.getApplicationContext(), dialog); //create a new player
@@ -981,6 +1019,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 }
             }
         }
+*/
     }
 
     @Override

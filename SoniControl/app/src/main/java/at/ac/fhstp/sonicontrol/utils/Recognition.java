@@ -135,7 +135,7 @@ public class Recognition {
                     bandEnergy[i] = fftSpectrum[j];
                 }
             }
-            Log.d(TAG, "bandEnergy[" + i + "] Idx in ["+bandStartFreqIdx+":"+bandEndFreqIdx+"]: " + String.format("%.12f", bandEnergy[i]));
+            //Log.d(TAG, "bandEnergy[" + i + "] Idx in ["+bandStartFreqIdx+":"+bandEndFreqIdx+"]: " + String.format("%.12f", bandEnergy[i]));
         }
 
         double[] offBandEnergy = new double[nOffBands];
