@@ -36,7 +36,16 @@ public interface SoniControlAPI {
     @GET("/importDetections")
     Call<ResponseBody>  importDetections(@Query("longitude") double longitude,
                                        @Query("latitude") double latitude,
+                                       @Query("range") int range,
                                        @Query("technologyid") int technologyid,
                                        @Query("timestampfrom") String timestampfrom,
                                        @Query("timestampto") String timestampto);
+
+    @GET("/getNumberOfImportDetections")
+    Call<ResponseBody>  getNumberOfImportDetections(@Query("longitude") double longitude,
+                                         @Query("latitude") double latitude,
+                                         @Query("range") int range,
+                                         @Query("technologyid") int technologyid,
+                                         @Query("timestampfrom") String timestampfrom,
+                                         @Query("timestampto") String timestampto);
 }

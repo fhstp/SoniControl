@@ -76,6 +76,24 @@
             app:layout_constraintTop_toBottomOf="@+id/txtFilterTitle" />
 
         <TextView
+            android:id="@+id/txtRange"
+            android:layout_width="120dp"
+            android:layout_height="29dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="Range"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edtLocation" />
+
+        <TextView
             android:id="@+id/txtFilterTitle"
             android:layout_width="379dp"
             android:layout_height="30dp"
@@ -147,7 +165,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edtLocation" />
+            app:layout_constraintTop_toBottomOf="@+id/edtRange" />
 
         <TextView
             android:id="@+id/txtTimestampFromTitle"
@@ -183,6 +201,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtLocation" />
 
+        <EditText
+            android:id="@+id/edtRange"
+            android:layout_width="342dp"
+            android:layout_height="46dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:ems="10"
+            android:hint="Please enter a range!"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.615"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtRange" />
+
         <Button
             android:id="@+id/btnTimestampFrom"
             android:layout_width="144dp"
@@ -209,6 +244,7 @@
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampFromTitle" />
+
     </android.support.constraint.ConstraintLayout>
 </ScrollView>
 

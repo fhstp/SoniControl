@@ -117,4 +117,5 @@
     <string name="statusChannelName">App-Status Kanal</string>
     <string name="detectionChannelName">Signalerkennung Kanal</string>
     <string name="gui_technology">Technologie: </string>
+    <string name="NoSignalImportedAndSavedYet">Sie haben noch keine Ultraschallsignale importiert!</string>
 </resources>

@@ -117,4 +117,6 @@
     <string name="statusChannelName">App status channel</string>
     <string name="detectionChannelName">Signal detection channel</string>
     <string name="gui_technology">Technology: </string>
+    <string name="NoSignalImportedAndSavedYet">You have not imported any signals yet!</string>
+    <string name="stored_detections_ask_again">will ask again</string>
 </resources>

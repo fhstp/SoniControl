@@ -74,5 +74,6 @@ public final class ConfigConstants {
     public static int DETECTION_TYPE_ALWAYS_BLOCKED_HERE = 1;
     public static int DETECTION_TYPE_DISMISSED_THIS_TIME = 2;
     public static int DETECTION_TYPE_BLOCKED_THIS_TIME = 3;
+    public static int DETECTION_TYPE_ASK_AGAIN = 4;
 
 }

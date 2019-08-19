@@ -75,7 +75,7 @@ import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
 public class MainActivity extends BaseActivity implements Scan.DetectionListener {
-    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET/*, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE*/};
+    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE/*, Manifest.permission.READ_EXTERNAL_STORAGE*/};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
 
     private static final String TAG = "MainActivity";
@@ -149,6 +149,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
     double[] lastPosition;
+
+    boolean entryWasAskedAgain = false;
 
     // Thread handling
     private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
@@ -449,6 +451,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 }
             }
         }
+    }
+
+    public void activateAlertOnAskAgain(Technology signalType){
+        entryWasAskedAgain = true;
+        activateAlert(signalType);
     }
 
 
@@ -961,7 +968,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         saveJsonFile = checkJsonAndLocationPermissions()[0];
         boolean locationTrack = checkJsonAndLocationPermissions()[1];
 
-        if(saveJsonFile && locationTrack) {
+        if(saveJsonFile && locationTrack && entryWasAskedAgain) {
+            entryWasAskedAgain = false;
+            //TODO: Update entry
+            Log.d("MainActivity", "update entry");
+            double[] detectedSignalPosition = locationFinder.getDetectedDBEntry();
+            jsonMan.updateSpoofStatusOfRules(detectedSignalPosition, sigType.toString(), spoofDecision);
+            //jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
+        }else if(saveJsonFile && locationTrack && !entryWasAskedAgain) {
             //Log.d("SearchForJson", "addWithLoc");
             double[] detectedSignalPosition = locationFinder.getDetectedDBEntry();
             jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
@@ -970,8 +984,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
             }
-        }
-        if(saveJsonFile&&!locationTrack){
+        }else if(saveJsonFile&&!locationTrack){
             //showToastOnNoLocation(); NOTE: Already shown in the Always options
             double[] noLocation = new double[2];
             noLocation[0] = 0;
@@ -1235,12 +1248,16 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     public void onResponse(Call<Detection> call, Response<Detection> response) {
                         if(response.isSuccessful()) {
                             Log.i(TAG, "post submitted to API." + response.body().toString());
+                            Toast toast = Toast.makeText(MainActivity.this, "The detection was successfully uploaded.", Toast.LENGTH_LONG);
+                            toast.show();
                             sendAudioData(restService, technology, timestamp);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Detection> call, Throwable t) {
+                        Toast toast = Toast.makeText(MainActivity.this, "The detection was not uploaded.", Toast.LENGTH_LONG);
+                        toast.show();
                         Log.e(TAG, "Unable to submit post to API." + t);
                     }
                 });
@@ -1274,11 +1291,15 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             @Override
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
+                Toast toast = Toast.makeText(MainActivity.this, "The audiofile was successfully uploaded.", Toast.LENGTH_LONG);
+                toast.show();
                 Log.v("Upload", "success");
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast toast = Toast.makeText(MainActivity.this, "The audiofile was not uploaded.", Toast.LENGTH_LONG);
+                toast.show();
                 Log.e("Upload error:", t.getMessage());
             }
         });

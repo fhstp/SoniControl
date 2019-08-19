@@ -74,4 +74,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
 
     implementation 'org.apache.commons:commons-lang3:3.8.1'
+    implementation 'org.osmdroid:osmdroid-android:6.1.0'
+
+    implementation 'com.github.MKergall:osmbonuspack:6.6.0'
 }

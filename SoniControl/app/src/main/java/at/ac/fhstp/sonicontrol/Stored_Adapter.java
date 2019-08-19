@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 public class Stored_Adapter extends ArrayAdapter<String[]>{
 
-    Stored_Adapter(@NonNull Context context, ArrayList<String[]> resource) {
+    public Stored_Adapter(@NonNull Context context, ArrayList<String[]> resource) {
         super(context, R.layout.row_item, resource);
     }
 
@@ -64,13 +64,18 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
         txtLastDet.setText(formattedDate);
         txtAddress.setText(singleArrayItem[5]);
 
-        String spoofingStatus;
+        String spoofingStatus = null;
         if(Integer.valueOf(singleArrayItem[4])==1){
             spoofingStatus = getContext().getString(R.string.stored_detections_will_be_blocked);
-            customView.setBackgroundColor(0xFFE39B26);
-        }else {
+            customView.setBackgroundColor(0xFFFF0015);
+            //customView.setBackgroundColor(0xFFE39B26);
+        }else if(Integer.valueOf(singleArrayItem[4])==0){
             spoofingStatus = getContext().getString(R.string.stored_detections_will_be_ignored);
-            customView.setBackgroundColor(0x00ffffff);
+            customView.setBackgroundColor(0xFF00C200);
+            //customView.setBackgroundColor(0x00ffffff);
+        }else if(Integer.valueOf(singleArrayItem[4])==4){
+            spoofingStatus = getContext().getString(R.string.stored_detections_ask_again);
+            customView.setBackgroundColor(0xFFE39B26);
         }
         txtSpoofingStatus.setText(spoofingStatus);
 

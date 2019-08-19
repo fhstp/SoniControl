@@ -111,10 +111,15 @@ public class Location {
 
         JSONManager jsonMan = new JSONManager(main);
         data = jsonMan.getJsonData(); //get the Json data saved in "data"
+        ArrayList<String[]> importedData = jsonMan.getImportJsonData();
+        data.addAll(importedData);
         jsonMan = null;
+        int spoofStatus = -1;
         for (String[] array : data){ //iterate through the list
             positionDBEntry[0] = Double.valueOf(array[0]); //save the longitude in the positionDBEntry array
             positionDBEntry[1] = Double.valueOf(array[1]); //save the latitude in the positionDBEntry array
+
+            Log.d("Location", positionDBEntry[0] + " "+positionDBEntry[1]);
 
             double distance = getDistanceInMetres(positionDBEntry, position); //calculate the distance between the latest Position and the position from the JSON-file
 
@@ -129,15 +134,32 @@ public class Location {
 
                 fileUrl = array[6]; //get file from json and save in fileUrl variable
 
-                if(Integer.valueOf(array[4]) == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
-                    shouldBeSpoofed = true;
-                }else{
-                    shouldBeSpoofed = false;
+                spoofStatus = Integer.valueOf(array[4]);
+                for (String[] importedArray : importedData) {
+                    double[] importedPositionDBEntry = new double[2];
+                    importedPositionDBEntry[0] = Double.valueOf(importedArray[0]);
+                    importedPositionDBEntry[1] = Double.valueOf(importedArray[1]);
+                    double importedDistance = getDistanceInMetres(positionDBEntry, importedPositionDBEntry);
+                    if(importedDistance<locationRadius && importedArray[2].equals(signalType.toString()) && spoofStatus != Integer.valueOf(importedArray[4])) {
+                        spoofStatus = ConfigConstants.DETECTION_TYPE_ASK_AGAIN;
+                        Log.d("Location", "contradictory rule");
+                        break;
+                    }
                 }
+                break;
             }
         }
-
-        decideIfNewSignalOrNot(isNewSignal, positionDBEntry, shouldBeSpoofed, position);
+        if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
+            shouldBeSpoofed = true;
+            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry);
+        }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){
+            shouldBeSpoofed = false;
+            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry);
+        }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ASK_AGAIN){
+            openAlertToAskAgain(position);
+        }else {
+            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry);
+        }
     }
 
     public double[] getDetectedDBEntry(){
@@ -160,9 +182,9 @@ public class Location {
         detectedSignalPosition = positionLatest; //set the latest position to the detected position if the continuous spoofing setting is active
     }
 
-    private void shouldDBEntrySpoofed(boolean shouldBeSpoofed, double[]position){
+    private void shouldDBEntrySpoofed(boolean shouldBeSpoofed, double[] position, double[] positionDBEntry){
         JSONManager jsonMan = new JSONManager(main);
-        jsonMan.setLatestDate(position, signalTech); //update the date in the json-file at the detected position
+        jsonMan.setLatestDate(positionDBEntry, signalTech); //update the date in the json-file at the detected position
         if(shouldBeSpoofed){ //if it should be spoofed
             //Log.d("Location", "I should be spoofed");
             /*if (!main.getBackgroundStatus()) { //if the app is not in the background
@@ -191,7 +213,7 @@ public class Location {
         return (distance*1000);
     }
 
-        private void blockBySpoofing() {
+    private void blockBySpoofing() {
         boolean playingGlobal = true; //the global play status is now true after the start
         boolean playingHandler = true; //helpboolean for switching the playstatus in the puslinghandler
         spoof = Spoofer.getInstance(); //get an instance of the spoofer
@@ -314,10 +336,17 @@ public class Location {
         this.signalType = sigType;
     }
 
-    public void decideIfNewSignalOrNot(boolean isNewSignal, double[] positionDBEntry, boolean shouldBeSpoofed, double[] position){
+    public void openAlertToAskAgain(double[] position){
+        detectedSignalPosition = position; //save the new signal as the detected Position
+        NotificationHelper.activateDetectionAlertStatusNotification(main.getApplicationContext(), signalType);
+
+        main.activateAlertOnAskAgain(signalType);
+    }
+
+    public void decideIfNewSignalOrNot(boolean isNewSignal, boolean shouldBeSpoofed, double[] position, double[] positionDBEntry){
         if(isNewSignal){ //if its a new signal
-            //Log.d("Location", "I am a new Signal");
             detectedSignalPosition = position; //save the new signal as the detected Position
+            //Log.d("Location", "I am a new Signal");
             //main.cancelScanningStatusNotification();
             NotificationHelper.activateDetectionAlertStatusNotification(main.getApplicationContext(), signalType);
             /*if(main.getBackgroundStatus()) { //if the app is in the background
@@ -326,9 +355,9 @@ public class Location {
             main.activateAlert(signalType); //open the alert dialog with the found technology
 
         }else{
+            detectedSignalPosition = positionDBEntry; //save the new signal as the detected Position
             //Log.d("Location", "I am not a new Signal");
-            detectedSignalPosition = positionDBEntry; //save the position from the json-file
-            shouldDBEntrySpoofed(shouldBeSpoofed,positionDBEntry); //check the spoofed status from the json-file
+            shouldDBEntrySpoofed(shouldBeSpoofed,position, positionDBEntry); //check the spoofed status from the json-file
 
         }
     }
