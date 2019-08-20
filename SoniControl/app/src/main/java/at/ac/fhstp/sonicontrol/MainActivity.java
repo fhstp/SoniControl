@@ -441,13 +441,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     public void activateAlert(Technology signalType){
         SharedPreferences settings = getSettingsObject(); //get the settings
-        preventiveSpoof = settings.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
-        if(preventiveSpoof) {
-            if (usedBlockingMethod == null) {
-                NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
-                usedBlockingMethod = locationFinder.blockMicOrSpoof();
-            }
-        }
 
         boolean gpsEnabled = settings.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
         boolean networkEnabled = settings.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
@@ -737,6 +730,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
 
+
     private void checkTechnologyAndDoAccordingly(Technology detectedTechnology){
         if(detectedTechnology == null) {
             // This case should not happen
@@ -758,8 +752,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     private void handleSignal(Technology technology) {
-        // Stores the technology on disk in case the Activity was destroyed
+    
         SharedPreferences sp = getSettingsObject();
+        preventiveSpoof = sp.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
+        if(preventiveSpoof) {
+            if (usedBlockingMethod == null) {
+                NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
+                usedBlockingMethod = locationFinder.blockMicOrSpoof();
+            }
+        }
+
+        // Stores the technology on disk in case the Activity was destroyed
         SharedPreferences.Editor ed = sp.edit();
         ed.putString("lastDetectedTechnology", technology.toString());
         ed.apply();
