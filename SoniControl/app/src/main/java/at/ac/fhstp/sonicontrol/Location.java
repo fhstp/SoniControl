@@ -245,7 +245,9 @@ public class Location {
                 available = false;
             }
         } finally{
-            recorder.stop(); //stop the recorder
+            if (recorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+                recorder.stop(); //stop the recorder
+            }
             recorder.release(); //release the recorder resources
         }
 

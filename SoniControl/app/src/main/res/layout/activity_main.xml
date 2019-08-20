@@ -24,7 +24,7 @@
     android:layout_height="match_parent" tools:context=".MainActivity">
 
     <ImageButton
-        android:id="@+id/btnPlay"
+        android:id="@+id/btnStart"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_alignParentTop="true"
@@ -37,7 +37,7 @@
         android:id="@+id/btnStorLoc"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_alignTop="@+id/btnPlay"
+        android:layout_alignTop="@+id/btnStart"
         android:layout_toEndOf="@+id/btnExit"
         android:layout_toRightOf="@+id/btnExit"
         android:background="@android:color/darker_gray"
@@ -48,10 +48,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/btnSettings"
-        android:layout_alignEnd="@+id/btnPlay"
-        android:layout_alignLeft="@+id/btnPlay"
-        android:layout_alignRight="@+id/btnPlay"
-        android:layout_alignStart="@+id/btnPlay"
+        android:layout_alignEnd="@+id/btnStart"
+        android:layout_alignLeft="@+id/btnStart"
+        android:layout_alignRight="@+id/btnStart"
+        android:layout_alignStart="@+id/btnStart"
         android:layout_alignTop="@+id/btnSettings"
         android:background="@android:color/darker_gray"
         android:src="@drawable/ic_pause_white_48dp" />

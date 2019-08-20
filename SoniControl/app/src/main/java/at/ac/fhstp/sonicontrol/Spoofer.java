@@ -114,7 +114,7 @@ public class Spoofer {
                 AudioManager audioManager = (AudioManager) main.getSystemService(Context.AUDIO_SERVICE);
                 // not used ? int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
                 //Log.d("Spoofer", "Streamtype: " + String.valueOf(AudioManager.STREAM_MUSIC));
-                audioManager.setStreamVolume(3, (int) Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 1.00D)), 0);
+                audioManager.setStreamVolume(3, (int) Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 0.70D)), 0);
 
                 if (playingHandler) {
                     playtime = genNoise.getPlayertime(); //get the playertime depending on the generated whitenoise
@@ -185,7 +185,10 @@ public class Spoofer {
             setInstanceNull(); //set the instance of the spoofer null
         }
         if(audioTrack != null){ //if there is an audioplayer
-            audioTrack.stop(); //stop playing
+
+            if (audioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
+                audioTrack.stop(); //stop playing
+            }
             audioTrack.release(); //release the player resources
             audioTrack = null; //set the player to null
             // TODO: shouldnt we keep it in case we can reuse it ?
