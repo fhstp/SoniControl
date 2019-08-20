@@ -700,20 +700,20 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     @Override
-    public void onDetection(final Technology detectedTechnology, final float[] bufferHistory, final int maxValueIndex) {
+    public void onDetection(final Technology detectedTechnology, final float[] bufferHistory) {//, final int maxValueIndex) {
         // Should we start this as an AsyncTask already ?
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                handleSignal(detectedTechnology, bufferHistory, maxValueIndex);
+                handleSignal(detectedTechnology, bufferHistory); //, maxValueIndex);
             }
         });
     }
 
-    private void handleSignal(Technology technology, float[] bufferHistory, int maxValueIndex) {
+    private void handleSignal(Technology technology, float[] bufferHistory) { //, int maxValueIndex) {
         Log.d("handleSignal", "Start to handle signal");
         //Log.d("nb samples", "bufferHistory.length (mono): " + bufferHistory.length);
-        bufferHistory = highPassFilter(bufferHistory);
+        bufferHistory = preProcessing(bufferHistory);
 
         // Stores the technology on disk in case the Activity was destroyed
         SharedPreferences sp = getSettingsObject();
@@ -721,7 +721,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         ed.putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, technology.toString());
         ed.putString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getTimeAndDateForAlert());
         ed.putInt(ConfigConstants.BUFFER_HISTORY_LENGTH_SHARED_PREF, bufferHistory.length);
-        ed.putInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, maxValueIndex);
+        //ed.putInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, maxValueIndex);
         ed.apply();
 
         // TODO: Move to the specific cases where the bufferHistory will be needed ?
@@ -788,10 +788,19 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
     }
 
-    private float[] highPassFilter(float[] bufferHistory) {
-        Log.d("highPassFilter", "Start high pass filtering");
+    /**
+     * Preprocess the buffer history (containing the detected signal).
+     * Convert to mono, compute RMS and apply a high pass filter.
+     * @param bufferHistory Stereo interleaved audio buffer
+     * @return the preprocessed audio buffer
+     */
+    private float[] preProcessing(float[] bufferHistory) {
+        int maxValueIndex = -1;
+        float maxValue = Integer.MIN_VALUE;
 
-        float[] highPassedArray = new float[bufferHistory.length];
+        Log.d("preProcessing", "Start converting to mono, computing RMS and high pass filtering");
+
+        float[] highPassedArray = new float[bufferHistory.length/2];
 
         Butterworth butterworthUp = new Butterworth();
         int bandPassFilterOrder = ConfigConstants.BANDPASS_FILTER_ORDER;
@@ -800,10 +809,27 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         double bandpassWidth = ConfigConstants.BANDPASS_WIDTH;
         //butterworthUp.bandPass(bandPassFilterOrder, Fs, centerFrequencyBandPass, bandpassWidth);
         butterworthUp.highPass(bandPassFilterOrder, Fs, ConfigConstants.HIGHPASS_CUTOFF_FREQUENCY);
-        for(int i = 0; i < bufferHistory.length; i++) {
-            highPassedArray[i] = (float) butterworthUp.filter(bufferHistory[i]);
+        double squareSum = 0.0;
+        for(int i = 1, counter = 0; i < bufferHistory.length; i+=2, counter++) {
+            float value = (float) butterworthUp.filter((bufferHistory[i] + bufferHistory[i-1])/2);
+            highPassedArray[counter] = value;
+            if (value > maxValue) {
+                maxValue = value;
+                maxValueIndex = counter;
+            }
+            squareSum += value*value;
         }
-        Log.d("highPassFilter", "Done high pass filtering");
+        float amplitude = (float) Math.sqrt(squareSum/highPassedArray.length);
+
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, maxValueIndex);
+        ed.putFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, amplitude);
+        ed.apply();
+        Log.d("preProcessing", "maxValueIndex: " + maxValueIndex + ", amplitude: " + amplitude);
+
+
+        Log.d("preProcessing", "Done converting to mono, computing RMS and high pass filtering");
         return highPassedArray;
     }
 

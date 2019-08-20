@@ -168,7 +168,7 @@ public class Recognition {
             offBandEnergy[i] = max(offBands);//Using the maximum gave the most interpretable results. //median(offBands);
 
             sumOffBandEnergy += offBandEnergy[i];
-            Log.d(TAG, "offBandEnergy[" + i + "] Idx in ["+bandStartFreqIdx+":"+bandEndFreqIdx+"]: " + String.format("%.12f", offBandEnergy[i]));
+            //Log.d(TAG, "offBandEnergy[" + i + "] Idx in ["+bandStartFreqIdx+":"+bandEndFreqIdx+"]: " + String.format("%.12f", offBandEnergy[i]));
         }
 
         //get the highest quarter of the in band frequencies (in case not all are present)

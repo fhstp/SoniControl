@@ -26,7 +26,7 @@ import android.preference.PreferenceManager;
 public class Scan {
     private static final String TAG = "Scan";
     public interface DetectionListener {
-        public void onDetection(Technology technology, float[] stereoRawData, int maxValueIndex);
+        public void onDetection(Technology technology, float[] stereoRawData);//, int maxValueIndex);
     }
     //private List<DetectionListener> detectionListeners = new ArrayList<>();
     private DetectionListener mainDetectionListener = null;
@@ -72,25 +72,26 @@ public class Scan {
         this.mainDetectionListener = listener;
     }
 
-    public void notifyDetectionListeners(Technology technology, float[] bufferHistory, int maxValueIndex) {
+    public void notifyDetectionListeners(Technology technology, float[] bufferHistory) {//, int maxValueIndex) {
         if (technology != null) {
             /*for(DetectionListener listener: detectionListeners) {
                 listener.onDetection(lastDetectedTechnology);
             }*/
-            mainDetectionListener.onDetection(technology, bufferHistory, maxValueIndex);
+            mainDetectionListener.onDetection(technology, bufferHistory); //, maxValueIndex);
         }
         else {
             //Log.d(TAG, "notifyDetectionListeners: lastDetectedTechnology is null");
         }
     }
 
-    /***
-     * Translates the String received from CPP to a Technology value and notifies the listeners of the detection.
+    /**
+     * Notify listeners after translating the String received from CPP to a Technology value.
      * Note: This is called from the native code every time there is a detection
      * @param technology String corresponding to a Technology Enum value
+     * @param bufferHistory raw buffer captured via Superpowered
      */
-    public void detectedSignal(String technology, float[] bufferHistory, int maxValueIndex) {
-        float[] bufferHistoryFloatArrayMono = bufferHistory;
+    public void detectedSignal(String technology, float[] bufferHistory) { //}, int maxValueIndex) {
+        //float[] bufferHistoryFloatArrayMono = bufferHistory;
         //SignalConverter.writeToCSV(bufferHistoryFloatArrayMono, main.getApplicationContext());
 
         try {
@@ -101,7 +102,7 @@ public class Scan {
             lastDetectedTechnology = Technology.UNKNOWN;
         }
         paused = true;
-        notifyDetectionListeners(lastDetectedTechnology, bufferHistory, maxValueIndex);
+        notifyDetectionListeners(lastDetectedTechnology, bufferHistory); //, maxValueIndex);
     }
 
     private Runnable scanRun = new Runnable() {

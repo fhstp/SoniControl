@@ -58,6 +58,7 @@ public final class ConfigConstants {
     public static final String BUFFER_HISTORY_FILENAME = "bufferHistory.raw";
     public static final String BUFFER_HISTORY_LENGTH_SHARED_PREF = "bufferHistoryLength";
     public static final String MAX_VALUE_INDEX_SHARED_PREF = "bufferHistoryMaxValueIndex";
+    public static final String BUFFER_HISTORY_AMPLITUDE_SHARED_PREF = "bufferHistoryAmplitude";
     public static final String LAST_DETECTED_TECHNOLOGY_SHARED_PREF = "lastDetectedTechnology";
     public static final String LAST_DETECTED_DATE_SHARED_PREF = "lastDetectedDateAndTime";
     public static String EXTRA_TECHNOLOGY_DETECTED = "at.ac.fhstp.sonicontrol.TECHNOLOGY_DETECTED";

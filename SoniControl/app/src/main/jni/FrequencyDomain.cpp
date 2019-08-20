@@ -272,6 +272,11 @@ static jfloatArray *getJavaReorderedBufferHistoryMono(JNIEnv *jniEnv, int number
         memcpy(container+numberOfBufferHistoryItems-bufferHistoryIndex*numberOfSamples, bufferHistory, bufferHistoryIndex*numberOfSamples*sizeof(bufferHistory));
     }
 
+    jfloatArray bufferHistoryArray = jniEnv->NewFloatArray(numberOfBufferHistoryItems);
+    jniEnv->SetFloatArrayRegion(bufferHistoryArray, 0, numberOfBufferHistoryItems, container);
+    free(container);
+
+    /*
     float *containerMono = (float*)malloc(bufferHistorySize/2);
     maxValueIndex = 0;
     for (int i = 0, counter = 0; i < numberOfBufferHistoryItems; i += 2, counter++) {
@@ -281,7 +286,7 @@ static jfloatArray *getJavaReorderedBufferHistoryMono(JNIEnv *jniEnv, int number
             maxValueIndex=counter;
         }
 
-        //TODO: Calculate amplitude of the signal ? (avg)
+        //Calculate amplitude of the signal ? (avg)
     }
     free(container);
     
@@ -289,6 +294,7 @@ static jfloatArray *getJavaReorderedBufferHistoryMono(JNIEnv *jniEnv, int number
     jniEnv->SetFloatArrayRegion(bufferHistoryArray, 0, numberOfBufferHistoryItems/2, containerMono);
 
     free(containerMono);
+     */
 
     return &bufferHistoryArray;
 }
@@ -443,15 +449,16 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             jstring technologyString = jniEnv->NewStringUTF("Unknown");
 
 
+            //maxValueIndex = -1;
             // This also updates the global maxValueIndex
             jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistoryMono(jniEnv,
                                                                                  numberOfSamples));
             // First get the class that contains the method you need to call
             jclass scanClass = jniEnv->GetObjectClass(jniScan);
             // Get the method that you want to call
-            jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;[FI)V");
+            jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;[F)V");
             // Call the method on the object
-            jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString, bufferHistoryArray, maxValueIndex);
+            jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString, bufferHistoryArray);//, maxValueIndex);
             //TODO: Are we suppose to delete references on our side or is detaching enough ?
             //jniEnv->DeleteLocalRef(bufferHistoryArray);
             //jniEnv->DeleteLocalRef(technologyString);
