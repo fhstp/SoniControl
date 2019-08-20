@@ -654,6 +654,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             isSignalPlayerGenerated = false; //now there is no player anymore so it's false
             alert.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
         }
+        if (isSignalPlayerGenerated && pitchShiftPlayer != null) {
+            pitchShiftPlayer.cleanup();
+            pitchShiftPlayer = null;
+            isSignalPlayerGenerated = false;
+            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
+        }
     }
 
     @Override
@@ -662,6 +668,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         if (pitchShiftPlayer != null) {
             pitchShiftPlayer.cleanup();
+            pitchShiftPlayer = null;
         }
         // TODO: Release resources... But this should not be called as long as our Service runs.
         // Maybe threads, microphone, ... ?
@@ -995,6 +1002,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
         if (pitchShiftPlayer != null) {
             pitchShiftPlayer.cleanup();
+            pitchShiftPlayer = null;
+            isSignalPlayerGenerated = false;
+            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
         }
     }
 
