@@ -299,6 +299,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
                  //Are there more detections than non-detection in the buffer, then declare a detection (--> median over the past medianBufferSizeItems buffer-based detections)
                 if(isSignalDetected()) {
                     detectionAfterMedian = 1;
+                    pauseIO();
                 }
                 else {
                     detectionAfterMedian=0;
@@ -397,8 +398,6 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             }
 
             jvm->DetachCurrentThread();
-
-            pauseIO();
         }
         frequencyDomain->advance(numberOfSamples);
     };
