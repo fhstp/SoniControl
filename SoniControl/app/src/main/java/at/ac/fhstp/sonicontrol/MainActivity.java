@@ -433,13 +433,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         Log.d("activateAlert", "Will activate alert dialog if activity exists.");
 
         SharedPreferences settings = getSettingsObject(); //get the settings
-        preventiveSpoof = settings.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
-        if(preventiveSpoof) {
-            if (usedBlockingMethod == null) {
-                NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
-                usedBlockingMethod = locationFinder.blockMicOrSpoof();
-            }
-        }
 
         sigType = signalType; //set the technology variable to the latest detected one
 
@@ -721,11 +714,20 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     private void handleSignal(Technology technology, float[] bufferHistory) { //, int maxValueIndex) {
         Log.d("handleSignal", "Start to handle signal");
+
+        SharedPreferences sp = getSettingsObject();
+        preventiveSpoof = sp.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
+        if(preventiveSpoof) {
+            if (usedBlockingMethod == null) {
+                NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
+                usedBlockingMethod = locationFinder.blockMicOrSpoof();
+            }
+        }
+
         //Log.d("nb samples", "bufferHistory.length (mono): " + bufferHistory.length);
         bufferHistory = preProcessing(bufferHistory);
 
         // Stores the technology on disk in case the Activity was destroyed
-        SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
         ed.putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, technology.toString());
         ed.putString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getTimeAndDateForAlert());
