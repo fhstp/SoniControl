@@ -19,7 +19,9 @@
 
 package at.ac.fhstp.sonicontrol;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -37,7 +39,7 @@ import java.util.Calendar;
 
 public class JSONManager {
 
-    MainActivity main;
+    Context context;
     private Scan detector;
     private Location locationFinder;
     ArrayList<String[]> data = new ArrayList<String[]>();
@@ -57,9 +59,9 @@ public class JSONManager {
     private static final String JSON_ARRAY_SIGNAL_URL = "URL";
 
 
-    public JSONManager(MainActivity main){
-        this.main = main;
-        this.fileDir = main.getFilesDir();
+    public JSONManager(Context context){
+        this.context = context.getApplicationContext();
+        this.fileDir = context.getFilesDir();
     }
 
     public ArrayList<String[]> getJsonData(){
@@ -263,7 +265,7 @@ public class JSONManager {
                 positionDBEntry[0] = Double.valueOf(lon);
                 positionDBEntry[1] = Double.valueOf(lat);
                 double distance = locationFinder.getDistanceInMetres(positionDBEntry, position);
-                SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
                 locationFinder.locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //save the radius of the location in metres
                 if (distance < locationFinder.locationRadius && tech.equals(signalType.toString())) { //if in the location and the right technologytype
                     jArray.getJSONObject(i).put(JSON_ARRAY_SIGNAL_LAST_DETECTION, returnDateString()); //change latest detection date

@@ -5,14 +5,14 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 def superpowered_sdk_path = properties.getProperty('superpowered.dir')
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "at.ac.fhstp.sonicontrol"
         minSdkVersion 16 // more than 95% of all active Android devices (mid 2017)
-        targetSdkVersion 27
-        versionCode 15
-        versionName "1.4.1"
+        targetSdkVersion 28
+        versionCode 18
+        versionName "1.4.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -21,9 +21,9 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_PLATFORM=android-16', '-DANDROID_TOOLCHAIN=clang', '-DANDROID_ARM_NEON=TRUE', '-DANDROID_STL=gnustl_static', "-DPATH_TO_SUPERPOWERED:STRING=${superpowered_sdk_path}"
+                arguments '-DANDROID_PLATFORM=android-16', '-DANDROID_TOOLCHAIN=clang', '-DANDROID_ARM_NEON=TRUE', '-DANDROID_STL=c++_static', "-DPATH_TO_SUPERPOWERED:STRING=${superpowered_sdk_path}"
                 cFlags '-O3', '-fsigned-char' // full optimization, char data type is signed
-                cppFlags '-fsigned-char','-std=c++11', "-I${superpowered_sdk_path}"
+                cppFlags '-fsigned-char', "-I${superpowered_sdk_path}"
             }
         }
     }
@@ -50,14 +50,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
-    compile 'pl.edu.icm:JLargeArrays:1.6' // Better to have it here than in jar folder (see gitignore)
-    compile 'com.jjoe64:graphview:4.2.1'
-    compile 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    implementation 'pl.edu.icm:JLargeArrays:1.6' // Better to have it here than in jar folder (see gitignore)
+    implementation 'com.jjoe64:graphview:4.2.1'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
 }

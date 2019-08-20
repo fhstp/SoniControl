@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -15,6 +15,12 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with SoniControl app.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *     Additional permission under GNU GPL version 3 section 7
+ *     If you modify SoniControl app, or any covered work, by linking or combining it
+ *     with Superpowered (or a modified version of that library), containing parts
+ *     covered by the terms of Superpowered's license, the licensors of SoniControl app
+ *     grant you additional permission to convey the resulting work.
  */
 
 #include <jni.h>
@@ -32,6 +38,10 @@
 #include <android/log.h>
 #include <sstream>
 #include <cstring>
+
+#include <iostream>
+#include <vector>
+#include <numeric>
 
 #include <chrono>
 #define  LOG_TAG    "FrequencyDomain"
@@ -289,6 +299,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
                  //Are there more detections than non-detection in the buffer, then declare a detection (--> median over the past medianBufferSizeItems buffer-based detections)
                 if(isSignalDetected()) {
                     detectionAfterMedian = 1;
+                    pauseIO();
                 }
                 else {
                     detectionAfterMedian=0;
@@ -387,8 +398,6 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             }
 
             jvm->DetachCurrentThread();
-
-            pauseIO();
         }
         frequencyDomain->advance(numberOfSamples);
     };
@@ -458,7 +467,7 @@ static void stopIO() {
 }
 
 static void startIO() {
-    audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmpl * 2); // Start audio input/output.
+    audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
 
 extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
@@ -467,7 +476,7 @@ extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIE
     jniScan = javaEnvironment->NewGlobalRef(obj); // Keep a global reference to the Scan activity
 
     initFrequencyDomain(sampleRateJava, bufferSizeSmplJava);
-    audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA, bufferSizeSmplJava * 2); // Start audio input/output.
+    audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
 
 // Update Median Buffer size and buffer history (detection time) after update from SettingsActivity
