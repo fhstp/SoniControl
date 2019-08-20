@@ -360,6 +360,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
                  //See function documentation, now also require the detection to be over.
                 if(isSignalDetected()) {
                     detectionAfterMedian = 1;
+                    pauseIO();
                 }
                 else {
                     detectionAfterMedian=0;
@@ -468,8 +469,6 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             }
 
             jvm->DetachCurrentThread();
-
-            pauseIO();
         }
         frequencyDomain->advance(numberOfSamples);
     };
