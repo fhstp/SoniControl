@@ -302,6 +302,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         spoof.stopSpoofingComplete(); //stop the whole spoofing process
         MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
         micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
+        usedBlockingMethod = null;
 
         // Stop all the background threads
         threadPool.shutdownNow();
@@ -442,8 +443,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SharedPreferences settings = getSettingsObject(); //get the settings
         preventiveSpoof = settings.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
         if(preventiveSpoof) {
-            NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
             if (usedBlockingMethod == null) {
+                NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
                 usedBlockingMethod = locationFinder.blockMicOrSpoof();
             }
         }
@@ -516,6 +517,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             MicCapture micBlock = MicCapture.getInstance();
             micBlock.stopMicCapturingComplete();
         }
+        usedBlockingMethod = null;
     }
 
 
@@ -853,6 +855,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         spoof.stopSpoofingComplete(); //stop the whole spoofing process
         MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
         micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
+        usedBlockingMethod = null;
 
         setGUIStateStopped();
         SharedPreferences sp = getSettingsObject();
