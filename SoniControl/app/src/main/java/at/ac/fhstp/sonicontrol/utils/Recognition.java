@@ -80,19 +80,19 @@ public class Recognition {
             historySignalFFT[i] = historySignalFFT[i] / fftMax; // divide by the maximum, so that the theoretical max value of the resulting score can be 1 (minimum = 0)
         }
 
-        Log.d(TAG, "Compute score Nearby");
+        //Log.d(TAG, "Compute score Nearby");
         scoreNearby = detectActivity(historySignalFFT, fftMax, nearbyCenterFrequencies, ConfigConstants.NEARBY_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
-        Log.d(TAG, "Compute score Lisnr");
+        //Log.d(TAG, "Compute score Lisnr");
         scoreLisnr = detectActivity(historySignalFFT, fftMax, lisnrCenterFrequencies, ConfigConstants.LISNR_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
-        Log.d(TAG, "Compute score Prontoly");
+        //Log.d(TAG, "Compute score Prontoly");
         scoreProntoly = detectActivity(historySignalFFT, fftMax, prontolyCenterFrequencies, ConfigConstants.PRONTOLY_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
-        Log.d(TAG, "Compute score Shopkick");
+        //Log.d(TAG, "Compute score Shopkick");
         scoreShopkick = detectActivity(historySignalFFT, fftMax, shopkickCenterFrequencies, ConfigConstants.SHOPKICK_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
-        Log.d(TAG, "Compute score Silverpush");
+        //Log.d(TAG, "Compute score Silverpush");
         scoreSilverpush = detectActivity(historySignalFFT, fftMax, silverpushCenterFrequencies, ConfigConstants.SILVERPUSH_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
-        Log.d(TAG, "Compute score SoniTalk");
+        //Log.d(TAG, "Compute score SoniTalk");
         scoreSoniTalk = detectActivity(historySignalFFT, fftMax, sonitalkCenterFrequencies, ConfigConstants.SONITALK_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
-        Log.d(TAG, "Compute score Signal360");
+        //Log.d(TAG, "Compute score Signal360");
         scoreSignal360 = detectActivity(historySignalFFT, fftMax, signal360CenterFrequencies, ConfigConstants.SIGNAL360_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
 
 
