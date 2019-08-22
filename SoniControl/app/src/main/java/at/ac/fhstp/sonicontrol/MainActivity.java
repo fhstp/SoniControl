@@ -75,7 +75,7 @@ import uk.me.berndporr.iirj.Butterworth;
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
-public class MainActivity extends BaseActivity implements Scan.DetectionListener, DetectionDialogFragment.DetectionDialogListener {
+public class MainActivity extends BaseActivity implements Scan.DetectionListener, DetectionDialogFragment.DetectionDialogListener, PitchShiftPlayer.PitchShiftPlayerListener {
     private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET/*, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE*/};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
 
@@ -184,7 +184,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         detector = Scan.getInstance(); //Get Scan-object if no object is available yet make a new one
         detector.init(MainActivity.this); //initialize the detector with the main method
         detector.setDetectionListener(this); // MainActivity will be notified of detections (calls onDetection)
-        pitchShiftPlayer = new PitchShiftPlayer();
+        //pitchShiftPlayer = new PitchShiftPlayer();
 
         locationFinder = Location.getInstanceLoc(); //Get LocationFinder-object if no object is available yet make a new one
         locationFinder.init(MainActivity.this); //initialize the location-object with the main method
@@ -265,6 +265,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         if (pitchShiftPlayer != null) {
             pitchShiftPlayer.cleanup();
+            pitchShiftPlayer.removeDetectionListener();
+            pitchShiftPlayer = null;
         }
         
         // Reset state
@@ -651,6 +653,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
         if (isSignalPlayerGenerated && pitchShiftPlayer != null) {
             pitchShiftPlayer.cleanup();
+            pitchShiftPlayer.removeDetectionListener();
             pitchShiftPlayer = null;
             isSignalPlayerGenerated = false;
             alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
@@ -663,8 +666,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         if (pitchShiftPlayer != null) {
             pitchShiftPlayer.cleanup();
+            pitchShiftPlayer.removeDetectionListener();
             pitchShiftPlayer = null;
         }
+        // ??? detector.removeDetectionListener(this);
         // TODO: Release resources... But this should not be called as long as our Service runs.
         // Maybe threads, microphone, ... ?
         // threadPool.shutdownNow();
@@ -1007,6 +1012,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
         if (pitchShiftPlayer != null) {
             pitchShiftPlayer.cleanup();
+            pitchShiftPlayer.removeDetectionListener();
             pitchShiftPlayer = null;
             isSignalPlayerGenerated = false;
             alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
@@ -1025,6 +1031,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         if (pitchShiftPlayer == null) {
             pitchShiftPlayer = new PitchShiftPlayer();
+            pitchShiftPlayer.setDetectionListener(this);
         }
         if (!isSignalPlayerGenerated) {
             File file = new File (this.getApplicationContext().getFilesDir(), "detection.wav");
@@ -1387,5 +1394,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 Log.e("Upload error:", t.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onPlayCompleted() {
+        if (alert != null && alert.btnAlertReplay != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
+                }
+            });
+        }
     }
 }

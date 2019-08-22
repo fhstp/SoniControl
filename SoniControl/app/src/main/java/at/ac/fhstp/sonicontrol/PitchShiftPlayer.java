@@ -20,6 +20,10 @@
 package at.ac.fhstp.sonicontrol;
 
 public class PitchShiftPlayer {
+    public interface PitchShiftPlayerListener {
+        void onPlayCompleted();
+    }
+    private PitchShiftPlayerListener playerListener = null;
     private boolean playing = false;
 
     public PitchShiftPlayer() {
@@ -52,6 +56,24 @@ public class PitchShiftPlayer {
         b.setText(playing ? "Pause" : "Play");
     }
     */
+
+    public void setDetectionListener(PitchShiftPlayerListener listener) {
+        this.playerListener = listener;
+    }
+
+    public void removeDetectionListener() {
+        this.playerListener = null;
+    }
+
+    private void notifyPitchShiftPlayerListeners() {
+        if (playerListener != null) {
+            playerListener.onPlayCompleted();
+        }
+        else {
+            //Log.d(TAG, "notifyPitchShiftPlayerListeners: playerListener is null");
+        }
+    }
+
     public void playPause() {
         TogglePlayback();
         playing = !playing;
@@ -80,6 +102,14 @@ public class PitchShiftPlayer {
 
     public boolean isPlaying() {
         return playing;
+    }
+
+    /**
+     * Notify listener when called from the CPP (pitch shifting replay completed and was stopped).
+     */
+    public void onPlayCompleted() {
+        playing = false;
+        notifyPitchShiftPlayerListeners();
     }
 
     // Functions implemented in the native library.
