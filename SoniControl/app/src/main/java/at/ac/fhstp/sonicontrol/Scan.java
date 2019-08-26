@@ -19,6 +19,7 @@
 
 package at.ac.fhstp.sonicontrol;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
@@ -34,6 +35,7 @@ public class Scan {
     private static Scan instance;
     private JSONManager jsonMan;
 
+    Context applicationContext;
     MainActivity main;
     Location locFinder;
     Spoofer spoof = null;
@@ -47,6 +49,7 @@ public class Scan {
 
     private boolean paused = false; // Is the Scan paused ?
     private Technology lastDetectedTechnology = null;
+    private int fastDetection;
 
     private boolean consistentState = true; // Allows to detect wrong termination of the app
 
@@ -61,6 +64,8 @@ public class Scan {
     }
 
     public void init(MainActivity main){
+        this.applicationContext = main.getApplicationContext();
+        //TODO: Remove references to main
         this.main = main; //initialize the Scan with a main object
         System.loadLibrary("Superpowered");
     }
@@ -110,7 +115,7 @@ public class Scan {
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
 
-            FrequencyDomain(ConfigConstants.SCAN_SAMPLE_RATE, ConfigConstants.SCAN_BUFFER_SIZE);
+            FrequencyDomain(ConfigConstants.SCAN_SAMPLE_RATE, ConfigConstants.SCAN_BUFFER_SIZE, fastDetection);
         }
     };
 
@@ -123,7 +128,9 @@ public class Scan {
             }
         }
 
-        savedFileUrl = main.getFilesDir() + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
+        this.fastDetection = PreferenceManager.getDefaultSharedPreferences(this.applicationContext).getBoolean(ConfigConstants.SETTINGS_FAST_DETECTION, ConfigConstants.SETTINGS_FAST_DETECTION_DEFAULT) ? 1 : 0;
+
+        savedFileUrl = applicationContext.getFilesDir() + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
 
         locFinder = Location.getInstanceLoc(); //get an instance of location
         jsonMan = new JSONManager(main);
@@ -164,7 +171,7 @@ public class Scan {
 
     public void resume() {
         paused = false;
-        Resume();
+        Resume(fastDetection);
     }
 
     /**
@@ -176,11 +183,12 @@ public class Scan {
 
     // ------
     // Native functions to find in jni/FrequencyDomain.cpp
-    private native void FrequencyDomain(int samplerate, int buffersize);
+    private native void FrequencyDomain(int samplerate, int buffersize, int fastDetection);
     private native float GetAndroidOut1();
     private native int GetAndroidOut2();
     private native boolean GetBackgroundModelUpdating();
     private native int Pause();
-    private native void Resume();
+    private native void Resume(int fastDetection);
     private native void StopIO();
+    //private  native void setFastDetection(int fastDetection);
 }

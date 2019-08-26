@@ -118,4 +118,5 @@
     <string name="detectionChannelName">Signalerkennung Kanal</string>
     <string name="gui_technology">Potenzieller Typ:</string>
     <string name="how_to_proceed">Wählen Sie eine der Optionen um fortzufahren.</string>
+    <string name="fastDetection">Schneller Erkennung (ungenauere Diagnose)</string>
 </resources>

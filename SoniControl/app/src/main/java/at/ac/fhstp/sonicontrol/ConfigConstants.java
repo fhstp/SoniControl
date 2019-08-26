@@ -50,6 +50,8 @@ public final class ConfigConstants {
     public static final String USED_BLOCKING_METHOD_SPOOFER = "Spoofer";
     public static final String USED_BLOCKING_METHOD_MICROPHONE = "Microphone";
     public static String SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN = "cbAlertLocationDontAskAgain";
+    public static final String SETTINGS_FAST_DETECTION = "cbprefFastDetection";
+    public static final boolean SETTINGS_FAST_DETECTION_DEFAULT = false;
     public static boolean SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT = false;
     public static final String SETTING_PREVENTIVE_SPOOFING = "cbprefPreventiveSpoofing";
     public static final boolean SETTING_PREVENTIVE_SPOOFING_DEFAULT = false;

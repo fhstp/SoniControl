@@ -101,6 +101,8 @@ static float scoreNearby = 0; //holds the detection score for nearby messages
 static float recogResult = 0; //holds the recognition result
 static float scoreNearbyAC = 0; //holds the autocorrelation score for nearby recognition
 
+static int fastDetection = 0;
+
 //SONICONTROL VARIOUS
 static bool backgroundModelUpdating = true; //{IS SET} indicates if the background Model should continue to update itself
 #define FFT_LOG_SIZE 11 // 2^11 = 2048 - minimum viable size, should stay here
@@ -224,33 +226,37 @@ static void addDetectionToMedianBuffer(bool detected)
 
 /**
  * Returns true if a signal is detected. A signal is detected if at least half of the medianBuffer
- * values are detections, AND if some (percentage of) silence is following the detection (we want to
- * capture the whole message to display it later).
+ * values are detections, AND, if fastDetection is false, if some (percentage of) silence is
+ * following the detection (we want to capture the whole message to display it later).
  * @return If a signal was detected
  */
 static bool isSignalDetected()
 {
-    /*int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
-    return sum > (int) ceil(medianBufferSizeItems / 2);*/
-    bool messageIsOver = false;
-    int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
-    if (sum > (int) ceil(medianBufferSizeItems / 2)) {
-        int postMessageSum = 0;
-        int postMessageNbItems = (int) medianBufferSizeItems * percentSilenceAfterDetection / 100.0;
-        if (postMessageNbItems > 0 && postMessageNbItems != medianBufferSizeItems) {
-            for (int i = medianBuffer.size() - 1; i > medianBuffer.size() - postMessageNbItems; i--) {
-                postMessageSum += medianBuffer[i];
+    if (fastDetection) {
+        int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
+        return sum > (int) ceil(medianBufferSizeItems / 2);
+    }
+    else {
+        bool messageIsOver = false;
+        int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
+        if (sum > (int) ceil(medianBufferSizeItems / 2)) {
+            int postMessageSum = 0;
+            int postMessageNbItems = (int) medianBufferSizeItems * percentSilenceAfterDetection / 100.0;
+            if (postMessageNbItems > 0 && postMessageNbItems != medianBufferSizeItems) {
+                for (int i = medianBuffer.size() - 1; i > medianBuffer.size() - postMessageNbItems; i--) {
+                    postMessageSum += medianBuffer[i];
+                }
+                if (postMessageSum < (int) ceil(
+                        postMessageNbItems / 4)) { // At least 75% of the post message time is non detection
+                    messageIsOver = true;
+                }
             }
-            if (postMessageSum < (int) ceil(
-                    postMessageNbItems / 4)) { // At least 75% of the post message time is non detection
+            else { // Either percentSilenceAfterDetection is zero, or it is 100%
                 messageIsOver = true;
             }
         }
-        else { // Either percentSilenceAfterDetection is zero, or it is 100%
-            messageIsOver = true;
-        }
+        return messageIsOver;
     }
-    return messageIsOver;
 }
 
 /***
@@ -541,11 +547,12 @@ static void startIO() {
     audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
 
-extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava, jint fastDetectionJava) {
     // Source: https://stackoverflow.com/a/26534926
     javaEnvironment->GetJavaVM(&jvm); // Keep a global reference to the jvm
     jniScan = javaEnvironment->NewGlobalRef(obj); // Keep a global reference to the Scan activity
 
+    fastDetection = fastDetectionJava;
     initFrequencyDomain(sampleRateJava, bufferSizeSmplJava);
     audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
@@ -593,10 +600,15 @@ extern "C" JNIEXPORT jint JNICALL Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv
     return pauseIO();
 }
 
-extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint fastDetectionJava) {
+    fastDetection = fastDetectionJava;
     resumeIO();
 }
 
 extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_StopIO(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
     stopIO();
 }
+/*
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_setFastDetection(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint fastDetectionJava) {
+    fastDetection = fastDetectionJava;
+}*/

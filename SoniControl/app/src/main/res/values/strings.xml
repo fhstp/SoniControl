@@ -118,4 +118,5 @@
     <string name="detectionChannelName">Signal detection channel</string>
     <string name="gui_technology">Estimated type:</string>
     <string name="how_to_proceed">How to proceed?</string>
+    <string name="fastDetection">Faster detection (less accurate diagnostics)</string>
 </resources>
