@@ -137,11 +137,11 @@ static float Median(It begin, It end)
     return data[size / 2];
 }
 
-static void saveSampleToBufferHistory(float *samples, int numberOfSamples)
+static void saveSampleToBufferHistory(float *samples, int numberOfSamplesStereo)
 {
     //Copy the data from the samples pointer (which is n entries big, and n*sizeof(float) bytes )
     //into the lastSamples Array after the last entry
-    memcpy(bufferHistory+(bufferHistoryIndex*numberOfSamples), samples, numberOfSamples * sizeof(float));
+    memcpy(bufferHistory+(bufferHistoryIndex*numberOfSamplesStereo), samples, numberOfSamplesStereo * sizeof(float));
 
     advanceSampleArray();
 }
@@ -267,15 +267,15 @@ static void resetMedianBuffer() {
 }
 
 
-static jfloatArray *getJavaReorderedBufferHistoryMono(JNIEnv *jniEnv, int numberOfSamples) {
-    int numberOfBufferHistoryItems = medianBufferSizeItems * bufferSizeSmpl;
+static jfloatArray *getJavaReorderedBufferHistoryStereo(JNIEnv *jniEnv, int numberOfSamplesStereo) {
+    int numberOfBufferHistoryItems = medianBufferSizeItems * numberOfSamplesStereo;
     int bufferHistorySize = numberOfBufferHistoryItems * sizeof(bufferHistory);
     float *container = (float*)malloc(bufferHistorySize);
     if(bufferHistoryIndex==0){
         memcpy(container, bufferHistory, bufferHistorySize);
     }else{
-        memcpy(container, bufferHistory+bufferHistoryIndex*numberOfSamples, bufferHistorySize-bufferHistoryIndex*numberOfSamples*sizeof(bufferHistory));
-        memcpy(container+numberOfBufferHistoryItems-bufferHistoryIndex*numberOfSamples, bufferHistory, bufferHistoryIndex*numberOfSamples*sizeof(bufferHistory));
+        memcpy(container, bufferHistory+bufferHistoryIndex*numberOfSamplesStereo, bufferHistorySize-bufferHistoryIndex*numberOfSamplesStereo*sizeof(bufferHistory));
+        memcpy(container+numberOfBufferHistoryItems-bufferHistoryIndex*numberOfSamplesStereo, bufferHistory, bufferHistoryIndex*numberOfSamplesStereo*sizeof(bufferHistory));
     }
 
     jfloatArray bufferHistoryArray = jniEnv->NewFloatArray(numberOfBufferHistoryItems);
@@ -306,8 +306,8 @@ static jfloatArray *getJavaReorderedBufferHistoryMono(JNIEnv *jniEnv, int number
 }
 
 // This is called periodically by the media server.
-static bool audioProcessing(void * __unused clientdata, short int *audioInputOutput, int numberOfSamples, int __unused samplerate) {
-    SuperpoweredShortIntToFloat(audioInputOutput, inputBufferFloat, (unsigned int)numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.
+static bool audioProcessing(void * __unused clientdata, short int *audioInputOutput, int numberOfSamplesPerChannel, int __unused samplerate) {
+    SuperpoweredShortIntToFloat(audioInputOutput, inputBufferFloat, (unsigned int)numberOfSamplesPerChannel); // Converting the 16-bit integer samples to 32-bit floating point.
     counter++; // Increment in every iteration (will start at 1)
 
     //IMPORTANT: this portion of code is called more frequently per second than the frequency domain
@@ -315,7 +315,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
     //in reality when we call this code 100 times, the code in the while/fq domain is called ~87 times (tested on huawei mate)
     //there is no way to get the actual number of calls (except for runtime calculations)
 
-    frequencyDomain->addInput(inputBufferFloat, numberOfSamples); // Input goes to the frequency domain.
+    frequencyDomain->addInput(inputBufferFloat, numberOfSamplesPerChannel); // Input goes to the frequency domain.
 
     // In the frequency domain we are working with 1024 magnitudes and phases for every channel (left, right), if the fft size is 2048.
     while (frequencyDomain->timeDomainToFrequencyDomain(magnitudeLeft, magnitudeRight, phaseLeft, phaseRight)) {
@@ -343,7 +343,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
         //if the background model is full, start with detection, i.e. start with filling the median buffer
         if(counter > backgroundModelBufferSizeItems) {
             //Save the raw input buffer samples to our history
-            saveSampleToBufferHistory(inputBufferFloat, numberOfSamples);
+            saveSampleToBufferHistory(inputBufferFloat, numberOfSamplesPerChannel*2); //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
 
             createCurrentBackgroundModel(); // this computes the median of the background model buffer
             backgroundDist = getKullbackLeiblerDivergence();
@@ -458,8 +458,9 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
             //maxValueIndex = -1;
             // This also updates the global maxValueIndex
-            jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistoryMono(jniEnv,
-                                                                                 numberOfSamples));
+            jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistoryStereo(jniEnv,
+                                                                                   numberOfSamplesPerChannel *
+                                                                                   2)); //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
             // First get the class that contains the method you need to call
             jclass scanClass = jniEnv->GetObjectClass(jniScan);
             // Get the method that you want to call
@@ -476,7 +477,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
             jvm->DetachCurrentThread();
         }
-        frequencyDomain->advance(numberOfSamples);
+        frequencyDomain->advance(numberOfSamplesPerChannel);
     };
 
     return true;
@@ -497,10 +498,10 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     phaseLeft = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
     phaseRight = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
 
-    inputBufferFloat = (float *)malloc(bufferSizeSmplJava * sizeof(float) * 2 + 128); // TODO: why  +128 ???
+    inputBufferFloat = (float *)malloc(2 * bufferSizeSmpl * sizeof(float) /* + 128*/); // why  +128 ???  //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
 
-    bufferPerSeconds = (float) sampleRateJava / (float) bufferSizeSmplJava; //how many sampleSets of size bufferSizeSmplJava per Second
-    bufferSizeInMs = 1000.0f / ((float) sampleRateJava / bufferSizeSmplJava); //the size of one sampleSet in MS
+    bufferPerSeconds = (float) sampleRateJava / (float) bufferSizeSmpl; //how many sampleSets of size bufferSizeSmpl per Second
+    bufferSizeInMs = 1000.0f / ((float) sampleRateJava / bufferSizeSmpl); //the size of one sampleSet in MS
     binSizeinHz = sampleRateJava/ powf(2.0,(float)FFT_LOG_SIZE);
     cutoffFrequencyIdx = roundf(cutoffFrequency / binSizeinHz); // No +1 compared to Octave
 
@@ -508,7 +509,8 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     medianBuffer.resize(medianBufferSizeItems);
 
     bufferHistoryIndex = 0;
-    bufferHistory = (float*)malloc(medianBufferSizeItems * bufferSizeSmplJava * sizeof(bufferHistory)); //fits upto x ms of samples - Match with Octave
+    int bufferHistorySizeItems = 2 * medianBufferSizeItems * bufferSizeSmpl * sizeof(bufferHistory); //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
+    bufferHistory = (float*)malloc(bufferHistorySizeItems); //fits upto x ms of samples - Match with Octave
 
     normalizedSpectrogramSize = (int)(powf(2.0,(float)FFT_LOG_SIZE-1) - cutoffFrequencyIdx); //Removed +1 to match Octave
     backgroundModelBufferSizeItems = (int) round(backgroundModelBufferSizeInSec*1000/bufferSizeInMs); // Match with Octave
