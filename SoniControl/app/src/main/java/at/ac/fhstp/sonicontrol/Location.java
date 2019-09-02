@@ -151,14 +151,14 @@ public class Location {
         }
         if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
             shouldBeSpoofed = true;
-            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry);
+            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
         }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){
             shouldBeSpoofed = false;
-            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry);
+            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
         }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ASK_AGAIN){
             openAlertToAskAgain(position);
         }else {
-            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry);
+            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
         }
     }
 
@@ -182,9 +182,13 @@ public class Location {
         detectedSignalPosition = positionLatest; //set the latest position to the detected position if the continuous spoofing setting is active
     }
 
-    private void shouldDBEntrySpoofed(boolean shouldBeSpoofed, double[] position, double[] positionDBEntry){
+    private void shouldDBEntrySpoofed(boolean shouldBeSpoofed, double[] position, double[] positionDBEntry, Technology signalType, int spoofStatus){
         JSONManager jsonMan = new JSONManager(main);
         jsonMan.setLatestDate(positionDBEntry, signalTech); //update the date in the json-file at the detected position
+        //TODO: Update Detection Counter
+        Log.d("Location", "ShouldDBEntrySpoofed");
+        jsonMan.addJsonObject(position, signalType.toString(), spoofStatus, getDetectedDBEntryAddres(), true);
+        jsonMan.updateSignalAndImportedDetectionCounter(position, signalType.toString());
         if(shouldBeSpoofed){ //if it should be spoofed
             //Log.d("Location", "I should be spoofed");
             /*if (!main.getBackgroundStatus()) { //if the app is not in the background
@@ -343,7 +347,7 @@ public class Location {
         main.activateAlertOnAskAgain(signalType);
     }
 
-    public void decideIfNewSignalOrNot(boolean isNewSignal, boolean shouldBeSpoofed, double[] position, double[] positionDBEntry){
+    public void decideIfNewSignalOrNot(boolean isNewSignal, boolean shouldBeSpoofed, double[] position, double[] positionDBEntry, Technology signalType, int spoofStatus){
         if(isNewSignal){ //if its a new signal
             detectedSignalPosition = position; //save the new signal as the detected Position
             //Log.d("Location", "I am a new Signal");
@@ -357,7 +361,7 @@ public class Location {
         }else{
             detectedSignalPosition = positionDBEntry; //save the new signal as the detected Position
             //Log.d("Location", "I am not a new Signal");
-            shouldDBEntrySpoofed(shouldBeSpoofed,position, positionDBEntry); //check the spoofed status from the json-file
+            shouldDBEntrySpoofed(shouldBeSpoofed,position, positionDBEntry, signalType, spoofStatus); //check the spoofed status from the json-file
 
         }
     }

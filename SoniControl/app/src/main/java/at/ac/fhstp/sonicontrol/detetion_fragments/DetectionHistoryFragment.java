@@ -70,7 +70,8 @@ public class DetectionHistoryFragment extends Fragment {
         nextMain = main.getMainIsMain();
         jsonMan = new JSONManager(nextMain);
 
-        data = jsonMan.getAllJsonData();
+        //data = jsonMan.getAllJsonData();
+        data = jsonMan.getHistoryJsonData();
 
         txtNothingDiscovered = (TextView) rootView.findViewById(R.id.txtNoDetectionsYet);
         /*fabImportDetections = (FloatingActionButton) rootView.findViewById(R.id.fabImportDetections);

@@ -119,4 +119,5 @@
     <string name="gui_technology">Technology: </string>
     <string name="NoSignalImportedAndSavedYet">You have not imported any signals yet!</string>
     <string name="stored_detections_ask_again">will ask again</string>
+    <string name="rules_info_text">Detections are shown in four tabs: \"My Rules\", \"Imported Rules\", \"Detection History\" and a map visualization.  The first two act as firewall rules. Their color shows if the rule will be blocked (red), ignored (green) or ask you again on the next detection (orange). You can change the status by tapping on them several times. On tapping longer on them, you can delete each rule.  The history tab shows all detections.\nThe map shows all firewall rules geographically.</string>
 </resources>

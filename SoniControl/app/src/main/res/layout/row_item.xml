@@ -18,37 +18,59 @@
   ~     along with SoniControl app.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/holo_blue_bright"
+    android:orientation="vertical">
+
+    <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@android:color/holo_blue_bright"
-    android:padding="10dp">
+    android:padding="10dp">-->
 
     <TextView
         android:id="@+id/technologyName"
-        android:layout_width="100dp"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/linearLayout"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="end"
         android:text="Technology"
         android:textAlignment="textEnd"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/black"
         android:textStyle="bold"
-        android:gravity="end" />
+        app:layout_constraintBottom_toTopOf="@+id/lastdetection"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtAddress"
+        tools:visibility="visible" />
 
 
     <TextView
         android:id="@+id/lastdetection"
-        android:layout_width="wrap_content"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/technologyName"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="end"
         android:text="Time"
         android:textColor="@android:color/black"
-        android:layout_above="@+id/technologyName"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible" />
+    <!---->
     <!--
         <TextView
             android:id="@+id/name"
@@ -71,33 +93,58 @@
     -->
 
 
+    <TextView
+        android:id="@+id/txtAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Address"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="wrap" />
+
+    <TextView
+        android:id="@+id/latitude"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="48.213999"
+        android:textColor="@android:color/black"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtDetectionCounter" />
+
+    <TextView
+        android:id="@+id/longitude"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="15.631"
+        android:textColor="@android:color/black"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/latitude" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone">
 
-        <TextView
-            android:id="@+id/txtAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Address"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/latitude"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="48.2139"
-            android:textColor="@android:color/black" />
-
-        <TextView
-            android:id="@+id/longitude"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="15.6318"
-            android:textColor="@android:color/black" />
         <!--
                 <TextView
                     android:id="@+id/name"
@@ -122,14 +169,37 @@
 
     <TextView
         android:id="@+id/txtSpoofingStatus"
-        android:layout_width="130dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:text="SpoofingStatus"
-        android:textAlignment="center"
-        android:textColor="@android:color/black"
         android:layout_alignBaseline="@+id/technologyName"
         android:layout_alignBottom="@+id/technologyName"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginBottom="8dp"
+        android:layout_toStartOf="@+id/technologyName"
         android:layout_toLeftOf="@+id/technologyName"
-        android:layout_toStartOf="@+id/technologyName" />
+        android:text="SpoofingStatus"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/longitude"
+        app:layout_constraintEnd_toStartOf="@id/lastdetection"
+        app:layout_constraintTop_toBottomOf="@+id/txtDetectionCounter"
+        app:layout_constraintVertical_bias="0.0"
+        tools:visibility="visible" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/txtDetectionCounter"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/technologyName"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:text="DetectionCounter"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toEndOf="@+id/latitude"
+        app:layout_constraintEnd_toStartOf="@id/technologyName"
+        app:layout_constraintTop_toBottomOf="@+id/txtAddress"
+        tools:visibility="visible" />
+
+    <!--</RelativeLayout>-->
+</android.support.constraint.ConstraintLayout>

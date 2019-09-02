@@ -53,16 +53,25 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
         TextView txtLastDet = (TextView) customView.findViewById(R.id.lastdetection);
         TextView txtAddress = (TextView) customView.findViewById(R.id.txtAddress);
         TextView txtSpoofingStatus = (TextView) customView.findViewById(R.id.txtSpoofingStatus);
+        TextView txtDetectionCounter = (TextView) customView.findViewById(R.id.txtDetectionCounter);
 
-        txtLon.setText("Lon " + singleArrayItem[0]);
-        txtLat.setText("Lat " + singleArrayItem[1]);
+        txtLon.setText("Lon " + singleArrayItem[0].substring(0, 7));
+        txtLat.setText("Lat " + singleArrayItem[1].substring(0, 7));
         txtTech.setText(singleArrayItem[2]);
         String formattedDate = singleArrayItem[3];
         formattedDate = formattedDate.replace("T"," ");
         formattedDate = formattedDate.replace("Z","");
+        formattedDate = formattedDate.substring(0, 19);
 
         txtLastDet.setText(formattedDate);
-        txtAddress.setText(singleArrayItem[5]);
+        if(singleArrayItem[5].equals("Unknown")){
+            txtAddress.setText("Unknown Address (Lat "+singleArrayItem[1].substring(0, 7)+", Lon "+ singleArrayItem[0].substring(0, 7)+")");
+            txtLat.setVisibility(View.GONE);
+            txtLon.setVisibility(View.GONE);
+        }else{
+            txtAddress.setText(singleArrayItem[5]);
+        }
+        txtDetectionCounter.setText("previous Detections: "+singleArrayItem[8]);
 
         String spoofingStatus = null;
         if(Integer.valueOf(singleArrayItem[4])==1){

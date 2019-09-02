@@ -33,4 +33,11 @@ public class AboutUs extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_us_activity);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        setActiveRuleInfoMenuItem(false);
+        return true;
+    }
 }

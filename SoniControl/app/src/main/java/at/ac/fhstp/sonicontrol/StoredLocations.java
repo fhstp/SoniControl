@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import at.ac.fhstp.sonicontrol.detetion_fragments.DetectionHistoryFragment;
@@ -56,6 +57,13 @@ public class StoredLocations extends BaseActivity implements ViewPager.OnPageCha
         setupFragments(getSupportFragmentManager(), viewPager); //Setup Fragment
         viewPager.setCurrentItem(0); //Set Currrent Item When Activity Start
         viewPager.setOnPageChangeListener(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        setActiveRuleInfoMenuItem(true);
+        return true;
     }
 
     public static void setupFragments(FragmentManager fragmentManager, ViewPager viewPager){

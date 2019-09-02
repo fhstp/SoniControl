@@ -34,4 +34,11 @@ public class PrivacyPolicyActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_privacy_policy);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        setActiveRuleInfoMenuItem(false);
+        return true;
+    }
 }

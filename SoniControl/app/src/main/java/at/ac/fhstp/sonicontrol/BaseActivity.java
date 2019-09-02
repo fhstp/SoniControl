@@ -20,23 +20,32 @@
 package at.ac.fhstp.sonicontrol;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 /**
  * Created by aringot on 17.01.2018.
  */
 
 public class BaseActivity extends AppCompatActivity {
+    public AlertDialog alertRuleInfo = null;
+    public Menu menu;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
+        this.menu = menu;
+        Log.d("BaseActivity", "onCrateOptionsMenu");
+        menu.findItem(R.id.show_rules_info).setVisible(false);
         return true;
     }
 
@@ -57,11 +66,30 @@ public class BaseActivity extends AppCompatActivity {
             case R.id.open_privacy_policy:
                 openPrivacyPolicy();
                 break;
+            case R.id.show_rules_info:
+                showRulesInfo();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
         return true;
+    }
+
+    private void showRulesInfo(){
+        final AlertDialog.Builder activateRuleInfoDialog = new AlertDialog.Builder(this);
+        LayoutInflater RuleInfoAlertInflater = LayoutInflater.from(this);
+        final View alertRuleInfoView = RuleInfoAlertInflater.inflate(R.layout.rule_info, null);
+        activateRuleInfoDialog.setView(alertRuleInfoView);
+        activateRuleInfoDialog
+                .setTitle("Rules")
+                .setCancelable(true)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertRuleInfo.cancel();
+                    }
+                });
+        alertRuleInfo = activateRuleInfoDialog.show();
     }
 
     private void openPrivacyPolicy() {
@@ -83,5 +111,9 @@ public class BaseActivity extends AppCompatActivity {
     public void openAboutUs(){
         Intent myIntent = new Intent(this.getApplicationContext(), AboutUs.class); //redirect to the stored locations activity
         startActivityForResult(myIntent, 0);
+    }
+
+    public void setActiveRuleInfoMenuItem(boolean activate){
+        if(menu!=null) menu.findItem(R.id.show_rules_info).setVisible(activate);
     }
 }

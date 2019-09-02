@@ -45,4 +45,11 @@ public class SettingsActivity extends BaseActivity {
                 .replace(R.id.preference_container, new SettingsFragment()) //replace the layout file with the settingsFragment
                 .commit();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        setActiveRuleInfoMenuItem(false);
+        return true;
+    }
 }
