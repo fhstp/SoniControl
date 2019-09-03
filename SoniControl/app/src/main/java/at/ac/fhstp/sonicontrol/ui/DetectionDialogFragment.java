@@ -38,6 +38,8 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -59,6 +61,7 @@ public class DetectionDialogFragment extends DialogFragment {
         public void onAlertBlockAlways(DialogFragment dialog);
         public void onAlertBlockThisTime(DialogFragment dialog);
         public void onAlertPlayDetectedSignal(DialogFragment dialog);
+        public void onAlertSharing(DialogFragment dialog, boolean isChecked);
         //public void onAlertShare(DialogFragment dialog);
     }
 
@@ -75,6 +78,8 @@ public class DetectionDialogFragment extends DialogFragment {
     public TextView txtSignalType;
     public TextView txtAlertDate;
     public TextView txtNoLocation;
+
+    public CheckBox cbSharing;
 
     // Use this instance of the interface to deliver action events
     DetectionDialogListener listener;
@@ -120,6 +125,11 @@ public class DetectionDialogFragment extends DialogFragment {
         btnAlertBlockAlways = (Button) view.findViewById(R.id.btnBlockAlways); //button of the alert for starting the spoofing process after finding a signal
         btnAlertBlockThisTime = (Button) view.findViewById(R.id.btnBlockThisTime);
         btnAlertReplay = (Button) view.findViewById(R.id.btnReplay); //button of the alert for playing the found signal with fs/3
+
+        cbSharing = (CheckBox) view.findViewById(R.id.cbSharing);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean willBeShared = sp.getBoolean(ConfigConstants.SETTINGS_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT);
+        cbSharing.setChecked(willBeShared);
 
         // Initialize spectrogram view.
         spectrogramView = (SpectrogramView) view.findViewById(R.id.spectrogram_view);
@@ -169,6 +179,16 @@ public class DetectionDialogFragment extends DialogFragment {
         btnAlertReplay.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 listener.onAlertPlayDetectedSignal(DetectionDialogFragment.this);
+            }
+        });
+
+
+        // OnCheckedChangeListener ---
+
+        cbSharing.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                listener.onAlertSharing(DetectionDialogFragment.this, isChecked);
             }
         });
 

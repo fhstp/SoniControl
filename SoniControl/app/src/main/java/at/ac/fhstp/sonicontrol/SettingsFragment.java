@@ -52,6 +52,7 @@ public class SettingsFragment extends PreferenceFragment {
     private EditTextPreference etPauseDuration;
     private EditTextPreference etBandwidth;
     private EditTextPreference etBlockingDuration;
+    private CheckBoxPreference cbSharing;
 
 
     @Override
@@ -78,6 +79,7 @@ public class SettingsFragment extends PreferenceFragment {
         etPauseDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
         etBandwidth = (EditTextPreference) findPreference(ConfigConstants.SETTING_BANDWIDTH);
         etBlockingDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
+        cbSharing = (CheckBoxPreference) findPreference(ConfigConstants.SETTINGS_SHARING);
 
         // Initialize the preferences with the last values saved or the default ones
         setPreferenceValues();
@@ -217,6 +219,7 @@ public class SettingsFragment extends PreferenceFragment {
         editor.putString(ConfigConstants.SETTING_BLOCKING_DURATION,ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT);
         editor.putBoolean(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN,ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT);
         editor.putBoolean(ConfigConstants.SETTINGS_FAST_DETECTION, ConfigConstants.SETTINGS_FAST_DETECTION_DEFAULT);
+        editor.putBoolean(ConfigConstants.SETTINGS_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT);
         editor.apply();
         editor.commit();
 
@@ -275,6 +278,7 @@ public class SettingsFragment extends PreferenceFragment {
         cbPreventiveSpoofing.setChecked(sp.getBoolean(cbPreventiveSpoofing.getKey(), ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT));
         cbAlertLocationDontAsk.setChecked(sp.getBoolean(cbAlertLocationDontAsk.getKey(), ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT));
         cbFastDetection.setChecked(sp.getBoolean(cbFastDetection.getKey(), ConfigConstants.SETTINGS_FAST_DETECTION_DEFAULT));
+        cbSharing.setChecked(sp.getBoolean(cbSharing.getKey(), ConfigConstants.SETTINGS_SHARING_DEFAULT));
 
         String locationRadius = sp.getString(etLocationRadius.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT);
         String prefLocRadTitle = String.format(getString(R.string.settings_location_radius_title), locationRadius);

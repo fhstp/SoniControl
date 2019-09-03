@@ -999,6 +999,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             jsonMan.updateSpoofStatusOfRules(detectedSignalPosition, sigType.toString(), spoofDecision);
             //TODO: Update Detection Counter
             jsonMan.updateSignalAndImportedDetectionCounter(detectedSignalPosition, sigType.toString());
+            jsonMan.setLatestDate(detectedSignalPosition, sigType);
+            jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres(), true);
             //jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
         }else if(saveJsonFile && locationTrack && !entryWasAskedAgain) {
             //Log.d("SearchForJson", "addWithLoc");
@@ -1125,6 +1127,16 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
     }
+
+    @Override
+    public void onAlertSharing (DialogFragment dialog, boolean isChecked){
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean(ConfigConstants.SETTINGS_SHARING, isChecked);
+        editor.apply();
+
+    }
+
     // END DetectionDialogListener methods ----------
 
 

@@ -21,6 +21,7 @@ package at.ac.fhstp.sonicontrol;
 
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -305,7 +306,11 @@ public class JSONManager {
             }
             jHistoryArray.put(addArray);
 
-            main.sendDetection(position[0], position[1], 0, technology, returnDateString(), spoof, 2);
+            SharedPreferences sp =  PreferenceManager.getDefaultSharedPreferences(main);
+            boolean shouldBeShared = sp.getBoolean(ConfigConstants.SETTINGS_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT);
+            if(shouldBeShared) {
+                main.sendDetection(position[0], position[1], 0, technology, returnDateString(), spoof, 2);
+            }
 
             try {
                 FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //get the json file
