@@ -18,222 +18,166 @@
   ~     along with SoniControl app.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!-- NOTE: txtDiscovered is replaced by the dialog title.-->
+    <TextView
+        android:id="@+id/txtDiscovered"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/alertDialog_text_ultrasonic_signal_detected"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
 
-        <ImageView
-            android:id="@+id/rectimage"
-            android:layout_width="388dp"
-            android:layout_height="603dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/rectangle"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></ImageView>
+    <TextView
+        android:id="@+id/txtSignalType"
+        android:layout_marginStart="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/placeholderSpectrogram"
+        tools:text="@string/gui_technology"
+        android:layout_marginLeft="24dp" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="204dp"
-            android:layout_marginStart="13dp"
-            android:layout_marginLeft="13dp"
-            android:layout_marginTop="10dp"
-            app:layout_constraintEnd_toEndOf="@+id/rectimage"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/txtDiscovered"
-            app:srcCompat="@drawable/spectrum_landscape" />
+    <ImageView
+        android:id="@+id/placeholderSpectrogram"
+        android:layout_width="wrap_content"
+        android:layout_height="204dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtSignalType"
+        app:srcCompat="@drawable/spectrum_landscape"
+        android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/btnReplay"
-            android:layout_width="100dp"
-            android:layout_height="55dp"
-            android:layout_alignTop="@+id/rectimage"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="72dp"
-            android:layout_marginLeft="72dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/alertDialog_option_play"
-            android:visibility="visible"
-            app:layout_constraintStart_toStartOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+    <at.ac.fhstp.sonicontrol.ui.SpectrogramView
+        android:id="@+id/spectrogram_view"
+        android:layout_width="fill_parent"
+        android:layout_height="204dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/placeholderSpectrogram"
+        />
 
-        <Button
-            android:id="@+id/btnShare"
-            android:layout_width="100dp"
-            android:layout_height="55dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="72dp"
-            android:layout_marginRight="72dp"
-            android:text="Share"
-            app:layout_constraintEnd_toEndOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.ProgressBar.Small.Inverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toBottomOf="@id/spectrogram_view"
+        app:layout_constraintEnd_toEndOf="@id/spectrogram_view"
+        app:layout_constraintStart_toStartOf="@id/spectrogram_view"
+        app:layout_constraintTop_toTopOf="@id/spectrogram_view"
+        tools:visibility="invisible" />
 
-        <Button
-            android:id="@+id/btnBlockThisTime"
-            android:layout_width="150dp"
-            android:layout_height="60dp"
-            android:layout_below="@+id/btnReplay"
-            android:layout_alignStart="@+id/btnReplay"
-            android:layout_alignLeft="@+id/btnReplay"
-            android:layout_marginStart="35dp"
-            android:layout_marginLeft="35dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/alertDialog_option_jam_this_time"
-            app:layout_constraintStart_toStartOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/btnSpoof" />
+    <Button
+        android:id="@+id/btnReplay"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:text="@string/alertDialog_option_play"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/btnShare"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spectrogram_view"
+        app:layout_constraintBottom_toTopOf="@id/txtProceed" />
 
-        <Button
-            android:id="@+id/btnSpoof"
-            android:layout_width="150dp"
-            android:layout_height="60dp"
-            android:layout_below="@+id/btnBlockThisTime"
-            android:layout_alignStart="@+id/btnBlockThisTime"
-            android:layout_alignLeft="@+id/btnBlockThisTime"
-            android:layout_marginStart="35dp"
-            android:layout_marginLeft="35dp"
-            android:layout_marginTop="5dp"
-            android:text="@string/alertDialog_option_jam_always_here"
-            app:layout_constraintStart_toStartOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/txtProceed" />
+    <Button
+        android:id="@+id/btnShare"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Share"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnReplay"
+        app:layout_constraintTop_toTopOf="@id/btnReplay" />
 
-        <Button
-            android:id="@+id/btnDismissThisTime"
-            android:layout_width="150dp"
-            android:layout_height="60dp"
-            android:layout_below="@+id/btnSpoof"
-            android:layout_alignEnd="@+id/btnBlockThisTime"
-            android:layout_alignRight="@+id/btnBlockThisTime"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="35dp"
-            android:layout_marginRight="35dp"
-            android:text="@string/alertDialog_option_dismiss_this_time"
-            app:layout_constraintEnd_toEndOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/btnDismissAlwaysHere" />
+    <TextView
+        android:id="@+id/txtProceed"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/how_to_proceed"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnReplay"
+        app:layout_constraintBottom_toTopOf="@id/btnBlockAlways"/>
 
-        <Button
-            android:id="@+id/btnDismissAlwaysHere"
-            android:layout_width="150dp"
-            android:layout_height="60dp"
-            android:layout_below="@+id/btnDismissThisTime"
-            android:layout_alignStart="@+id/btnBlockThisTime"
-            android:layout_alignLeft="@+id/btnBlockThisTime"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="35dp"
-            android:layout_marginRight="35dp"
-            android:text="@string/alertDialog_option_dismiss_always_here"
-            app:layout_constraintEnd_toEndOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/txtProceed" />
+    <Button
+        android:id="@+id/btnBlockAlways"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_jam_always_here"
+        app:layout_constraintEnd_toStartOf="@id/btnDismissAlwaysHere"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnBlockThisTime" />
 
-        <TextView
-            android:id="@+id/txtSignalType"
-            android:layout_width="0dp"
-            android:layout_height="25dp"
-            android:layout_above="@+id/btnReplay"
-            android:layout_alignStart="@+id/btnReplay"
-            android:layout_alignLeft="@+id/btnReplay"
-            android:layout_alignTop="@+id/rectimage"
-            android:layout_alignEnd="@+id/btnReplay"
-            android:layout_alignRight="@+id/btnReplay"
-            android:layout_marginStart="50dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="50dp"
-            android:layout_marginRight="50dp"
-            android:textAlignment="center"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="@+id/rectimage"
-            app:layout_constraintHorizontal_bias="0.481"
-            app:layout_constraintStart_toStartOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/btnReplay"
-            tools:text="Test" />
+    <Button
+        android:id="@+id/btnDismissAlwaysHere"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_dismiss_always_here"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnBlockAlways"
+        app:layout_constraintBottom_toTopOf="@id/btnDismissThisTime" />
 
-        <TextView
-            android:id="@+id/txtProceed"
-            android:layout_width="0dp"
-            android:layout_height="25dp"
-            android:layout_marginStart="50dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="25dp"
-            android:layout_marginEnd="50dp"
-            android:layout_marginRight="50dp"
-            android:text="How to proceed?"
-            android:textAlignment="center"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="@+id/rectimage"
-            app:layout_constraintStart_toStartOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/txtSignalType" />
+    <Button
+        android:id="@+id/btnBlockThisTime"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_jam_this_time"
+        app:layout_constraintEnd_toStartOf="@id/btnDismissThisTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/txtNoLocation"/>
 
-        <TextView
-            android:id="@+id/txtDiscovered"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_alignStart="@+id/txtSignalType"
-            android:layout_alignLeft="@+id/txtSignalType"
-            android:layout_alignTop="@+id/txtSignalType"
-            android:layout_alignEnd="@+id/btnReplay"
-            android:layout_alignRight="@+id/btnReplay"
-            android:layout_alignBottom="@+id/btnReplay"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:text="@string/alertDialog_text_ultrasonic_signal_detected"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="@+id/rectimage"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/rectimage"
-            app:layout_constraintTop_toTopOf="@+id/rectimage" />
+    <Button
+        android:id="@+id/btnDismissThisTime"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_dismiss_this_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnBlockThisTime"
+        app:layout_constraintBottom_toTopOf="@id/txtNoLocation"/>
 
-        <TextView
-            android:id="@+id/txtNoLocation"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_below="@+id/btnDismissAlwaysHere"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="@+id/rectimage"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/btnBlockThisTime" />
+    <TextView
+        android:id="@+id/txtNoLocation"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/txtAlertDate" />
 
-        <TextView
-            android:id="@+id/txtAlertDate"
-            android:layout_width="0dp"
-            android:layout_height="20dp"
-            android:layout_below="@+id/txtNoLocation"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="@+id/rectimage"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/rectimage"
-            app:layout_constraintTop_toBottomOf="@+id/txtNoLocation" />
+    <TextView
+        android:id="@+id/txtAlertDate"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

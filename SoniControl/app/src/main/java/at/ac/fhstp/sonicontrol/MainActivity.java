@@ -28,26 +28,26 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.media.AudioTrack;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -58,12 +58,12 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import android.provider.Settings;
-
-
 import at.ac.fhstp.sonicontrol.rest.Detection;
 import at.ac.fhstp.sonicontrol.rest.RESTController;
 import at.ac.fhstp.sonicontrol.rest.SoniControlAPI;
+import at.ac.fhstp.sonicontrol.ui.DetectionAsyncTask;
+import at.ac.fhstp.sonicontrol.ui.DetectionDialogFragment;
+import at.ac.fhstp.sonicontrol.utils.Misc;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -71,11 +71,12 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import uk.me.berndporr.iirj.Butterworth;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
 
-public class MainActivity extends BaseActivity implements Scan.DetectionListener {
+public class MainActivity extends BaseActivity implements Scan.DetectionListener, DetectionDialogFragment.DetectionDialogListener, PitchShiftPlayer.PitchShiftPlayerListener {
     private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE/*, Manifest.permission.READ_EXTERNAL_STORAGE*/};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
 
@@ -88,20 +89,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     ImageButton btnSettings;
     ImageButton btnExit;
 
-    Button btnAlertStart;
-    Button btnAlertSpoof;
-    Button btnAlertDismissThisTime;
-    Button btnAlertDismissAlways;
-    Button btnAlertSpoofThisTime;
-
     Scan detector;
     Location locationFinder;
     JSONManager jsonMan;
 
-    AlertDialog alert;
-    TextView txtSignalType;
-    TextView txtAlertDate;
-    TextView txtNoLocation;
+    DetectionDialogFragment alert;
+    AsyncTask detectionAsyncTask;
+    PitchShiftPlayer pitchShiftPlayer;
+    //private SpectrogramView spectrogramView;
     Technology sigType;
     View view;
 
@@ -140,7 +135,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     boolean isSignalPlayerGenerated;
 
-    AudioTrack sigPlayer;
+    MediaPlayer sigPlayer;
 
     boolean saveJsonFile;
     String usedBlockingMethod;
@@ -181,6 +176,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
         jsonMan = new JSONManager(this);
 
+        // Used by SpectrogramView
+        Misc.setAttribute("activity", this);
 
         setContentView(R.layout.activity_main);
 
@@ -190,6 +187,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         detector = Scan.getInstance(); //Get Scan-object if no object is available yet make a new one
         detector.init(MainActivity.this); //initialize the detector with the main method
         detector.setDetectionListener(this); // MainActivity will be notified of detections (calls onDetection)
+        //pitchShiftPlayer = new PitchShiftPlayer();
 
         locationFinder = Location.getInstanceLoc(); //Get LocationFinder-object if no object is available yet make a new one
         locationFinder.init(MainActivity.this); //initialize the location-object with the main method
@@ -202,6 +200,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         btnStop.setEnabled(false); //after the start of the app set the stop button to false because nothing is there to stop yet
 
+        /*
         final AlertDialog.Builder openScanner = new AlertDialog.Builder(MainActivity.this); //AlertDialog for getting the alert message after detection
         openScanner.setCancelable(false); //the AlertDialog cannot be canceled because you have to choose an option for the found signal
         LayoutInflater inflater = getLayoutInflater(); //inflator for getting the custom alertDialog over the main activity
@@ -209,45 +208,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         view = inflater.inflate(R.layout.alert_message, viewGroup , false); //put the alert_message layout on the inflator
         openScanner.setView(view); //set the view of the inflater
         alert = openScanner.create(); //create the AlertDialog
-
-        txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
-        txtAlertDate = (TextView)view.findViewById(R.id.txtAlertDate);
-        txtNoLocation = (TextView)view.findViewById(R.id.txtNoLocation);
-
-        btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
-        btnAlertDismissAlways.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-            onAlertDismissAlways();
-            }
-        });
-
-        btnAlertDismissThisTime = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
-        btnAlertDismissThisTime.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-            onAlertDismissThisTime();
-            }
-        });
-
-        btnAlertSpoof = (Button) view.findViewById(R.id.btnSpoof); //button of the alert for starting the spoofing process after finding a signal
-        btnAlertSpoof.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-            onAlertBlockAlways();
-            }
-        });
-
-        btnAlertSpoofThisTime = (Button) view.findViewById(R.id.btnBlockThisTime);
-        btnAlertSpoofThisTime.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                onAlertBlockThisTime();
-            }
-        });
-
-        btnAlertStart = (Button) view.findViewById(R.id.btnReplay); //button of the alert for playing the found signal with fs/3
-        btnAlertStart.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-            //onAlertPlayDetectedSignal();
-            }
-        });
+*/
+        alert = new DetectionDialogFragment();
 
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -282,6 +244,16 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         if(savedInstanceState == null) {
         }
         getUpdatedSettings(); //get the settings
+
+        /*
+        // Initialize spectrogram view.
+        spectrogramView = (SpectrogramView) findViewById(R.id.spectrogram_view);
+        spectrogramView.setSamplingRate(ConfigConstants.SCAN_SAMPLE_RATE);
+        spectrogramView.setFFTResolution(ConfigConstants.SCAN_BUFFER_SIZE / 2);
+
+        spectrogramView.setCutoffFrequency(ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        spectrogramView.setUpperCutoffFrequency(ConfigConstants.UPPER_CUTOFF_FREQUENCY);
+        */
     }
 
     private void onBtnExitClick(View v) {
@@ -293,13 +265,19 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         else {
             NotificationHelper.cancelStatusNotification(MainActivity.this);
         }
+
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.cleanup();
+            pitchShiftPlayer.removeDetectionListener();
+            pitchShiftPlayer = null;
+        }
         
         // Reset state
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
         ed.remove(ConfigConstants.PREFERENCES_APP_STATE);
         // Clean the technology on disk
-        ed.remove("lastDetectedTechnology");
+        ed.remove(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF);
         // Note: this is blocking the thread, but we want to be sure that it gets persisted.
         ed.commit();
 /*
@@ -319,6 +297,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         spoof.stopSpoofingComplete(); //stop the whole spoofing process
         MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
         micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
+        usedBlockingMethod = null;
 
         // Stop all the background threads
         threadPool.shutdownNow();
@@ -460,70 +439,29 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
 
-    public void activateAlert(Technology signalType){
+    public void activateAlert(Technology signalType) {
+        Log.d("activateAlert", "Will activate alert dialog if activity exists.");
+
         SharedPreferences settings = getSettingsObject(); //get the settings
-        preventiveSpoof = settings.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
-        if(preventiveSpoof) {
-            NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
-            if (usedBlockingMethod == null) {
-                usedBlockingMethod = locationFinder.blockMicOrSpoof();
-            }
-        }
-
-        boolean gpsEnabled = settings.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
-        boolean networkEnabled = settings.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
-        locationManager = (LocationManager) this.getApplicationContext().getSystemService(LOCATION_SERVICE);
-        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
-
-        int status = ActivityCompat.checkSelfPermission(this.getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION);
-
-        if((!(isGPSEnabled && gpsEnabled) && !(isNetworkEnabled && networkEnabled)) || status != PackageManager.PERMISSION_GRANTED){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    btnAlertSpoof.setEnabled(false);
-                    btnAlertDismissAlways.setEnabled(false);
-                    txtNoLocation.setText(R.string.on_alert_no_location_message);
-                }
-            });
-        }else if(!saveJsonFile){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    btnAlertSpoof.setEnabled(false);
-                    btnAlertDismissAlways.setEnabled(false);
-                    txtNoLocation.setText(R.string.alert_no_json_file_message);
-                }
-            });
-        }else{
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    btnAlertSpoof.setEnabled(true);
-                    btnAlertDismissAlways.setEnabled(true);
-                    txtNoLocation.setText("");
-                }
-            });
-        }
 
         sigType = signalType; //set the technology variable to the latest detected one
-        txtSignalType.setText(getString(R.string.gui_technology) + " " + sigType.toString()); //can be deleted it's only for debugging
 
         boolean activityExists = settings.getBoolean("active", false);
         if (activityExists) {
             runOnUiThread(displayAlert);
-            //uiHandler.post(displayAlert); NOTE: runOnUiThread will execute code directly, not post
         }
     }
 
     private Runnable displayAlert = new Runnable() {
         public void run() {
-            txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + getTimeAndDateForAlert());
-            alert.show(); //open the alert
+            //alert.getDialog().show(); //open the alert
+
+            if (!alert.isAdded()) {
+                alert.show(getSupportFragmentManager(), "DetectionDialogFragment");
+            }
+//          alert.txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + getTimeAndDateForAlert());
+//          alert.txtSignalType.setText(getString(R.string.gui_technology) + " " + sigType.toString()); //can be deleted it's only for debugging
+            detectionAsyncTask = new DetectionAsyncTask(alert).execute(getApplicationContext()/*bufferHistory*/);
         }
     };
 
@@ -539,6 +477,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             MicCapture micBlock = MicCapture.getInstance();
             micBlock.stopMicCapturingComplete();
         }
+        usedBlockingMethod = null;
     }
 
 
@@ -571,6 +510,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         checkFirstRunForWelcomeShowing();
         checkForJSONHistoryUpdate();
 
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.onResume();
+        }
+
         PendingIntent detectionPendingIntent = NotificationHelper.getPendingIntentDetectionFlagNoCreate(getApplicationContext());
 
         // Store the app activeness and then check the state
@@ -599,7 +542,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
 
                 if (intent.hasExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED)) {
-                    //TODO: We might use directly the "lastDetectedTechnology", not using Extras ?
+                    //TODO: We might use directly the ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, not using Extras ?
 
                     Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
                     if (technology != null) {
@@ -613,7 +556,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     }
                     else {
                         // in case the Activity was destroyed
-                        String storedTechnology = sp.getString("lastDetectedTechnology", null);
+                        String storedTechnology = sp.getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, null);
                         if (storedTechnology != null) {
                             Technology lastDetectedTechnology = null;
                             try {
@@ -637,7 +580,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 setGUIStateStarted();
 
                 if (intent.hasExtra(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED)) {
-                    //TODO: We might use directly the "lastDetectedTechnology", not using Extras ?
+                    //TODO: We might use directly the ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, not using Extras ?
 
                     Technology technology = (Technology) intent.getExtras().get(ConfigConstants.EXTRA_TECHNOLOGY_DETECTED);
                     if (technology != null) {
@@ -651,7 +594,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     }
                     else {
                         // in case the Activity was destroyed
-                        String storedTechnology = sp.getString("lastDetectedTechnology", null);
+                        String storedTechnology = sp.getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, null);
                         if (storedTechnology != null) {
                             Technology lastDetectedTechnology = null;
                             try {
@@ -701,24 +644,48 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         super.onPause();
         isInBackground = true;
 
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.onPause();
+        }
+
         // Store our shared preference
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean("active", false);
         // Clean the technology on disk
-        ed.remove("lastDetectedTechnology");
+        ed.remove(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF);
         ed.apply();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+
+        if (sigPlayer != null ) {
+            sigPlayer.release(); //release the resources of the player
+            sigPlayer = null; //set the player variable to null
+            isSignalPlayerGenerated = false; //now there is no player anymore so it's false
+            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+        }
+        if (isSignalPlayerGenerated && pitchShiftPlayer != null) {
+            pitchShiftPlayer.cleanup();
+            pitchShiftPlayer.removeDetectionListener();
+            pitchShiftPlayer = null;
+            isSignalPlayerGenerated = false;
+            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.cleanup();
+            pitchShiftPlayer.removeDetectionListener();
+            pitchShiftPlayer = null;
+        }
+        // ??? detector.removeDetectionListener(this);
         // TODO: Release resources... But this should not be called as long as our Service runs.
         // Maybe threads, microphone, ... ?
         // threadPool.shutdownNow();
@@ -756,42 +723,44 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     @Override
-    public void onDetection(final Technology technology) {
+    public void onDetection(final Technology detectedTechnology, final float[] bufferHistory) {//, final int maxValueIndex) {
+        // Should we start this as an AsyncTask already ?
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                checkTechnologyAndDoAccordingly(technology);
+                handleSignal(detectedTechnology, bufferHistory); //, maxValueIndex);
             }
         });
     }
 
+    private void handleSignal(Technology technology, float[] bufferHistory) { //, int maxValueIndex) {
+        Log.d("handleSignal", "Start to handle signal");
 
-    private void checkTechnologyAndDoAccordingly(Technology detectedTechnology){
-        if(detectedTechnology == null) {
-            // This case should not happen
-           //Log.d(TAG, "checkTechnologyAndDoAccordingly: detectedTechnology is null !?");
-        }
-        else {
-            switch (detectedTechnology) {
-                case GOOGLE_NEARBY:
-                    handleSignal(Technology.GOOGLE_NEARBY);
-                case LISNR:
-                    handleSignal(Technology.LISNR);
-                case PRONTOLY:
-                    handleSignal(Technology.PRONTOLY);
-                case UNKNOWN:
-                    //Log.d("Detected", "Unknown ultrasonic signal");
-                    handleSignal(Technology.UNKNOWN);
+        SharedPreferences sp = getSettingsObject();
+        preventiveSpoof = sp.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
+        if(preventiveSpoof) {
+            if (usedBlockingMethod == null) {
+                NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
+                usedBlockingMethod = locationFinder.blockMicOrSpoof();
             }
         }
-    }
 
-    private void handleSignal(Technology technology) {
+        //Log.d("nb samples", "bufferHistory.length (mono): " + bufferHistory.length);
+        bufferHistory = preProcessing(bufferHistory);
+
         // Stores the technology on disk in case the Activity was destroyed
-        SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
-        ed.putString("lastDetectedTechnology", technology.toString());
+        ed.putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, technology.toString());
+        ed.putString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getTimeAndDateForAlert());
+        ed.putInt(ConfigConstants.BUFFER_HISTORY_LENGTH_SHARED_PREF, bufferHistory.length);
+        //ed.putInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, maxValueIndex);
         ed.apply();
+
+        // TODO: Move to the specific cases where the bufferHistory will be needed ?
+        alert.setSpectrum(null); // Reset the visualization
+        // Write bufferHistory to file (we are already in a separated Thread)
+        // It will be read when the alert is actually shown.
+        SignalConverter.writeFloatArray(bufferHistory, this.getFilesDir() + File.separator + ConfigConstants.BUFFER_HISTORY_FILENAME);
 
         boolean locationTrack;
         locationFinder.saveSignalTypeForLater(technology);
@@ -802,16 +771,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             locationFinder.saveLocationGPSTrackerObject();
         }
 
-
+        // Checks if the user prefers to block every location
         if (this.getSettingsObject().getBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, false)) { //check if the settings are set to continous spoofing
-            /*if (!this.getBackgroundStatus()) { //if the app is not in the background
-                this.cancelDetectionNotification(); //cancel the detection notification
-            }*/
-            //Log.d("Spoof", "I spoof oontinuous");
+            Log.d("Spoof", "Spoof continuous");
             if (locationTrack) {
                 locationFinder.setPositionForContinuousSpoofing(lastPosition); //set the position for distance calculation to the latest position
             }
-            //NotificationHelper.cancelScanningStatusNotification(); //cancel the scanning-status notification
             NotificationHelper.activateSpoofingStatusNotification(getApplicationContext()); //activate the spoofing-status notification
 
             saveJsonFile = this.checkJsonAndLocationPermissions()[0];
@@ -828,29 +793,76 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
 
             locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
-            //resetHandler(); // Should be handled by the cpp (just stop scanning)
-        } else {
-            if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if the user has a JSON file
-                /*if (this.getBackgroundStatus()) { //if the app is in the background
-                    this.activateDetectionNotification(); //activate the notification for a detection
-                }*/
-                //NotificationHelper.cancelScanningStatusNotification(); //cancel the scanning-status notification
+        } else { // The user does not prefer to block every location
+            Log.d("Not spoof", "Not spoof continuous");
+            if (locationTrack && jsonMan.checkIfJsonFileIsAvailable()) { // If the user allowed location and has a JSON file
+                Log.d("locationOn", "checkExistingLocationDB");
+
+                //TODO: We have one case in here where we also would need to write the bufferHistory.
+                //Pass the buffer history and file name ?
+
+                locationFinder.checkExistingLocationDB(lastPosition, technology); // Check our detection DB and follow user (stored) preference if it is not a new location
+            }
+            else {
+                // Notify the user
+                Log.d("Handle signal", "activate notification, reset spectrum and write float array");
                 NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology);
-                this.activateAlert(technology); //open the alert dialog
-            } else {
-                if (locationTrack) {
-                    locationFinder.checkExistingLocationDB(lastPosition, technology); //if a JSON file is available we check if the signal is a new one with position and technologytype
-                } else {
-                    /*if (this.getBackgroundStatus()) { //if the app is in the background
-                        this.activateDetectionNotification(); //activate the notification for a detection
-                    }*/
-                    //NotificationHelper.cancelScanningStatusNotification(); //cancel the scanning-status notification
-                    NotificationHelper.activateDetectionAlertStatusNotification(getApplicationContext(), technology); //activate the onHold-status notification
-                    this.activateAlert(technology); //open the alert dialog
-                    //resetHandler(); // Should be handled by the cpp (just stop scanning)
-                }
+                /*alert.setSpectrum(null); // Reset the visualization
+
+                synchronized (SignalConverter.class) {
+                    // Write bufferHistory to file (we are already in a separated Thread)
+                    // It will be read when the alert is actually shown.
+                    SignalConverter.writeFloatArray(bufferHistory, this.getFilesDir() + File.separator + ConfigConstants.BUFFER_HISTORY_FILENAME);
+                }*/
+
+                this.activateAlert(technology); //open the alert dialog if the app is visible
             }
         }
+    }
+
+    /**
+     * Preprocess the buffer history (containing the detected signal).
+     * Convert to mono, compute RMS and apply a high pass filter.
+     * @param bufferHistory Stereo interleaved audio buffer
+     * @return the preprocessed audio buffer
+     */
+    private float[] preProcessing(float[] bufferHistory) {
+        int maxValueIndex = -1;
+        float maxValue = Integer.MIN_VALUE;
+
+        Log.d("preProcessing", "Start converting to mono, computing RMS and high pass filtering");
+
+        float[] highPassedArray = new float[bufferHistory.length/2];
+
+        Butterworth butterworthUp = new Butterworth();
+        int bandPassFilterOrder = ConfigConstants.BANDPASS_FILTER_ORDER;
+        double Fs = ConfigConstants.SCAN_SAMPLE_RATE;
+        double centerFrequencyBandPass = ConfigConstants.BANDPASS_CENTER_FREQUENCY;
+        double bandpassWidth = ConfigConstants.BANDPASS_WIDTH;
+        //butterworthUp.bandPass(bandPassFilterOrder, Fs, centerFrequencyBandPass, bandpassWidth);
+        butterworthUp.highPass(bandPassFilterOrder, Fs, ConfigConstants.HIGHPASS_CUTOFF_FREQUENCY);
+        double squareSum = 0.0;
+        for(int i = 1, counter = 0; i < bufferHistory.length; i+=2, counter++) {
+            float value = (float) butterworthUp.filter((bufferHistory[i] + bufferHistory[i-1])/2);
+            highPassedArray[counter] = value;
+            if (value > maxValue) {
+                maxValue = value;
+                maxValueIndex = counter;
+            }
+            squareSum += value*value;
+        }
+        float amplitude = (float) Math.sqrt(squareSum/highPassedArray.length);
+
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, maxValueIndex);
+        ed.putFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, amplitude);
+        ed.apply();
+        Log.d("preProcessing", "maxValueIndex: " + maxValueIndex + ", amplitude: " + amplitude);
+
+
+        Log.d("preProcessing", "Done converting to mono, computing RMS and high pass filtering");
+        return highPassedArray;
     }
 
     public void startDetection(){
@@ -866,7 +878,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         }
 
-        //NotificationHelper.cancelStatusNotification(); //cancel the onHold notification
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //start the scanning-status notification
         setGUIStateStarted();
         detector.startScanning(); //start scanning for signals
@@ -879,11 +890,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         //NotificationHelper.mNotificationManager.cancelAll(); //cancel all active notifications
         NotificationHelper.activateOnHoldStatusNotification(getApplicationContext()); //activate only the onHold-status notification again
         detector.pause(); // stop scanning
-        alert.cancel();
+        if (alert.getDialog() != null) {
+            alert.getDialog().dismiss();
+        }
         Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
         spoof.stopSpoofingComplete(); //stop the whole spoofing process
         MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
         micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
+        usedBlockingMethod = null;
 
         setGUIStateStopped();
         SharedPreferences sp = getSettingsObject();
@@ -1003,33 +1017,85 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             //Log.d("SearchForJson", "addWithoutLoc");
             jsonMan.addJsonObject(noLocation, sigType.toString(), spoofDecision, getString(R.string.noAddressForJsonFile), false);
         }
-        alert.cancel(); //cancel the alert dialog
-        txtSignalType.setText(""); //can be deleted it's only for debugging
+        //TODO: Dismiss instead of cancel ?
+        alert.getDialog().dismiss(); //cancel the alert dialog
+        //alert.txtSignalType.setText(""); //can be deleted it's only for debugging
         NotificationHelper.cancelDetectionAlertStatusNotification(getApplicationContext());
 
         // Clean the technology on disk
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
-        ed.remove("lastDetectedTechnology");
+        ed.remove(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF);
         ed.apply();
-    }
 
-    public void onAlertPlayDetectedSignal(){
-        if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
-            btnAlertStart.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
-            sigPlayer = locationFinder.generatePlayer(); //create a new player
-            isSignalPlayerGenerated = true; //player is generated so it's true
-            sigPlayer.play(); //start the player
-        }else if(sigPlayer!=null && isSignalPlayerGenerated){ //if a player for the signal is created and the boolean for generating is true
-            sigPlayer.stop(); //stop the player
+        // Releasing audio resources
+        if (sigPlayer != null ) {
             sigPlayer.release(); //release the resources of the player
             sigPlayer = null; //set the player variable to null
-            btnAlertStart.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
             isSignalPlayerGenerated = false; //now there is no player anymore so it's false
+        }
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.cleanup();
+            pitchShiftPlayer.removeDetectionListener();
+            pitchShiftPlayer = null;
+            isSignalPlayerGenerated = false;
+            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
         }
     }
 
-    public void onAlertBlockAlways(){
+
+
+    // DetectionDialogListener methods ----------
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the DetectionDialogFragment.DetectionDialogListener interface
+
+    @Override
+    public void onAlertPlayDetectedSignal(DialogFragment dialog){
+
+        if (pitchShiftPlayer == null) {
+            pitchShiftPlayer = new PitchShiftPlayer();
+            pitchShiftPlayer.setDetectionListener(this);
+        }
+        if (!isSignalPlayerGenerated) {
+            File file = new File (this.getApplicationContext().getFilesDir(), "detection.wav");
+            Log.d("onReplay", "file length: " + file.length());
+
+            pitchShiftPlayer.startAudio(ConfigConstants.SCAN_SAMPLE_RATE, 4410);
+            pitchShiftPlayer.openFile(file.getPath(), 0, (int) file.length());
+            isSignalPlayerGenerated = true;
+        }
+
+        pitchShiftPlayer.playPause();
+        int playPauseText = pitchShiftPlayer.isPlaying() ? R.string.ButtonStopSignal : R.string.ButtonPlaySignal;
+        alert.btnAlertReplay.setText(playPauseText); //set the button for playing/stopping
+
+/*
+        if (sigPlayer == null && !isSignalPlayerGenerated){ //if no player for the signal is created yet and the boolean for generating is also false
+            alert.btnAlertReplay.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
+            sigPlayer = this.generatePlayer(this.getApplicationContext(), dialog); //create a new player
+            isSignalPlayerGenerated = true; //player is generated so it's true
+            sigPlayer.start();//play(); //start the player
+        }else if(sigPlayer!=null && isSignalPlayerGenerated){ //if a player for the signal is created and the boolean for generating is true
+            if (sigPlayer.isPlaying()) {
+                sigPlayer.stop(); //stop the player
+                alert.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+            }
+            else {
+                try {
+                    sigPlayer.prepare();
+                    sigPlayer.start();
+                    alert.btnAlertReplay.setText(R.string.ButtonStopSignal); //set the button for playing/stopping to "stop"
+                } catch (IOException e) {
+                    Log.e(TAG, "onAlertPlayDetectedSignal, mediaPlayer prepare() failed: " + e.getMessage());
+                }
+            }
+        }
+*/
+    }
+
+    @Override
+    public void onAlertBlockAlways(DialogFragment dialog){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE);
         showToastOnNoLocation();
         checkForActivatedLocation();
@@ -1037,13 +1103,15 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext()); //activates the notification for the spoofing process
     }
 
-    public void onAlertBlockThisTime(){
+    @Override
+    public void onAlertBlockThisTime(DialogFragment dialog){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME);
         locationFinder.blockMicOrSpoof();
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
     }
 
-    public void onAlertDismissAlways(){
+    @Override
+    public void onAlertDismissAlways(DialogFragment dialog){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE);
         showToastOnNoLocation();
         checkForActivatedLocation();
@@ -1051,10 +1119,56 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
     }
 
-    public void onAlertDismissThisTime(){
+    @Override
+    public void onAlertDismissThisTime(DialogFragment dialog){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME);
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
+    }
+    // END DetectionDialogListener methods ----------
+
+
+    public static MediaPlayer generatePlayer(Context context, final DialogFragment dialog){
+        File file = new File(context.getFilesDir(), "detection.wav");
+        Uri uri = Uri.fromFile(file);
+        MediaPlayer mediaPlayer = MediaPlayer.create(context, uri);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.stop();
+                DetectionDialogFragment detectionDialog = (DetectionDialogFragment) dialog;
+                detectionDialog.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+            }
+        });
+        return mediaPlayer;
+        /*
+        noiseByteArray = new byte[(int) file.length()]; //size & length of the file
+        InputStream is = null;
+        try{
+            is = new FileInputStream(file);
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+        }
+        BufferedInputStream bis = new BufferedInputStream(is, 44100);
+        DataInputStream dis = new DataInputStream(bis);
+
+        int i = 0;
+        try {
+            while (dis.available() > 0) {
+                noiseByteArray[i] = dis.readByte(); //read every entry of the data input stream into the new byte array
+                i++;
+            }
+
+            dis.close();
+        }
+        catch (IOException ex){
+            ex.printStackTrace();
+        }
+        AudioTrack sigPlayer = new AudioTrack(AudioManager.STREAM_MUSIC,44100, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_FLOAT,noiseByteArray.length,AudioTrack.MODE_STATIC); //create a new player with the byte array
+        sigPlayer.write(noiseByteArray, 0, noiseByteArray.length); //write the byte array into the player
+        return sigPlayer;
+        */
     }
 
     public void onFirstOpeningShowWelcome(){
@@ -1258,8 +1372,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
             return !TextUtils.isEmpty(locationProviders);
         }
-
-
     }
 
     public void sendDetection(final double longitude, final double latitude, final int technologyid, final String technology, final String timestamp, final int spoofDecision, final int amplitude) {
@@ -1330,5 +1442,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 Log.e("Upload error:", t.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onPlayCompleted() {
+        if (alert != null && alert.btnAlertReplay != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
+                }
+            });
+        }
     }
 }

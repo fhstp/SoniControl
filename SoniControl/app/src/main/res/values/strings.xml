@@ -51,7 +51,7 @@
     <string name="alertDialog_option_dismiss_this_time">Ignore this time</string>
     <string name="alertDialog_option_dismiss_always_here">Ignore always here</string>
     <string name="alertDialog_option_jam_this_time">Block this time</string>
-    <string name="alertDialog_text_ultrasonic_signal_detected">Ultrasonic signal detected. \nSelect one of the options below to proceed</string>
+    <string name="alertDialog_text_ultrasonic_signal_detected">Ultrasonic signal detected</string>
     <string name="alertDialog_option_play">Play</string>
     <string name="storedLocationActivityTitle">Detected signals</string>
     <string name="SettingsActivityTitle">Settings</string>
@@ -116,8 +116,10 @@
     <string name="settings_title_location_radius">Location radius (metre)</string>
     <string name="statusChannelName">App status channel</string>
     <string name="detectionChannelName">Signal detection channel</string>
-    <string name="gui_technology">Technology: </string>
+    <string name="gui_technology">Estimated type:</string>
     <string name="NoSignalImportedAndSavedYet">You have not imported any signals yet!</string>
     <string name="stored_detections_ask_again">will ask again</string>
+    <string name="how_to_proceed">How to proceed?</string>
+    <string name="fastDetection">Faster detection (less accurate diagnostics)</string>
     <string name="rules_info_text">Detections are shown in four tabs: \"My Rules\", \"Imported Rules\", \"Detection History\" and a map visualization.  The first two act as firewall rules. Their color shows if the rule will be blocked (red), ignored (green) or ask you again on the next detection (orange). You can change the status by tapping on them several times. On tapping longer on them, you can delete each rule.  The history tab shows all detections.\nThe map shows all firewall rules geographically.</string>
 </resources>

@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Random;
 
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
+
 public class NoiseGenerator {
 
     /***

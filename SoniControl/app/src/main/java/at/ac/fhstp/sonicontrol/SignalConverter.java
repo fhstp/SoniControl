@@ -21,25 +21,136 @@ package at.ac.fhstp.sonicontrol;
 
 
 import android.content.Context;
-import android.media.AudioRecord;
 import android.os.Environment;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 
 public class SignalConverter {
+
+    public static void writeFloatArray(float[] floatArray, String filePath) {
+        writeFloatArray(floatArray, filePath, false);
+    }
+
+    public static void writeFloatArray(float[] floatArray, String filePath, boolean shouldAppend) {
+        Log.d("writeFloatBuffer", filePath);
+        RandomAccessFile randomAccessWriter = null;
+        try {
+            randomAccessWriter = new RandomAccessFile(filePath, "rw");
+            Log.d("writeFloatBuffer", "File created");
+
+            FileChannel outChannel = randomAccessWriter.getChannel();
+            if (shouldAppend) {
+                outChannel.position(randomAccessWriter.length());
+            }
+
+            //one float 4 bytes
+            ByteBuffer buf = ByteBuffer.allocate(4*floatArray.length);
+            buf.clear();
+            buf.asFloatBuffer().put(floatArray);
+
+            outChannel.write(buf);
+
+            outChannel.close();
+            Log.d("writeFloatBuffer", "File written");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (randomAccessWriter != null) {
+                try {
+                    randomAccessWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private static void writeIntArray(int[] intArray, String filepath) {
+        writeIntArray(intArray, filepath, false);
+    }
+
+    public static void writeIntArray(int[] intArray, String filePath, boolean shouldAppend) {
+        Log.d("writeIntArray", filePath);
+        RandomAccessFile randomAccessWriter = null;
+        try {
+            randomAccessWriter = new RandomAccessFile(filePath, "rw");
+            Log.d("writeIntArray", "File created");
+
+            FileChannel outChannel = randomAccessWriter.getChannel();
+            if (shouldAppend) {
+                outChannel.position(randomAccessWriter.length());
+            }
+
+            //one float 4 bytes
+            ByteBuffer buf = ByteBuffer.allocate(4*intArray.length);
+            buf.clear();
+            buf.asIntBuffer().put(intArray);
+
+            outChannel.write(buf);
+
+            outChannel.close();
+            Log.d("writeIntArray", "File written");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (randomAccessWriter != null) {
+                try {
+                    randomAccessWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static float[] readFloatArray(String filePath, int arrayLength) {
+        RandomAccessFile randomAccessReader = null;
+        try {
+            randomAccessReader = new RandomAccessFile(filePath, "r");
+
+            float[] floatArray = new float[arrayLength];
+
+            FileChannel inChannel = randomAccessReader.getChannel();
+            ByteBuffer buf_in = ByteBuffer.allocate(arrayLength*4);
+            buf_in.clear();
+
+            inChannel.read(buf_in);
+
+            buf_in.rewind();
+            buf_in.asFloatBuffer().get(floatArray);
+
+            inChannel.close();
+
+            return floatArray;
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (randomAccessReader != null) {
+                try {
+                    randomAccessReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
 
     public static void writeToCSV(float[] dataArray, Context context){
         FileWriter writer = null;
@@ -72,9 +183,10 @@ public class SignalConverter {
 
     public static void writeWAVHeaderToFile(/*byte[] rawdata, */float[] rawFloat, Context context, int maxValueIndex) {
         RandomAccessFile randomAccessWriter = null;
+        String filepath = context.getFilesDir()+ "/detection.wav";
         try {
-            randomAccessWriter = new RandomAccessFile(context.getFilesDir()+ "/detection.wav", "rw");
-            Log.d("writeWAVHeaderToFile", context.getFilesDir()+ "/detection.wav");
+            randomAccessWriter = new RandomAccessFile(filepath, "rw");
+            Log.d("writeWAVHeaderToFile", filepath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -102,7 +214,7 @@ public class SignalConverter {
             randomAccessWriter.writeBytes("PEAK");
             randomAccessWriter.writeInt(Integer.reverseBytes(16));
             randomAccessWriter.writeInt(Integer.reverseBytes(1));
-            Log.d("SignalConverter", String.valueOf((int) Math.floor((float)System.currentTimeMillis()/1000)));
+            //Log.d("SignalConverter", String.valueOf((int) Math.floor((float)System.currentTimeMillis()/1000)));
             randomAccessWriter.writeInt(Integer.reverseBytes((int) Math.floor((float)System.currentTimeMillis()/1000))); //current timestamp in seconds
             //randomAccessWriter.writeInt(Integer.reverseBytes(1024434463));
             randomAccessWriter.writeInt(Integer.reverseBytes(Float.floatToIntBits(rawFloat[maxValueIndex])));
@@ -110,9 +222,11 @@ public class SignalConverter {
             randomAccessWriter.writeBytes("data");
             randomAccessWriter.writeInt(Integer.reverseBytes(payloadSize));
 
+            /*
             for(int i = 0; i< rawFloat.length;i++){
                 randomAccessWriter.writeInt(Integer.reverseBytes(Float.floatToIntBits(rawFloat[i])));
             }
+            */
             //randomAccessWriter.write(rawdata, 0, payloadSize);
         } catch (Exception e) {
             if (e.getMessage() != null) {
@@ -127,5 +241,12 @@ public class SignalConverter {
                 Log.e("SignalConverter", "I/O exception occured while closing output file");
             }
         }
+
+        int[] intArray = new int[rawFloat.length];
+        for(int i = 0; i< rawFloat.length;i++){
+            intArray[i] = Integer.reverseBytes(Float.floatToIntBits(rawFloat[i]));
+        }
+        writeIntArray(intArray, filepath, true);
+        Log.d("writeWAVHeaderToFile", "Done writing audio");
     }
 }

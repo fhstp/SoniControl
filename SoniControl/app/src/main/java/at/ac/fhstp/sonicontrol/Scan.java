@@ -19,23 +19,15 @@
 
 package at.ac.fhstp.sonicontrol;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
-import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.util.Log;
-
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Scan {
     private static final String TAG = "Scan";
     public interface DetectionListener {
-        public void onDetection(Technology technology);
+        public void onDetection(Technology technology, float[] stereoRawData);//, int maxValueIndex);
     }
     //private List<DetectionListener> detectionListeners = new ArrayList<>();
     private DetectionListener mainDetectionListener = null;
@@ -43,6 +35,7 @@ public class Scan {
     private static Scan instance;
     private JSONManager jsonMan;
 
+    Context applicationContext;
     MainActivity main;
     Location locFinder;
     Spoofer spoof = null;
@@ -56,6 +49,7 @@ public class Scan {
 
     private boolean paused = false; // Is the Scan paused ?
     private Technology lastDetectedTechnology = null;
+    private int fastDetection;
 
     private boolean consistentState = true; // Allows to detect wrong termination of the app
 
@@ -70,6 +64,8 @@ public class Scan {
     }
 
     public void init(MainActivity main){
+        this.applicationContext = main.getApplicationContext();
+        //TODO: Remove references to main
         this.main = main; //initialize the Scan with a main object
         System.loadLibrary("Superpowered");
     }
@@ -81,36 +77,27 @@ public class Scan {
         this.mainDetectionListener = listener;
     }
 
-    public void notifyDetectionListeners() {
-        if (lastDetectedTechnology != null) {
+    public void notifyDetectionListeners(Technology technology, float[] bufferHistory) {//, int maxValueIndex) {
+        if (technology != null) {
             /*for(DetectionListener listener: detectionListeners) {
                 listener.onDetection(lastDetectedTechnology);
             }*/
-            mainDetectionListener.onDetection(lastDetectedTechnology);
+            mainDetectionListener.onDetection(technology, bufferHistory); //, maxValueIndex);
         }
         else {
             //Log.d(TAG, "notifyDetectionListeners: lastDetectedTechnology is null");
         }
     }
 
-    /***
-     * Translates the String received from CPP to a Technology value and notifies the listeners of the detection.
+    /**
+     * Notify listeners after translating the String received from CPP to a Technology value.
      * Note: This is called from the native code every time there is a detection
      * @param technology String corresponding to a Technology Enum value
+     * @param bufferHistory raw buffer captured via Superpowered
      */
-    public void detectedSignal(String technology, float[] bufferHistory) {
-        float[] bufferHistoryFloatArray = bufferHistory;
-        float[] bufferHistoryFloatArrayMono = null;
-        int maxValueIndex = 0;
-        for(int i=0;i<bufferHistoryFloatArray.length/2;i++){
-            bufferHistoryFloatArrayMono = ArrayUtils.add(bufferHistoryFloatArrayMono, bufferHistoryFloatArray[i*2]);
-            if(Math.max(bufferHistoryFloatArrayMono[maxValueIndex],bufferHistoryFloatArrayMono[i])==bufferHistoryFloatArrayMono[i]){
-                maxValueIndex=i;
-            }
-        }
+    public void detectedSignal(String technology, float[] bufferHistory) { //}, int maxValueIndex) {
+        //float[] bufferHistoryFloatArrayMono = bufferHistory;
         //SignalConverter.writeToCSV(bufferHistoryFloatArrayMono, main.getApplicationContext());
-
-        SignalConverter.writeWAVHeaderToFile(bufferHistoryFloatArrayMono, main.getApplicationContext(), maxValueIndex);
 
         try {
             lastDetectedTechnology = Technology.fromString(technology);
@@ -120,7 +107,7 @@ public class Scan {
             lastDetectedTechnology = Technology.UNKNOWN;
         }
         paused = true;
-        notifyDetectionListeners();
+        notifyDetectionListeners(lastDetectedTechnology, bufferHistory); //, maxValueIndex);
     }
 
     private Runnable scanRun = new Runnable() {
@@ -128,7 +115,7 @@ public class Scan {
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
 
-            FrequencyDomain(ConfigConstants.SCAN_SAMPLE_RATE, ConfigConstants.SCAN_BUFFER_SIZE);
+            FrequencyDomain(ConfigConstants.SCAN_SAMPLE_RATE, ConfigConstants.SCAN_BUFFER_SIZE, fastDetection);
         }
     };
 
@@ -141,7 +128,9 @@ public class Scan {
             }
         }
 
-        savedFileUrl = main.getFilesDir() + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
+        this.fastDetection = PreferenceManager.getDefaultSharedPreferences(this.applicationContext).getBoolean(ConfigConstants.SETTINGS_FAST_DETECTION, ConfigConstants.SETTINGS_FAST_DETECTION_DEFAULT) ? 1 : 0;
+
+        savedFileUrl = applicationContext.getFilesDir() + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
 
         locFinder = Location.getInstanceLoc(); //get an instance of location
         jsonMan = new JSONManager(main);
@@ -182,7 +171,7 @@ public class Scan {
 
     public void resume() {
         paused = false;
-        Resume();
+        Resume(fastDetection);
     }
 
     /**
@@ -194,11 +183,12 @@ public class Scan {
 
     // ------
     // Native functions to find in jni/FrequencyDomain.cpp
-    private native void FrequencyDomain(int samplerate, int buffersize);
+    private native void FrequencyDomain(int samplerate, int buffersize, int fastDetection);
     private native float GetAndroidOut1();
     private native int GetAndroidOut2();
     private native boolean GetBackgroundModelUpdating();
     private native int Pause();
-    private native void Resume();
+    private native void Resume(int fastDetection);
     private native void StopIO();
+    //private  native void setFastDetection(int fastDetection);
 }

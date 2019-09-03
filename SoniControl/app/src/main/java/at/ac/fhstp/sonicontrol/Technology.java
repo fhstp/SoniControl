@@ -32,7 +32,8 @@ public enum Technology {
     SHOPKICK("Shopkick", 5),
     UNKNOWN("Unknown", 0),
     SILVERPUSH("Silverpush", 6),
-    SONARAX("Sonarax", 3);
+    SONARAX("Sonarax", 3),
+    SONITALK("SoniTalk", 8);
 
     private String stringValue;
     private int idValue;
