@@ -46,7 +46,7 @@ public class SettingsFragment extends PreferenceFragment {
     private CheckBoxPreference cbSaveJson;
     private CheckBoxPreference cbPreventiveSpoofing;
     private CheckBoxPreference cbAlertLocationDontAsk;
-    private CheckBoxPreference cbFastDetection;
+    private CheckBoxPreference cbExtendedDiagnostics;
     private EditTextPreference etLocationRadius;
     private EditTextPreference etPulseDuration;
     private EditTextPreference etPauseDuration;
@@ -73,7 +73,7 @@ public class SettingsFragment extends PreferenceFragment {
         cbSaveJson = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE);
         cbPreventiveSpoofing = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_PREVENTIVE_SPOOFING);
         cbAlertLocationDontAsk = (CheckBoxPreference) findPreference(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN);
-        cbFastDetection = (CheckBoxPreference) findPreference(ConfigConstants.SETTINGS_FAST_DETECTION);
+        cbExtendedDiagnostics = (CheckBoxPreference) findPreference(ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS);
         etLocationRadius = (EditTextPreference) findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
         etPulseDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_PULSE_DURATION);
         etPauseDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
@@ -218,7 +218,7 @@ public class SettingsFragment extends PreferenceFragment {
         editor.putString(ConfigConstants.SETTING_BANDWIDTH,ConfigConstants.SETTING_BANDWIDTH_DEFAULT);
         editor.putString(ConfigConstants.SETTING_BLOCKING_DURATION,ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT);
         editor.putBoolean(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN,ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT);
-        editor.putBoolean(ConfigConstants.SETTINGS_FAST_DETECTION, ConfigConstants.SETTINGS_FAST_DETECTION_DEFAULT);
+        editor.putBoolean(ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS, ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS_DEFAULT);
         editor.putBoolean(ConfigConstants.SETTINGS_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT);
         editor.apply();
         editor.commit();
@@ -277,7 +277,7 @@ public class SettingsFragment extends PreferenceFragment {
         cbSaveJson.setChecked(sp.getBoolean(cbSaveJson.getKey(), ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT));
         cbPreventiveSpoofing.setChecked(sp.getBoolean(cbPreventiveSpoofing.getKey(), ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT));
         cbAlertLocationDontAsk.setChecked(sp.getBoolean(cbAlertLocationDontAsk.getKey(), ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT));
-        cbFastDetection.setChecked(sp.getBoolean(cbFastDetection.getKey(), ConfigConstants.SETTINGS_FAST_DETECTION_DEFAULT));
+        cbExtendedDiagnostics.setChecked(sp.getBoolean(cbExtendedDiagnostics.getKey(), ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS_DEFAULT));
         cbSharing.setChecked(sp.getBoolean(cbSharing.getKey(), ConfigConstants.SETTINGS_SHARING_DEFAULT));
 
         String locationRadius = sp.getString(etLocationRadius.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT);

@@ -101,7 +101,7 @@ static float scoreNearby = 0; //holds the detection score for nearby messages
 static float recogResult = 0; //holds the recognition result
 static float scoreNearbyAC = 0; //holds the autocorrelation score for nearby recognition
 
-static int fastDetection = 0;
+static int extendedDiagnostics = 0;
 
 //SONICONTROL VARIOUS
 static bool backgroundModelUpdating = true; //{IS SET} indicates if the background Model should continue to update itself
@@ -226,17 +226,13 @@ static void addDetectionToMedianBuffer(bool detected)
 
 /**
  * Returns true if a signal is detected. A signal is detected if at least half of the medianBuffer
- * values are detections, AND, if fastDetection is false, if some (percentage of) silence is
+ * values are detections, AND, if extendedDiagnostics is true, if some (percentage of) silence is
  * following the detection (we want to capture the whole message to display it later).
  * @return If a signal was detected
  */
 static bool isSignalDetected()
 {
-    if (fastDetection) {
-        int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
-        return sum > (int) ceil(medianBufferSizeItems / 2);
-    }
-    else {
+    if (extendedDiagnostics) {
         bool messageIsOver = false;
         int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
         if (sum > (int) ceil(medianBufferSizeItems / 2)) {
@@ -256,6 +252,10 @@ static bool isSignalDetected()
             }
         }
         return messageIsOver;
+    }
+    else {
+        int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
+        return sum > (int) ceil(medianBufferSizeItems / 2);
     }
 }
 
@@ -549,12 +549,12 @@ static void startIO() {
     audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
 
-extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava, jint fastDetectionJava) {
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava, jint extendedDiagnosticsJava) {
     // Source: https://stackoverflow.com/a/26534926
     javaEnvironment->GetJavaVM(&jvm); // Keep a global reference to the jvm
     jniScan = javaEnvironment->NewGlobalRef(obj); // Keep a global reference to the Scan activity
 
-    fastDetection = fastDetectionJava;
+    extendedDiagnostics = extendedDiagnosticsJava;
     initFrequencyDomain(sampleRateJava, bufferSizeSmplJava);
     audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
@@ -602,8 +602,8 @@ extern "C" JNIEXPORT jint JNICALL Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv
     return pauseIO();
 }
 
-extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint fastDetectionJava) {
-    fastDetection = fastDetectionJava;
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint extendedDiagnosticsJava) {
+    extendedDiagnostics = extendedDiagnosticsJava;
     resumeIO();
 }
 
@@ -611,6 +611,6 @@ extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_StopIO(JNIEnv * __un
     stopIO();
 }
 /*
-extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_setFastDetection(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint fastDetectionJava) {
-    fastDetection = fastDetectionJava;
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_setExtendedDiagnostics(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint extendedDiagnosticsJava) {
+    extendedDiagnostics = extendedDiagnosticsJava;
 }*/

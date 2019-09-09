@@ -49,7 +49,7 @@ public class Scan {
 
     private boolean paused = false; // Is the Scan paused ?
     private Technology lastDetectedTechnology = null;
-    private int fastDetection;
+    private int extendedDiagnostics;
 
     private boolean consistentState = true; // Allows to detect wrong termination of the app
 
@@ -115,7 +115,7 @@ public class Scan {
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
 
-            FrequencyDomain(ConfigConstants.SCAN_SAMPLE_RATE, ConfigConstants.SCAN_BUFFER_SIZE, fastDetection);
+            FrequencyDomain(ConfigConstants.SCAN_SAMPLE_RATE, ConfigConstants.SCAN_BUFFER_SIZE, extendedDiagnostics);
         }
     };
 
@@ -128,7 +128,7 @@ public class Scan {
             }
         }
 
-        this.fastDetection = PreferenceManager.getDefaultSharedPreferences(this.applicationContext).getBoolean(ConfigConstants.SETTINGS_FAST_DETECTION, ConfigConstants.SETTINGS_FAST_DETECTION_DEFAULT) ? 1 : 0;
+        this.extendedDiagnostics = PreferenceManager.getDefaultSharedPreferences(this.applicationContext).getBoolean(ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS, ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS_DEFAULT) ? 1 : 0;
 
         savedFileUrl = applicationContext.getFilesDir() + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
 
@@ -171,7 +171,7 @@ public class Scan {
 
     public void resume() {
         paused = false;
-        Resume(fastDetection);
+        Resume(extendedDiagnostics);
     }
 
     /**
@@ -183,12 +183,12 @@ public class Scan {
 
     // ------
     // Native functions to find in jni/FrequencyDomain.cpp
-    private native void FrequencyDomain(int samplerate, int buffersize, int fastDetection);
+    private native void FrequencyDomain(int samplerate, int buffersize, int extendedDiagnostics);
     private native float GetAndroidOut1();
     private native int GetAndroidOut2();
     private native boolean GetBackgroundModelUpdating();
     private native int Pause();
-    private native void Resume(int fastDetection);
+    private native void Resume(int extendedDiagnostics);
     private native void StopIO();
-    //private  native void setFastDetection(int fastDetection);
+    //private  native void setExtendedDiagnostics(int extendedDiagnostics);
 }
