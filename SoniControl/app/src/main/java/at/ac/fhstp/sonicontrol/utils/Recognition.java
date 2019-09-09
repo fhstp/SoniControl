@@ -57,9 +57,10 @@ public class Recognition {
         int[] silverpushCenterFrequencies = getCenterFrequencies(Technology.SILVERPUSH, context);
         int[] sonitalkCenterFrequencies = getCenterFrequencies(Technology.SONITALK, context);
         int[] signal360CenterFrequencies = getCenterFrequencies(Technology.SIGNAL360, context);
+        int[] sonaraxCenterFrequencies = getCenterFrequencies(Technology.SONARAX, context);
 
         // 3. Perform recognition of the individual technologies
-        Technology[] technologies = {Technology.GOOGLE_NEARBY, Technology.LISNR, Technology.PRONTOLY, Technology.SHOPKICK, Technology.SILVERPUSH, Technology.SONITALK, Technology.SIGNAL360, Technology.UNKNOWN};
+        Technology[] technologies = {Technology.GOOGLE_NEARBY, Technology.LISNR, Technology.PRONTOLY, Technology.SHOPKICK, Technology.SILVERPUSH, Technology.SONITALK, Technology.SIGNAL360, Technology.SONARAX, Technology.UNKNOWN};
 
         // Recognition is hierarchical:
         // First check if the signal is a nearby message with the autocorrelation detector:
@@ -72,6 +73,7 @@ public class Recognition {
         double scoreSilverpush = 0.0;
         double scoreSoniTalk = 0.0;
         double scoreSignal360 = 0.0;
+        double scoreSonarax = 0.0;
         /*if (scoreNearbyAC > ConfigConstants.DECISION_THRESHOLD_NEARBY_AC) {
             recogResult = Technology.GOOGLE_NEARBY;
         }
@@ -94,9 +96,11 @@ public class Recognition {
         scoreSoniTalk = detectActivity(historySignalFFT, fftMax, sonitalkCenterFrequencies, ConfigConstants.SONITALK_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
         //Log.d(TAG, "Compute score Signal360");
         scoreSignal360 = detectActivity(historySignalFFT, fftMax, signal360CenterFrequencies, ConfigConstants.SIGNAL360_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
+        //Log.d(TAG, "Compute score Sonarax");
+        scoreSonarax = detectActivity(historySignalFFT, fftMax, sonaraxCenterFrequencies, ConfigConstants.SONARAX_BANDWIDTH, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory, ConfigConstants.LOWER_CUTOFF_FREQUENCY);
 
 
-        double[] scores = {scoreNearby, scoreLisnr, scoreProntoly, scoreShopkick, scoreSilverpush, scoreSoniTalk, scoreSignal360}; //the 0 stands for nearby (in case of AC detection)
+        double[] scores = {scoreNearby, scoreLisnr, scoreProntoly, scoreShopkick, scoreSilverpush, scoreSoniTalk, scoreSignal360, scoreSonarax}; //the 0 stands for nearby (in case of AC detection)
         double maxScore = 0.0;
         for (int i = 0; i < scores.length; i++) {
             if (scores[i] > maxScore) {
@@ -295,6 +299,9 @@ public class Recognition {
                 break;
             case SONITALK:
                 fileName = "sonitalk-frequencies.txt";
+                break;
+            case SONARAX:
+                fileName = "sonarax-frequencies.txt";
                 break;
             case UNKNOWN:
                 fileName = "unknown-frequencies.txt";
