@@ -33,8 +33,8 @@
     <string name="StatusNotificationScanningMessage">Suche nach Ultraschallsignalen</string>
     <string name="NotificationDetectionTitle">SoniControl</string>
     <string name="NotificationDetectionMessage">Ultraschallsignal erkannt!</string>
-    <string name="ButtonStopSignal">Stopp</string>
-    <string name="ButtonPlaySignal">Start</string>
+    <string name="ButtonStopSignal">Stoppen</string>
+    <string name="ButtonPlaySignal">Abspielen</string>
     <string name="DeleteJsonAlertTitle">Erkannten Signaleintrag löschen</string>
     <string name="DeleteJsonAlertMessage">Sind sie sich sicher, dass sie den erkannten Signaleintrag löschen wollen?</string>
     <string name="noAddressForJsonFile">Nicht verfügbar</string>

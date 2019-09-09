@@ -283,6 +283,9 @@ public class NoiseGenerator {
                 case SHOPKICK:
                     reader = new BufferedReader(new InputStreamReader(main.getAssets().open("shopkick-frequencies.txt"), "UTF-8"));
                     break;
+                case SONITALK:
+                    reader = new BufferedReader(new InputStreamReader(main.getAssets().open("sonitalk-frequencies.txt"), "UTF-8"));
+                    break;
                 case SILVERPUSH:
                     reader = new BufferedReader(new InputStreamReader(main.getAssets().open("silverpush-frequencies.txt"), "UTF-8"));
                     break;
