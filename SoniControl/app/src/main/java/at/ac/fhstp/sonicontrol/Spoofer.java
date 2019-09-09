@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.Calendar;
@@ -54,7 +55,7 @@ public class Spoofer {
     private long startTime;
     private long stopTime;
 
-    private Technology signalType;
+    //private Technology signalType;
 
     private boolean stopped = false;
 
@@ -68,7 +69,7 @@ public class Spoofer {
         return instance;
     }
 
-    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, Technology sigType){  //initialize the Scan with a main object
+    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler/*, Technology sigType*/){  //initialize the Scan with a main object
         this.main = main;
 
         // TODO: init() could be called only once. We create a new NoiseGenerator object every time we want to spoof.
@@ -76,7 +77,7 @@ public class Spoofer {
         this.genNoise = new NoiseGenerator(main);
         this.playingGlobal = playingGlobal;
         this.playingHandler = playingHandler;
-        this.signalType = sigType;
+        //this.signalType = sigType;
     }
 
     public void startSpoofing(){
@@ -110,8 +111,11 @@ public class Spoofer {
                 // TODO: Do we need to reinitialize something ?
             }
             else {
+                Context context = main.getApplicationContext();
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
-                AudioManager audioManager = (AudioManager) main.getSystemService(Context.AUDIO_SERVICE);
+                AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
                 // not used ? int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
                 //Log.d("Spoofer", "Streamtype: " + String.valueOf(AudioManager.STREAM_MUSIC));
                 audioManager.setStreamVolume(3, (int) Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 0.70D)), 0);
@@ -119,10 +123,20 @@ public class Spoofer {
                 if (playingHandler) {
                     playtime = genNoise.getPlayertime(); //get the playertime depending on the generated whitenoise
                 } else {
-                    playtime = Integer.valueOf(main.getSettingsObject().getString(ConfigConstants.SETTING_PAUSE_DURATION, ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT)); //get the pause value from the settings
+                    playtime = Integer.valueOf(sp.getString(ConfigConstants.SETTING_PAUSE_DURATION, ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT)); //get the pause value from the settings
                 }
                 if (!noiseGenerated) { //if no whitenoise is available generate a new one
-                    genNoise.generateWhitenoise(signalType); //generate noise
+                    String technologyName = sp.getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF,Technology.UNKNOWN.toString());
+                    Log.d("Spoofer", "spoofRun - technologyNama " + technologyName);
+                    Technology detectedTechnology = null;
+                    try {
+                        detectedTechnology = Technology.fromString(technologyName);
+                    }
+                    catch (IllegalArgumentException e) {
+                        Log.d("Spoofer", "spoofRun - technology string stored not recognized: " + e.getMessage());
+                        detectedTechnology = Technology.UNKNOWN;
+                    }
+                    genNoise.generateWhitenoise(detectedTechnology); //generate noise
                     audioTrack = genNoise.getGeneratedPlayer(); //get the generated player
                     noiseGenerated = true; //noise and player are generated so its true
                     startTime = Calendar.getInstance().getTimeInMillis(); //get the starttime

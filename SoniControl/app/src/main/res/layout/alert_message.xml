@@ -89,11 +89,10 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="64dp"
-        android:layout_marginLeft="64dp"
         android:text="@string/alertDialog_option_play"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@id/txtProceed"
+        app:layout_constraintEnd_toStartOf="@id/cbSharing"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spectrogram_view" />
 
@@ -184,15 +183,10 @@
         android:id="@+id/cbSharing"
         android:layout_width="165dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:text="Share your Detection"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.259"
-        app:layout_constraintStart_toEndOf="@+id/btnReplay"
+        app:layout_constraintStart_toEndOf="@id/btnReplay"
         app:layout_constraintTop_toTopOf="@+id/btnReplay" />
 
 </android.support.constraint.ConstraintLayout>

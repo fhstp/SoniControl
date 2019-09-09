@@ -653,7 +653,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean("active", false);
         // Clean the technology on disk
-        ed.remove(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF);
+        // ed.remove(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF);
         ed.apply();
     }
 
@@ -665,14 +665,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             sigPlayer.release(); //release the resources of the player
             sigPlayer = null; //set the player variable to null
             isSignalPlayerGenerated = false; //now there is no player anymore so it's false
-            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+            alert.btnAlertReplay.setText(R.string.alertDialog_option_play); //set the button for playing/stopping to "play"
         }
         if (isSignalPlayerGenerated && pitchShiftPlayer != null) {
             pitchShiftPlayer.cleanup();
             pitchShiftPlayer.removeDetectionListener();
             pitchShiftPlayer = null;
             isSignalPlayerGenerated = false;
-            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
+            alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
         }
     }
 
@@ -737,6 +737,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         Log.d("handleSignal", "Start to handle signal");
 
         SharedPreferences sp = getSettingsObject();
+
+        // Stores the technology on disk in case the Activity was destroyed
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, null);
+        ed.putString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getTimeAndDateForAlert());
+        ed.apply();
+
         preventiveSpoof = sp.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
         if(preventiveSpoof) {
             if (usedBlockingMethod == null) {
@@ -748,10 +755,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         //Log.d("nb samples", "bufferHistory.length (mono): " + bufferHistory.length);
         bufferHistory = preProcessing(bufferHistory);
 
-        // Stores the technology on disk in case the Activity was destroyed
-        SharedPreferences.Editor ed = sp.edit();
-        ed.putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, technology.toString());
-        ed.putString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getTimeAndDateForAlert());
         ed.putInt(ConfigConstants.BUFFER_HISTORY_LENGTH_SHARED_PREF, bufferHistory.length);
         //ed.putInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, maxValueIndex);
         ed.apply();
@@ -1025,10 +1028,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.cancelDetectionAlertStatusNotification(getApplicationContext());
 
         // Clean the technology on disk
-        SharedPreferences sp = getSettingsObject();
+        /*SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
         ed.remove(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF);
-        ed.apply();
+        ed.apply();*/
 
         // Releasing audio resources
         if (sigPlayer != null ) {
@@ -1041,7 +1044,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             pitchShiftPlayer.removeDetectionListener();
             pitchShiftPlayer = null;
             isSignalPlayerGenerated = false;
-            alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
+            alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
         }
     }
 
@@ -1069,7 +1072,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
 
         pitchShiftPlayer.playPause();
-        int playPauseText = pitchShiftPlayer.isPlaying() ? R.string.ButtonStopSignal : R.string.ButtonPlaySignal;
+        int playPauseText = pitchShiftPlayer.isPlaying() ? R.string.ButtonStopSignal : R.string.alertDialog_option_play;
         alert.btnAlertReplay.setText(playPauseText); //set the button for playing/stopping
 
 /*
@@ -1081,7 +1084,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }else if(sigPlayer!=null && isSignalPlayerGenerated){ //if a player for the signal is created and the boolean for generating is true
             if (sigPlayer.isPlaying()) {
                 sigPlayer.stop(); //stop the player
-                alert.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+                alert.btnAlertReplay.setText(R.string.alertDialog_option_play); //set the button for playing/stopping to "play"
             }
             else {
                 try {
@@ -1149,7 +1152,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             public void onCompletion(MediaPlayer mp) {
                 mp.stop();
                 DetectionDialogFragment detectionDialog = (DetectionDialogFragment) dialog;
-                detectionDialog.btnAlertReplay.setText(R.string.ButtonPlaySignal); //set the button for playing/stopping to "play"
+                detectionDialog.btnAlertReplay.setText(R.string.alertDialog_option_play); //set the button for playing/stopping to "play"
             }
         });
         return mediaPlayer;
@@ -1462,7 +1465,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    alert.btnAlertReplay.setText(R.string.ButtonPlaySignal);
+                    alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
                 }
             });
         }
