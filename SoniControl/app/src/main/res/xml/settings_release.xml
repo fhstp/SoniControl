@@ -23,8 +23,8 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="cbprefFastDetection"
-            android:title="@string/fastDetection" />
+            android:key="cbprefExtendedDiagnostics"
+            android:title="@string/extendedDiagnostics" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbprefContinuousSpoof"
