@@ -363,7 +363,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             // if backgroundBuffer and medianBuffer are full, start with the actual detection:
             if(counter > backgroundModelBufferSizeItems + medianBufferSizeItems) {
                  //Are there more detections than non-detection in the buffer, then declare a detection (--> median over the past medianBufferSizeItems buffer-based detections)
-                 //See function documentation, now also require the detection to be over.
+                 //See function documentation, now also require the detection to be over if extendedDiagnostics is activated.
                 if(isSignalDetected()) {
                     detectionAfterMedian = 1;
                     pauseIO();
