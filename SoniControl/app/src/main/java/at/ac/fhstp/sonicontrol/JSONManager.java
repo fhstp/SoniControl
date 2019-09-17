@@ -73,6 +73,35 @@ public class JSONManager {
 
     public ArrayList<String[]> getImportJsonData(){
         ArrayList<String[]> data = new ArrayList<String[]>();
+
+        File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME);
+        ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
+
+        JSONObject jObject = null;
+        try {
+            jObject = new JSONObject(
+                    byteArrayOutputStream.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject jObjectResult = null;
+        try {
+            jObjectResult = jObject.getJSONObject(JSON_LIST_NAME);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JSONArray array = jObjectResult.optJSONArray(JSON_ARRAY_IMPORT_SIGNALS);
+        if (array == null) {
+            JSONArray jImportArray = new JSONArray();
+            try {
+                jObjectResult.put(JSON_ARRAY_IMPORT_SIGNALS, jImportArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         data.addAll(retrieveSavedJsonData(JSON_ARRAY_IMPORT_SIGNALS));
         sortJsonDataByDatetime(data);
         return data;
@@ -480,51 +509,52 @@ public class JSONManager {
 
     public void updateJSONHistory(){
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
-        ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-        try {
-            JSONObject jObject = new JSONObject(
-                    byteArrayOutputStream.toString()); //new json-object with the outputstream
-            JSONObject jObjectResult = jObject.getJSONObject(JSON_LIST_NAME); //get the jsonobject "items"
-            JSONArray array = jObjectResult.optJSONArray(JSON_ARRAY_HISTORY_SIGNALS);
-            JSONArray jArray = null;
-            if (array == null) {
-                JSONArray jImportArray = new JSONArray();
-                jObjectResult.put(JSON_ARRAY_HISTORY_SIGNALS, jImportArray);
-                jArray = jObjectResult.getJSONArray(JSON_ARRAY_HISTORY_SIGNALS);
-            }
-
-            ArrayList<String[]> data = getAllJsonData();
-
-            for (String[] arrayData : data){
-                JSONObject addArray = new JSONObject(); //new json-object
-
-                addArray.put(JSON_ARRAY_SIGNAL_LONGITUDE, arrayData[0]); //add the longitude to the new object
-                addArray.put(JSON_ARRAY_SIGNAL_LATITUDE, arrayData[1]); //add the latitude to the new object
-                addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY, arrayData[2]); //add the technology to the new object
-                addArray.put(JSON_ARRAY_SIGNAL_LAST_DETECTION, arrayData[3]); //add the last_detection to the new object
-                addArray.put(JSON_ARRAY_SIGNAL_SPOOFING_STATUS, arrayData[4]); //add the spoofing status to the new object
-                addArray.put(JSON_ARRAY_SIGNAL_ADDRESS, arrayData[5]); //add the addressline of the found signal
-                detector = Scan.getInstance(); //get an instance of the scan
-                String fileUrl = detector.getDetectedFileUrl(); //get the url from the scan
-                addArray.put(JSON_ARRAY_SIGNAL_URL, ""); //add the url to the new object
-                addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID, arrayData[7]);
-                addArray.put(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER, 1);
-
-                jArray.put(addArray); //add the created object to the json array
-            }
-
+        if(jsonFile.exists()){
+            ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
             try {
-                FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME));
-                file.write( jObject.toString() );
-                file.flush();
-                file.close();
-            } catch (IOException e) {
+                JSONObject jObject = new JSONObject(
+                        byteArrayOutputStream.toString()); //new json-object with the outputstream
+                JSONObject jObjectResult = jObject.getJSONObject(JSON_LIST_NAME); //get the jsonobject "items"
+                JSONArray array = jObjectResult.optJSONArray(JSON_ARRAY_HISTORY_SIGNALS);
+                JSONArray jArray = null;
+                if (array == null) {
+                    JSONArray jImportArray = new JSONArray();
+                    jObjectResult.put(JSON_ARRAY_HISTORY_SIGNALS, jImportArray);
+                    jArray = jObjectResult.getJSONArray(JSON_ARRAY_HISTORY_SIGNALS);
+                }
+
+                ArrayList<String[]> data = getAllJsonData();
+
+                for (String[] arrayData : data){
+                    JSONObject addArray = new JSONObject(); //new json-object
+
+                    addArray.put(JSON_ARRAY_SIGNAL_LONGITUDE, arrayData[0]); //add the longitude to the new object
+                    addArray.put(JSON_ARRAY_SIGNAL_LATITUDE, arrayData[1]); //add the latitude to the new object
+                    addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY, arrayData[2]); //add the technology to the new object
+                    addArray.put(JSON_ARRAY_SIGNAL_LAST_DETECTION, arrayData[3]); //add the last_detection to the new object
+                    addArray.put(JSON_ARRAY_SIGNAL_SPOOFING_STATUS, arrayData[4]); //add the spoofing status to the new object
+                    addArray.put(JSON_ARRAY_SIGNAL_ADDRESS, arrayData[5]); //add the addressline of the found signal
+                    detector = Scan.getInstance(); //get an instance of the scan
+                    String fileUrl = detector.getDetectedFileUrl(); //get the url from the scan
+                    addArray.put(JSON_ARRAY_SIGNAL_URL, ""); //add the url to the new object
+                    addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID, arrayData[7]);
+                    addArray.put(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER, 1);
+
+                    jArray.put(addArray); //add the created object to the json array
+                }
+
+                try {
+                    FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME));
+                    file.write( jObject.toString() );
+                    file.flush();
+                    file.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
     }
 
     public void deleteWaveFilesInDirectory(){

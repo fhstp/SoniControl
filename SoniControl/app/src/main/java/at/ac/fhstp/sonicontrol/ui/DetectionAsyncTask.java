@@ -94,11 +94,6 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
                 //onSpectrum(); This is already called in setSpectrum
 
 
-                Log.d("DetectionTask", "Start computing recognition");
-                Technology detectedTechnology = computeRecognition(bufferHistory, context);
-                sp.edit().putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, detectedTechnology.toString()).apply();
-                Log.d("DetectionTask", "Done computing recognition");
-
                 //TODO: Should this be done in all cases ? When ? (do we send detections automatically if user agreed?)
                 int maxValueIndex = sp.getInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, -1);
                 if (maxValueIndex == -1) {

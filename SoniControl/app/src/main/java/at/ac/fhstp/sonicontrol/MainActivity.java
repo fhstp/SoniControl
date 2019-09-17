@@ -74,6 +74,7 @@ import retrofit2.Response;
 import uk.me.berndporr.iirj.Butterworth;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
+import static at.ac.fhstp.sonicontrol.utils.Recognition.computeRecognition;
 
 
 public class MainActivity extends BaseActivity implements Scan.DetectionListener, DetectionDialogFragment.DetectionDialogListener, PitchShiftPlayer.PitchShiftPlayerListener {
@@ -728,20 +729,32 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                handleSignal(detectedTechnology, bufferHistory); //, maxValueIndex);
+                handleSignal(bufferHistory); //, maxValueIndex);
             }
         });
     }
 
-    private void handleSignal(Technology technology, float[] bufferHistory) { //, int maxValueIndex) {
+    private void handleSignal(float[] bufferHistory) { //, int maxValueIndex) {
         Log.d("handleSignal", "Start to handle signal");
+        String detectionDateAndTime = getTimeAndDateForAlert();
 
         SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+
+        Log.d("handleSignal", "Start preprocessing bufferHistory");
+        bufferHistory = preProcessing(bufferHistory);
+
+        Log.d("handleSignal", "Start computing recognition");
+        Technology technology = computeRecognition(bufferHistory, this.getApplicationContext());
+        Log.d("handleSignal", "Done computing recognition");
+        //String technologyName = sp.getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF,Technology.UNKNOWN.toString());
+        //Log.d("DetectionTask", "afterSave - technologyNama " + technologyName);
 
         // Stores the technology on disk in case the Activity was destroyed
-        SharedPreferences.Editor ed = sp.edit();
-        ed.putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, null);
-        ed.putString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getTimeAndDateForAlert());
+        ed.putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, technology.toString());
+        ed.putString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, detectionDateAndTime);
+        ed.putInt(ConfigConstants.BUFFER_HISTORY_LENGTH_SHARED_PREF, bufferHistory.length);
+        //ed.putInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, maxValueIndex);
         ed.apply();
 
         preventiveSpoof = sp.getBoolean(ConfigConstants.SETTING_PREVENTIVE_SPOOFING, ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT);
@@ -753,11 +766,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
 
         //Log.d("nb samples", "bufferHistory.length (mono): " + bufferHistory.length);
-        bufferHistory = preProcessing(bufferHistory);
 
-        ed.putInt(ConfigConstants.BUFFER_HISTORY_LENGTH_SHARED_PREF, bufferHistory.length);
-        //ed.putInt(ConfigConstants.MAX_VALUE_INDEX_SHARED_PREF, maxValueIndex);
-        ed.apply();
 
         // TODO: Move to the specific cases where the bufferHistory will be needed ?
         alert.setSpectrum(null); // Reset the visualization

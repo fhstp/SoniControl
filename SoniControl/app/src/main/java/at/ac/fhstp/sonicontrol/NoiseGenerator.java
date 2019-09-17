@@ -289,6 +289,9 @@ public class NoiseGenerator {
                 case SILVERPUSH:
                     reader = new BufferedReader(new InputStreamReader(main.getAssets().open("silverpush-frequencies.txt"), "UTF-8"));
                     break;
+                case SONARAX:
+                    reader = new BufferedReader(new InputStreamReader(main.getAssets().open("sonarax-frequencies.txt"), "UTF-8"));
+                    break;
                 case UNKNOWN:
                     reader = new BufferedReader(new InputStreamReader(main.getAssets().open("unknown-frequencies.txt"), "UTF-8"));
                     bandWidth = 1500;

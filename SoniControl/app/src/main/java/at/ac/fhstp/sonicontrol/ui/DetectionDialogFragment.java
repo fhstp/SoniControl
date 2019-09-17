@@ -137,7 +137,7 @@ public class DetectionDialogFragment extends DialogFragment {
         spectrogramView.setFFTResolution(ConfigConstants.SCAN_BUFFER_SIZE / 2);
         spectrogramView.setCutoffFrequency(ConfigConstants.LOWER_CUTOFF_FREQUENCY);
         spectrogramView.setUpperCutoffFrequency(ConfigConstants.UPPER_CUTOFF_FREQUENCY);
-        Misc.setPreference(currentActivity, "color_scale", "Ice");
+        Misc.setPreference(currentActivity, "color_scale", "Fire");
 
         // If spectrum available show it, else make it invisible and show a loading symbol
         if (lastDetectedSpectrum != null) {
