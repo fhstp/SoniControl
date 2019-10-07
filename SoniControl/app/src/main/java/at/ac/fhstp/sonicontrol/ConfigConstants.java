@@ -103,6 +103,8 @@ public final class ConfigConstants {
     public static final double SONARAX_BANDWIDTH = 30; //unit Hz
 
     public static final int REQUEST_GPS_PERMISSION = 1337;
+    public static final int REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION = 237;
+
     //Notification ids
     public static final int ON_HOLD_NOTIFICATION_ID = 1;
     public static final int SCANNING_NOTIFICATION_ID = 2;

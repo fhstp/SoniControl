@@ -19,7 +19,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:text="The color of the markers stands for the action of the firewall rule.\nRed markers will be always blocked, green markers will be always ignored and orange markers will be asked again for a decision on the next detection of it.\n\n\nOn tapping on the marker a circle will appear where its size represents the signal strength.\n"
+            android:text="@string/map_legend"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"

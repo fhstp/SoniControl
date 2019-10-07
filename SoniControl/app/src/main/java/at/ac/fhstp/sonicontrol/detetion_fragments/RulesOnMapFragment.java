@@ -1,10 +1,12 @@
 package at.ac.fhstp.sonicontrol.detetion_fragments;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +30,8 @@ import org.osmdroid.bonuspack.clustering.RadiusMarkerClusterer;
 import org.osmdroid.bonuspack.location.NominatimPOIProvider;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
+import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -42,6 +47,7 @@ import org.osmdroid.views.overlay.infowindow.BasicInfoWindow;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
 import java.lang.reflect.Array;
+import java.security.Permission;
 import java.util.ArrayList;
 
 import at.ac.fhstp.sonicontrol.ConfigConstants;
@@ -66,15 +72,20 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         map = (MapView) rootView.findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
+        final ITileSource tileSource = TileSourceFactory.MAPNIK;
+        map.setTileSource(tileSource);
+        map.setUseDataConnection(false);
+        //map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
 
-        NominatimPOIProvider poiProvider = new NominatimPOIProvider("OSMBonusPackTutoUserAgent");
+        //NominatimPOIProvider poiProvider = new NominatimPOIProvider("OSMBonusPackTutoUserAgent");
 
         IMapController mapController = map.getController();
         mapController.setZoom(10);
-        GeoPoint startPoint = new GeoPoint(48.212602, 15.6352079);
+        GeoPoint startPoint;
+        startPoint = new GeoPoint(48.212602, 15.6352079);
+
         mapController.setCenter(startPoint);
 
         circleMarker = new FolderOverlay(getActivity());

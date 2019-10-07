@@ -4,22 +4,22 @@
     <item
         android:id="@+id/navigation_my_rules"
         android:icon="@drawable/ic_view_list_white_48dp"
-        android:title="My Rules" />
+        android:title="@string/navigation_title_my_rules" />
 
     <item
         android:id="@+id/navigation_imported_rules"
         android:icon="@drawable/ic_view_list_white_48dp"
-        android:title="Imported Rules" />
+        android:title="@string/navigation_title_imported_rules" />
 
     <item
         android:id="@+id/navigation_detection_history"
         android:icon="@drawable/ic_view_list_white_48dp"
-        android:title="Detection History" />
+        android:title="@string/navigation_title_detection_history" />
 
     <item
         android:id="@+id/navigation_rules_map"
         android:icon="@drawable/baseline_map_black_48"
-        android:title="Rules on Map" />
+        android:title="@string/navigation_title_rules_on_map" />
 
 
 </menu>

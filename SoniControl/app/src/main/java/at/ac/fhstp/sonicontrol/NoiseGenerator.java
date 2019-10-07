@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.audiofx.LoudnessEnhancer;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -51,7 +52,7 @@ public class NoiseGenerator {
 
     private short[] whiteNoise;
 
-    private Random randomGen = new Random();
+    private Random randomGen = new Random(42);
 
     private int whiteNoiseVolume;
     private int playertime;
@@ -116,6 +117,7 @@ public class NoiseGenerator {
 
         double[] signal = new double[winLenSamples]; //initializing the double array for the signal
 
+        randomGen = new Random(42);
         for (int j = 0; j < winLenSamples; j++) {
             signal[j] = randomGen.nextDouble(); //generate random double values and store it in the signal array
         }
@@ -147,7 +149,9 @@ public class NoiseGenerator {
 
     private double[] makeFadeInAndFadeOut(Technology signalType){
         double[] helpNoise = normalizeWhitenoiseSignal(signalType);
-        int fadeSamples = Math.round(helpNoise.length / 10); //value for the length of the fade in/fade out
+        int fadeAmount = 10;
+        int fadeSamples = Math.round(helpNoise.length/fadeAmount);
+        //int fadeSamples = Math.round(helpNoise.length / 10); //value for the length of the fade in/fade out
         //int fadeSamples = 500;
         for (int i = 0; i < fadeSamples; i++) { //fade in
             helpNoise[i] = (helpNoise[i] * ((double) i / (double) fadeSamples));
@@ -164,7 +168,7 @@ public class NoiseGenerator {
         double[] helpNoise = makeFadeInAndFadeOut(signalType);
         if(whiteNoiseVolume == 0){whiteNoiseVolume = 1;}
         for (int i = 0; i < winLenSamples; i++) {
-            helpNoise[i] = (helpNoise[i]*(1+(whiteNoiseVolume/100))); //multiplay every value of the array with numbers between 1.0 to 3.0 (depending on the whiteNoiseValue = Slidervalue)
+            //helpNoise[i] = (helpNoise[i]*(1+(whiteNoiseVolume/100))); //multiplay every value of the array with numbers between 1.0 to 3.0 (depending on the whiteNoiseValue = Slidervalue)
             if(helpNoise[i] > 1){ //if new value higher than 1
                 helpNoise[i] = 1; //change it to 1
             }
@@ -187,8 +191,18 @@ public class NoiseGenerator {
 
         whiteNoise = new short[winLenSamples/*+(winLenSamples/65)*/]; //short array for the whitenoise
 
-        for (int i = 0; i < winLenSamples/*+(winLenSamples/65)*/; i++) {
+        /*for (int i = 0; i < winLenSamples; i++) {
             whiteNoise[i] = (short) (helpNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
+        }*/
+
+        for (int i = 0; i < winLenSamples; i++) {
+            whiteNoise[i] = (short) (helpNoise[i] * 32760); //scale the double values up to short by multiplying with 32760
+            if(whiteNoise[i] > 32760){ //if new value higher than 1
+                whiteNoise[i] = 32760; //change it to 1
+            }
+            if(whiteNoise[i] < -32760){ //if new value lower than -1
+                whiteNoise[i] = -32760; //chang it to -1
+            }
         }
 
         return whiteNoise;
@@ -231,13 +245,24 @@ public class NoiseGenerator {
                     complexSignal[(int)l] = 0.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0 mirrored to the doubled winLenSamples size
                 }
             }
-            for (int k = 0; k < whiteNoiseBands.length-2; k++) {
+            /*for (int k = 0; k < whiteNoiseBands.length-2; k++) {
                 for (double l = cutoffFreqDownIdx[k]; l <= cutoffFreqUpIdx[k]; l++) {
                     complexSignal[(int)l] = 10000.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0
                 }
                 int helpSamples = winLenSamples * 2;
                 for (double l = helpSamples-cutoffFreqUpIdx[k]; l <= helpSamples-cutoffFreqDownIdx[k]; l++) {
                     complexSignal[(int)l] = 10000.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0 mirrored to the doubled winLenSamples size
+                }
+            }*/
+
+            for (int k = 0; k < whiteNoiseBands.length; k++) {
+                for (double l = cutoffFreqDownIdx[k]; l <= cutoffFreqUpIdx[k]; l++) {
+                    complexSignal[(int)l] = 1000;
+                }
+                int helpSamples = winLenSamples * 2;
+
+                for (double l = helpSamples-cutoffFreqUpIdx[k]; l <= helpSamples-cutoffFreqDownIdx[k]; l++) {
+                    complexSignal[(int)l] = 1000;
                 }
             }
         }
@@ -262,7 +287,7 @@ public class NoiseGenerator {
 
         double[][] test; //helparray for storing the frequencybands of the technologies
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-        bandWidth = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BANDWIDTH, ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
+        bandWidth = 1;//Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BANDWIDTH, ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
 
         BufferedReader reader = null;
         try {
@@ -294,7 +319,7 @@ public class NoiseGenerator {
                     break;
                 case UNKNOWN:
                     reader = new BufferedReader(new InputStreamReader(main.getAssets().open("unknown-frequencies.txt"), "UTF-8"));
-                    bandWidth = 1500;
+                    bandWidth = 4000;
                     break;
             }
 

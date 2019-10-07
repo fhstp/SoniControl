@@ -78,7 +78,7 @@ import static at.ac.fhstp.sonicontrol.utils.Recognition.computeRecognition;
 
 
 public class MainActivity extends BaseActivity implements Scan.DetectionListener, DetectionDialogFragment.DetectionDialogListener, PitchShiftPlayer.PitchShiftPlayerListener {
-    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE/*, Manifest.permission.READ_EXTERNAL_STORAGE*/};
+    private static final String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET/*, Manifest.permission.WRITE_EXTERNAL_STORAGE*//*, Manifest.permission.READ_EXTERNAL_STORAGE*/};
     private static final int REQUEST_ALL_PERMISSIONS = 42;
 
     private static final String TAG = "MainActivity";
