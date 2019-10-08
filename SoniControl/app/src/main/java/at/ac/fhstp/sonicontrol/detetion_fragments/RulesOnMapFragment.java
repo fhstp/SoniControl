@@ -22,7 +22,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
@@ -34,6 +37,7 @@ import org.osmdroid.tileprovider.MapTileProviderBase;
 import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.util.TileSystem;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.FolderOverlay;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
@@ -45,6 +49,7 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.infowindow.BasicInfoWindow;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
+import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 import java.lang.reflect.Array;
 import java.security.Permission;
@@ -75,6 +80,7 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
         final ITileSource tileSource = TileSourceFactory.MAPNIK;
         map.setTileSource(tileSource);
         map.setUseDataConnection(false);
+        map.setVerticalMapRepetitionEnabled(false);
         //map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
@@ -140,6 +146,8 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
         JSONManager jsonMan = new JSONManager(nextMain);
         ArrayList<String[]> locationData = jsonMan.getJsonData();
         locationData.addAll(jsonMan.getImportJsonData());
+
+        ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 
         for(String[] sArray : locationData){
             /*Polygon circle = new Polygon(map);
@@ -207,9 +215,13 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
             marker.setTitle(sArray[2]);
             marker.setSubDescription("Last Detection: " +sArray[3]);
             marker.setRelatedObject(sArray[4]);
+            MarkerInfoWindow infoWindow = new MarkerInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map);
+            marker.setInfoWindow(infoWindow);
             marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker, MapView mapView) {
+                    MarkerInfoWindow.closeAllInfoWindowsOn(map);
+                    marker.showInfoWindow();
                     Polygon circle = new Polygon(map);
                     circle.setPoints(Polygon.pointsAsCircle(marker.getPosition(), 20.0));
                     switch ((String)marker.getRelatedObject()){
@@ -253,6 +265,7 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
                     return true;
                 }
             });
+            //items.add(new OverlayItem(sArray[2] + "-" + sArray[3], sArray[5], new GeoPoint(Double.valueOf(sArray[1]),Double.valueOf(sArray[0])))); // Lat/Lon decimal degrees
             detectionMarkers.add(marker);
             //map.getOverlays().add(marker);
         }
@@ -260,14 +273,14 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
 
 
 
-        /*ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
-        for(String[] sArray : locationData){
+
+        /*for(String[] sArray : locationData){
                 items.add(new OverlayItem(sArray[2] + "-" + sArray[3], sArray[5], new GeoPoint(Double.valueOf(sArray[1]),Double.valueOf(sArray[0])))); // Lat/Lon decimal degrees
-        }
+        }*/
 
 
         //the overlay
-        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,
+        /*ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                     @Override
                     public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
@@ -296,6 +309,7 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
 
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
+        MarkerInfoWindow.closeAllInfoWindowsOn(map);
         InfoWindow.closeAllInfoWindowsOn(map);
         if(lastCircle!=null) {
             circleMarker.remove(lastCircle);
