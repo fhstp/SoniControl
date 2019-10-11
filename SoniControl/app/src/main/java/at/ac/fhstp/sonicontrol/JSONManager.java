@@ -338,7 +338,7 @@ public class JSONManager {
             SharedPreferences sp =  PreferenceManager.getDefaultSharedPreferences(main);
             boolean shouldBeShared = sp.getBoolean(ConfigConstants.SETTINGS_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT);
             if(shouldBeShared) {
-                main.sendDetection(position[0], position[1], 0, technology, returnDateString(), spoof, 2);
+                main.sendDetection(position[0], position[1], Technology.fromString(technology).getId(), technology, returnDateString(), spoof, 2);
             }
 
             try {

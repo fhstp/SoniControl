@@ -270,7 +270,7 @@ public class ImportedRulesFragment extends Fragment {
 
         spnTechnology = (Spinner) view.findViewById(R.id.spnTechnology);
         String[] numberOfFrequencyElements = new String[] {
-                "Unknown", "Google Nearby", "Prontoly", "Sonarax", "Signal 360", "Shopkick", "Silverpush", "Lisnr"
+                "Unknown", "Google Nearby", "Prontoly", "Sonarax", "Signal 360", "Shopkick", "Silverpush", "Lisnr", "SoniTalk"
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, numberOfFrequencyElements);
