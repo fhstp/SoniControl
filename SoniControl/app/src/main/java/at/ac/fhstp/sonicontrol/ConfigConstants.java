@@ -119,4 +119,7 @@ public final class ConfigConstants {
     public static int DETECTION_TYPE_BLOCKED_THIS_TIME = 3;
     public static int DETECTION_TYPE_ASK_AGAIN = 4;
 
+    //Detection filtering
+    public static int NO_VALUES_ENTERED = -10000;
+
 }

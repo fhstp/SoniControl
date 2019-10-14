@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import at.ac.fhstp.sonicontrol.ConfigConstants;
 import at.ac.fhstp.sonicontrol.GPSTracker;
 import at.ac.fhstp.sonicontrol.JSONManager;
 import at.ac.fhstp.sonicontrol.Location;
@@ -235,13 +236,13 @@ public class ImportedRulesFragment extends Fragment {
                     position = gpsTracker.getLocationFromAddress(edtLocation.getText().toString(), getActivity());
                     Log.d("StoredDetections", (position[0]/1000000) + " " + (position[1]/1000000));
                 }else{
-                    position[0] = -10000;
-                    position[1] = -10000;
+                    position[0] = ConfigConstants.NO_VALUES_ENTERED;
+                    position[1] = ConfigConstants.NO_VALUES_ENTERED;
                 }
                 if(!edtRange.getText().toString().matches("")){
                     range = Integer.valueOf(edtRange.getText().toString());
                 }else{
-                    range = -10000;
+                    range = ConfigConstants.NO_VALUES_ENTERED;
                 }
                 technology = spnTechnology.getSelectedItemPosition();
                 if(jsonMan.returnDateStringFromAlert(timeFrom) != null){

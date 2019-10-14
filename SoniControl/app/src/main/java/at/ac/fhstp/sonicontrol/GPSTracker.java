@@ -476,14 +476,9 @@ public class GPSTracker extends Service implements LocationListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (address==null) {
-            position[1]= (double) -10000;
-            position[0]= (double)  -10000;
-            return position;
-        }
-        if(address.isEmpty()){
-            position[1]= (double) -10000;
-            position[0]= (double)  -10000;
+        if (address==null || address.isEmpty()) {
+            position[1]= (double) ConfigConstants.NO_VALUES_ENTERED;
+            position[0]= (double)  ConfigConstants.NO_VALUES_ENTERED;
             return position;
         }
         Address location=address.get(0);
