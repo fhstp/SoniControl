@@ -121,5 +121,6 @@ public final class ConfigConstants {
 
     //Detection filtering
     public static int NO_VALUES_ENTERED = -10000;
+    public static int ALL_TECHNOLOGIES = -10;
 
 }

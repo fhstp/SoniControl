@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -40,6 +43,7 @@ import at.ac.fhstp.sonicontrol.MainActivity;
 import at.ac.fhstp.sonicontrol.R;
 import at.ac.fhstp.sonicontrol.StoredLocations;
 import at.ac.fhstp.sonicontrol.Stored_Adapter;
+import at.ac.fhstp.sonicontrol.Technology;
 import at.ac.fhstp.sonicontrol.rest.RESTController;
 import at.ac.fhstp.sonicontrol.rest.SoniControlAPI;
 import okhttp3.ResponseBody;
@@ -63,6 +67,7 @@ public class ImportedRulesFragment extends Fragment {
     TextView txtNothingDiscovered;
     FloatingActionButton fabImportDetections;
 
+    View rootView;
     AlertDialog filterDialog;
     View view;
     AlertDialog dateTimeDialog;
@@ -76,6 +81,10 @@ public class ImportedRulesFragment extends Fragment {
     Button btnCancel;
 
     Button btnDateTimeSet;
+    Button btnDateTimeCancel;
+
+    ImageButton btnResetTimestampFrom;
+    ImageButton btnResetTimestampTo;
 
     EditText edtLocation;
     EditText edtRange;
@@ -92,7 +101,7 @@ public class ImportedRulesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.imported_rules_fragment, null);
+        rootView = inflater.inflate(R.layout.imported_rules_fragment, null);
         Log.d("MyRulesFragment", "onCreateView");
         //super.onCreateView(savedInstanceState);
         //setContentView(R.layout.stored_locations);
@@ -221,6 +230,23 @@ public class ImportedRulesFragment extends Fragment {
             }
         });
 
+        btnResetTimestampFrom = (ImageButton) view.findViewById(R.id.btnResetTimestampFrom);
+        btnResetTimestampFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtTimestampFrom.setText("");
+                timeFrom = null;
+            }
+        });
+        btnResetTimestampTo = (ImageButton) view.findViewById(R.id.btnResetTimestampTo);
+        btnResetTimestampTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtTimestampTo.setText("");
+                timeTo = null;
+            }
+        });
+
         btnImport = (Button) view.findViewById(R.id.btnImport);
         btnImport.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,11 +270,19 @@ public class ImportedRulesFragment extends Fragment {
                 }else{
                     range = ConfigConstants.NO_VALUES_ENTERED;
                 }
-                technology = spnTechnology.getSelectedItemPosition();
+                //technology = spnTechnology.getSelectedItemPosition();
+                if(spnTechnology.getSelectedItem().toString().equals("All")){
+                    technology = ConfigConstants.ALL_TECHNOLOGIES;
+                }else{
+                    technology = Technology.fromString(spnTechnology.getSelectedItem().toString()).getId();
+                }
+
                 if(jsonMan.returnDateStringFromAlert(timeFrom) != null){
+                    Log.d("returnDataStringFrom", jsonMan.returnDateStringFromAlert(timeFrom));
                     timestampFrom = jsonMan.returnDateStringFromAlert(timeFrom);
                 }
                 if(jsonMan.returnDateStringFromAlert(timeTo) != null){
+                    Log.d("returnDataStringTo", jsonMan.returnDateStringFromAlert(timeTo));
                     timestampTo = jsonMan.returnDateStringFromAlert(timeTo);
                 }
                 if(!edtLocation.getText().toString().matches("")) {
@@ -271,7 +305,9 @@ public class ImportedRulesFragment extends Fragment {
 
         spnTechnology = (Spinner) view.findViewById(R.id.spnTechnology);
         String[] numberOfFrequencyElements = new String[] {
-                "Unknown", "Google Nearby", "Prontoly", "Sonarax", "Signal 360", "Shopkick", "Silverpush", "Lisnr", "SoniTalk"
+                "All", Technology.UNKNOWN.toString(), Technology.GOOGLE_NEARBY.toString(), Technology.PRONTOLY.toString(), Technology.SONARAX.toString(), Technology.SIGNAL360.toString(),
+                    Technology.SHOPKICK.toString(), Technology.SILVERPUSH.toString(), Technology.LISNR.toString(), Technology.SONITALK.toString()
+                //"Unknown", "Google Nearby", "Prontoly", "Sonarax", "Signal 360", "Shopkick", "Silverpush", "Lisnr", "SoniTalk"
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, numberOfFrequencyElements);
@@ -318,7 +354,6 @@ public class ImportedRulesFragment extends Fragment {
                         Location location = Location.getInstanceLoc();
                         GPSTracker gpsTracker = location.getGPSTracker();
 
-
                         Log.d("StoreDetections", ""+data.size());
                         for (int i = 0; i < jArray.length(); i++) {
                             try {
@@ -357,6 +392,17 @@ public class ImportedRulesFragment extends Fragment {
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Log.e("StoredDetections", "Unable to submit post to API." + t);
+                        Snackbar importSnackbar = Snackbar.make(rootView, "The server is not reachable at the moment. Please try again later!",
+                                Snackbar.LENGTH_INDEFINITE)
+                                .setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                    }
+                                });
+                        View importSnackbarView = importSnackbar.getView();
+                        TextView importSnackbarTextView = (TextView) importSnackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        importSnackbarTextView.setMaxLines(4);
+                        importSnackbar.show();
                     }
                 });
             }
@@ -385,6 +431,17 @@ public class ImportedRulesFragment extends Fragment {
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Log.e("StoredDetections", "Unable to get numberOfDetections." + t);
+                        Snackbar importSnackbar = Snackbar.make(rootView, "The server is not reachable at the moment. Please try again later!",
+                                Snackbar.LENGTH_INDEFINITE)
+                                .setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                    }
+                                });
+                        View importSnackbarView = importSnackbar.getView();
+                        TextView importSnackbarTextView = (TextView) importSnackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        importSnackbarTextView.setMaxLines(4);
+                        importSnackbar.show();
                     }
                 });
             }
@@ -421,6 +478,7 @@ public class ImportedRulesFragment extends Fragment {
         dateTimeDialog = openDateTime.create();
 
         btnDateTimeSet = (Button) viewDateTime.findViewById(R.id.btnDateTimeSet);
+        btnDateTimeCancel = (Button) viewDateTime.findViewById(R.id.btnDateTimeCancel);
         datePicker = (DatePicker) viewDateTime.findViewById(R.id.date_picker);
         timePicker = (TimePicker) viewDateTime.findViewById(R.id.time_picker);
         timePicker.setIs24HourView(true);
@@ -445,6 +503,13 @@ public class ImportedRulesFragment extends Fragment {
                 timeFrom = calendar.getTimeInMillis();
                 dateTimeDialog.dismiss();
                 txtTimestampFrom.setText(jsonMan.returnDateStringFromAlert(timeFrom));
+            }
+        });
+
+        btnDateTimeCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dateTimeDialog.cancel();
             }
         });
         dateTimeDialog.setView(viewDateTime);
