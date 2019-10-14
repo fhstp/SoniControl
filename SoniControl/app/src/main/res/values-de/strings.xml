@@ -140,4 +140,5 @@
     <string name="navigation_title_imported_rules">Importierte Regeln</string>
     <string name="navigation_title_detection_history">Signalchronik</string>
     <string name="navigation_title_rules_on_map">Karte</string>
+    <string name="button_date_time_picker_set">Ok</string>
 </resources>
