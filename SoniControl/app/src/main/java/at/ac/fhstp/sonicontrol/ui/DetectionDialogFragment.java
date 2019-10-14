@@ -25,7 +25,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -130,6 +133,14 @@ public class DetectionDialogFragment extends DialogFragment {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         boolean willBeShared = sp.getBoolean(ConfigConstants.SETTINGS_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT);
         cbSharing.setChecked(willBeShared);
+        if(!checkInternetForSharing(getActivity())){
+            cbSharing.setChecked(false);
+            cbSharing.setClickable(false);
+            cbSharing.setTextColor(Color.parseColor("#A4A4A4"));
+        }else{
+            cbSharing.setClickable(true);
+            cbSharing.setTextColor(Color.parseColor("#000000"));
+        }
 
         // Initialize spectrogram view.
         spectrogramView = (SpectrogramView) view.findViewById(R.id.spectrogram_view);
@@ -318,5 +329,11 @@ public class DetectionDialogFragment extends DialogFragment {
         else {
             Log.w(TAG, "onSpectrum: alert not initialized yet !");
         }
+    }
+
+    public boolean checkInternetForSharing(FragmentActivity currentActivity){
+        ConnectivityManager connectivityManager = (ConnectivityManager) currentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
