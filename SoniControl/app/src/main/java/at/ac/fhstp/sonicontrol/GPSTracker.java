@@ -21,6 +21,7 @@ package at.ac.fhstp.sonicontrol;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -32,7 +33,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.design.widget.Snackbar;
+import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.content.SharedPreferences;
@@ -46,7 +48,7 @@ import java.util.Locale;
 public class GPSTracker extends Service implements LocationListener {
 
     private static String TAG = GPSTracker.class.getName();
-    private final MainActivity main;
+    private final Activity activity;
 
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
@@ -68,16 +70,16 @@ public class GPSTracker extends Service implements LocationListener {
     private String provider_info_gps = "";
     private String provider_info_network = "";
 
-    public GPSTracker(MainActivity main) {
-        this.main = main;
+    public GPSTracker(Activity activity) {
+        this.activity = activity;
         initGPSTracker();
     }
 
 
     public void initGPSTracker() {
         try {
-            //main.displayToast("I am in initGPS", Toast.LENGTH_LONG);
-            locationManager = (LocationManager) main.getApplicationContext().getSystemService(LOCATION_SERVICE);
+            //activity.displayToast("I am in initGPS", Toast.LENGTH_LONG);
+            locationManager = (LocationManager) activity.getApplicationContext().getSystemService(LOCATION_SERVICE);
 
             Location locationNetwork = null;
             Location locationGPS = null;
@@ -86,7 +88,7 @@ public class GPSTracker extends Service implements LocationListener {
 
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity); //get the settings
             boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
             boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
@@ -104,11 +106,11 @@ public class GPSTracker extends Service implements LocationListener {
 
             int status = 0;
             if (!provider_info_network.isEmpty() || !provider_info_gps.isEmpty()) {
-                status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
+                status = ActivityCompat.checkSelfPermission(activity.getApplicationContext(),
                         Manifest.permission.ACCESS_FINE_LOCATION);
                 if (status != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(
-                            main,
+                            activity,
                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                             ConfigConstants.REQUEST_GPS_PERMISSION);
                 }
@@ -119,7 +121,7 @@ public class GPSTracker extends Service implements LocationListener {
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES,
                                 this,
-                                main.uiHandler.getLooper()
+                                Looper.getMainLooper()
                         );
                         if (locationManager != null) {
                             locationNetwork = locationManager.getLastKnownLocation(provider_info_network);
@@ -133,7 +135,7 @@ public class GPSTracker extends Service implements LocationListener {
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES,
                                 this,
-                                main.uiHandler.getLooper()
+                                Looper.getMainLooper()
                         );
                         if (locationManager != null) {
                             locationGPS = locationManager.getLastKnownLocation(provider_info_gps);
@@ -185,7 +187,8 @@ public class GPSTracker extends Service implements LocationListener {
         {
             e.printStackTrace();
             Log.e(TAG, "Impossible to connect to LocationManager", e);
-            main.displayToast(getResources().getString(R.string.toastMessageNoGeocoderConnection), Toast.LENGTH_LONG);
+            Toast.makeText(activity, getResources().getString(R.string.toastMessageNoGeocoderConnection), Toast.LENGTH_LONG).show();
+            //activity.displayToast(getResources().getString(R.string.toastMessageNoGeocoderConnection), Toast.LENGTH_LONG);
         }
     }
 
@@ -251,7 +254,7 @@ public class GPSTracker extends Service implements LocationListener {
 
             return addressLine;
         } else {
-            return main.getApplicationContext().getString(R.string.json_detections_unknown_address);
+            return this.activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
         }
     }
 
@@ -266,13 +269,13 @@ public class GPSTracker extends Service implements LocationListener {
 
                 return addressLine;
             } else {
-                return main.getApplicationContext().getString(R.string.json_detections_unknown_address);
+                return this.activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
             }
         } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG, "Impossible to connect to Geocoder", e);
         }
-        return main.getApplicationContext().getString(R.string.json_detections_unknown_address);
+        return this.activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
     }
 
 
@@ -323,11 +326,11 @@ public class GPSTracker extends Service implements LocationListener {
         Location locationGPS = null;
         int status = 0;
         if (!provider_info_network.isEmpty() || !provider_info_gps.isEmpty()) {
-            status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
+            status = ActivityCompat.checkSelfPermission(activity.getApplicationContext(),
                     Manifest.permission.ACCESS_FINE_LOCATION);
             if (status != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(
-                        main,
+                        activity,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         ConfigConstants.REQUEST_GPS_PERMISSION);
             } else {
@@ -378,7 +381,7 @@ public class GPSTracker extends Service implements LocationListener {
                     MIN_TIME_BW_UPDATES,
                     MIN_DISTANCE_CHANGE_FOR_UPDATES,
                     this,
-                    main.uiHandler.getLooper()
+                    Looper.getMainLooper()
             );
         }
         if(!provider_info_network.isEmpty()) {
@@ -387,7 +390,7 @@ public class GPSTracker extends Service implements LocationListener {
                     MIN_TIME_BW_UPDATES,
                     MIN_DISTANCE_CHANGE_FOR_UPDATES,
                     this,
-                    main.uiHandler.getLooper()
+                    Looper.getMainLooper()
             );
         }
     }

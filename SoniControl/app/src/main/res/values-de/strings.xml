@@ -40,7 +40,7 @@
     <string name="noAddressForJsonFile">Nicht verfügbar</string>
     <string name="NoSignalDiscoveredAndSavedYet">Sie haben noch keine Ultraschallsignale gefunden!</string>
     <string name="permissionRequestExplanation">Die App braucht für die Nutzung die Berechtigung des Mikrofons. Ohne dieser kann die App keine Ultraschallsignale erkennen.</string>
-    <string name="permissionMapRequestExplanation">Um die den Kartenhintergrund anzuzeigen wird die "Speicher"-Berechtigung benötigt, um die Karte auf den aktuellen Standort zu zentrieren wir die "Standort"-Berechtigung benötigt. Beide App-Berechtigungen sind optional.</string>
+    <string name="permissionMapRequestExplanation">Um die Karte auf den aktuellen Standort zu zentrieren wir die "Standort"-Berechtigung benötigt. Diese App-Berechtigung ist optional.</string>
     <string name="toastLocationAccessDenied">Keine Berechtigung für Standortzugriff</string>
     <string name="toastWritingAccessDenied">eine Berechtigung für das lokale Speichern der Karte.</string>
     <string name="aboutUsProject">Neuartige Technologien wie Silverpush bauen auf Ultraschalltönen auf, um Informationen auszutauschen. Immer mehr unserer Geräte kommunizieren über diesen unhörbaren Kommunikationskanal. Die Ultraschallkommunikation ermöglicht es, Geräte zu koppeln, Informationen auszutauschen, aber auch BenutzerInnen und deren Verhalten über mehrere Geräte hinweg zu verfolgen, ähnlich wie bei Cookies im Web. Jedes Gerät mit einem Mikrofon und einem Lautsprecher ist in der Lage, Ultraschallinformationen zu senden und zu empfangen. Dieser unhörbare und versteckte Datentransfer ist den AnwenderInnen in der Regel nicht bekannt.
@@ -65,9 +65,12 @@
     <string name="help_menuItem">Hilfe</string>
     <string name="privacy_policy_text">Datenerhebung und Datenverarbeitung:\n\n
 - Wir verwenden das Mikrofon um Geräusche aufzunehmen, aber verarbeiten nur den Ultraschallbereich, wir verwerfen alle Daten unter 17kHz.\n\n
-- Geräusche werden in Echtzeit auf dem Smartphone verarbeitet. Die Daten werden nicht über das Web geschickt und auch nicht am Smartphone gespeichert.\n\n
+- Geräusche werden in Echtzeit auf dem Smartphone verarbeitet.\n\n
+- Um Signale mit der Community zu teilen, brauchen wir die Internetberechtigung. Diese Berechtigung wird von Google/Android als unkritisch (protection_normal) eingestuft. Daher wird diese als nicht gefährliche Berechtigung behandelt und wird bei der Frage nach neuen Berechtigungen, wie auch bei der Berechtigungenübersicht der App, nicht angzeigt. Das Teilen von Signalen wird nur aktiv durch den Nutzer selbst durchgeführt. Ohne explizite Nachfrage wird nichts auf einen Server geladen. Wenn der Nutzer erkannte Signale teilt, werden die Standortinformationen, ein Zeitstempel und ein kurzes Stück des Geräuschs (alles unter 17kHz ist abgeschnitten) auf den SoniControl server hochgeladen. Keine Nutzer-ID wird gespeichert, daher sind die Daten anonym.
 - Erkannte Signale werden lokal in einer JSON Datei gespeichert. Gespeichert werden Zeit und Ort (wenn vom Nutzer erlaubt). Der Nutzer kann diese Datei jederzeit über die Einstellungen löschen.\n\n
-- Wenn vom Nutzer erlaubt, überprüfen wir die Position des Nutzers in bestimmten Zeitabständen und teilen ihm mit, ob er einen Bereich betritt, wo er schon einmal eine Ultraschallnachricht entdeckt hat.
+- Wenn vom Nutzer erlaubt, überprüfen wir die Position des Nutzers in bestimmten Zeitabständen und teilen ihm mit, ob er einen Bereich betritt, wo er schon einmal eine Ultraschallnachricht entdeckt hat.\n\n
+- Zusätzlich wird die Internetberechtigung zum Darstellen der Karte verwendet.\n\n
+- Die Standortberechtigung wird benötigt um die Karte auf den aktuellen Standort zu zentrieren. Dies ist optional.
     </string>
     <string name="privacy_policy_label">Datenschutzerklärung</string>
     <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
@@ -141,4 +144,12 @@
     <string name="navigation_title_detection_history">Signalchronik</string>
     <string name="navigation_title_rules_on_map">Karte</string>
     <string name="button_date_time_picker_set">Ok</string>
+    <string name="toast_on_failure_detection_upload">Der Server ist nicht erreichbar. Ihr erkanntes Signal konnte nicht geteilt werden.</string>
+    <string name="toast_on_success_detection_upload">Das erkannte Signal konnte erfolgreich hochgeladen werden.</string>
+    <string name="map_marker_description_last_detection">Letzte Erkennung:</string>
+    <string name="permission_explanation_map_button_negative">Zurück zur Karte</string>
+    <string name="permission_explanation_map_button_positive">Das Berechtigungsmenü öffnen</string>
+    <string name="import_filtered_detections_failure_snackbar">Der Server ist momentan nicht erreichbar. Bitte versuchen Sie es später nochmal!</string>
+    <string name="map_dialog_legend_title">Legende</string>
+    <string name="alert_share_your_detection">Teile die Erkennung</string>
 </resources>

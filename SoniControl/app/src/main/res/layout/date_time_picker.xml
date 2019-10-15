@@ -47,7 +47,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TimePicker
+        <!--<TimePicker
             android:id="@+id/time_picker"
             android:layout_width="339dp"
             android:layout_height="343dp"
@@ -60,7 +60,7 @@
             android:headerBackground="#00687A"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/date_picker" />
+            app:layout_constraintTop_toBottomOf="@+id/date_picker" />-->
 
         <Button
             android:id="@+id/btnDateTimeSet"
@@ -68,17 +68,17 @@
             android:layout_height="55dp"
             android:layout_marginStart="36dp"
             android:layout_marginLeft="36dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:layout_weight="1"
             android:text="@string/button_date_time_picker_set"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/time_picker" />
+            app:layout_constraintTop_toBottomOf="@+id/date_picker" />
 
         <Button
             android:id="@+id/btnDateTimeCancel"
             android:layout_width="110dp"
             android:layout_height="55dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="36dp"
             android:layout_marginRight="36dp"
             android:layout_weight="1"
@@ -86,7 +86,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/btnDateTimeSet"
-            app:layout_constraintTop_toBottomOf="@+id/time_picker" />
+            app:layout_constraintTop_toBottomOf="@+id/date_picker" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

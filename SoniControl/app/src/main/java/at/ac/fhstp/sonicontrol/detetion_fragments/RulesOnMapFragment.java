@@ -59,6 +59,7 @@ import java.security.Permission;
 import java.util.ArrayList;
 
 import at.ac.fhstp.sonicontrol.ConfigConstants;
+import at.ac.fhstp.sonicontrol.GPSTracker;
 import at.ac.fhstp.sonicontrol.JSONManager;
 import at.ac.fhstp.sonicontrol.MainActivity;
 import at.ac.fhstp.sonicontrol.R;
@@ -70,20 +71,21 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
     RadiusMarkerClusterer detectionMarkers;
     FolderOverlay circleMarker;
     Polygon lastCircle;
+    GPSTracker locationData;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
-        View rootView = inflater.inflate(R.layout.rules_on_map_fragment, container, false);
-
         Context ctx = getActivity();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+        Configuration.getInstance().setOsmdroidBasePath(new File(ctx.getCacheDir().getAbsolutePath(), "osmdroid"));
+        Configuration.getInstance().setOsmdroidTileCache(new File(Configuration.getInstance().getOsmdroidBasePath().getAbsolutePath(), "tile"));
+
+        View rootView = inflater.inflate(R.layout.rules_on_map_fragment, container, false);
 
         map = (MapView) rootView.findViewById(R.id.map);
         final ITileSource tileSource = TileSourceFactory.MAPNIK;
         map.setTileSource(tileSource);
-        Configuration.getInstance().setOsmdroidBasePath(new File(ctx.getCacheDir().getAbsolutePath(), "osmdroid"));
-        Configuration.getInstance().setOsmdroidTileCache(new File(Configuration.getInstance().getOsmdroidBasePath().getAbsolutePath(), "tile"));
         map.setUseDataConnection(true);
         map.setVerticalMapRepetitionEnabled(false);
         //map.setTileSource(TileSourceFactory.MAPNIK);
@@ -94,8 +96,20 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
 
         IMapController mapController = map.getController();
         mapController.setZoom(10);
-        GeoPoint startPoint;
-        startPoint = new GeoPoint(48.212602, 15.6352079);
+        GeoPoint startPoint = null;
+        int status = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        Log.d("RulesOnMap-status",String.valueOf(status));
+        if(status == 0) {
+            if (locationData == null) {
+                locationData = new GPSTracker(getActivity());
+                locationData.initGPSTracker();
+            }
+            Log.d("RulesOnMap-Lat",String.valueOf(locationData.getLatitude()));
+            Log.d("RulesOnMap-Lon",String.valueOf(locationData.getLongitude()));
+            startPoint = new GeoPoint(locationData.getLatitude(), locationData.getLongitude());
+        }else{
+            startPoint = new GeoPoint(48.212602, 15.6352079); //Default BIZ St. Pölten
+        }
 
         mapController.setCenter(startPoint);
 
@@ -135,7 +149,7 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
         final View alertMapInfoView = mapInfoAlertInflater.inflate(R.layout.map_info, null);
         activateMapInfoDialog.setView(alertMapInfoView);
         activateMapInfoDialog
-                .setTitle("Legend")
+                .setTitle(getString(R.string.map_dialog_legend_title))
                 .setCancelable(true)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -218,7 +232,7 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
                     break;
             }
             marker.setTitle(sArray[2]);
-            marker.setSubDescription("Last Detection: " +sArray[3]);
+            marker.setSubDescription(getActivity().getString(R.string.map_marker_description_last_detection) +sArray[3]);
             marker.setRelatedObject(sArray[4]);
             MarkerInfoWindow infoWindow = new MarkerInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map);
             marker.setInfoWindow(infoWindow);

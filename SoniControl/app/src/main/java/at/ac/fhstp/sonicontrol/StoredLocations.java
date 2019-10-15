@@ -55,9 +55,9 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
     BottomNavigationView navView;
     ViewPager viewPager;
 
-    private static final String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_NETWORK_STATE};
-    private static final String[] PERMISSION_LOCATION = {Manifest.permission.ACCESS_FINE_LOCATION};
-    private static final String[] PERMISSION_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static final String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET/*, Manifest.permission.WRITE_EXTERNAL_STORAGE*/, Manifest.permission.ACCESS_NETWORK_STATE};
+    //private static final String[] PERMISSION_LOCATION = {Manifest.permission.ACCESS_FINE_LOCATION};
+    //private static final String[] PERMISSION_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int REQUEST_MAP_PERMISSIONS = 72;
 
     public Handler uiHandler = new Handler(Looper.getMainLooper());
@@ -226,13 +226,13 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
                                 //viewPager.setCurrentItem(3);
                                 //navView.setSelectedItemId(R.id.navigation_rules_map);
                             }
-                        }else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[i])) {
+                        }/*else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[i])) {
                             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                             } else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                                 showRequestPermissionExplanation();
                                 break;
                             }
-                        }
+                        }*/
                     }
                 }
             }
@@ -319,7 +319,7 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
     public void requestPermissions(){
         if(!hasPermissions(StoredLocations.this, PERMISSIONS)){
             // If an explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(StoredLocations.this,
+            /*if (ActivityCompat.shouldShowRequestPermissionRationale(StoredLocations.this,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 Log.d("requestPermissions", "WRITE_EXTERNAL_STORAGE");
                 Snackbar permissionSnackbar = Snackbar.make(findViewById(android.R.id.content).getRootView(), R.string.permissionMapRequestExplanation,
@@ -334,7 +334,7 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
                 TextView permissionSnackbarTextView = (TextView) permissionSnackbarView.findViewById(android.support.design.R.id.snackbar_text);
                 permissionSnackbarTextView.setMaxLines(6);
                 permissionSnackbar.show();
-            } else if (ActivityCompat.shouldShowRequestPermissionRationale(StoredLocations.this,
+            } else */if (ActivityCompat.shouldShowRequestPermissionRationale(StoredLocations.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Log.d("requestPermissions", "ACCESS_FINE_LOCATION");
 
@@ -348,7 +348,7 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
                         });
                 View permissionSnackbarView = permissionSnackbar.getView();
                 TextView permissionSnackbarTextView = (TextView) permissionSnackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                permissionSnackbarTextView.setMaxLines(6);
+                permissionSnackbarTextView.setMaxLines(4);
                 permissionSnackbar.show();
 
                 /*Toast toast = Toast.makeText(StoredLocations.this, R.string.permissionRequestExplanation, Toast.LENGTH_LONG);
@@ -375,7 +375,7 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
     private void showRequestPermissionExplanation() {
         AlertDialog.Builder builder = new AlertDialog.Builder(StoredLocations.this);
         builder.setMessage(R.string.permissionMapRequestExplanation);
-        builder.setPositiveButton("Open the Permission Menu",new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.permission_explanation_map_button_positive),new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent();
@@ -386,7 +386,7 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
                     }
                 }
         );
-        builder.setNegativeButton("Back to the main menu", null);
+        builder.setNegativeButton(getString(R.string.permission_explanation_map_button_negative), null);
         builder.show();
     }
 

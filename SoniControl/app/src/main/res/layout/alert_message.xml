@@ -184,7 +184,7 @@
         android:layout_width="165dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Share your Detection"
+        android:text="@string/alert_share_your_detection"
         android:textColor="@android:color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnReplay"

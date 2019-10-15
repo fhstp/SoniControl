@@ -1411,7 +1411,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     public void onResponse(Call<Detection> call, Response<Detection> response) {
                         if(response.isSuccessful()) {
                             Log.i(TAG, "post submitted to API." + response.body().toString());
-                            Toast toast = Toast.makeText(MainActivity.this, "The detection was successfully uploaded.", Toast.LENGTH_LONG);
+                            Toast toast = Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.toast_on_success_detection_upload), Toast.LENGTH_LONG);
                             toast.show();
                             sendAudioData(restService, technology, timestamp);
                         }
@@ -1419,7 +1419,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
                     @Override
                     public void onFailure(Call<Detection> call, Throwable t) {
-                        Toast toast = Toast.makeText(MainActivity.this, "The detection was not uploaded.", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.toast_on_failure_detection_upload), Toast.LENGTH_LONG);
                         toast.show();
                         Log.e(TAG, "Unable to submit post to API." + t);
                     }
@@ -1454,14 +1454,16 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             @Override
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
-                Toast toast = Toast.makeText(MainActivity.this, "The audiofile was successfully uploaded.", Toast.LENGTH_LONG);
+                //Toast toast = Toast.makeText(MainActivity.this, "The audiofile was successfully uploaded.", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.toast_on_success_detection_upload), Toast.LENGTH_LONG);
                 toast.show();
                 Log.v("Upload", "success");
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast toast = Toast.makeText(MainActivity.this, "The audiofile was not uploaded.", Toast.LENGTH_LONG);
+                //Toast toast = Toast.makeText(MainActivity.this, "The audiofile was not uploaded.", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.toast_on_failure_detection_upload), Toast.LENGTH_LONG);
                 toast.show();
                 Log.e("Upload error:", t.getMessage());
             }

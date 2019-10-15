@@ -40,7 +40,7 @@
     <string name="noAddressForJsonFile">Not available</string>
     <string name="NoSignalDiscoveredAndSavedYet">You have not discovered any signals yet!</string>
     <string name="permissionRequestExplanation">The app requires at least the permission to access the microphone. Otherwise it cannot detect ultrasonic signals.</string>
-    <string name="permissionMapRequestExplanation">Showing the map background requires "Storage" permission, centering the map on your location requires "Location" permission. Both permissions are optional.</string>
+    <string name="permissionMapRequestExplanation">Centering the map on your location requires "Location" permission. This permission is optional.</string>
     <string name="toastLocationAccessDenied">No permission to access location.</string>
     <string name="toastWritingAccessDenied">No permission to locally save map tiles.</string>
     <string name="aboutUsProject">Technologies like Google Nearby and Silverpush build upon ultrasonic sounds to exchange data (data over audio). More and more of our devices communicate via this inaudible communication channel. Every device with a microphone and a speaker is able to send and receive ultrasonic information. Users are usually not aware of this inaudible and hidden data transfer.
@@ -65,9 +65,12 @@
     <string name="help_menuItem">Help</string>
     <string name="privacy_policy_text">Data collection and data processing:\n\n
 - We use the microphone to capture sound, but process only the ultrasonic part, we remove everything under 17kHz.\n\n
-- Sounds are analyzed in real time on the phone. They are not sent to the web, nor stored on the phone.\n\n
+- Sounds are analyzed in real time on the phone.\n\n
+- For sharing detections with the community, we need the internet permission. This permission is classified by Google/Android as uncritical (protection_normal). Therefore it is not categorized as dangerous permission and not shown in the permission overview of the apps detail information. Sharing is only done on demand by the user. Without explicit request no data will be uploaded. If the users share their detections, the location information, a timestamp and a short audio sample of the detection (everything under 17kHz is removed), will be uploaded to the SoniControl server. No user ID is stored, and thus the data is anonymous.\n\n
 - Detections are stored locally in a JSON file, including the time and location (if allowed by the user). The user can delete this file at any time via the Settings menu.\n\n
-- If allowed, we check the user\'s location regularly in order to tell him when he enters an area where he previously detected ultrasonic communications.
+- If allowed, we check the user\'s location regularly in order to tell her when she enters an area where she previously detected ultrasonic communications.\n\n
+- Additionally, we need the internet permission to display the map background.\n\n
+- The location permission is required to center your position on the map. This is optional.
     </string>
     <string name="privacy_policy_label">Privacy policy</string>
     <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
@@ -141,4 +144,12 @@
     <string name="navigation_title_detection_history">Detection History</string>
     <string name="navigation_title_rules_on_map">Rules on Map</string>
     <string name="button_date_time_picker_set">Set</string>
+    <string name="toast_on_failure_detection_upload">The server is not reachable. Your detection could not be shared.</string>
+    <string name="toast_on_success_detection_upload">The detection was successfully uploaded.</string>
+    <string name="map_marker_description_last_detection">Last Detection:</string>
+    <string name="permission_explanation_map_button_negative">Back to the map</string>
+    <string name="permission_explanation_map_button_positive">Open the Permission Menu</string>
+    <string name="import_filtered_detections_failure_snackbar">The server is not reachable at the moment. Please try again later!</string>
+    <string name="map_dialog_legend_title">Legend</string>
+    <string name="alert_share_your_detection">Share your Detection</string>
 </resources>

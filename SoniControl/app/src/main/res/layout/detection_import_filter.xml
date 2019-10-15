@@ -68,8 +68,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:text="@string/import_timeto_button"
-            app:layout_constraintStart_toEndOf="@+id/txtTimestampTo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.786"
+            app:layout_constraintStart_toEndOf="@+id/btnResetTimestampTo"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampToTitle" />
 
         <TextView
@@ -237,8 +241,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:text="@string/import_timefrom_button"
-            app:layout_constraintStart_toEndOf="@+id/txtTimestampFrom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.786"
+            app:layout_constraintStart_toEndOf="@+id/btnResetTimestampFrom"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampFromTitle" />
 
         <TextView
@@ -260,11 +268,8 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.777"
-            app:layout_constraintStart_toEndOf="@+id/btnTimestampFrom"
+            android:scaleType="fitXY"
+            app:layout_constraintStart_toEndOf="@+id/txtTimestampFrom"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampFromTitle"
             app:srcCompat="@drawable/baseline_undo_black_48" />
 
@@ -275,11 +280,8 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.777"
-            app:layout_constraintStart_toEndOf="@+id/btnTimestampTo"
+            android:scaleType="fitXY"
+            app:layout_constraintStart_toEndOf="@+id/txtTimestampTo"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampToTitle"
             app:srcCompat="@drawable/baseline_undo_black_48" />
 

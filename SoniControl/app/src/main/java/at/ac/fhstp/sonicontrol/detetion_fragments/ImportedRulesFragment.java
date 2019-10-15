@@ -392,7 +392,7 @@ public class ImportedRulesFragment extends Fragment {
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Log.e("StoredDetections", "Unable to submit post to API." + t);
-                        Snackbar importSnackbar = Snackbar.make(rootView, "The server is not reachable at the moment. Please try again later!",
+                        Snackbar importSnackbar = Snackbar.make(rootView, R.string.import_filtered_detections_failure_snackbar,
                                 Snackbar.LENGTH_INDEFINITE)
                                 .setAction("OK", new View.OnClickListener() {
                                     @Override
@@ -431,7 +431,7 @@ public class ImportedRulesFragment extends Fragment {
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Log.e("StoredDetections", "Unable to get numberOfDetections." + t);
-                        Snackbar importSnackbar = Snackbar.make(rootView, "The server is not reachable at the moment. Please try again later!",
+                        Snackbar importSnackbar = Snackbar.make(rootView, R.string.import_filtered_detections_failure_snackbar,
                                 Snackbar.LENGTH_INDEFINITE)
                                 .setAction("OK", new View.OnClickListener() {
                                     @Override
@@ -480,8 +480,8 @@ public class ImportedRulesFragment extends Fragment {
         btnDateTimeSet = (Button) viewDateTime.findViewById(R.id.btnDateTimeSet);
         btnDateTimeCancel = (Button) viewDateTime.findViewById(R.id.btnDateTimeCancel);
         datePicker = (DatePicker) viewDateTime.findViewById(R.id.date_picker);
-        timePicker = (TimePicker) viewDateTime.findViewById(R.id.time_picker);
-        timePicker.setIs24HourView(true);
+        //timePicker = (TimePicker) viewDateTime.findViewById(R.id.time_picker);
+        //timePicker.setIs24HourView(true);
     }
 
     public void openDateTimePickerFrom() {
@@ -496,9 +496,10 @@ public class ImportedRulesFragment extends Fragment {
 
                 Calendar calendar = new GregorianCalendar(datePicker.getYear(),
                         datePicker.getMonth(),
-                        datePicker.getDayOfMonth(),
-                        timePicker.getCurrentHour(),
-                        timePicker.getCurrentMinute());
+                        datePicker.getDayOfMonth()
+                        //timePicker.getCurrentHour(),
+                        //timePicker.getCurrentMinute()
+                        );
 
                 timeFrom = calendar.getTimeInMillis();
                 dateTimeDialog.dismiss();
@@ -528,9 +529,10 @@ public class ImportedRulesFragment extends Fragment {
 
                 Calendar calendar = new GregorianCalendar(datePicker.getYear(),
                         datePicker.getMonth(),
-                        datePicker.getDayOfMonth(),
-                        timePicker.getCurrentHour(),
-                        timePicker.getCurrentMinute());
+                        datePicker.getDayOfMonth()
+                        //timePicker.getCurrentHour(),
+                        //timePicker.getCurrentMinute()
+                );
 
                 timeTo = calendar.getTimeInMillis();
                 dateTimeDialog.dismiss();
