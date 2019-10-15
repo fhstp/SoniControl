@@ -235,6 +235,7 @@ public class ImportedRulesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 txtTimestampFrom.setText("");
+                btnResetTimestampFrom.setVisibility(View.INVISIBLE);
                 timeFrom = null;
             }
         });
@@ -243,6 +244,7 @@ public class ImportedRulesFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 txtTimestampTo.setText("");
+                btnResetTimestampTo.setVisibility(View.INVISIBLE);
                 timeTo = null;
             }
         });
@@ -504,6 +506,7 @@ public class ImportedRulesFragment extends Fragment {
                 timeFrom = calendar.getTimeInMillis();
                 dateTimeDialog.dismiss();
                 txtTimestampFrom.setText(jsonMan.returnDateStringFromAlert(timeFrom));
+                btnResetTimestampFrom.setVisibility(View.VISIBLE);
             }
         });
 
@@ -537,6 +540,7 @@ public class ImportedRulesFragment extends Fragment {
                 timeTo = calendar.getTimeInMillis();
                 dateTimeDialog.dismiss();
                 txtTimestampTo.setText(jsonMan.returnDateStringFromAlert(timeTo));
+                btnResetTimestampTo.setVisibility(View.VISIBLE);
             }
         });
         dateTimeDialog.setView(viewDateTime);

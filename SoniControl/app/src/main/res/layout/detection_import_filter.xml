@@ -269,6 +269,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:scaleType="fitXY"
+            android:visibility="invisible"
             app:layout_constraintStart_toEndOf="@+id/txtTimestampFrom"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampFromTitle"
             app:srcCompat="@drawable/baseline_undo_black_48" />
@@ -281,6 +282,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:scaleType="fitXY"
+            android:visibility="invisible"
             app:layout_constraintStart_toEndOf="@+id/txtTimestampTo"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampToTitle"
             app:srcCompat="@drawable/baseline_undo_black_48" />
