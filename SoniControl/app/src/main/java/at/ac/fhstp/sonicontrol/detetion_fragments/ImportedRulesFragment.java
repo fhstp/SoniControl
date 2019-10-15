@@ -549,8 +549,8 @@ public class ImportedRulesFragment extends Fragment {
 
     private void openImportDialogWithCount(int count, final double longitude, final double latitude, final int range, final int technologyid, final String timestampfrom, final String timestampto){
         final AlertDialog.Builder filterImport = new AlertDialog.Builder(getActivity());
-        filterImport.setTitle("Do you want to import?")
-                .setMessage(String.format("The filter resulted in %s Detections.", String.valueOf(count)))
+        filterImport.setTitle(getString(R.string.filter_import_dialog_title))
+                .setMessage(String.format(getString(R.string.filter_import_dialog_message), String.valueOf(count)))
                 .setCancelable(false)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

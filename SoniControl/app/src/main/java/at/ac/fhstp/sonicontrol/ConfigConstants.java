@@ -55,8 +55,9 @@ public final class ConfigConstants {
     public static boolean SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT = false;
     public static final String SETTING_PREVENTIVE_SPOOFING = "cbprefPreventiveSpoofing";
     public static final boolean SETTING_PREVENTIVE_SPOOFING_DEFAULT = false;
-    public static final String SETTINGS_SHARING = "cbSharing";
-    public static final boolean SETTINGS_SHARING_DEFAULT = false;
+    public static final String LAST_DECISION_ON_SHARING = "cbSharingLastDecision";
+    public static final String SETTINGS_SHARING_DEFAULT = "cbSharing";
+    public static final boolean SETTINGS_SHARING_DEFAULT_VALUE = false;
 
     // Other SharedPreferences keys
     public static final String BUFFER_HISTORY_FILENAME = "bufferHistory.raw";

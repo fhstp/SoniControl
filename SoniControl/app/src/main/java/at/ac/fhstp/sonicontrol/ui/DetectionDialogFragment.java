@@ -64,7 +64,7 @@ public class DetectionDialogFragment extends DialogFragment {
         public void onAlertBlockAlways(DialogFragment dialog);
         public void onAlertBlockThisTime(DialogFragment dialog);
         public void onAlertPlayDetectedSignal(DialogFragment dialog);
-        public void onAlertSharing(DialogFragment dialog, boolean isChecked);
+        //public void onAlertSharing(DialogFragment dialog, boolean isChecked);
         //public void onAlertShare(DialogFragment dialog);
     }
 
@@ -131,7 +131,7 @@ public class DetectionDialogFragment extends DialogFragment {
 
         cbSharing = (CheckBox) view.findViewById(R.id.cbSharing);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean willBeShared = sp.getBoolean(ConfigConstants.SETTINGS_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT);
+        boolean willBeShared = sp.getBoolean(ConfigConstants.SETTINGS_SHARING_DEFAULT, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
         cbSharing.setChecked(willBeShared);
         if(!checkInternetForSharing(getActivity())){
             cbSharing.setChecked(false);
@@ -166,23 +166,27 @@ public class DetectionDialogFragment extends DialogFragment {
 
         btnAlertDismissAlways.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                setLastSharingDecision(cbSharing.isChecked());
                 listener.onAlertDismissAlways(DetectionDialogFragment.this);
             }
         });
         btnAlertDismissThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                setLastSharingDecision(cbSharing.isChecked());
                 listener.onAlertDismissThisTime(DetectionDialogFragment.this);
             }
         });
 
         btnAlertBlockAlways.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                setLastSharingDecision(cbSharing.isChecked());
                 listener.onAlertBlockAlways(DetectionDialogFragment.this);
             }
         });
 
         btnAlertBlockThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                setLastSharingDecision(cbSharing.isChecked());
                 listener.onAlertBlockThisTime(DetectionDialogFragment.this);
             }
         });
@@ -196,12 +200,12 @@ public class DetectionDialogFragment extends DialogFragment {
 
         // OnCheckedChangeListener ---
 
-        cbSharing.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        /*cbSharing.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 listener.onAlertSharing(DetectionDialogFragment.this, isChecked);
             }
-        });
+        });*/
 
         // Should be executed after initialization of all buttons AND before setting the view
         setupButtonState(currentActivity);
@@ -213,6 +217,14 @@ public class DetectionDialogFragment extends DialogFragment {
     private void setTechnologyText(FragmentActivity currentActivity) {
         String storedTechnology = PreferenceManager.getDefaultSharedPreferences(currentActivity).getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, null);
         setTechnologyText(storedTechnology);
+    }
+
+    private void setLastSharingDecision(boolean isChecked){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean(ConfigConstants.LAST_DECISION_ON_SHARING, isChecked);
+        editor.apply();
+        editor.commit();
     }
 
     /*package-private*/void setTechnologyText(String technology) {

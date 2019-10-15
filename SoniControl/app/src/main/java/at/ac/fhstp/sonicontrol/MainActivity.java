@@ -1140,14 +1140,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
     }
 
-    @Override
+    /*@Override
     public void onAlertSharing (DialogFragment dialog, boolean isChecked){
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor editor = sp.edit();
-        editor.putBoolean(ConfigConstants.SETTINGS_SHARING, isChecked);
+        editor.putBoolean(ConfigConstants.LAST_DECISION_ON_SHARING, isChecked);
         editor.apply();
 
-    }
+    }*/
 
     // END DetectionDialogListener methods ----------
 

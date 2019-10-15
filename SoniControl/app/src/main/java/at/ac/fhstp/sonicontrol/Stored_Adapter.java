@@ -65,13 +65,14 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
 
         txtLastDet.setText(formattedDate);
         if(singleArrayItem[5].equals("Unknown")){
-            txtAddress.setText("Unknown Address (Lat "+singleArrayItem[1].substring(0, 7)+", Lon "+ singleArrayItem[0].substring(0, 7)+")");
+            String unknownAddress = getContext().getString(R.string.stored_adapter_unknown_address);
+            txtAddress.setText(unknownAddress + " (Lat "+singleArrayItem[1].substring(0, 7)+", Lon "+ singleArrayItem[0].substring(0, 7)+")");
             txtLat.setVisibility(View.GONE);
             txtLon.setVisibility(View.GONE);
         }else{
             txtAddress.setText(singleArrayItem[5]);
         }
-        txtDetectionCounter.setText("previous Detections: "+singleArrayItem[8]);
+        txtDetectionCounter.setText(getContext().getString(R.string.stored_adapter_detection_counter_title)+singleArrayItem[8]);
 
         String spoofingStatus = null;
         if(Integer.valueOf(singleArrayItem[4])==1){

@@ -95,7 +95,7 @@
     <string name="alert_microphone_already_used_message">We could not start scanning, the microphone is already used by another app.</string>
     <string name="on_alert_no_location_message">Please activate location if you want to be able to save detections.</string>
     <string name="action_reset_settings_message">Do you want to reset all settings?</string>
-    <string name="action_reset_settings_title">Reset Settings</string>
+    <string name="action_reset_settings_title">Reset settings</string>
     <string name="settings_location_radius_title">Location radius (%s metres)</string>
     <string name="settings_pulse_duration_title">Pulse duration (%s ms)</string>
     <string name="settings_pause_duration_title">Pause duration (%s ms)</string>
@@ -127,10 +127,10 @@
     <string name="how_to_proceed">How to proceed?</string>
     <string name="extendedDiagnostics">Extended diagnostics</string>
     <string name="rules_info_text">Detections are shown in four tabs: \"My Rules\", \"Imported Rules\", \"Detection History\" and a map visualization.  The first two act as firewall rules. Their color shows if the rule will be blocked (red), ignored (green) or ask you again on the next detection (orange). You can change the status by tapping on them several times. On tapping longer on them, you can delete each rule.  The history tab shows all detections.\nThe map shows all firewall rules geographically.</string>
-    <string name="settings_share_detections">Share Detections</string>
+    <string name="settings_share_detections">Share detections</string>
     <string name="map_legend">The color of the markers stands for the action of the firewall rule. Red markers will be always blocked, green markers will be always ignored and orange markers will be asked again for a decision on the next detection of it.   On tapping on the marker a circle will appear where its size represents the signal strength.</string>
     <string name="import_timeto_title">Time to</string>
-    <string name="import_timeto_button">Pick Date</string>
+    <string name="import_timeto_button">Pick date</string>
     <string name="import_location">Location</string>
     <string name="import_range">Range</string>
     <string name="import_filter_info">Please set your filters for importing detections!</string>
@@ -138,7 +138,7 @@
     <string name="import_timefrom_title">Time from</string>
     <string name="import_location_hint">Please enter an address!</string>
     <string name="import_range_hint">Please enter a range!</string>
-    <string name="import_timefrom_button">Pick Date</string>
+    <string name="import_timefrom_button">Pick date</string>
     <string name="navigation_title_my_rules">My Rules</string>
     <string name="navigation_title_imported_rules">Imported Rules</string>
     <string name="navigation_title_detection_history">Detection History</string>
@@ -146,10 +146,14 @@
     <string name="button_date_time_picker_set">Set</string>
     <string name="toast_on_failure_detection_upload">The server is not reachable. Your detection could not be shared.</string>
     <string name="toast_on_success_detection_upload">The detection was successfully uploaded.</string>
-    <string name="map_marker_description_last_detection">Last Detection:</string>
+    <string name="map_marker_description_last_detection">Last detection:</string>
     <string name="permission_explanation_map_button_negative">Back to the map</string>
     <string name="permission_explanation_map_button_positive">Open the Permission Menu</string>
     <string name="import_filtered_detections_failure_snackbar">The server is not reachable at the moment. Please try again later!</string>
     <string name="map_dialog_legend_title">Legend</string>
-    <string name="alert_share_your_detection">Share your Detection</string>
+    <string name="alert_share_your_detection">Share your detection</string>
+    <string name="filter_import_dialog_title">Do you want to import the rules?</string>
+    <string name="filter_import_dialog_message">The filter resulted in %s rules.</string>
+    <string name="stored_adapter_detection_counter_title">previous Detections:</string>
+    <string name="stored_adapter_unknown_address">Unknown Address</string>
 </resources>

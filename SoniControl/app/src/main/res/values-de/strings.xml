@@ -152,4 +152,8 @@
     <string name="import_filtered_detections_failure_snackbar">Der Server ist momentan nicht erreichbar. Bitte versuchen Sie es später nochmal!</string>
     <string name="map_dialog_legend_title">Legende</string>
     <string name="alert_share_your_detection">Teile die Erkennung</string>
+    <string name="filter_import_dialog_title">Möchten sie die Firewall-Regeln importieren?</string>
+    <string name="filter_import_dialog_message">Das Filtern ergibt %s Firewall-Regeln.</string>
+    <string name="stored_adapter_detection_counter_title">Erkennungen:</string>
+    <string name="stored_adapter_unknown_address">Unbekannte Adresse</string>
 </resources>
