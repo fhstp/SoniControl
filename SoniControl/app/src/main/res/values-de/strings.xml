@@ -64,13 +64,12 @@
     <string name="instructions_menuItem">Anleitung</string>
     <string name="help_menuItem">Hilfe</string>
     <string name="privacy_policy_text">Datenerhebung und Datenverarbeitung:\n\n
-- Wir verwenden das Mikrofon um Geräusche aufzunehmen, aber verarbeiten nur den Ultraschallbereich, wir verwerfen alle Daten unter 17kHz.\n\n
+- Wir verwenden das Mikrofon, um Geräusche aufzunehmen, verarbeiten aber nur den Frequenzbereich über 17kHz. Wir verwerfen alle Daten unter 17kHz.\n\n
 - Geräusche werden in Echtzeit auf dem Smartphone verarbeitet.\n\n
-- Um Signale mit der Community zu teilen, brauchen wir die Internetberechtigung. Diese Berechtigung wird von Google/Android als unkritisch (protection_normal) eingestuft. Daher wird diese als nicht gefährliche Berechtigung behandelt und wird bei der Frage nach neuen Berechtigungen, wie auch bei der Berechtigungenübersicht der App, nicht angzeigt. Das Teilen von Signalen wird nur aktiv durch den Nutzer selbst durchgeführt. Ohne explizite Nachfrage wird nichts auf einen Server geladen. Wenn der Nutzer erkannte Signale teilt, werden die Standortinformationen, ein Zeitstempel und ein kurzes Stück des Geräuschs (alles unter 17kHz ist abgeschnitten) auf den SoniControl server hochgeladen. Keine Nutzer-ID wird gespeichert, daher sind die Daten anonym.
-- Erkannte Signale werden lokal in einer JSON Datei gespeichert. Gespeichert werden Zeit und Ort (wenn vom Nutzer erlaubt). Der Nutzer kann diese Datei jederzeit über die Einstellungen löschen.\n\n
-- Wenn vom Nutzer erlaubt, überprüfen wir die Position des Nutzers in bestimmten Zeitabständen und teilen ihm mit, ob er einen Bereich betritt, wo er schon einmal eine Ultraschallnachricht entdeckt hat.\n\n
-- Zusätzlich wird die Internetberechtigung zum Darstellen der Karte verwendet.\n\n
-- Die Standortberechtigung wird benötigt um die Karte auf den aktuellen Standort zu zentrieren. Dies ist optional.
+- Die Erkennungen werden lokal in einer JSON-Datei gespeichert einschließlich der Zeit, der Art der von unserem Algorithmus erkannten Technologie, der Entscheidung, ob die Schallquelle in Zukunft blockiert werden soll oder nicht und dem Ort der Erkennung (wenn die Nutzer*in den Standortzugriff gestattet). Die Nutzer*in kann diese Datei über die Einstellungen jederzeit löschen.\n\n
+- Wenn die Nutzer*in es erlaubt hat, überprüfen wir regelmäßig den aktuellen Standort. Sobald ein von einer Firewall-Regel abgedeckter Bereich betreten wird (z.B. an Orten an denen bereits zuvor Ultraschallkommunikation erkannt wurde und sich die Nutzer*in entschieden hat diese in Zukunft zu blockieren), wird mit dem Blockieren begonnen.\n\n
+- Die Internetberechtigung ist erforderlich, um den Kartenhintergrund anzuzeigen und die Erkennungen mit der Community zu teilen. Diese Berechtigung wird von Google/Android als unkritisch (protection_normal) eingestuft. Daher wird sie in der Berechtigungsübersicht der App nicht angezeigt. Es werden keine Daten hochgeladen, ohne Einverständnis der Nutzer*in. Das Teilen von Erkennungen erfolgt bei Bedarf, wenn die Benutzer*in "Teile die Erkennung" aktiviert, oder automatisch, wenn eine "hier immer"-Firewallregel erfüllt ist und die Benutzer*in sich standardmäßig für das Teilen von Erkennungen entschieden hat (in den Einstellungen). Wenn die Nutzer*innen ihre Erkennungen teilen, werden die Zeit, die Technologie welche erkannt wurde, die Blockierungsentscheidung, die Standortinformationen (falls von der Benutzer*in erlaubt) und eine kurze Audiodatei der Erkennung (alles unter 17kHz wird verworfen) auf den SoniControl-Server hochgeladen. Es wird keine Benutzerkennung gespeichert, dadurch bleiben die Daten anonym. Die hochgeladenen akustischen Daten werden genutzt, um Fascherkennungen der Firewall zu identifizieren.\n\n
+- Wenn von der Nutzer*in erlaubt, wird der Standort dazu verwendet, die Karte auf den aktuellen Ort zu zentrieren.
     </string>
     <string name="privacy_policy_label">Datenschutzerklärung</string>
     <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
@@ -156,4 +155,5 @@
     <string name="filter_import_dialog_message">Das Filtern ergibt %s Firewall-Regeln.</string>
     <string name="stored_adapter_detection_counter_title">Erkennungen:</string>
     <string name="stored_adapter_unknown_address">Unbekannte Adresse</string>
+    <string name="rules_info_title">Firewall-Regeln</string>
 </resources>

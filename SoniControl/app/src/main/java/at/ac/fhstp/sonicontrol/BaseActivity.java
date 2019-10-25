@@ -82,7 +82,7 @@ public class BaseActivity extends AppCompatActivity {
         final View alertRuleInfoView = RuleInfoAlertInflater.inflate(R.layout.rule_info, null);
         activateRuleInfoDialog.setView(alertRuleInfoView);
         activateRuleInfoDialog
-                .setTitle("Rules")
+                .setTitle(getString(R.string.rules_info_title))
                 .setCancelable(true)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

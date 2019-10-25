@@ -66,11 +66,10 @@
     <string name="privacy_policy_text">Data collection and data processing:\n\n
 - We use the microphone to capture sound, but process only the ultrasonic part, we remove everything under 17kHz.\n\n
 - Sounds are analyzed in real time on the phone.\n\n
-- For sharing detections with the community, we need the internet permission. This permission is classified by Google/Android as uncritical (protection_normal). Therefore it is not categorized as dangerous permission and not shown in the permission overview of the apps detail information. Sharing is only done on demand by the user. Without explicit request no data will be uploaded. If the users share their detections, the location information, a timestamp and a short audio sample of the detection (everything under 17kHz is removed), will be uploaded to the SoniControl server. No user ID is stored, and thus the data is anonymous.\n\n
-- Detections are stored locally in a JSON file, including the time and location (if allowed by the user). The user can delete this file at any time via the Settings menu.\n\n
-- If allowed, we check the user\'s location regularly in order to tell her when she enters an area where she previously detected ultrasonic communications.\n\n
-- Additionally, we need the internet permission to display the map background.\n\n
-- The location permission is required to center your position on the map. This is optional.
+- Detections are stored locally in a JSON file, including the time, the type of technology detected by our algorithm, the decision, whether the sound source shall be blocked in future or not and the location of the detection (if location access is permitted by the user). The user can delete this file at any time via the "settings" menu.\n\n
+- If allowed, we check the users\' location regularly in order to start blocking when they enter an area covered by a firewall rule (e.g. where they previously detected ultrasonic communications and decided to block it in future).\n\n
+- The Internet permission is required to display the geographic map background and to share detections with the community. This permission is classified by Google/Android as uncritical (protection_normal). Therefore it is not shown in the permission overview of the app\'s detail information. No data is uploaded without the user opting in. Sharing is done on demand, when the user checks "Share detection", or automatically if an "always" firewall rule is met and the user opted in for sharing detections by default (from the "settings" menu). If the users share their detections, the time, technology detected, blocking decision, the location information (if allowed by the user) and a short audio sample of the detection (everything under 17kHz is removed), will be uploaded to the SoniControl server. No user ID is stored, and thus the data is anonymous. The uploaded audio samples are used to identify false detections of the firewall.\n\n
+- If allowed, the geolocation is used to center the map on your position.
     </string>
     <string name="privacy_policy_label">Privacy policy</string>
     <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
