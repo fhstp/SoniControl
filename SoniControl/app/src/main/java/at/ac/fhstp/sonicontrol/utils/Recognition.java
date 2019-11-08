@@ -34,6 +34,14 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 public class Recognition {
     private static final String TAG = "Recognition";
 
+    /**
+     * Computes the signal recognition and returns the most likely Technology. If no Technology
+     * seems likely enough, we return Technoloy.UNKNOWN. Expects a preprocessed mono audio buffer,
+     * highpass filtered already to remove audible frequencies.
+     * @param bufferHistory Mono audio buffer highpass filtered
+     * @param context Context to read technology characteristics' files
+     * @return the most likely Technology for this audio buffer
+     */
     public static Technology computeRecognition(float[] bufferHistory, Context context) {
         double[] historySignalFFT = getFouriersCoeffiecients(bufferHistory);
 
@@ -47,6 +55,16 @@ public class Recognition {
         return computeRecognition(historySignalFFT, bufferHistory.length, fftMax, context);
     }
 
+    /**
+     * Computes the signal recognition and returns the most likely Technology. If no Technology
+     * seems likely enough, we return Technoloy.UNKNOWN. Expects an FFT spectrum of the
+     * (preprocessed) signal.
+     * @param historySignalFFT FFT spectrum of the signal
+     * @param nSamplesHistory FFT spectrum length
+     * @param fftMax Highest energy in the FFT spectrum
+     * @param context Context to read technology characteristics' files
+     * @return the most likely Technology for this audio buffer
+     */
     private static Technology computeRecognition(double[] historySignalFFT, int nSamplesHistory, double fftMax, Context context) {
         Technology recogResult = Technology.UNKNOWN;
 
