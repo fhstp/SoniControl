@@ -4,15 +4,17 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.Fragment;
+//import android.support.annotation.Nullable;
+//import android.support.design.widget.FloatingActionButton;
+//import androidx.core.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -22,29 +24,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
-import at.ac.fhstp.sonicontrol.GPSTracker;
 import at.ac.fhstp.sonicontrol.JSONManager;
-import at.ac.fhstp.sonicontrol.Location;
 import at.ac.fhstp.sonicontrol.MainActivity;
 import at.ac.fhstp.sonicontrol.R;
 import at.ac.fhstp.sonicontrol.StoredLocations;
 import at.ac.fhstp.sonicontrol.Stored_Adapter;
-import at.ac.fhstp.sonicontrol.rest.RESTController;
-import at.ac.fhstp.sonicontrol.rest.SoniControlAPI;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MyRulesFragment extends Fragment {
 

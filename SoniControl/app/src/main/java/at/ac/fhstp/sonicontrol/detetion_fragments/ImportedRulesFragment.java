@@ -3,27 +3,38 @@ package at.ac.fhstp.sonicontrol.detetion_fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
+import androidx.annotation.Nullable;
+
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+//import android.support.annotation.Nullable;
+//import android.support.design.widget.FloatingActionButton;
+//import android.support.design.widget.Snackbar;
+
+import androidx.fragment.app.Fragment;
+//import androidx.core.app.Fragment;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,8 +43,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import at.ac.fhstp.sonicontrol.ConfigConstants;
 import at.ac.fhstp.sonicontrol.GPSTracker;
@@ -50,6 +64,9 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class ImportedRulesFragment extends Fragment {
     MainActivity main = new MainActivity();
@@ -75,6 +92,8 @@ public class ImportedRulesFragment extends Fragment {
 
     AlertDialog filterImportDialog;
 
+    Button btnFindPlace;
+
     Button btnTimestampFrom;
     Button btnTimestampTo;
     Button btnImport;
@@ -83,20 +102,36 @@ public class ImportedRulesFragment extends Fragment {
     Button btnDateTimeSet;
     Button btnDateTimeCancel;
 
-    ImageButton btnResetTimestampFrom;
-    ImageButton btnResetTimestampTo;
+    Button btnResetTimestampFrom;
+    Button btnResetTimestampTo;
 
-    EditText edtLocation;
+    //EditText edtLocation;
     EditText edtRange;
     Spinner spnTechnology;
 
+    TextView txtPlace;
     TextView txtTimestampFrom;
     TextView txtTimestampTo;
 
     Long timeFrom;
     Long timeTo;
     DatePicker datePicker;
-    TimePicker timePicker;
+    //TimePicker timePicker;
+    AutoCompleteTextView actPosition;
+
+    private Handler textChangedHandler;
+    Runnable textChangedRun;
+    private Runnable inputFinishChecker;
+    long delay = 100; // 1 seconds after user stops typing
+    //TODO: AtomicLong
+    //long lastTextEdit = 0;
+    AtomicLong lastTextEdit = new AtomicLong(0);
+
+    LocationSuggestion locationSuggestion;
+
+    //int AUTOCOMPLETE_REQUEST_CODE = 1;
+    //List<Place.Field> fields;
+
 
     @Nullable
     @Override
@@ -107,6 +142,18 @@ public class ImportedRulesFragment extends Fragment {
         //setContentView(R.layout.stored_locations);
 
         //loadFragment(new DetectionHistoryFragment());
+
+        //String apiKey = getString(R.string.api_key);
+        /**
+         * Initialize Places. For simplicity, the API key is hard-coded. In a production
+         * environment we recommend using a secure mechanism to manage API keys.
+         */
+
+        //if (!Places.isInitialized()) {
+        //    Places.initialize(getActivity(), apiKey);
+        //}
+        // Create a new Places client instance.
+        //PlacesClient placesClient = Places.createClient(getActivity());
 
         nextMain = main.getMainIsMain();
         jsonMan = new JSONManager(nextMain);
@@ -209,10 +256,80 @@ public class ImportedRulesFragment extends Fragment {
         openFilter.setView(view);
         filterDialog = openFilter.create();
 
+        actPosition = (AutoCompleteTextView) view.findViewById(R.id.actPosition);
+        actPosition.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //Log.d("ImportedRulesFragment", "beforeTextChanged");
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //Log.d("ImportedRulesFragment", "onTextChanged");
+                textChangedHandler.removeCallbacks(inputFinishChecker);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Log.d("ImportedRulesFragment", "afterTextChanged");
+                if (s.length() > 0) { //TODO Asynctask
+                    lastTextEdit.set(System.currentTimeMillis());
+                    textChangedHandler.postDelayed(inputFinishChecker, delay);
+                }
+            }
+        });
+        textChangedHandler = new Handler();
+
+        inputFinishChecker = new Runnable() {
+            public void run() {
+                if(locationSuggestion != null){
+                    locationSuggestion.cancel(true);
+                }
+                Log.d("ImportedRulesFragment", "inputFinishChecker");
+                locationSuggestion = new LocationSuggestion(lastTextEdit);
+                locationSuggestion.execute();
+                /*
+                if (System.currentTimeMillis() > (lastTextEdit.get())) {
+                    Log.d("ImportedRulesFragment", "if currentTimeMil > lasttextedit");
+                    //String[] countries = {"Vie,tnam","Eng, land","Can , ada", "Fra,nce","Australia"};
+                    Location location = Location.getInstanceLoc();
+                    Log.d("ImportedRulesFragment", "instLoc");
+                    GPSTracker gpsTracker = location.getGPSTracker();
+                    Log.d("ImportedRulesFragment", "getgps");
+                    String[] addresses = gpsTracker.getAddressListOfName(actPosition.getText().toString(), getContext());
+                    if(addresses!=null) {
+                        Log.d("ImportedRulesFragment", "if addresses notNull " + addresses[0]);
+                        System.out.println(Arrays.toString(addresses));
+                        actPosition.setAdapter(null);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, addresses);
+                        actPosition.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+
+                    }
+                }*/
+            }
+        };
+
         txtTimestampFrom = (TextView) view.findViewById(R.id.txtTimestampFrom);
         txtTimestampTo = (TextView) view.findViewById(R.id.txtTimestampTo);
-        edtLocation = (EditText) view.findViewById(R.id.edtLocation);
+        //edtLocation = (EditText) view.findViewById(R.id.edtLocation);
         edtRange = (EditText) view.findViewById(R.id.edtRange);
+
+        txtPlace = (TextView) view.findViewById(R.id.txtPlace);
+
+        btnFindPlace = (Button) view.findViewById(R.id.btnFindPlace);
+        btnFindPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+                // Start the autocomplete intent.
+                Intent intent = new Autocomplete.IntentBuilder(
+                        AutocompleteActivityMode.OVERLAY, fields)
+                        .build(getActivity());
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);*/
+            }
+        });
 
         btnTimestampFrom = (Button) view.findViewById(R.id.btnTimestampFrom);
         btnTimestampFrom.setOnClickListener(new View.OnClickListener() {
@@ -230,7 +347,7 @@ public class ImportedRulesFragment extends Fragment {
             }
         });
 
-        btnResetTimestampFrom = (ImageButton) view.findViewById(R.id.btnResetTimestampFrom);
+        btnResetTimestampFrom = (Button) view.findViewById(R.id.btnResetTimestampFrom);
         btnResetTimestampFrom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -239,7 +356,7 @@ public class ImportedRulesFragment extends Fragment {
                 timeFrom = null;
             }
         });
-        btnResetTimestampTo = (ImageButton) view.findViewById(R.id.btnResetTimestampTo);
+        btnResetTimestampTo = (Button) view.findViewById(R.id.btnResetTimestampTo);
         btnResetTimestampTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -260,8 +377,8 @@ public class ImportedRulesFragment extends Fragment {
                 String timestampTo = null;
                 Location location = Location.getInstanceLoc();
                 GPSTracker gpsTracker = location.getGPSTracker();
-                if(!edtLocation.getText().toString().matches("")){
-                    position = gpsTracker.getLocationFromAddress(edtLocation.getText().toString(), getActivity());
+                if(!txtPlace.getText().toString().matches("")){
+                    position = gpsTracker.getLocationFromAddress(txtPlace.getText().toString(), getActivity());
                     Log.d("StoredDetections", (position[0]/1000000) + " " + (position[1]/1000000));
                 }else{
                     position[0] = ConfigConstants.NO_VALUES_ENTERED;
@@ -287,7 +404,7 @@ public class ImportedRulesFragment extends Fragment {
                     Log.d("returnDataStringTo", jsonMan.returnDateStringFromAlert(timeTo));
                     timestampTo = jsonMan.returnDateStringFromAlert(timeTo);
                 }
-                if(!edtLocation.getText().toString().matches("")) {
+                if(!txtPlace.getText().toString().matches("")) {
                     getNumberOfDetections((position[0] / 1000000), (position[1] / 1000000), range, technology, timestampFrom, timestampTo);
                 }else{
                     getNumberOfDetections(position[0], position[1], range, technology, timestampFrom, timestampTo);
@@ -323,7 +440,36 @@ public class ImportedRulesFragment extends Fragment {
         return rootView;
     }
 
-    public void getDetections(final double longitude, final double latitude, final int range, final int technologyid, final String timestampfrom, final String timestampto) {
+    /*@Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                System.out.println(place);
+                Log.i("ImportedRulesFragment", "Place: " + place.getName() + ", " + place.getId());
+                txtPlace.setText(place.getName());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("ImportedRulesFragment", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }*/
+
+
+    public AlertDialog openLoadingDialogImport(){
+        final AlertDialog.Builder loadingImport = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = this.getLayoutInflater();
+        View loadingView = inflater.inflate(R.layout.loading_screen, null);
+        loadingImport.setView(loadingView);
+        loadingImport.setTitle(getString(R.string.loading_dialog_import_detections))
+                .setCancelable(false)
+                .setIcon(android.R.drawable.ic_dialog_alert);
+        return loadingImport.show();
+    }
+
+    public void getDetections(final double longitude, final double latitude, final int range, final int technologyid, final String timestampfrom, final String timestampto, final AlertDialog loadingDialog) {
         main.threadPool.execute(new Runnable() {
 
             JSONArray jArray;
@@ -335,6 +481,7 @@ public class ImportedRulesFragment extends Fragment {
                 restService.importDetections(longitude, latitude, range, technologyid, timestampfrom, timestampto).enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        //TODO Cancel Loading dialog
                         String detailsString = getStringFromRetrofitResponse(response.body());
                         Log.d("StoredDetections", detailsString);
                         //detailsString = detailsString.substring(1, detailsString.length()-1);
@@ -385,6 +532,7 @@ public class ImportedRulesFragment extends Fragment {
                         lv.setAdapter(null);
                         stored_adapter = new Stored_Adapter(getActivity(), data);
                         lv.setAdapter(stored_adapter);
+                        loadingDialog.cancel();
 
                     /*if(response.isSuccessful()) {
                         Log.i("StoredDetections", "post submitted to API." + response.body().toString());
@@ -393,6 +541,8 @@ public class ImportedRulesFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        //TODO Cancel Loading dialog
+                        loadingDialog.cancel();
                         Log.e("StoredDetections", "Unable to submit post to API." + t);
                         Snackbar importSnackbar = Snackbar.make(rootView, R.string.import_filtered_detections_failure_snackbar,
                                 Snackbar.LENGTH_INDEFINITE)
@@ -402,7 +552,7 @@ public class ImportedRulesFragment extends Fragment {
                                     }
                                 });
                         View importSnackbarView = importSnackbar.getView();
-                        TextView importSnackbarTextView = (TextView) importSnackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        TextView importSnackbarTextView = (TextView) importSnackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
                         importSnackbarTextView.setMaxLines(4);
                         importSnackbar.show();
                     }
@@ -441,7 +591,7 @@ public class ImportedRulesFragment extends Fragment {
                                     }
                                 });
                         View importSnackbarView = importSnackbar.getView();
-                        TextView importSnackbarTextView = (TextView) importSnackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                        TextView importSnackbarTextView = (TextView) importSnackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
                         importSnackbarTextView.setMaxLines(4);
                         importSnackbar.show();
                     }
@@ -554,7 +704,7 @@ public class ImportedRulesFragment extends Fragment {
                 .setCancelable(false)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        getDetections(longitude, latitude, range, technologyid, timestampfrom, timestampto);
+                        getDetections(longitude, latitude, range, technologyid, timestampfrom, timestampto, openLoadingDialogImport());
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -564,5 +714,71 @@ public class ImportedRulesFragment extends Fragment {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert);
         filterImportDialog = filterImport.show();
+    }
+
+    private final class LocationSuggestion extends AsyncTask<Void, Void, String[]> {
+
+        private Runnable inputFinishChecker;
+        long delay = 100;
+        //TODO: AtomicLong
+        AtomicLong lastTextEdit;
+
+
+        public LocationSuggestion(final AtomicLong lastTextEdit){
+            this.lastTextEdit = lastTextEdit;
+            Log.d("LocationSuggestion", " " + lastTextEdit);
+            /*this.inputFinishChecker = new Runnable() {
+                public void run() {
+                    if (System.currentTimeMillis() > (lastTextEdit.get())) {
+                        Log.d("ImportedRulesFragment", "if currentTimeMil > lasttextedit");
+                        //String[] countries = {"Vie,tnam","Eng, land","Can , ada", "Fra,nce","Australia"};
+                        Location location = Location.getInstanceLoc();
+                        Log.d("ImportedRulesFragment", "instLoc");
+                        GPSTracker gpsTracker = location.getGPSTracker();
+                        Log.d("ImportedRulesFragment", "getgps");
+                        String[] addresses = gpsTracker.getAddressListOfName(actPosition.getText().toString(), getContext());
+                        if(addresses!=null) {
+                            Log.d("ImportedRulesFragment", "if addresses notNull " + addresses[0]);
+                            System.out.println(Arrays.toString(addresses));
+                            actPosition.setAdapter(null);
+                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, addresses);
+                            actPosition.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+
+                        }
+                    }
+                }
+            };*/
+        }
+
+
+        @Override
+        protected String[] doInBackground(Void... params) {
+            //textChangedHandler.postDelayed(inputFinishChecker, delay);
+            if (System.currentTimeMillis() > (lastTextEdit.get()/* + delay*/)) {
+                Log.d("ImportedRulesFragment", "if currentTimeMil > lasttextedit");
+                //String[] countries = {"Vie,tnam","Eng, land","Can , ada", "Fra,nce","Australia"};
+                Location location = Location.getInstanceLoc();
+                Log.d("ImportedRulesFragment", "instLoc");
+                GPSTracker gpsTracker = location.getGPSTracker();
+                Log.d("ImportedRulesFragment", "getgps");
+                String[] addresses = gpsTracker.getAddressListOfName(actPosition.getText().toString(), getContext());
+                return addresses;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] addresses) {
+            if(addresses!=null) {
+                Log.d("ImportedRulesFragment", "if addresses notNull " + addresses[0]);
+                System.out.println(Arrays.toString(addresses));
+                actPosition.setAdapter(null);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, addresses);
+                actPosition.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                Log.d("ImportedRulesFragment", "onPostExecute");
+            }
+        }
     }
 }

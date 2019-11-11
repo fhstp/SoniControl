@@ -29,20 +29,23 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+//import android.support.annotation.NonNull;
+//import android.support.design.widget.BottomNavigationView;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
+import com.google.android.material.snackbar.Snackbar;
+//import android.support.design.widget.Snackbar;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+//import androidx.core.app.Fragment;
+//import androidx.core.view.ViewPager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import at.ac.fhstp.sonicontrol.detetion_fragments.DetectionHistoryFragment;
 import at.ac.fhstp.sonicontrol.detetion_fragments.ImportedRulesFragment;
@@ -87,6 +90,7 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         setActiveRuleInfoMenuItem(true);
+        setActiveSettingsInfoMenuItem(false);
         return true;
     }
 
@@ -347,7 +351,7 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
                             }
                         });
                 View permissionSnackbarView = permissionSnackbar.getView();
-                TextView permissionSnackbarTextView = (TextView) permissionSnackbarView.findViewById(android.support.design.R.id.snackbar_text);
+                TextView permissionSnackbarTextView = (TextView) permissionSnackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
                 permissionSnackbarTextView.setMaxLines(4);
                 permissionSnackbar.show();
 

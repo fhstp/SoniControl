@@ -124,7 +124,7 @@
     <string name="NoSignalImportedAndSavedYet">You have not imported any signals yet!</string>
     <string name="stored_detections_ask_again">will ask again</string>
     <string name="how_to_proceed">How to proceed?</string>
-    <string name="extendedDiagnostics">Extended diagnostics</string>
+    <string name="extendedDiagnostics">Wait for message end</string>
     <string name="rules_info_text">Detections are shown in four tabs: \"My Rules\", \"Imported Rules\", \"Detection History\" and a map visualization.  The first two act as firewall rules. Their color shows if the rule will be blocked (red), ignored (green) or ask you again on the next detection (orange). You can change the status by tapping on them several times. On tapping longer on them, you can delete each rule.  The history tab shows all detections.\nThe map shows all firewall rules geographically.</string>
     <string name="settings_share_detections">Share detections</string>
     <string name="map_legend">The color of the markers stands for the action of the firewall rule. Red markers will be always blocked, green markers will be always ignored and orange markers will be asked again for a decision on the next detection of it.   On tapping on the marker a circle will appear where its size represents the signal strength.</string>
@@ -140,7 +140,7 @@
     <string name="import_timefrom_button">Pick date</string>
     <string name="navigation_title_my_rules">My Rules</string>
     <string name="navigation_title_imported_rules">Imported Rules</string>
-    <string name="navigation_title_detection_history">Detection History</string>
+    <string name="navigation_title_detection_history">History</string>
     <string name="navigation_title_rules_on_map">Rules on Map</string>
     <string name="button_date_time_picker_set">Set</string>
     <string name="toast_on_failure_detection_upload">The server is not reachable. Your detection could not be shared.</string>
@@ -155,4 +155,20 @@
     <string name="filter_import_dialog_message">The filter resulted in %s rules.</string>
     <string name="stored_adapter_detection_counter_title">previous Detections:</string>
     <string name="stored_adapter_unknown_address">Unknown Address</string>
+    <string name="rules_info_title">Rules</string>
+    <string name="filter_dialog_reset_date">reset</string>
+    <string name="loading_dialog_import_detections">Importing Detections</string>
+    <string name="settings_info_title">Settings</string>
+    <string name="settings_info_text">"Wait for message end" - \n
+        \n
+        "Block on each location" - Every detection will be blocked automatically and no alert will be shown.\n
+        \n
+        "Preventive blocking" - The time span between every detection and choice on the alert will be automatically blocked.\n
+        \n
+        "Share detections" - If checked, the user agrees with sending the anonymised detection to the server. This option can be also changed on every alert. If the alert is not shown e.g. if "Block on each location" is activated, this choice counts.\n
+        \n
+        "Save detections in JSON file" - If activated, every detection will be saved in a local JSON file to collect rules and show history entries.\n
+        \n
+        "Clear detections of JSON file" - This deletes the local JSON file and removes all rules and history entries.
+    </string>
 </resources>

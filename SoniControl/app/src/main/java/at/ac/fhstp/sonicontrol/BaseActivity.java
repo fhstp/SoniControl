@@ -23,7 +23,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,6 +37,7 @@ import android.view.View;
 
 public class BaseActivity extends AppCompatActivity {
     public AlertDialog alertRuleInfo = null;
+    public AlertDialog alertSettingsInfo = null;
     public Menu menu;
 
     @Override
@@ -69,6 +70,9 @@ public class BaseActivity extends AppCompatActivity {
             case R.id.show_rules_info:
                 showRulesInfo();
                 break;
+            case R.id.show_settings_info:
+                showSettingsInfo();
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -90,6 +94,22 @@ public class BaseActivity extends AppCompatActivity {
                     }
                 });
         alertRuleInfo = activateRuleInfoDialog.show();
+    }
+
+    private void showSettingsInfo(){
+        final AlertDialog.Builder activateSettingsInfoDialog = new AlertDialog.Builder(this);
+        LayoutInflater SettingsInfoAlertInflater = LayoutInflater.from(this);
+        final View alertSettingsInfoView = SettingsInfoAlertInflater.inflate(R.layout.settings_info, null);
+        activateSettingsInfoDialog.setView(alertSettingsInfoView);
+        activateSettingsInfoDialog
+                .setTitle(getString(R.string.settings_info_title))
+                .setCancelable(true)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertSettingsInfo.cancel();
+                    }
+                });
+        alertSettingsInfo = activateSettingsInfoDialog.show();
     }
 
     private void openPrivacyPolicy() {
@@ -115,5 +135,9 @@ public class BaseActivity extends AppCompatActivity {
 
     public void setActiveRuleInfoMenuItem(boolean activate){
         if(menu!=null) menu.findItem(R.id.show_rules_info).setVisible(activate);
+    }
+
+    public void setActiveSettingsInfoMenuItem(boolean activate){
+        if(menu!=null) menu.findItem(R.id.show_settings_info).setVisible(activate);
     }
 }

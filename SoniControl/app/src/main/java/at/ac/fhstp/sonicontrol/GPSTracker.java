@@ -35,7 +35,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.content.SharedPreferences;
 import android.widget.Toast;
@@ -69,6 +69,8 @@ public class GPSTracker extends Service implements LocationListener {
     protected LocationManager locationManager;
     private String provider_info_gps = "";
     private String provider_info_network = "";
+
+    Geocoder geocoder = null;
 
     public GPSTracker(Activity activity) {
         this.activity = activity;
@@ -229,10 +231,8 @@ public class GPSTracker extends Service implements LocationListener {
     public List<Address> getGeocoderAddress(Context context) {
         if (location != null) {
 
-            Geocoder geocoder = new Geocoder(context, Locale.ENGLISH);
-
             try {
-                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, this.geocoderMaxResults);
+                List<Address> addresses = getGeocoder(context, Locale.getDefault()).getFromLocation(latitude, longitude, this.geocoderMaxResults);
 
                 return addresses;
             } catch (IOException e) {
@@ -259,9 +259,8 @@ public class GPSTracker extends Service implements LocationListener {
     }
 
     public String getAddressFromPoint(double latitude, double longitude, Context context){
-        Geocoder geocoder = new Geocoder(context, Locale.ENGLISH);
         try {
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, this.geocoderMaxResults);
+            List<Address> addresses = getGeocoder(context, Locale.getDefault()).getFromLocation(latitude, longitude, this.geocoderMaxResults);
 
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
@@ -470,12 +469,10 @@ public class GPSTracker extends Service implements LocationListener {
     }
 
     public double[] getLocationFromAddress(String strAddress, Context context){
-
-        Geocoder geocoder = new Geocoder(context, Locale.ENGLISH);
         List<Address> address = null;
         double[] position = new double[2];
         try {
-            address = geocoder.getFromLocationName(strAddress,5);
+            address = getGeocoder(context, Locale.getDefault()).getFromLocationName(strAddress,5);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -492,5 +489,45 @@ public class GPSTracker extends Service implements LocationListener {
         position[0]= (double) (location.getLongitude() * 1E6);
 
         return position;
+    }
+
+    public String[] getAddressListOfName(String strAddress, Context context){
+        List<Address> address = null;
+        int numberOfElements = 5;
+        try {
+            Log.d("ImportedRulesFragment", "getaddress");
+            address = getGeocoder(context, Locale.getDefault()).getFromLocationName(strAddress,numberOfElements);
+            Log.d("ImportedRulesFragment", "resultAddress");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(address);
+        if (address!=null && !address.isEmpty()) {
+            /*Log.d("GPSTracker", "onTextChanged");
+            Log.d("GPSTracker","1 "+address.get(1).getAddressLine(0));
+            Log.d("GPSTracker","2 "+address.get(2).getAddressLine(0));
+            Log.d("GPSTracker","3 "+address.get(3).getAddressLine(0));
+            Log.d("GPSTracker","4 "+address.get(4).getAddressLine(0));*/
+            String[] addressList = new String[address.size()];
+            for(int i = 0; i<address.size(); i++){
+
+                Log.d("GPSTracker","0"+address.get(i).getAddressLine(0));
+                if(address.get(i).getAddressLine(0)!=null) {
+                    addressList[i] = address.get(i).getAddressLine(0);
+                }else{
+                    addressList[i] = "-";
+                }
+            }
+            String [] addressesList = {"Vie,tnam","Eng, land","Can , ada", "Fra,nce","Australia"};
+            return addressList;
+        }
+        return null;
+    }
+
+    private Geocoder getGeocoder(Context context, Locale locale){
+        if(geocoder == null) {
+            geocoder = new Geocoder(context, locale);
+        }
+        return geocoder;
     }
 }

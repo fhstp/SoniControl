@@ -27,16 +27,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/txtTimestampTo"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
+        <View
+            android:id="@+id/myRectangleView"
+            android:layout_width="230dp"
+            android:layout_height="74dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
+            android:background="@drawable/rectangle_filter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtTimestampFromTitle" />
+
+        <View
+            android:id="@+id/myRectangleView2"
+            android:layout_width="230dp"
+            android:layout_height="74dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:background="@drawable/rectangle_filter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtTimestampToTitle" />
+
+        <TextView
+            android:id="@+id/txtTimestampTo"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
             android:layout_marginTop="16dp"
             android:textColor="#000000"
             android:textSize="16sp"
@@ -49,7 +69,7 @@
             android:layout_height="29dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:text="@string/import_timeto_title"
@@ -59,7 +79,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtTimestampFrom" />
+            app:layout_constraintTop_toBottomOf="@+id/myRectangleView" />
 
         <Button
             android:id="@+id/btnTimestampTo"
@@ -72,7 +92,7 @@
             android:layout_marginRight="8dp"
             android:text="@string/import_timeto_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.786"
+            app:layout_constraintHorizontal_bias="0.66"
             app:layout_constraintStart_toEndOf="@+id/btnResetTimestampTo"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampToTitle" />
 
@@ -110,7 +130,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edtLocation" />
+            app:layout_constraintTop_toBottomOf="@+id/actPosition" />
 
         <TextView
             android:id="@+id/txtFilterTitle"
@@ -135,14 +155,14 @@
             android:layout_height="48dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:text="@android:string/cancel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.975"
             app:layout_constraintStart_toEndOf="@+id/btnImport"
-            app:layout_constraintTop_toBottomOf="@+id/txtTimestampTo" />
+            app:layout_constraintTop_toBottomOf="@+id/myRectangleView2" />
 
         <Button
             android:id="@+id/btnImport"
@@ -150,10 +170,10 @@
             android:layout_height="48dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="10dp"
             android:text="@string/import_button"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtTimestampTo" />
+            app:layout_constraintTop_toBottomOf="@+id/myRectangleView2" />
 
         <Spinner
             android:id="@+id/spnTechnology"
@@ -204,21 +224,6 @@
             app:layout_constraintTop_toBottomOf="@+id/spnTechnology" />
 
         <EditText
-            android:id="@+id/edtLocation"
-            android:layout_width="0dp"
-            android:layout_height="46dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:ems="10"
-            android:hint="@string/import_location_hint"
-            android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtLocation" />
-
-        <EditText
             android:id="@+id/edtRange"
             android:layout_width="0dp"
             android:layout_height="46dp"
@@ -245,48 +250,88 @@
             android:layout_marginRight="8dp"
             android:text="@string/import_timefrom_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.786"
+            app:layout_constraintHorizontal_bias="0.66"
             app:layout_constraintStart_toEndOf="@+id/btnResetTimestampFrom"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampFromTitle" />
 
         <TextView
             android:id="@+id/txtTimestampFrom"
-            android:layout_width="120dp"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
             android:layout_marginTop="16dp"
             android:textColor="#000000"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtTimestampFromTitle" />
 
-        <ImageButton
+
+        <Button
             android:id="@+id/btnResetTimestampFrom"
-            android:layout_width="63dp"
-            android:layout_height="47dp"
+            android:layout_width="94dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:scaleType="fitXY"
+            android:text="@string/filter_dialog_reset_date"
             android:visibility="invisible"
             app:layout_constraintStart_toEndOf="@+id/txtTimestampFrom"
-            app:layout_constraintTop_toBottomOf="@+id/txtTimestampFromTitle"
-            app:srcCompat="@drawable/baseline_undo_black_48" />
+            app:layout_constraintTop_toBottomOf="@+id/txtTimestampFromTitle" />
 
-        <ImageButton
+        <Button
             android:id="@+id/btnResetTimestampTo"
-            android:layout_width="63dp"
-            android:layout_height="46dp"
+            android:layout_width="94dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-            android:scaleType="fitXY"
+            android:text="@string/filter_dialog_reset_date"
             android:visibility="invisible"
             app:layout_constraintStart_toEndOf="@+id/txtTimestampTo"
-            app:layout_constraintTop_toBottomOf="@+id/txtTimestampToTitle"
-            app:srcCompat="@drawable/baseline_undo_black_48" />
+            app:layout_constraintTop_toBottomOf="@+id/txtTimestampToTitle" />
 
-    </android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/txtPlace"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:textColor="#000000"
+            android:textSize="16dp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtLocation" />
+
+        <Button
+            android:id="@+id/btnFindPlace"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:text="Find a Place"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.981"
+            app:layout_constraintStart_toEndOf="@+id/txtPlace"
+            app:layout_constraintTop_toBottomOf="@+id/txtLocation" />
+
+        <AutoCompleteTextView
+            android:id="@+id/actPosition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtLocation" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
 

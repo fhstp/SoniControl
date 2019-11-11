@@ -37,9 +37,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
+//import android.support.design.widget.Snackbar;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
+//import androidx.core.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -496,6 +498,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         setActiveRuleInfoMenuItem(false);
+        setActiveSettingsInfoMenuItem(false);
         return true;
     }
 

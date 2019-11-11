@@ -6,43 +6,26 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.util.Log;
+//import android.support.annotation.Nullable;
+
+//import androidx.core.app.Fragment;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.ArrayList;
 
-import at.ac.fhstp.sonicontrol.GPSTracker;
 import at.ac.fhstp.sonicontrol.HistoryDetectionAdapter;
 import at.ac.fhstp.sonicontrol.JSONManager;
-import at.ac.fhstp.sonicontrol.Location;
 import at.ac.fhstp.sonicontrol.MainActivity;
 import at.ac.fhstp.sonicontrol.R;
 import at.ac.fhstp.sonicontrol.StoredLocations;
-import at.ac.fhstp.sonicontrol.Stored_Adapter;
-import at.ac.fhstp.sonicontrol.rest.RESTController;
-import at.ac.fhstp.sonicontrol.rest.SoniControlAPI;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class DetectionHistoryFragment extends Fragment {
     MainActivity main = new MainActivity();
@@ -62,9 +45,9 @@ public class DetectionHistoryFragment extends Fragment {
 
     AlertDialog filterDialog;
 
-    @Nullable
+    @androidx.annotation.Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @androidx.annotation.Nullable ViewGroup container, @androidx.annotation.Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.detection_history_fragment, container, false);
 
         nextMain = main.getMainIsMain();

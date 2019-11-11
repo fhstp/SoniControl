@@ -22,7 +22,7 @@ package at.ac.fhstp.sonicontrol;
 
 import android.os.Bundle;
 //import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -50,6 +50,7 @@ public class SettingsActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         setActiveRuleInfoMenuItem(false);
+        setActiveSettingsInfoMenuItem(true);
         return true;
     }
 }
