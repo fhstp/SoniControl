@@ -43,7 +43,7 @@ public interface SoniControlAPI {
                              @Field("spoofDecision") int spoofDecision,
                              @Field("technologyid") int technologyid,
                              @Field("technology") String technology,
-                             @Field("amplitude") int amplitude,
+                             @Field("amplitude") float amplitude,
                              @Field("timestamp") String timestamp,
                              @Field("audiodata") String audiodata);
 

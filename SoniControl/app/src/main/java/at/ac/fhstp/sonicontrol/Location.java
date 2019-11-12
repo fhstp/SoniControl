@@ -26,6 +26,7 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -187,7 +188,9 @@ public class Location {
         jsonMan.setLatestDate(positionDBEntry, signalTech); //update the date in the json-file at the detected position
         //TODO: Update Detection Counter
         Log.d("Location", "ShouldDBEntrySpoofed");
-        jsonMan.addJsonObject(position, signalType.toString(), spoofStatus, getDetectedDBEntryAddres(), true);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main.getApplicationContext());
+        float amplitude = sp.getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
+        jsonMan.addJsonObject(position, signalType.toString(), spoofStatus, getDetectedDBEntryAddres(), true, amplitude);
         jsonMan.updateSignalAndImportedDetectionCounter(position, signalType.toString());
         if(shouldBeSpoofed){ //if it should be spoofed
             //Log.d("Location", "I should be spoofed");

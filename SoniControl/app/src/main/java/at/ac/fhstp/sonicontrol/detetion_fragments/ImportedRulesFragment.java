@@ -500,6 +500,7 @@ public class ImportedRulesFragment extends Fragment {
                         String address = null;
                         String timestamp = null;
                         int technologyid = -1;
+                        float amplitude = 0f;
                         Location location = Location.getInstanceLoc();
                         GPSTracker gpsTracker = location.getGPSTracker();
 
@@ -513,12 +514,13 @@ public class ImportedRulesFragment extends Fragment {
                                 spoof = jArray.getJSONObject(i).getJSONObject("detection").getInt("spoofDecision");
                                 timestamp = jArray.getJSONObject(i).getJSONObject("detection").getString("timestamp");
                                 technologyid = jArray.getJSONObject(i).getJSONObject("detection").getInt("technologyid");
+                                amplitude = jArray.getJSONObject(i).getJSONObject("detection").getInt("amplitude");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                             if(position[0]!=0 && position[1]!=0 && spoof!=-1 && address!=null && timestamp!=null){
                                 Log.d("StoreDetections", "one detection importaed");
-                                jsonMan.addImportedJsonObject(position, technology, spoof, address, timestamp, technologyid);
+                                jsonMan.addImportedJsonObject(position, technology, spoof, address, timestamp, technologyid, amplitude);
                             }
                         }
                         Log.d("StoreDetections", ""+data.size());

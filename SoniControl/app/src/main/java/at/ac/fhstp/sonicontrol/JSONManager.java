@@ -63,6 +63,7 @@ public class JSONManager {
     private static final String JSON_ARRAY_SIGNAL_URL = "URL";
     private static final String JSON_ARRAY_SIGNAL_TECHNOLOGY_ID = "technologyId";
     private static final String JSON_ARRAY_SIGNAL_DETECTIONCOUNTER = "detectioncounter";
+    private static final String JSON_ARRAY_SIGNAL_AMPLITUDE = "detectionamplitude";
 
 
     public JSONManager(MainActivity main){
@@ -192,6 +193,7 @@ public class JSONManager {
             String url = ""; //fileUrl
             String technologyid = "";
             String detectioncounter = "";
+            String amplitude = "";
 
             //boolean needsUpdate = false;
             for (int i = 0; i < jArray.length(); i++) { //go through the array
@@ -221,10 +223,15 @@ public class JSONManager {
                     }else{
                         detectioncounter = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER);
                     }
+                    if(jArray.getJSONObject(i).optString(JSON_ARRAY_SIGNAL_AMPLITUDE).equals("")){
+                        amplitude = String.valueOf(0.5);
+                    }else{
+                        amplitude = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_AMPLITUDE);
+                    }
                     //Log.d("Longitude", lon);
                     //Log.d("Latitude", lat);
                     //Log.d("Technology", tech);
-                    data.add(new String[]{lon, lat, tech, lastDet, spoof, address, url, technologyid, detectioncounter}); //add every data of one array-index in the data-list
+                    data.add(new String[]{lon, lat, tech, lastDet, spoof, address, url, technologyid, detectioncounter, amplitude}); //add every data of one array-index in the data-list
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -290,7 +297,7 @@ public class JSONManager {
         }
     }
 
-    public void addJsonObject(double[] position, String technology, int spoof, String address, boolean justHistoryEntry){
+    public void addJsonObject(double[] position, String technology, int spoof, String address, boolean justHistoryEntry, float amplitude){
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
@@ -328,6 +335,7 @@ public class JSONManager {
             int technologyId = Technology.fromString(technology).getId();
             addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID, technologyId);
             addArray.put(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER, 1);
+            addArray.put(JSON_ARRAY_SIGNAL_AMPLITUDE, amplitude);
 
             if(!justHistoryEntry){
                 jArray.put(addArray); //add the created object to the json array
@@ -337,7 +345,7 @@ public class JSONManager {
             SharedPreferences sp =  PreferenceManager.getDefaultSharedPreferences(main);
             boolean shouldBeShared = sp.getBoolean(ConfigConstants.LAST_DECISION_ON_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
             if(shouldBeShared) {
-                main.sendDetection(position[0], position[1], Technology.fromString(technology).getId(), technology, returnDateString(), spoof, 2);
+                main.sendDetection(position[0], position[1], Technology.fromString(technology).getId(), technology, returnDateString(), spoof, amplitude);
             }
 
             try {
@@ -355,7 +363,7 @@ public class JSONManager {
         }
     }
 
-    public void addImportedJsonObject(double[] position, String technology, int spoof, String address, String timestamp, int technologyid){
+    public void addImportedJsonObject(double[] position, String technology, int spoof, String address, String timestamp, int technologyid, float amplitude){
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
@@ -401,6 +409,7 @@ public class JSONManager {
             addArray.put(JSON_ARRAY_SIGNAL_URL, ""); //add the url to the new object
             addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID, technologyid);
             addArray.put(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER, 1);
+            addArray.put(JSON_ARRAY_SIGNAL_AMPLITUDE, amplitude);
 
             jArray.put(addArray); //add the created object to the json array
 
@@ -538,6 +547,7 @@ public class JSONManager {
                     addArray.put(JSON_ARRAY_SIGNAL_URL, ""); //add the url to the new object
                     addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID, arrayData[7]);
                     addArray.put(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER, 1);
+                    addArray.put(JSON_ARRAY_SIGNAL_AMPLITUDE, 0.5);
 
                     jArray.put(addArray); //add the created object to the json array
                 }

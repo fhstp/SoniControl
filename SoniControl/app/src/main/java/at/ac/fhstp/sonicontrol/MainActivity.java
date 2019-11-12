@@ -797,14 +797,15 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             saveJsonFile = this.checkJsonAndLocationPermissions()[0];
 
             JSONManager jsonMan = new JSONManager(this);
+            float amplitude = getSettingsObject().getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
             if (saveJsonFile && locationTrack) {
-                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, locationFinder.getDetectedDBEntryAddres(), false); //adding the found signal in the JSON file
+                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, locationFinder.getDetectedDBEntryAddres(), false, amplitude); //adding the found signal in the JSON file
             }
             if (saveJsonFile && !locationTrack) {
                 double[] noLocation = new double[2];
                 noLocation[0] = 0;
                 noLocation[1] = 0;
-                jsonMan.addJsonObject(noLocation, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, this.getResources().getString(R.string.addressData), false);
+                jsonMan.addJsonObject(noLocation, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, this.getResources().getString(R.string.addressData), false, amplitude);
             }
 
             locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
@@ -1001,6 +1002,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             stopAutomaticBlockingMethodOnAction();
         }
 
+        float amplitude = sharedPref.getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
+
         // TODO: Function to be called in a thread, for IO (save json entry)
 
         saveJsonFile = checkJsonAndLocationPermissions()[0];
@@ -1015,12 +1018,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             //TODO: Update Detection Counter
             jsonMan.updateSignalAndImportedDetectionCounter(detectedSignalPosition, sigType.toString());
             jsonMan.setLatestDate(detectedSignalPosition, sigType);
-            jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres(), true);
+            jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres(), true, amplitude);
             //jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
         }else if(saveJsonFile && locationTrack && !entryWasAskedAgain) {
             //Log.d("SearchForJson", "addWithLoc");
             double[] detectedSignalPosition = locationFinder.getDetectedDBEntry();
-            jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres(), false); //adding the found signal in the JSON file
+            jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres(), false, amplitude); //adding the found signal in the JSON file
             if (detectedSignalPosition[0] == 0 && detectedSignalPosition[1] == 0) {
                 Toast toast = Toast.makeText(MainActivity.this, R.string.toast_no_location_text, Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER, 0, 0);
@@ -1032,7 +1035,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             noLocation[0] = 0;
             noLocation[1] = 0;
             //Log.d("SearchForJson", "addWithoutLoc");
-            jsonMan.addJsonObject(noLocation, sigType.toString(), spoofDecision, getString(R.string.noAddressForJsonFile), false);
+            jsonMan.addJsonObject(noLocation, sigType.toString(), spoofDecision, getString(R.string.noAddressForJsonFile), false, amplitude);
         }
         //TODO: Dismiss instead of cancel ?
         alert.getDialog().dismiss(); //cancel the alert dialog
@@ -1401,7 +1404,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
     }
 
-    public void sendDetection(final double longitude, final double latitude, final int technologyid, final String technology, final String timestamp, final int spoofDecision, final int amplitude) {
+    public void sendDetection(final double longitude, final double latitude, final int technologyid, final String technology, final String timestamp, final int spoofDecision, final float amplitude) {
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
