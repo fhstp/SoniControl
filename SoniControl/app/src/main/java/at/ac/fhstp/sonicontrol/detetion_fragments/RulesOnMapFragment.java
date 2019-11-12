@@ -252,9 +252,10 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
                             break;
                     }
                     circle.setStrokeWidth(7);
-                    circle.setInfoWindow(new BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map));
-                    circle.setTitle(marker.getTitle());
-                    circle.setSubDescription(marker.getSubDescription());
+                    circle.setInfoWindow(null);
+                    //circle.setInfoWindow(new BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map));
+                    //circle.setTitle(marker.getTitle());
+                    //circle.setSubDescription(marker.getSubDescription());
                     if(lastCircle!=null) {
                         circleMarker.remove(lastCircle);
                         map.invalidate();
