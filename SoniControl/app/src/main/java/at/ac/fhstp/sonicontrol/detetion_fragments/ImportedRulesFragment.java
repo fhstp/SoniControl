@@ -14,6 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 //import android.support.design.widget.FloatingActionButton;
 //import android.support.design.widget.Snackbar;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 //import androidx.core.app.Fragment;
 import android.os.Handler;
@@ -32,6 +33,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -250,7 +252,7 @@ public class ImportedRulesFragment extends Fragment {
 
 
         final AlertDialog.Builder openFilter = new AlertDialog.Builder(getActivity());
-        openFilter.setCancelable(false);
+        openFilter.setCancelable(true);
         LayoutInflater inflaterImport = getLayoutInflater();
         final ViewGroup viewGroup = (ViewGroup) rootView.findViewById(android.R.id.content);
         view = inflaterImport.inflate(R.layout.detection_import_filter, viewGroup , false);
@@ -660,7 +662,7 @@ public class ImportedRulesFragment extends Fragment {
 
                 timeFrom = calendar.getTimeInMillis();
                 dateTimeDialog.dismiss();
-                txtTimestampFrom.setText(jsonMan.returnDateStringFromAlert(timeFrom));
+                txtTimestampFrom.setText(jsonMan.returnDateStringFromAlert(timeFrom).replace("Z", "").replace("T", " \n"));
                 btnResetTimestampFrom.setVisibility(View.VISIBLE);
             }
         });
@@ -694,7 +696,7 @@ public class ImportedRulesFragment extends Fragment {
 
                 timeTo = calendar.getTimeInMillis();
                 dateTimeDialog.dismiss();
-                txtTimestampTo.setText(jsonMan.returnDateStringFromAlert(timeTo));
+                txtTimestampTo.setText(jsonMan.returnDateStringFromAlert(timeTo).replace("Z", "").replace("T", " \n"));
                 btnResetTimestampTo.setVisibility(View.VISIBLE);
             }
         });
