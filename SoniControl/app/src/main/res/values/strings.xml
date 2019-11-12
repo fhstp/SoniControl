@@ -127,7 +127,7 @@
     <string name="extendedDiagnostics">Wait for signal end</string>
     <string name="rules_info_text">Detections are shown in four tabs: \"My Rules\", \"Imported Rules\", \"Detection History\" and a map visualization.  The first two act as firewall rules. Their color shows if the rule will be blocked (red), ignored (green) or ask you again on the next detection (orange). You can change the status by tapping on them several times. On tapping longer on them, you can delete each rule.  The history tab shows all detections.\nThe map shows all firewall rules geographically.</string>
     <string name="settings_share_detections">Share detections</string>
-    <string name="map_legend">The color of the markers stands for the action of the firewall rule. Red markers will be always blocked, green markers will be always ignored and orange markers will be asked again for a decision on the next detection of it.   On tapping on the marker a circle will appear where its size represents the signal strength.</string>
+    <string name="map_legend">The color of the markers stands for the action of the firewall rule. \n- Red markers will be always blocked \n- Green markers will be always ignored \n- Orange markers will be asked again for a decision on the next detection of it. \n\nOn tapping on the marker a circle will appear where its size represents the signal strength. The radius of the circle is NOT representing the distance of the signal source.</string>
     <string name="import_timeto_title">Time to</string>
     <string name="import_timeto_button">Pick date</string>
     <string name="import_location">Location</string>
