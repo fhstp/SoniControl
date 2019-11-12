@@ -60,6 +60,7 @@ import at.ac.fhstp.sonicontrol.Stored_Adapter;
 import at.ac.fhstp.sonicontrol.Technology;
 import at.ac.fhstp.sonicontrol.rest.RESTController;
 import at.ac.fhstp.sonicontrol.rest.SoniControlAPI;
+import at.ac.fhstp.sonicontrol.utils.LocationSuggestion;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -286,7 +287,7 @@ public class ImportedRulesFragment extends Fragment {
                     locationSuggestion.cancel(true);
                 }
                 Log.d("ImportedRulesFragment", "inputFinishChecker");
-                locationSuggestion = new LocationSuggestion(lastTextEdit);
+                locationSuggestion = new LocationSuggestion(lastTextEdit, actPosition, getContext());
                 locationSuggestion.execute();
                 /*
                 if (System.currentTimeMillis() > (lastTextEdit.get())) {
@@ -405,9 +406,9 @@ public class ImportedRulesFragment extends Fragment {
                     timestampTo = jsonMan.returnDateStringFromAlert(timeTo);
                 }
                 if(!txtPlace.getText().toString().matches("")) {
-                    getNumberOfDetections((position[0] / 1000000), (position[1] / 1000000), range, technology, timestampFrom, timestampTo);
+                    getNumberOfDetections((position[0] / 1000000), (position[1] / 1000000), range, technology, timestampFrom, timestampTo, openLoadingDialogImport());
                 }else{
-                    getNumberOfDetections(position[0], position[1], range, technology, timestampFrom, timestampTo);
+                    getNumberOfDetections(position[0], position[1], range, technology, timestampFrom, timestampTo, openLoadingDialogImport());
                 }
                 //getDetections(14.810007, 48.1328671, 0, "2019-06-17T10:09:34Z", "2019-06-17T19:09:34Z");
                 filterDialog.cancel();
@@ -562,7 +563,7 @@ public class ImportedRulesFragment extends Fragment {
             }
         });
     }
-    public void getNumberOfDetections(final double longitude, final double latitude, final int range, final int technologyid, final String timestampfrom, final String timestampto) {
+    public void getNumberOfDetections(final double longitude, final double latitude, final int range, final int technologyid, final String timestampfrom, final String timestampto, final AlertDialog loadingDialog) {
         main.threadPool.execute(new Runnable() {
             JSONArray jArray;
             int numberOfFiles;
@@ -575,6 +576,7 @@ public class ImportedRulesFragment extends Fragment {
 
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        loadingDialog.cancel();
                         String detailsString = getStringFromRetrofitResponse(response.body());
 
                         numberOfFiles = Integer.valueOf(detailsString);
@@ -585,6 +587,7 @@ public class ImportedRulesFragment extends Fragment {
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Log.e("StoredDetections", "Unable to get numberOfDetections." + t);
+                        loadingDialog.cancel();
                         Snackbar importSnackbar = Snackbar.make(rootView, R.string.import_filtered_detections_failure_snackbar,
                                 Snackbar.LENGTH_INDEFINITE)
                                 .setAction("OK", new View.OnClickListener() {
@@ -716,71 +719,5 @@ public class ImportedRulesFragment extends Fragment {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert);
         filterImportDialog = filterImport.show();
-    }
-
-    private final class LocationSuggestion extends AsyncTask<Void, Void, String[]> {
-
-        private Runnable inputFinishChecker;
-        long delay = 100;
-        //TODO: AtomicLong
-        AtomicLong lastTextEdit;
-
-
-        public LocationSuggestion(final AtomicLong lastTextEdit){
-            this.lastTextEdit = lastTextEdit;
-            Log.d("LocationSuggestion", " " + lastTextEdit);
-            /*this.inputFinishChecker = new Runnable() {
-                public void run() {
-                    if (System.currentTimeMillis() > (lastTextEdit.get())) {
-                        Log.d("ImportedRulesFragment", "if currentTimeMil > lasttextedit");
-                        //String[] countries = {"Vie,tnam","Eng, land","Can , ada", "Fra,nce","Australia"};
-                        Location location = Location.getInstanceLoc();
-                        Log.d("ImportedRulesFragment", "instLoc");
-                        GPSTracker gpsTracker = location.getGPSTracker();
-                        Log.d("ImportedRulesFragment", "getgps");
-                        String[] addresses = gpsTracker.getAddressListOfName(actPosition.getText().toString(), getContext());
-                        if(addresses!=null) {
-                            Log.d("ImportedRulesFragment", "if addresses notNull " + addresses[0]);
-                            System.out.println(Arrays.toString(addresses));
-                            actPosition.setAdapter(null);
-                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, addresses);
-                            actPosition.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-
-                        }
-                    }
-                }
-            };*/
-        }
-
-
-        @Override
-        protected String[] doInBackground(Void... params) {
-            //textChangedHandler.postDelayed(inputFinishChecker, delay);
-            if (System.currentTimeMillis() > (lastTextEdit.get()/* + delay*/)) {
-                Log.d("ImportedRulesFragment", "if currentTimeMil > lasttextedit");
-                //String[] countries = {"Vie,tnam","Eng, land","Can , ada", "Fra,nce","Australia"};
-                Location location = Location.getInstanceLoc();
-                Log.d("ImportedRulesFragment", "instLoc");
-                GPSTracker gpsTracker = location.getGPSTracker();
-                Log.d("ImportedRulesFragment", "getgps");
-                String[] addresses = gpsTracker.getAddressListOfName(actPosition.getText().toString(), getContext());
-                return addresses;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String[] addresses) {
-            if(addresses!=null) {
-                Log.d("ImportedRulesFragment", "if addresses notNull " + addresses[0]);
-                System.out.println(Arrays.toString(addresses));
-                actPosition.setAdapter(null);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, addresses);
-                actPosition.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-                Log.d("ImportedRulesFragment", "onPostExecute");
-            }
-        }
     }
 }
