@@ -16,8 +16,8 @@ android {
         applicationId "at.ac.fhstp.sonicontrol"
         minSdkVersion 16 // more than 95% of all active Android devices (mid 2017)
         targetSdkVersion 28
-        versionCode 21
-        versionName "1.5.1 Beta"
+        versionCode 22
+        versionName "1.5.2 Beta"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
