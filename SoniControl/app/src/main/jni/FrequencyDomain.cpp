@@ -267,7 +267,7 @@ static void resetMedianBuffer() {
 }
 
 
-static jfloatArray *getJavaReorderedBufferHistoryStereo(JNIEnv *jniEnv, int numberOfSamplesStereo) {
+static jfloatArray getJavaReorderedBufferHistoryStereo(JNIEnv *jniEnv, int numberOfSamplesStereo) {
     int numberOfBufferHistoryItems = medianBufferSizeItems * numberOfSamplesStereo;
     int bufferHistorySize = numberOfBufferHistoryItems * sizeof(bufferHistory);
     float *container = (float*)malloc(bufferHistorySize);
@@ -302,7 +302,7 @@ static jfloatArray *getJavaReorderedBufferHistoryStereo(JNIEnv *jniEnv, int numb
     free(containerMono);
      */
 
-    return &bufferHistoryArray;
+    return bufferHistoryArray;
 }
 
 // This is called periodically by the media server.
@@ -458,7 +458,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
             //maxValueIndex = -1;
             // This also updates the global maxValueIndex
-            jfloatArray bufferHistoryArray = *(getJavaReorderedBufferHistoryStereo(jniEnv,
+            jfloatArray bufferHistoryArray = (getJavaReorderedBufferHistoryStereo(jniEnv,
                                                                                    numberOfSamplesPerChannel *
                                                                                    2)); //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
             // First get the class that contains the method you need to call
@@ -467,7 +467,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;[F)V");
             // Call the method on the object
             jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString, bufferHistoryArray);//, maxValueIndex);
-            //TODO: Are we suppose to delete references on our side or is detaching enough ?
+            //TODO: Are we suppose to delete references on our side or is detaching enough ? (not needed if the function ends soon)
             //jniEnv->DeleteLocalRef(bufferHistoryArray);
             //jniEnv->DeleteLocalRef(technologyString);
 
