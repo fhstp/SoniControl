@@ -103,9 +103,9 @@
     <string name="settings_blocking_duration_plural">Blocking duration (%s minutes)</string>
     <string name="stored_detections_will_be_blocked">will be blocked</string>
     <string name="stored_detections_will_be_ignored">will be ignored</string>
-    <string name="settings_category_jammer">Expert settings - Jammer</string>
-    <string name="settings_category">Settings</string>
-    <string name="settings_category_expert">Expert settings - RESET</string>
+    <string name="settings_category_jammer">Advanced settings - Jammer</string>
+    <string name="settings_category_blocking">Blocking</string>
+    <string name="settings_category_expert">Advanced - RESET</string>
     <string name="settings_title_json_save">Save detections in JSON file</string>
     <string name="settings_title_clear_detections">Clear detections of JSON file</string>
     <string name="settings_title_dont_ask">Don\'t ask for activating location</string>
@@ -124,7 +124,7 @@
     <string name="NoSignalImportedAndSavedYet">You have not imported any signals yet!</string>
     <string name="stored_detections_ask_again">will ask again</string>
     <string name="how_to_proceed">How to proceed?</string>
-    <string name="extendedDiagnostics">Wait for signal end</string>
+    <string name="extendedDiagnosticsSummary">Extended diagnostics</string>
     <string name="rules_info_text">Detections are shown in four tabs: \"My Rules\", \"Imported Rules\", \"Detection History\" and a map visualization.  The first two act as firewall rules. Their color shows if the rule will be blocked (red), ignored (green) or ask you again on the next detection (orange). You can change the status by tapping on them several times. On tapping longer on them, you can delete each rule.  The history tab shows all detections.\nThe map shows all firewall rules geographically.</string>
     <string name="settings_share_detections">Share detections</string>
     <string name="map_legend">The color of the markers stands for the action of the firewall rule. \n- Red markers will be always blocked \n- Green markers will be always ignored \n- Orange markers will be asked again for a decision on the next detection of it. \n\nOn tapping on the marker a circle will appear where its size represents the signal strength. The radius of the circle is NOT representing the distance of the signal source.</string>
@@ -159,7 +159,7 @@
     <string name="filter_dialog_reset_date">reset</string>
     <string name="loading_dialog_import_detections">Importing Detections</string>
     <string name="settings_info_title">Settings</string>
-    <string name="settings_info_text">"Wait for message end" - \n
+    <string name="settings_info_text">"Extended diagnostics" - \n
         \n
         "Block on each location" - Every detection will be blocked automatically and no alert will be shown.\n
         \n
@@ -171,4 +171,8 @@
         \n
         "Clear detections of JSON file" - This deletes the local JSON file and removes all rules and history entries.
     </string>
+    <string name="extendedDiganosticsTitle">Advanced Diagnostics</string>
+    <string name="settings_category_permissions">Permissions</string>
+    <string name="settings_category_data_storage">Data Storage</string>
+    <string name="settings_category_advanced_detection">Advanced settings - detection</string>
 </resources>
