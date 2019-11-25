@@ -45,9 +45,9 @@
     <string name="toastWritingAccessDenied">No permission to locally save map tiles.</string>
     <string name="aboutUsProject">Technologies like Google Nearby and Silverpush build upon ultrasonic sounds to exchange data (data over audio). More and more of our devices communicate via this inaudible communication channel. Every device with a microphone and a speaker is able to send and receive ultrasonic information. Users are usually not aware of this inaudible and hidden data transfer.
         \n\nSoniControl is a novel technology for the recognition and masking of acoustic ultrasound communication. SoniControl detects ultrasonic communication, notifies the user and blocks the information on demand. Thereby, SoniControl helps end-users to protect their privacy from potential audio tracking.
-        \n\nThe project SoniControl has been financially supported by the funding program netidee (http://www.netidee.at) and has been developed in a research project at the Institute for Creative Media Technologies at the University of Applied Sciences Sankt Pölten (http://sonicontrol.fhstp.ac.at). The entire project is open source under GNU license.
+        \n\nThe project SoniControl has been financially supported by the funding program netidee (https://www.netidee.at) and has been developed in a research project at the Institute for Creative Media Technologies at the University of Applied Sciences Sankt Pölten (https://sonicontrol.fhstp.ac.at). The entire project is open source under GNU license.
         \n\nPrivacy statement: SoniControl does not send any data from the users to other places and works even completely offline. All program data are stored locally on the phone. SoniControl requires microphone access to listen to the ultrasonic channel (all hearable information is filtered out). It further requires location information if the user wants the app to block ultrasonic communication permanently at a certain location (e.g. near to an audio beacon mounted next to some building).
-        \n\nIn case of questions, bugs, ideas, please contact us directly under http://sonicontrol.fhstp.ac.at/#contact or sonicontrol@fhstp.ac.at.</string>
+        \n\nIn case of questions, bugs, ideas, please contact us directly under https://sonicontrol.fhstp.ac.at/#contact or sonicontrol@fhstp.ac.at.</string>
     <string name="toastMessageNoGeocoderConnection">Not able to access location</string>
     <string name="alertDialog_option_jam_always_here">Block always here</string>
     <string name="alertDialog_option_dismiss_this_time">Ignore this time</string>
@@ -58,7 +58,7 @@
     <string name="storedLocationActivityTitle">Detected signals</string>
     <string name="SettingsActivityTitle">Settings</string>
     <string name="AboutUsActivityTitle">About us</string>
-    <string name="creditsText">Credits \n\n Audio by Superpowered (http://www.superpowered.com/)\n\nMaterial Icons used, which are under the license of Apache License Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
+    <string name="creditsText">Credits \n\n Audio by Superpowered (https://www.superpowered.com/)\n\nMaterial Icons used, which are under the license of Apache License Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
     <string name="privacy_policy_menuItem">Privacy policy</string>
     <string name="about_us_menuItem">About us</string>
     <string name="instructions_menuItem">Instructions</string>
@@ -72,7 +72,7 @@
 - If allowed, the geolocation is used to center the map on your position.
     </string>
     <string name="privacy_policy_label">Privacy policy</string>
-    <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
+    <string name="sonicontrolLink">https://sonicontrol.fhstp.ac.at</string>
     <string name="instructionsText">Welcome to the SoniControl firewall.\n\nSoniControl scans for ultrasonic messages coming from other phones or audio beacons in your environment and notifies you about such detections. On a detection you can choose to block the messages (also future messages at the same location) or to let it pass. \n\nSoniControl needs access to the microphone to work properly, and to your location (optional) to remember places where ultrasounds should be blocked. \n\nWe do not transmit any data from your phone and do not store privacy-sensitive data.\n\nTap the play button to start scanning for ultrasonic signals.</string>
     <string name="instructionsTitle">Instructions</string>
     <string name="alert_no_json_file_message">To save/see locations where ultrasonic communications were detected, you need to check the \'Save data in JSON file\' setting</string>
