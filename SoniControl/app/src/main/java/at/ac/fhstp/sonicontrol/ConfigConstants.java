@@ -70,6 +70,7 @@ public final class ConfigConstants {
     public static String EXTRA_TECHNOLOGY_DETECTED = "at.ac.fhstp.sonicontrol.TECHNOLOGY_DETECTED";
 
     public final static String PREFERENCES_APP_STATE = "PREFERENCES_APP_STATE";
+    public final static String PREFERENCES_SCANNER_INITIALIZED = "PREFERENCES_SCANNER_INITIALIZED";
 
     // Scan parameters
     public static final int SCAN_SAMPLE_RATE = 44100;

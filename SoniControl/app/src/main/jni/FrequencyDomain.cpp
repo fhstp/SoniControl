@@ -107,6 +107,7 @@ static int extendedDiagnostics = 0;
 static bool backgroundModelUpdating = true; //{IS SET} indicates if the background Model should continue to update itself
 #define FFT_LOG_SIZE 11 // 2^11 = 2048 - minimum viable size, should stay here
 static int counter = 0; //increments in every loop (without exception), helps to find out when backgroundBuffer is full and detection can be started
+static bool initialized = false; // Indicates if the background model is initialized (detection can start)
 
 // Needed to call Java functions
 static JavaVM* jvm = 0;
@@ -305,6 +306,38 @@ static jfloatArray getJavaReorderedBufferHistoryStereo(JNIEnv *jniEnv, int numbe
     return bufferHistoryArray;
 }
 
+static bool onDetectorInitialized() {
+    // Source: https://stackoverflow.com/a/12901159
+    JNIEnv * jniEnv;
+    // double check if it's all ok
+    int getEnvStat = jvm->GetEnv((void **)&jniEnv, JNI_VERSION_1_6);
+    if (getEnvStat == JNI_EDETACHED) {
+        //LOGD("GetEnv: not attached");
+        if (jvm->AttachCurrentThread(&jniEnv, NULL) != 0) {
+            LOGD("Failed to attach");
+        }
+        //LOGD("Attached thread from audio callback");
+    } else if (getEnvStat == JNI_OK) {
+        //LOGD("Audio callback thread already attached ");
+    } else if (getEnvStat == JNI_EVERSION) {
+        LOGD("GetEnv: version not supported");
+    }
+
+    // First get the class that contains the method you need to call
+    jclass scanClass = jniEnv->GetObjectClass(jniScan);
+    // Get the method that you want to call
+    jmethodID onDetectorInitializedMethod = jniEnv->GetMethodID(scanClass, "onDetectorInitialized", "()V");
+    // Call the method on the object
+    jniEnv->CallVoidMethod(jniScan, onDetectorInitializedMethod);
+
+    if (jniEnv->ExceptionCheck()) {
+        jniEnv->ExceptionDescribe();
+    }
+
+    jvm->DetachCurrentThread();
+    return true;
+}
+
 // This is called periodically by the media server.
 static bool audioProcessing(void * __unused clientdata, short int *audioInputOutput, int numberOfSamplesPerChannel, int __unused samplerate) {
     SuperpoweredShortIntToFloat(audioInputOutput, inputBufferFloat, (unsigned int)numberOfSamplesPerChannel); // Converting the 16-bit integer samples to 32-bit floating point.
@@ -342,6 +375,10 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
         //if the background model is full, start with detection, i.e. start with filling the median buffer
         if(counter > backgroundModelBufferSizeItems) {
+            if (!initialized) {
+                onDetectorInitialized();
+                initialized = true;
+            }
             //Save the raw input buffer samples to our history
             saveSampleToBufferHistory(inputBufferFloat, numberOfSamplesPerChannel*2); //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
 
@@ -536,6 +573,7 @@ int pauseIO() {
 }
 
 static void resumeIO() {
+    initialized = false;
     if (audioIO != NULL) { // Safety check to avoid a crash, but should never be needed
         audioIO->onForeground(); // Starts the queues again
     }
@@ -546,6 +584,7 @@ void stopIO() {
 }
 
 static void startIO() {
+    initialized = false;
     audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
 
@@ -555,6 +594,7 @@ extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIE
     jniScan = javaEnvironment->NewGlobalRef(obj); // Keep a global reference to the Scan activity
 
     extendedDiagnostics = extendedDiagnosticsJava;
+    initialized = false;
     initFrequencyDomain(sampleRateJava, bufferSizeSmplJava);
     audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }

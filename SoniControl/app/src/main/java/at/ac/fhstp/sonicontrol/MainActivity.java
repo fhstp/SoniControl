@@ -50,6 +50,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -86,6 +87,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
 
+    private TextView textViewStatus;
     ImageButton btnStorLoc;
     ImageButton btnStart;
     ImageButton btnStop;
@@ -195,6 +197,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         locationFinder = Location.getInstanceLoc(); //Get LocationFinder-object if no object is available yet make a new one
         locationFinder.init(MainActivity.this); //initialize the location-object with the main method
 
+        textViewStatus = findViewById(R.id.textViewStatus);
         btnStop = (ImageButton) findViewById(R.id.btnStop); //Main button for stopping the whole process
         btnStart = (ImageButton) findViewById(R.id.btnPlay); //Main button for starting the whole process
         btnStorLoc = (ImageButton) findViewById(R.id.btnStorLoc); //button for getting into the storedLocations activity
@@ -625,13 +628,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 break;
         }
 
-
+        boolean initialized = sp.getBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
+        updateStateText(state, initialized);
         Snackbar.make(findViewById(android.R.id.content).getRootView(), state.toString(),
                 Snackbar.LENGTH_SHORT)
                 .show();
 
-        SharedPreferences settings = getSettingsObject(); //get the settings
-        saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
+        saveJsonFile = sp.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
         if(saveJsonFile) {
             if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
@@ -640,6 +643,34 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
                 jsonMan.createSaveFolder(); //create a folder for the audio files
             }
+        }
+    }
+
+    /**
+     * Update the state Textview with the corresponding localized string.
+     * @param state Current state (get from SharedPreferences)
+     * @param initialized Indicates if the detector is ready (get from SharedPreferences)
+     */
+    private void updateStateText(StateEnum state, boolean initialized) {
+        //Would it be better to retrieve both shared preferences here directly?
+        switch (state) {
+        case ON_HOLD:
+            textViewStatus.setText(getString(R.string.StatusNotificationOnHoldMessage));
+            break;
+        case JAMMING:
+            textViewStatus.setText(getString(R.string.StatusNotificationSpoofingMesssage));
+            break;
+        case SCANNING:
+            if (!initialized) {
+                textViewStatus.setText(getString(R.string.textviewStatusInitializing));
+            }
+            else {
+                textViewStatus.setText(getString(R.string.StatusNotificationScanningMessage));
+            }
+            break;
+        default:
+            textViewStatus.setText(getString(R.string.StatusNotificationOnHoldMessage));
+            break;
         }
     }
 
@@ -733,6 +764,28 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             @Override
             public void run() {
                 handleSignal(bufferHistory); //, maxValueIndex);
+            }
+        });
+    }
+
+    @Override
+    public void onDetectorInitialized() {
+        SharedPreferences sp = getSettingsObject();
+        String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+        StateEnum storedState;
+        try {
+            storedState = StateEnum.fromString(stateString);
+        }
+        catch (IllegalArgumentException e) {
+            //Log.d(TAG, "onResume: " + e.getMessage());
+            storedState = StateEnum.ON_HOLD;
+        }
+        final StateEnum state = storedState;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateStateText(state, true);
             }
         });
     }
@@ -920,6 +973,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SharedPreferences.Editor ed = sp.edit();
         ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
         ed.apply();
+        updateStateText(StateEnum.ON_HOLD, false);
     }
 
     public void setGUIStateStopped() {
@@ -1121,6 +1175,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         checkForActivatedLocation();
         locationFinder.blockMicOrSpoof();
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext()); //activates the notification for the spoofing process
+        updateStateText(StateEnum.JAMMING, false);
     }
 
     @Override
@@ -1128,6 +1183,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         onAlertChoice(ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME);
         locationFinder.blockMicOrSpoof();
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
+        updateStateText(StateEnum.JAMMING, false);
     }
 
     @Override
@@ -1137,6 +1193,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         checkForActivatedLocation();
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
+        updateStateText(StateEnum.SCANNING, false);
     }
 
     @Override
@@ -1144,6 +1201,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         onAlertChoice(ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME);
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
+        updateStateText(StateEnum.SCANNING, false);
     }
 
     /*@Override
