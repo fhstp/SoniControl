@@ -40,6 +40,7 @@ import android.provider.Settings;
 //import android.support.design.widget.Snackbar;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.DialogFragment;
 //import androidx.core.app.DialogFragment;
 import android.text.TextUtils;
@@ -50,6 +51,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +89,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     private static final String TAG = "MainActivity";
     static MainActivity mainIsMain;
 
+    private ContentLoadingProgressBar statusLoadingBar;
     private TextView textViewStatus;
     ImageButton btnStorLoc;
     ImageButton btnStart;
@@ -197,6 +200,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         locationFinder = Location.getInstanceLoc(); //Get LocationFinder-object if no object is available yet make a new one
         locationFinder.init(MainActivity.this); //initialize the location-object with the main method
 
+        statusLoadingBar = findViewById(R.id.statusLoadingBar);
         textViewStatus = findViewById(R.id.textViewStatus);
         btnStop = (ImageButton) findViewById(R.id.btnStop); //Main button for stopping the whole process
         btnStart = (ImageButton) findViewById(R.id.btnPlay); //Main button for starting the whole process
@@ -652,6 +656,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
      * @param initialized Indicates if the detector is ready (get from SharedPreferences)
      */
     private void updateStateText(StateEnum state, boolean initialized) {
+        // Should not be visible by default, will be set to visible if initialization is ongoing
+        statusLoadingBar.setVisibility(View.GONE);
         //Would it be better to retrieve both shared preferences here directly?
         switch (state) {
         case ON_HOLD:
@@ -661,8 +667,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             textViewStatus.setText(getString(R.string.StatusNotificationSpoofingMesssage));
             break;
         case SCANNING:
-            if (!initialized) {
+            if (!initialized) { // Detector initialization is ongoing
                 textViewStatus.setText(getString(R.string.textviewStatusInitializing));
+                statusLoadingBar.setVisibility(View.VISIBLE);
             }
             else {
                 textViewStatus.setText(getString(R.string.StatusNotificationScanningMessage));

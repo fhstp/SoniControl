@@ -39,6 +39,20 @@
         android:text="@string/StatusNotificationOnHoldMessage"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/statusLoadingBar"
+        style="@android:style/Widget.ProgressBar.Small.Inverse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textViewStatus"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_toEndOf="@id/textViewStatus"
+        android:layout_toRightOf="@id/textViewStatus"
+        android:indeterminate="true"
+        tools:visibility="visible" />
+
     <View
         android:id="@+id/statusDivider"
         style="@style/Divider"
