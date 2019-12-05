@@ -108,11 +108,11 @@
     <string name="settings_category_expert">Experteneinstellungen - Zurücksetzen</string>
     <string name="settings_title_json_save">Signale in JSON Datei speichern</string>
     <string name="settings_title_clear_detections">Alle Signale in der JSON Datei löschen</string>
-    <string name="settings_title_dont_ask">Nicht nach Standortfreigabe fragen</string>
-    <string name="settings_title_microphone_for_blocking">Mikrofon zum Blockieren verwenden</string>
+    <string name="settings_summary_dont_ask">Nicht nach Standortfreigabe fragen</string>
+    <string name="settings_title_microphone_for_blocking">Mikrofon zum Blockieren</string>
     <string name="settings_title_preventive_blocking">Präventiv blockieren</string>
-    <string name="settings_title_network_location">Netzwerk zur Standortermittlung verwenden</string>
-    <string name="settings_title_gps_location">GPS zur Standortermittlung verwenden</string>
+    <string name="settings_title_network_location">Netzwerk</string>
+    <string name="settings_title_gps_location">GPS</string>
     <string name="settings_title_pulse_duration">Pulsdauer (ms)</string>
     <string name="settings_title_pause_duration">Stoppdauer (ms)</string>
     <string name="settings_title_bandwidth">Bandbreite</string>
@@ -124,7 +124,7 @@
     <string name="NoSignalImportedAndSavedYet">Sie haben noch keine Ultraschallsignale importiert!</string>
     <string name="how_to_proceed">Wählen Sie eine der Optionen um fortzufahren.</string>
     <string name="stored_detections_ask_again">nochmal fragen</string>
-    <string name="extendedDiagnosticsSummary">Erweiterte Diagnose</string>
+    <string name="extendedDiagnosticsSummary">Auf Signalende warten</string>
     <string name="rules_info_text">Signal sind in vier Bereiche eingeteilt: \"Meine Regeln\", \"Importierte Regeln\", \"Verlauf\" und eine Kartenvisualisierung. Die ersten beiden verhalten sich wie Firewall-Regeln. Die Farbe zeigt ob die Regel Signale blockiert (rot), ignoriert (grün) oder bei der nächsten Erkennung nochmal fragt (orange). Man kann diesen Status durch mehrmaliges tippen verändern. Bei einem längeren Tippvorgang, kann die Regel gelöscht werden. Die Chronik zeigt alle bisherigen erkannten Signale. \nDie Karte zeigt alle Firewall-Regeln an ihren geographischen Positionen.</string>
     <string name="settings_share_detections">Erkennungen teilen</string>
     <string name="map_legend">Die Farbe der Markierungen steht für die Firewall-Regel:\n- Rote Markierungen werden immer geblockt\n- Grüne Markierungen werden immer ignoriert \n- Orange Markierungen wird bei der nächsten Erkennung wieder nachgefragt\n\nBeim Tippen auf eine Markierung wird ein farbiger Kreis angezeigt, dessen Größe die Signalstärke repräsentiert. Die Größe zeigt jedoch NICHT die Distanz zur Signalquelle.</string>
@@ -176,4 +176,11 @@
     <string name="settings_category_permissions">Berechtigungen</string>
     <string name="settings_category_data_storage">Datenspeicher</string>
     <string name="settings_category_advanced_detection">Experteneinstellungen - Erkennung</string>
+    <string name="settings_summary_gps_location">Zur Standortermittlung verwenden</string>
+    <string name="settings_summary_network_location">Zur Standortermittlung verwenden</string>
+    <string name="settings_summary_preventive_blocking">Zeitspanne zwischen Erkennung und Auswahl blockieren</string>
+    <string name="spoofOnEachLoc_summary">Alle Erkennungen blockieren</string>
+    <string name="settings_summary_microphone_for_blocking">Mikrofon als präferierten Wahl für das Blockieren verwenden</string>
+    <string name="settings_share_detections_summary">Erkennungen mit der Community teilen</string>
+    <string name="settings_title_dont_ask">Standortfreigabedialog</string>
 </resources>
