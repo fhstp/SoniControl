@@ -150,7 +150,7 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
 
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 
-        for(String[] sArray : locationData){
+        for(final String[] sArray : locationData){
             /*Polygon circle = new Polygon(map);
             circle.setPoints(Polygon.pointsAsCircle(new GeoPoint(Double.valueOf(sArray[1]),Double.valueOf(sArray[0])), 20.0));
             switch (sArray[4]){
@@ -224,7 +224,8 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
                     MarkerInfoWindow.closeAllInfoWindowsOn(map);
                     marker.showInfoWindow();
                     Polygon circle = new Polygon(map);
-                    circle.setPoints(Polygon.pointsAsCircle(marker.getPosition(), 20.0));
+                    double radius = Double.valueOf(sArray[9]) * 1000.0 * 20.0;
+                    circle.setPoints(Polygon.pointsAsCircle(marker.getPosition(), radius));
                     switch ((String)marker.getRelatedObject()){
                         case "0":
                             circle.setFillColor(0x3300FF00);

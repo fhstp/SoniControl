@@ -23,33 +23,40 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbprefPreventiveSpoofing"
-            android:title="@string/settings_title_preventive_blocking" />
+            android:title="@string/settings_title_preventive_blocking"
+            android:summary="@string/settings_summary_preventive_blocking" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbprefContinuousSpoof"
-            android:title="@string/spoofOnEachLoc" />
+            android:title="@string/spoofOnEachLoc"
+            android:summary="@string/spoofOnEachLoc_summary"  />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefMicBlock"
-            android:title="@string/settings_title_microphone_for_blocking" />
+            android:title="@string/settings_title_microphone_for_blocking"
+            android:summary="@string/settings_summary_microphone_for_blocking"  />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_permissions">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbSharing"
-            android:title="@string/settings_share_detections" />
+            android:title="@string/settings_share_detections"
+            android:summary="@string/settings_share_detections_summary"  />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefGpsUse"
-            android:title="@string/settings_title_gps_location" />
+            android:title="@string/settings_title_gps_location"
+            android:summary="@string/settings_summary_gps_location" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefNetworkUse"
-            android:title="@string/settings_title_network_location" />
+            android:title="@string/settings_title_network_location"
+            android:summary="@string/settings_summary_network_location" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbAlertLocationDontAskAgain"
-            android:title="@string/settings_title_dont_ask" />
+            android:title="@string/settings_title_dont_ask"
+            android:summary="@string/settings_summary_dont_ask"  />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_data_storage">
         <CheckBoxPreference
