@@ -175,6 +175,7 @@
     <string name="settings_category_permissions">Permissions</string>
     <string name="settings_category_data_storage">Data storage</string>
     <string name="settings_category_advanced_detection">Advanced settings - detection</string>
+<<<<<<< HEAD
     <string name="settings_summary_gps_location">Use for location</string>
     <string name="settings_summary_network_location">Use for location</string>
     <string name="settings_summary_preventive_blocking">Block timespan between detection and alert choice</string>
@@ -182,4 +183,7 @@
     <string name="settings_summary_microphone_for_blocking">Use microphone as preferred choice for blocking</string>
     <string name="settings_share_detections_summary">Share your detections with the community</string>
     <string name="settings_title_dont_ask">Location permission dialog</string>
+=======
+    <string name="textviewStatusInitializing">Initializing</string>
+>>>>>>> 02419424eff628650496ab74d0b2439fe9dc3223
 </resources>

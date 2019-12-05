@@ -28,6 +28,7 @@ public class Scan {
     private static final String TAG = "Scan";
     public interface DetectionListener {
         public void onDetection(Technology technology, float[] stereoRawData);//, int maxValueIndex);
+        public void onDetectorInitialized();
     }
     //private List<DetectionListener> detectionListeners = new ArrayList<>();
     private DetectionListener mainDetectionListener = null;
@@ -110,6 +111,19 @@ public class Scan {
         notifyDetectionListeners(lastDetectedTechnology, bufferHistory); //, maxValueIndex);
     }
 
+    /**
+     * Notify listeners once the detector is initiliazed (background model buffer is full).
+     * Note: This is called from the native code once after each start/resume of the detector.
+     */
+    public void onDetectorInitialized() {
+        // Update initialized state, and then callback the main activity for GUI update
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, true);
+        ed.apply();
+        mainDetectionListener.onDetectorInitialized();
+    }
+
     private Runnable scanRun = new Runnable() {
         @Override
         public void run() {
@@ -134,6 +148,11 @@ public class Scan {
 
         locFinder = Location.getInstanceLoc(); //get an instance of location
         jsonMan = new JSONManager(main);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
+        ed.apply();
         if (paused && consistentState) {
             //Log.d(TAG, "Resume scanning");
             resume();
@@ -145,8 +164,6 @@ public class Scan {
         consistentState = true; // Handles wrong termination of the app
 
         // Stores the app state : SCANNING
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
-        SharedPreferences.Editor ed = sp.edit();
         ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.SCANNING.toString());
         ed.apply();
     }
@@ -171,6 +188,10 @@ public class Scan {
 
     public void resume() {
         paused = false;
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
+        ed.apply();
         Resume(extendedDiagnostics);
     }
 

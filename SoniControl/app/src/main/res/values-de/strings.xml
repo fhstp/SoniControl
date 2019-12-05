@@ -176,6 +176,7 @@
     <string name="settings_category_permissions">Berechtigungen</string>
     <string name="settings_category_data_storage">Datenspeicher</string>
     <string name="settings_category_advanced_detection">Experteneinstellungen - Erkennung</string>
+<<<<<<< HEAD
     <string name="settings_summary_gps_location">Zur Standortermittlung verwenden</string>
     <string name="settings_summary_network_location">Zur Standortermittlung verwenden</string>
     <string name="settings_summary_preventive_blocking">Zeitspanne zwischen Erkennung und Auswahl blockieren</string>
@@ -183,4 +184,7 @@
     <string name="settings_summary_microphone_for_blocking">Mikrofon als präferierten Wahl für das Blockieren verwenden</string>
     <string name="settings_share_detections_summary">Erkennungen mit der Community teilen</string>
     <string name="settings_title_dont_ask">Standortfreigabedialog</string>
+=======
+    <string name="textviewStatusInitializing">Initialisierung</string>
+>>>>>>> 02419424eff628650496ab74d0b2439fe9dc3223
 </resources>
