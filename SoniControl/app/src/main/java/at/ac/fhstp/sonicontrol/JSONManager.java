@@ -224,7 +224,7 @@ public class JSONManager {
                         detectioncounter = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER);
                     }
                     if(jArray.getJSONObject(i).optString(JSON_ARRAY_SIGNAL_AMPLITUDE).equals("")){
-                        amplitude = String.valueOf(0.5);
+                        amplitude = String.valueOf(0.0005);
                     }else{
                         amplitude = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_AMPLITUDE);
                     }
@@ -547,7 +547,7 @@ public class JSONManager {
                     addArray.put(JSON_ARRAY_SIGNAL_URL, ""); //add the url to the new object
                     addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID, arrayData[7]);
                     addArray.put(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER, 1);
-                    addArray.put(JSON_ARRAY_SIGNAL_AMPLITUDE, 0.5);
+                    addArray.put(JSON_ARRAY_SIGNAL_AMPLITUDE, 0.005);
 
                     jArray.put(addArray); //add the created object to the json array
                 }
