@@ -254,6 +254,7 @@ public class Location {
         SharedPreferences.Editor ed = sharedPref.edit();
         ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.JAMMING.toString());
         ed.apply();
+        main.updateStateText();
 
         return usedBlockingMethod;
     }

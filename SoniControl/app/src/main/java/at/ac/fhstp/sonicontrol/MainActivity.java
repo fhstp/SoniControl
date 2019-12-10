@@ -632,8 +632,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 break;
         }
 
-        boolean initialized = sp.getBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
-        updateStateText(state, initialized);
+        updateStateText();
         Snackbar.make(findViewById(android.R.id.content).getRootView(), state.toString(),
                 Snackbar.LENGTH_SHORT)
                 .show();
@@ -652,34 +651,51 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     /**
      * Update the state Textview with the corresponding localized string.
-     * @param state Current state (get from SharedPreferences)
-     * @param initialized Indicates if the detector is ready (get from SharedPreferences)
      */
-    private void updateStateText(StateEnum state, boolean initialized) {
-        // Should not be visible by default, will be set to visible if initialization is ongoing
-        statusLoadingBar.setVisibility(View.GONE);
-        //Would it be better to retrieve both shared preferences here directly?
-        switch (state) {
-        case ON_HOLD:
-            textViewStatus.setText(getString(R.string.StatusNotificationOnHoldMessage));
-            break;
-        case JAMMING:
-            textViewStatus.setText(getString(R.string.StatusNotificationSpoofingMesssage));
-            break;
-        case SCANNING:
-            if (!initialized) { // Detector initialization is ongoing
-                textViewStatus.setText(getString(R.string.textviewStatusInitializing));
-                statusLoadingBar.setVisibility(View.VISIBLE);
-            }
-            else {
-                textViewStatus.setText(getString(R.string.StatusNotificationScanningMessage));
-            }
-            break;
-        default:
-            textViewStatus.setText(getString(R.string.StatusNotificationOnHoldMessage));
-            break;
-        }
+    /*package-private*/ void updateStateText() {
+        runOnUiThread(updateStateTextRunnable);
     }
+
+    private Runnable updateStateTextRunnable = new Runnable() {
+        @Override
+        public void run() {
+            SharedPreferences sp = getSettingsObject();
+            String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+            StateEnum state;
+            try {
+                state = StateEnum.fromString(stateString);
+            }
+            catch (IllegalArgumentException e) {
+                Log.w(TAG, "updateStateText, StateEnum changed? Error: " + e.getMessage());
+                state = StateEnum.ON_HOLD;
+            }
+
+            // Should not be visible by default, will be set to visible if initialization is ongoing
+            statusLoadingBar.setVisibility(View.GONE);
+            //Would it be better to retrieve both shared preferences here directly?
+            switch (state) {
+                case ON_HOLD:
+                    textViewStatus.setText(getString(R.string.StatusNotificationOnHoldMessage));
+                    break;
+                case JAMMING:
+                    textViewStatus.setText(getString(R.string.StatusNotificationSpoofingMesssage));
+                    break;
+                case SCANNING:
+                    boolean initialized = sp.getBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
+                    if (!initialized) { // Detector initialization is ongoing
+                        textViewStatus.setText(getString(R.string.textviewStatusInitializing));
+                        statusLoadingBar.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        textViewStatus.setText(getString(R.string.StatusNotificationScanningMessage));
+                    }
+                    break;
+                default:
+                    textViewStatus.setText(getString(R.string.StatusNotificationOnHoldMessage));
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onPause(){ //override the onPause method for setting a variable for checking the background-status
@@ -777,24 +793,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     @Override
     public void onDetectorInitialized() {
-        SharedPreferences sp = getSettingsObject();
-        String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
-        StateEnum storedState;
-        try {
-            storedState = StateEnum.fromString(stateString);
-        }
-        catch (IllegalArgumentException e) {
-            //Log.d(TAG, "onResume: " + e.getMessage());
-            storedState = StateEnum.ON_HOLD;
-        }
-        final StateEnum state = storedState;
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateStateText(state, true);
-            }
-        });
+        updateStateText();
     }
 
     private void handleSignal(float[] bufferHistory) { //, int maxValueIndex) {
@@ -980,7 +979,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SharedPreferences.Editor ed = sp.edit();
         ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
         ed.apply();
-        updateStateText(StateEnum.ON_HOLD, false);
+        updateStateText();
     }
 
     public void setGUIStateStopped() {
@@ -1182,7 +1181,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         checkForActivatedLocation();
         locationFinder.blockMicOrSpoof();
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext()); //activates the notification for the spoofing process
-        updateStateText(StateEnum.JAMMING, false);
     }
 
     @Override
@@ -1190,7 +1188,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         onAlertChoice(ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME);
         locationFinder.blockMicOrSpoof();
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
-        updateStateText(StateEnum.JAMMING, false);
     }
 
     @Override
@@ -1200,7 +1197,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         checkForActivatedLocation();
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
-        updateStateText(StateEnum.SCANNING, false);
     }
 
     @Override
@@ -1208,7 +1204,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         onAlertChoice(ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME);
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
-        updateStateText(StateEnum.SCANNING, false);
     }
 
     /*@Override

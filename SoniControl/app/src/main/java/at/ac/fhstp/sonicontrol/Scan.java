@@ -153,6 +153,7 @@ public class Scan {
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
         ed.apply();
+
         if (paused && consistentState) {
             //Log.d(TAG, "Resume scanning");
             resume();
@@ -166,6 +167,7 @@ public class Scan {
         // Stores the app state : SCANNING
         ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.SCANNING.toString());
         ed.apply();
+        main.updateStateText();
     }
 
     public void getTheOldSpoofer(Spoofer spoofing){

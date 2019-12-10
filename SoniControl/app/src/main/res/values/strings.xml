@@ -24,13 +24,13 @@
     <string name="deleteJsonAlertTitle">Empty detection cache</string>
     <string name="deleteJsonAlertMessage">Are you sure you want to delete the JSON-file?<!--and the detected audio files?--></string>
     <string name="StatusNotificationSpoofingTitle">SoniControl</string>
-    <string name="StatusNotificationSpoofingMesssage">Blocking ultrasonic communication</string>
+    <string name="StatusNotificationSpoofingMesssage">Blocking ultrasonic communication...</string>
     <string name="StatusNotificationDetectionAlertTitle">SoniControl</string>
     <string name="StatusNotificationDetectionAlertMessage">Detected ultrasonic signal</string>
     <string name="StatusNotificationOnHoldTitle">SoniControl</string>
-    <string name="StatusNotificationOnHoldMessage">Paused</string>
+    <string name="StatusNotificationOnHoldMessage">Paused.</string>
     <string name="StatusNotificationScanningTitle">SoniControl</string>
-    <string name="StatusNotificationScanningMessage">Scanning for ultrasonic sounds</string>
+    <string name="StatusNotificationScanningMessage">Scanning for ultrasonic sounds...</string>
     <string name="NotificationDetectionTitle">SoniControl</string>
     <string name="NotificationDetectionMessage">Detected ultrasonic signal</string>
     <string name="ButtonStopSignal">Pause</string>
