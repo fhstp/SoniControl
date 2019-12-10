@@ -19,7 +19,7 @@
 
 <resources>
     <string name="app_name">SoniControl</string>
-    <string name="spoofOnEachLoc">Block on each location</string>
+    <string name="spoofOnEachLoc">Block always</string>
     <string name="addressData">Not available</string>
     <string name="deleteJsonAlertTitle">Empty detection cache</string>
     <string name="deleteJsonAlertMessage">Are you sure you want to delete the JSON-file?<!--and the detected audio files?--></string>
@@ -103,7 +103,7 @@
     <string name="settings_blocking_duration_plural">Blocking duration (%s minutes)</string>
     <string name="stored_detections_will_be_blocked">will be blocked</string>
     <string name="stored_detections_will_be_ignored">will be ignored</string>
-    <string name="settings_category_jammer">Advanced settings - Jammer</string>
+    <string name="settings_category_jammer">Advanced settings - Jammer (active blocking)</string>
     <string name="settings_category_blocking">Blocking</string>
     <string name="settings_category_expert">Advanced - RESET</string>
     <string name="settings_title_json_save">Save detections in JSON file</string>
@@ -124,7 +124,7 @@
     <string name="NoSignalImportedAndSavedYet">You have not imported any signals yet!</string>
     <string name="stored_detections_ask_again">will ask again</string>
     <string name="how_to_proceed">How to proceed?</string>
-    <string name="extendedDiagnosticsSummary">Wait for signal end</string>
+    <string name="extendedDiagnosticsSummary">Notify of detection after signal end (more accurate recognition)</string>
     <string name="rules_info_text">Detections are shown in four tabs: \"My Rules\", \"Imported Rules\", \"Detection History\" and a map visualization.  The first two act as firewall rules. Their color shows if the rule will be blocked (red), ignored (green) or ask you again on the next detection (orange). You can change the status by tapping on them several times. On tapping longer on them, you can delete each rule.  The history tab shows all detections.\nThe map shows all firewall rules geographically.</string>
     <string name="settings_share_detections">Share detections</string>
     <string name="map_legend">The color of the markers stands for the action of the firewall rule. \n- Red markers will be always blocked \n- Green markers will be always ignored \n- Orange markers will be asked again for a decision on the next detection of it. \n\nOn tapping on the marker a circle will appear where its size represents the signal strength. The radius of the circle is NOT representing the distance of the signal source.</string>
@@ -177,9 +177,9 @@
     <string name="settings_category_advanced_detection">Advanced settings - detection</string>
     <string name="settings_summary_gps_location">Use for location</string>
     <string name="settings_summary_network_location">Use for location</string>
-    <string name="settings_summary_preventive_blocking">Block timespan between detection and alert choice</string>
-    <string name="spoofOnEachLoc_summary">Block every signal detected</string>
-    <string name="settings_summary_microphone_for_blocking">Use microphone as preferred choice for blocking</string>
+    <string name="settings_summary_preventive_blocking">Block immediately and then ask user choice</string>
+    <string name="spoofOnEachLoc_summary">Block every signal detected without asking</string>
+    <string name="settings_summary_microphone_for_blocking">Use microphone as preferred choice for blocking (otherwise actively jam)</string>
     <string name="settings_share_detections_summary">Share your detections with the community</string>
     <string name="settings_title_dont_ask">Location permission dialog</string>
     <string name="textviewStatusInitializing">Initializing</string>
