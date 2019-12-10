@@ -111,10 +111,10 @@ public class GPSTracker extends Service implements LocationListener {
                 status = ActivityCompat.checkSelfPermission(activity.getApplicationContext(),
                         Manifest.permission.ACCESS_FINE_LOCATION);
                 if (status != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(
+                    /*ActivityCompat.requestPermissions(
                             activity,
                             new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            ConfigConstants.REQUEST_GPS_PERMISSION);
+                            ConfigConstants.REQUEST_GPS_PERMISSION);*/
                 }
                 else {
                     if (!provider_info_network.isEmpty()) {
