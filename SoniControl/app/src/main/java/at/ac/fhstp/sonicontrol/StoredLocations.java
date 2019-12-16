@@ -78,7 +78,7 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
         setContentView(R.layout.stored_locations);
         navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(this);
-        loadFragment(new MyRulesFragment());
+        loadFragment(new DetectionHistoryFragment());
 
         /*viewPager = findViewById(R.id.viewpager); //Init Viewpager
         setupFragments(getSupportFragmentManager(), viewPager); //Setup Fragment
