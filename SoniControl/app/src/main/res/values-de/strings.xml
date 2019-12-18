@@ -38,7 +38,8 @@
     <string name="DeleteJsonAlertTitle">Erkannten Signaleintrag löschen</string>
     <string name="DeleteJsonAlertMessage">Sind sie sich sicher, dass sie den erkannten Signaleintrag löschen wollen?</string>
     <string name="noAddressForJsonFile">Nicht verfügbar</string>
-    <string name="NoSignalDiscoveredAndSavedYet">Sie haben noch keine Ultraschallsignale gefunden!</string>
+    <string name="noSignalDiscoveredYet">Sie haben noch keine Ultraschallsignale gefunden!</string>
+    <string name="noFirewallRuleYet">Sie haben noch keine Regel gespeichert! (Regeln können gespeichert werden, indem man beim Erkennen eines Signals "Immer an dieser Stelle" wählt).</string>
     <string name="permissionRequestExplanation">Die App braucht für die Nutzung die Berechtigung des Mikrofons. Ohne dieser kann die App keine Ultraschallsignale erkennen.</string>
     <string name="permissionMapRequestExplanation">Um die Karte auf den aktuellen Standort zu zentrieren wir die "Standort"-Berechtigung benötigt. Diese App-Berechtigung ist optional.</string>
     <string name="toastLocationAccessDenied">Keine Berechtigung für Standortzugriff</string>

@@ -38,7 +38,8 @@
     <string name="DeleteJsonAlertTitle">Delete location entry</string>
     <string name="DeleteJsonAlertMessage">Are you sure you want to delete the location entry?</string>
     <string name="noAddressForJsonFile">Not available</string>
-    <string name="NoSignalDiscoveredAndSavedYet">You have not discovered any signals yet!</string>
+    <string name="noSignalDiscoveredYet">You have not discovered any signals yet!</string>
+    <string name="noFirewallRuleYet">You have not saved any rule yet! (rules can be saved by selecting "Always at this location" when detecting a signal)</string>
     <string name="permissionRequestExplanation">The app requires at least the permission to access the microphone. Otherwise it cannot detect ultrasonic signals.</string>
     <string name="permissionMapRequestExplanation">Centering the map on your location requires "Location" permission. This permission is optional.</string>
     <string name="toastLocationAccessDenied">No permission to access location.</string>
