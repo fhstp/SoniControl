@@ -38,17 +38,18 @@
     <string name="DeleteJsonAlertTitle">Erkannten Signaleintrag löschen</string>
     <string name="DeleteJsonAlertMessage">Sind sie sich sicher, dass sie den erkannten Signaleintrag löschen wollen?</string>
     <string name="noAddressForJsonFile">Nicht verfügbar</string>
-    <string name="noSignalDiscoveredYet">Sie haben noch keine Ultraschallsignale gefunden!</string>
-    <string name="noFirewallRuleYet">Sie haben noch keine Regel gespeichert! (Regeln können gespeichert werden, indem man beim Erkennen eines Signals "Immer an dieser Stelle" wählt).</string>
+    <string name="noSignalDiscoveredYet">Sie haben noch keine Ultraschallsignale gefunden.</string>
+    <string name="noFirewallRuleYet">Sie haben noch keine Regel gespeichert.
+        \n\nRegeln können gespeichert werden, indem man beim Erkennen eines Signals \"Immer an dieser Stelle\" wählt.</string>
     <string name="permissionRequestExplanation">Die App braucht für die Nutzung die Berechtigung des Mikrofons. Ohne dieser kann die App keine Ultraschallsignale erkennen.</string>
     <string name="permissionMapRequestExplanation">Um die Karte auf den aktuellen Standort zu zentrieren wir die "Standort"-Berechtigung benötigt. Diese App-Berechtigung ist optional.</string>
     <string name="toastLocationAccessDenied">Keine Berechtigung für Standortzugriff</string>
     <string name="toastWritingAccessDenied">eine Berechtigung für das lokale Speichern der Karte.</string>
     <string name="aboutUsProject">Neuartige Technologien wie Silverpush bauen auf Ultraschalltönen auf, um Informationen auszutauschen. Immer mehr unserer Geräte kommunizieren über diesen unhörbaren Kommunikationskanal. Die Ultraschallkommunikation ermöglicht es, Geräte zu koppeln, Informationen auszutauschen, aber auch BenutzerInnen und deren Verhalten über mehrere Geräte hinweg zu verfolgen, ähnlich wie bei Cookies im Web. Jedes Gerät mit einem Mikrofon und einem Lautsprecher ist in der Lage, Ultraschallinformationen zu senden und zu empfangen. Dieser unhörbare und versteckte Datentransfer ist den AnwenderInnen in der Regel nicht bekannt.
 \n\nSoniControl ist die erste Firewall, die Ultraschallaktivitäten erkennt, Sie umgehend benachrichtigt und die Informationen bei Bedarf blockiert und so hilft, Ihre Privatsphäre zu schützen.
-\n\nDas Projekt SoniControl wurde finanziell unterstützt von der Internet Privatstiftung Netidee (http://www.netidee.at) und wurde im Rahmen eines Forschungsprojekts im Institut für Creative\Media/Technologies an der Fachhochschule St. Pölten entwickelt (http://sonicontrol.fhstp.ac.at). Das Projekt ist Open Source unter GNU Lizenz.
+\n\nDas Projekt SoniControl wurde finanziell unterstützt von der Internet Privatstiftung Netidee (https://www.netidee.at) und wurde im Rahmen eines Forschungsprojekts im Institut für Creative\Media/Technologies an der Fachhochschule St. Pölten entwickelt (https://sonicontrol.fhstp.ac.at). Das Projekt ist Open Source unter GNU Lizenz.
 \n\nDatenschutzerklärung: SoniControl sendet keine Daten von Nutzern an andere Orte und funktioniert komplett offline. Alle Daten werden lokal gespeichert. SoniControl braucht Zugriff auf das Mikrofon, um Ultraschallsignale erkennen zu können (alle hörbaren Geräusche werden herausgefiltert). Weiters braucht die App den Standortzugriff, falls NutzerInnen Ultraschallsignale von einem bestimmten Ort permanent blockieren möchten (z.B. ein Audiobeacon in einem Geschäft).
-\n\nBei Fragen, Bugs, Ideen, kontaktieren Sie uns bitte direkt unter http://sonicontrol.fhstp.ac.at/#contact oder der Email-Adresse sonicontrol@fhstp.ac.at.</string>
+\n\nBei Fragen, Bugs, Ideen, kontaktieren Sie uns bitte direkt unter https://sonicontrol.fhstp.ac.at/#contact oder der Email-Adresse sonicontrol@fhstp.ac.at.</string>
     <string name="toastMessageNoGeocoderConnection">Der Standort konnte nicht ermittelt werden</string>
     <string name="alertDialog_option_jam_always_here">Hier immer blockieren</string>
     <string name="alertDialog_option_dismiss_this_time">Dieses Mal ignorieren</string>
@@ -59,7 +60,7 @@
     <string name="storedLocationActivityTitle">Erkannte Signale</string>
     <string name="SettingsActivityTitle">Einstellungen</string>
     <string name="AboutUsActivityTitle">Über Uns</string>
-    <string name="creditsText">Credits \n\n Audio by Superpowered (http://www.superpowered.com/)\n\nMaterial-Icons wurden verwendet. Diese stehen unter der Lizenz "Apache License Version 2.0"(https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
+    <string name="creditsText">Credits \n\n Audio by Superpowered (https://www.superpowered.com/)\n\nMaterial-Icons wurden verwendet. Diese stehen unter der Lizenz "Apache License Version 2.0"(https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
     <string name="privacy_policy_menuItem">Datenschutzerklärung</string>
     <string name="about_us_menuItem">Über Uns</string>
     <string name="instructions_menuItem">Anleitung</string>
@@ -73,7 +74,7 @@
 - Wenn von der Nutzer*in erlaubt, wird der Standort dazu verwendet, die Karte auf den aktuellen Ort zu zentrieren.
     </string>
     <string name="privacy_policy_label">Datenschutzerklärung</string>
-    <string name="sonicontrolLink">http://sonicontrol.fhstp.ac.at</string>
+    <string name="sonicontrolLink">https://sonicontrol.fhstp.ac.at</string>
     <string name="instructionsText">Willkommen zur SoniControl Firewall.\n\nSonicontrol scannt nach Ultraschallnachrichten von anderen Smarphones oder Audiobeacons in der Umgebung und benachrichtigt Sie wenn eine Nachricht erkannt wurde. Sie können dann auswählen, ob diese Nachricht blockiert werden soll (auch zukünftig an diesem Ort) oder ob sie durchgelassen werden soll. \n\nSoniControl braucht die Mikrofonberechtigung, um ordnungsgemäß arbeiten zu können und braucht weiters die Standortfreigabe (optional), um den Ort zu einer erkannten Nachricht speichern zu können. \n\nWir versenden keine Daten von Ihrem Smartphone und speichern auch keine privaten, sensiblen Daten.\n\nUm den Scanvorgang zu starten, müssen Sie den Startbutton antippen.</string>
     <string name="instructionsTitle">Anleitung</string>
     <string name="alert_no_json_file_message">Um erkannte Ultraschallsignale zu speichern/anzuzeigen, müssen Sie die Einstellung \'In JSON Datei speichern\' ankreuzen.</string>
@@ -122,11 +123,16 @@
     <string name="statusChannelName">App-Status Kanal</string>
     <string name="detectionChannelName">Signalerkennung Kanal</string>
     <string name="gui_technology">Potenzieller Typ:</string>
-    <string name="NoSignalImportedAndSavedYet">Sie haben noch keine Ultraschallsignale importiert!</string>
+    <string name="NoSignalImportedAndSavedYet">Sie haben noch keine Firewall-Regel importiert.
+    \n\nFirewall-Regeln, die von anderen BenutzerInnen geteilt wurden, können durch Anklicken der + Taste unten importiert werden.</string>
     <string name="how_to_proceed">Wählen Sie eine der Optionen um fortzufahren.</string>
     <string name="stored_detections_ask_again">nochmal fragen</string>
     <string name="extendedDiagnosticsSummary">Auf Signalende warten</string>
-    <string name="rules_info_text">Signal sind in vier Bereiche eingeteilt: \"Meine Regeln\", \"Importierte Regeln\", \"Verlauf\" und eine Kartenvisualisierung. Die ersten beiden verhalten sich wie Firewall-Regeln. Die Farbe zeigt ob die Regel Signale blockiert (rot), ignoriert (grün) oder bei der nächsten Erkennung nochmal fragt (orange). Man kann diesen Status durch mehrmaliges tippen verändern. Bei einem längeren Tippvorgang, kann die Regel gelöscht werden. Die Chronik zeigt alle bisherigen erkannten Signale. \nDie Karte zeigt alle Firewall-Regeln an ihren geographischen Positionen.</string>
+    <string name="rules_info_text">Signal sind in vier Bereiche eingeteilt: \"Meine Regeln\", \"Importierte Regeln\", \"Verlauf\" und eine Kartenvisualisierung.
+        \n\n- Die ersten beiden verhalten sich wie Firewall-Regeln. Die Farbe zeigt ob die Regel Signale blockiert (rot), ignoriert (grün) oder bei der nächsten Erkennung nochmal fragt (orange).
+        \nMan kann diesen Status durch mehrmaliges tippen verändern. Bei einem längeren Tippvorgang, kann die Regel gelöscht werden.
+        \n\n- Die Chronik zeigt alle bisherigen erkannten Signale.
+        \n\n- Die Karte zeigt alle Firewall-Regeln an ihren geographischen Positionen.</string>
     <string name="settings_share_detections">Erkennungen teilen</string>
     <string name="map_legend">Die Farbe der Markierungen steht für die Firewall-Regel:\n- Rote Markierungen werden immer geblockt\n- Grüne Markierungen werden immer ignoriert \n- Orange Markierungen wird bei der nächsten Erkennung wieder nachgefragt\n\nBeim Tippen auf eine Markierung wird ein farbiger Kreis angezeigt, dessen Größe die Signalstärke repräsentiert. Die Größe zeigt jedoch NICHT die Distanz zur Signalquelle.</string>
     <string name="import_timeto_title">Zeit von</string>
