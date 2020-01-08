@@ -334,7 +334,7 @@ public class DetectionDialogFragment extends DialogFragment {
                     @Override
                     public void run() {
                         // Update spectrogram
-                        spectrogramView.invalidate();
+                        //spectrogramView.invalidate(); // Does not seem to be needed, probably already redrawn by setting to visible
                         spectrogramView.setVisibility(View.VISIBLE);
                     }
                 }));
