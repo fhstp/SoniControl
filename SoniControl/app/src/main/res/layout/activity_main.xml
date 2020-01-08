@@ -81,7 +81,7 @@
         android:src="@drawable/ic_view_list_white_48dp" />
 
     <ImageButton
-        android:id="@+id/btnStop"
+        android:id="@+id/btnPause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/btnSettings"
@@ -97,7 +97,7 @@
         android:id="@+id/btnExit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btnStop"
+        android:layout_below="@+id/btnPause"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
         android:background="@android:color/darker_gray"

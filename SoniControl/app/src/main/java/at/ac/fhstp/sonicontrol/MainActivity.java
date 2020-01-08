@@ -51,7 +51,6 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -93,7 +92,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     private TextView textViewStatus;
     ImageButton btnStorLoc;
     ImageButton btnStart;
-    ImageButton btnStop;
+    ImageButton btnPause;
     ImageButton btnSettings;
     ImageButton btnExit;
 
@@ -202,13 +201,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         statusLoadingBar = findViewById(R.id.statusLoadingBar);
         textViewStatus = findViewById(R.id.textViewStatus);
-        btnStop = (ImageButton) findViewById(R.id.btnStop); //Main button for stopping the whole process
-        btnStart = (ImageButton) findViewById(R.id.btnPlay); //Main button for starting the whole process
+        btnPause = (ImageButton) findViewById(R.id.btnPause); //Main button for pausing the scanning and blocking process
+        btnStart = (ImageButton) findViewById(R.id.btnPlay); //Main button for starting the scanning process
         btnStorLoc = (ImageButton) findViewById(R.id.btnStorLoc); //button for getting into the storedLocations activity
         btnSettings = (ImageButton) findViewById(R.id.btnSettings); //button for getting into the settings activity
         btnExit = (ImageButton) findViewById(R.id.btnExit); //button for exiting the application
 
-        btnStop.setEnabled(false); //after the start of the app set the stop button to false because nothing is there to stop yet
+        btnPause.setEnabled(false); //after the start of the app set the pause button to false because nothing is there to pause yet
 
         /*
         final AlertDialog.Builder openScanner = new AlertDialog.Builder(MainActivity.this); //AlertDialog for getting the alert message after detection
@@ -227,9 +226,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             }
         });
 
-        btnStop.setOnClickListener(new View.OnClickListener(){
+        btnPause.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                stopApplicationProcesses();
+                pauseFirewall();
             }
         });
 
@@ -546,7 +545,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         switch (state) {
             case ON_HOLD:
                 NotificationHelper.activateOnHoldStatusNotification(getApplicationContext());
-                setGUIStateStopped();
+                setGUIStatePaused();
                 break;
             case JAMMING:
                 setGUIStateStarted();
@@ -958,23 +957,24 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         detector.startScanning(); //start scanning for signals
     }
 
-    /***
-     * Called when clicking on the stop button
+    /**
+     * Pauses the scan and blocking process. Reset the UI to paused state.
+     * Called when clicking on the pause button.
      */
-    public void stopApplicationProcesses(){
+    public void pauseFirewall(){
         //NotificationHelper.mNotificationManager.cancelAll(); //cancel all active notifications
         NotificationHelper.activateOnHoldStatusNotification(getApplicationContext()); //activate only the onHold-status notification again
-        detector.pause(); // stop scanning
+        detector.pause(); // pause scanning
         if (alert.getDialog() != null) {
             alert.getDialog().dismiss();
         }
-        Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
+        Spoofer spoof = Spoofer.getInstance(); //get the spoofing object
         spoof.stopSpoofingComplete(); //stop the whole spoofing process
-        MicCapture micCap = MicCapture.getInstance(); //get a microphone capture object
-        micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
+        MicCapture micCap = MicCapture.getInstance(); //get the microphone capture object
+        micCap.stopMicCapturingComplete(); //stop the blocking process via the microphone
         usedBlockingMethod = null;
 
-        setGUIStateStopped();
+        setGUIStatePaused();
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
         ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
@@ -982,17 +982,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         updateStateText();
     }
 
-    public void setGUIStateStopped() {
+    public void setGUIStatePaused() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 btnStart.setBackgroundColor(0XFFAAAAAA);
                 btnStart.setImageResource(R.drawable.ic_play_arrow_white_48dp);
-                btnStop.setBackgroundColor(0XFFD4D4D4);
-                btnStop.setImageResource(R.drawable.ic_pause_blue_48dp);
+                btnPause.setBackgroundColor(0XFFD4D4D4);
+                btnPause.setImageResource(R.drawable.ic_pause_blue_48dp);
 
                 btnStart.setEnabled(true); //enable the start button again
-                btnStop.setEnabled(false); //disable the stop button
+                btnPause.setEnabled(false); //disable the stop button
             }
         });
     }
@@ -1003,11 +1003,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             public void run() {
                 btnStart.setBackgroundColor(0XFFD4D4D4);
                 btnStart.setImageResource(R.drawable.ic_play_arrow_blue_48dp);
-                btnStop.setBackgroundColor(0XFFAAAAAA);
-                btnStop.setImageResource(R.drawable.ic_pause_white_48dp);
+                btnPause.setBackgroundColor(0XFFAAAAAA);
+                btnPause.setImageResource(R.drawable.ic_pause_white_48dp);
 
                 btnStart.setEnabled(false); //enable the start button again
-                btnStop.setEnabled(true); //disable the stop button
+                btnPause.setEnabled(true); //disable the stop button
             }
         });
     }
