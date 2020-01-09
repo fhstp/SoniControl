@@ -49,6 +49,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -90,11 +91,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     private ContentLoadingProgressBar statusLoadingBar;
     private TextView textViewStatus;
-    ImageButton btnStorLoc;
-    ImageButton btnStartPause;
+    Button btnStorLoc;
+    Button btnStartPause;
     //ImageButton btnPause;
-    ImageButton btnSettings;
-    ImageButton btnExit;
+    Button btnSettings;
+    Button btnExit;
 
     Scan detector;
     Location locationFinder;
@@ -202,10 +203,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         statusLoadingBar = findViewById(R.id.statusLoadingBar);
         textViewStatus = findViewById(R.id.textViewStatus);
         //btnPause = (ImageButton) findViewById(R.id.btnPause); //Main button for pausing the scanning and blocking process
-        btnStartPause = (ImageButton) findViewById(R.id.btnStartPause); //Main button for starting and pausing the scanning process
-        btnStorLoc = (ImageButton) findViewById(R.id.btnStorLoc); //button for getting into the storedLocations activity
-        btnSettings = (ImageButton) findViewById(R.id.btnSettings); //button for getting into the settings activity
-        btnExit = (ImageButton) findViewById(R.id.btnExit); //button for exiting the application
+        btnStartPause = findViewById(R.id.btnStartPause); //Main button for starting and pausing the scanning process
+        btnStorLoc =  findViewById(R.id.btnStorLoc); //button for getting into the storedLocations activity
+        btnSettings = findViewById(R.id.btnSettings); //button for getting into the settings activity
+        btnExit = findViewById(R.id.btnExit); //button for exiting the application
 
         //btnPause.setEnabled(false); //after the start of the app set the pause button to false because nothing is there to pause yet
 
@@ -1009,7 +1010,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnStartPause.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+                btnStartPause.setCompoundDrawablesWithIntrinsicBounds (0, R.drawable.ic_play_arrow_white_48dp, 0, 0);
                 /*
                 btnStartPause.setBackgroundColor(0XFFAAAAAA);
                 btnStartPause.setImageResource(R.drawable.ic_play_arrow_white_48dp);
@@ -1027,7 +1028,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnStartPause.setImageResource(R.drawable.ic_pause_white_48dp);
+                btnStartPause.setCompoundDrawablesWithIntrinsicBounds (0, R.drawable.ic_pause_white_48dp, 0, 0);
                 /*
                 btnStartPause.setBackgroundColor(0XFFD4D4D4);
                 btnStartPause.setImageResource(R.drawable.ic_play_arrow_blue_48dp);

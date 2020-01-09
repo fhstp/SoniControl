@@ -65,29 +65,33 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
-    <ImageButton
+    <Button
         android:id="@+id/btnStartPause"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="140dp"
+        android:layout_height="110dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@android:color/darker_gray"
         android:contentDescription="Firewall Start / Pause button"
-        android:src="@drawable/ic_play_arrow_white_48dp"
+        android:drawableTop="@drawable/ic_play_arrow_white_48dp"
+        android:drawableTint="@color/colorPrimary"
+        android:text="Start Firewall"
         app:layout_constraintBottom_toTopOf="@id/horizontalGuideline"
         app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
         app:layout_constraintRight_toLeftOf="@id/verticalGuideline" />
 
-    <ImageButton
+    <Button
         android:id="@+id/btnExit"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginLeft="16dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="140dp"
+        android:layout_height="110dp"
         android:layout_marginStart="16dp"
-        android:background="@android:color/darker_gray"
+        android:layout_marginLeft="16dp"
         android:contentDescription="Stop button"
-        android:src="@drawable/ic_clear_white_48dp"
+        android:drawableTop="@drawable/baseline_stop_white_48"
+        android:drawableTint="@color/colorPrimary"
+        android:text="Stop Firewall"
         app:layout_constraintLeft_toRightOf="@id/verticalGuideline"
         app:layout_constraintStart_toStartOf="@id/verticalGuideline"
         app:layout_constraintTop_toTopOf="@id/btnStartPause" />
@@ -100,25 +104,29 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <ImageButton
+    <Button
         android:id="@+id/btnStorLoc"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="140dp"
+        android:layout_height="110dp"
         android:layout_marginTop="16dp"
-        android:background="@android:color/darker_gray"
         android:contentDescription="Detection list button"
-        android:src="@drawable/ic_view_list_white_48dp"
+        android:drawableTop="@drawable/ic_view_list_white_48dp"
+        android:drawableTint="@color/colorPrimary"
+        android:text="Detections"
         app:layout_constraintLeft_toLeftOf="@id/btnStartPause"
         app:layout_constraintStart_toStartOf="@id/btnStartPause"
         app:layout_constraintTop_toBottomOf="@id/horizontalGuideline" />
 
-    <ImageButton
+    <Button
         android:id="@+id/btnSettings"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:background="@android:color/darker_gray"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="140dp"
+        android:layout_height="110dp"
         android:contentDescription="Settings button"
-        android:src="@drawable/ic_settings_white_48dp"
+        android:drawableTop="@drawable/ic_settings_white_48dp"
+        android:drawableTint="@color/colorPrimary"
+        android:text="Settings"
         app:layout_constraintLeft_toLeftOf="@id/btnExit"
         app:layout_constraintStart_toStartOf="@id/btnExit"
         app:layout_constraintTop_toTopOf="@id/btnStorLoc" />
