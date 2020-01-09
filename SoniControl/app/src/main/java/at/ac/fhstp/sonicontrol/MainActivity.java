@@ -91,8 +91,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     private ContentLoadingProgressBar statusLoadingBar;
     private TextView textViewStatus;
     ImageButton btnStorLoc;
-    ImageButton btnStart;
-    ImageButton btnPause;
+    ImageButton btnStartPause;
+    //ImageButton btnPause;
     ImageButton btnSettings;
     ImageButton btnExit;
 
@@ -201,13 +201,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         statusLoadingBar = findViewById(R.id.statusLoadingBar);
         textViewStatus = findViewById(R.id.textViewStatus);
-        btnPause = (ImageButton) findViewById(R.id.btnPause); //Main button for pausing the scanning and blocking process
-        btnStart = (ImageButton) findViewById(R.id.btnPlay); //Main button for starting the scanning process
+        //btnPause = (ImageButton) findViewById(R.id.btnPause); //Main button for pausing the scanning and blocking process
+        btnStartPause = (ImageButton) findViewById(R.id.btnStartPause); //Main button for starting and pausing the scanning process
         btnStorLoc = (ImageButton) findViewById(R.id.btnStorLoc); //button for getting into the storedLocations activity
         btnSettings = (ImageButton) findViewById(R.id.btnSettings); //button for getting into the settings activity
         btnExit = (ImageButton) findViewById(R.id.btnExit); //button for exiting the application
 
-        btnPause.setEnabled(false); //after the start of the app set the pause button to false because nothing is there to pause yet
+        //btnPause.setEnabled(false); //after the start of the app set the pause button to false because nothing is there to pause yet
 
         /*
         final AlertDialog.Builder openScanner = new AlertDialog.Builder(MainActivity.this); //AlertDialog for getting the alert message after detection
@@ -220,18 +220,18 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 */
         alert = new DetectionDialogFragment();
 
-        btnStart.setOnClickListener(new View.OnClickListener(){
+        btnStartPause.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                onBtnStartClick(v);
+                onBtnStartPauseClick(v);
             }
         });
-
+/*
         btnPause.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 pauseFirewall();
             }
         });
-
+*/
         btnStorLoc.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
             openStoredLocations();
@@ -324,7 +324,30 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         return true;
     }
 
-    private void onBtnStartClick(View v) {
+    private void onBtnStartPauseClick(View v) {
+        SharedPreferences sp = this.getSettingsObject();
+        String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+        StateEnum state;
+        try {
+            state = StateEnum.fromString(stateString);
+        }
+        catch (IllegalArgumentException e) {
+            //Log.d(TAG, "onResume: " + e.getMessage());
+            state = StateEnum.ON_HOLD;
+        }
+
+        switch (state) {
+            case ON_HOLD:
+                startFirewall();
+                break;
+            case JAMMING:
+            case SCANNING:
+                pauseFirewall();
+
+        }
+    }
+
+    private void startFirewall() {
         if(!hasPermissions(MainActivity.this, PERMISSIONS)){
             // If an explanation is needed
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
@@ -986,13 +1009,16 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnStart.setBackgroundColor(0XFFAAAAAA);
-                btnStart.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+                btnStartPause.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+                /*
+                btnStartPause.setBackgroundColor(0XFFAAAAAA);
+                btnStartPause.setImageResource(R.drawable.ic_play_arrow_white_48dp);
                 btnPause.setBackgroundColor(0XFFD4D4D4);
                 btnPause.setImageResource(R.drawable.ic_pause_blue_48dp);
 
-                btnStart.setEnabled(true); //enable the start button again
+                btnStartPause.setEnabled(true); //enable the start button again
                 btnPause.setEnabled(false); //disable the stop button
+                */
             }
         });
     }
@@ -1001,13 +1027,16 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnStart.setBackgroundColor(0XFFD4D4D4);
-                btnStart.setImageResource(R.drawable.ic_play_arrow_blue_48dp);
+                btnStartPause.setImageResource(R.drawable.ic_pause_white_48dp);
+                /*
+                btnStartPause.setBackgroundColor(0XFFD4D4D4);
+                btnStartPause.setImageResource(R.drawable.ic_play_arrow_blue_48dp);
                 btnPause.setBackgroundColor(0XFFAAAAAA);
                 btnPause.setImageResource(R.drawable.ic_pause_white_48dp);
 
-                btnStart.setEnabled(false); //enable the start button again
+                btnStartPause.setEnabled(false); //enable the start button again
                 btnPause.setEnabled(true); //disable the stop button
+                */
             }
         });
     }
