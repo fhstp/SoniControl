@@ -1028,6 +1028,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 else {
                     btnStartPause.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_play_arrow_white_48dp, 0, 0);
                 }
+                btnStartPause.setText(R.string.button_start_firewall);
                 /*
                 btnStartPause.setBackgroundColor(0XFFAAAAAA);
                 btnStartPause.setImageResource(R.drawable.ic_play_arrow_white_48dp);
@@ -1053,6 +1054,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 else {
                     btnStartPause.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_pause_white_48dp, 0, 0);
                 }
+                btnStartPause.setText(R.string.button_pause_firewall);
                 /*
                 btnStartPause.setBackgroundColor(0XFFD4D4D4);
                 btnStartPause.setImageResource(R.drawable.ic_play_arrow_blue_48dp);

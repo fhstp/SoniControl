@@ -190,4 +190,9 @@
     <string name="settings_share_detections_summary">Share your detections with the community</string>
     <string name="settings_title_dont_ask">Location permission dialog</string>
     <string name="textviewStatusInitializing">Initializing</string>
+    <string name="button_start_firewall">Start Firewall</string>
+    <string name="button_pause_firewall">Pause Firewall</string>
+    <string name="button_stop_firewall">Stop Firewall</string>
+    <string name="button_detection_list">Detections</string>
+    <string name="button_settings">Settings</string>
 </resources>

@@ -76,7 +76,8 @@
         android:contentDescription="Firewall Start / Pause button"
         android:drawableTop="@drawable/ic_play_arrow_white_48dp"
         android:drawableTint="@color/colorPrimary"
-        android:text="Start Firewall"
+        android:text="@string/button_start_firewall"
+        android:textColor="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@id/horizontalGuideline"
         app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
         app:layout_constraintRight_toLeftOf="@id/verticalGuideline" />
@@ -91,7 +92,8 @@
         android:contentDescription="Stop button"
         android:drawableTop="@drawable/baseline_stop_white_48"
         android:drawableTint="@color/colorPrimary"
-        android:text="Stop Firewall"
+        android:text="@string/button_stop_firewall"
+        android:textColor="@color/colorPrimary"
         app:layout_constraintLeft_toRightOf="@id/verticalGuideline"
         app:layout_constraintStart_toStartOf="@id/verticalGuideline"
         app:layout_constraintTop_toTopOf="@id/btnStartPause" />
@@ -113,7 +115,8 @@
         android:contentDescription="Detection list button"
         android:drawableTop="@drawable/ic_view_list_white_48dp"
         android:drawableTint="@color/colorPrimary"
-        android:text="Detections"
+        android:text="@string/button_detection_list"
+        android:textColor="@color/colorPrimary"
         app:layout_constraintLeft_toLeftOf="@id/btnStartPause"
         app:layout_constraintStart_toStartOf="@id/btnStartPause"
         app:layout_constraintTop_toBottomOf="@id/horizontalGuideline" />
@@ -126,7 +129,8 @@
         android:contentDescription="Settings button"
         android:drawableTop="@drawable/ic_settings_white_48dp"
         android:drawableTint="@color/colorPrimary"
-        android:text="Settings"
+        android:text="@string/button_settings"
+        android:textColor="@color/colorPrimary"
         app:layout_constraintLeft_toLeftOf="@id/btnExit"
         app:layout_constraintStart_toStartOf="@id/btnExit"
         app:layout_constraintTop_toTopOf="@id/btnStorLoc" />
