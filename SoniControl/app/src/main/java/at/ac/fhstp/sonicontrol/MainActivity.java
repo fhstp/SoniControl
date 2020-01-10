@@ -27,6 +27,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -40,6 +41,8 @@ import android.provider.Settings;
 //import android.support.design.widget.Snackbar;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.fragment.app.DialogFragment;
 //import androidx.core.app.DialogFragment;
@@ -51,7 +54,6 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -207,6 +209,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         btnStorLoc =  findViewById(R.id.btnStorLoc); //button for getting into the storedLocations activity
         btnSettings = findViewById(R.id.btnSettings); //button for getting into the settings activity
         btnExit = findViewById(R.id.btnExit); //button for exiting the application
+
+        // Set the tinting color for the button icons on older versions
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            tintCompat(btnStartPause, R.drawable.ic_play_arrow_white_48dp, R.color.colorPrimary, this);
+            tintCompat(btnExit, R.drawable.baseline_stop_white_48, R.color.colorPrimary, this);
+            tintCompat(btnStorLoc, R.drawable.ic_view_list_white_48dp, R.color.colorPrimary, this);
+            tintCompat(btnSettings, R.drawable.ic_settings_white_48dp, R.color.colorPrimary, this);
+        }
 
         //btnPause.setEnabled(false); //after the start of the app set the pause button to false because nothing is there to pause yet
 
@@ -1007,10 +1017,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void setGUIStatePaused() {
+        final Context context = this.getApplicationContext();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnStartPause.setCompoundDrawablesWithIntrinsicBounds (0, R.drawable.ic_play_arrow_white_48dp, 0, 0);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    // Set the right icon and tinting color
+                    tintCompat(btnStartPause, R.drawable.ic_play_arrow_white_48dp, R.color.colorPrimary, context);
+                }
+                else {
+                    btnStartPause.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_play_arrow_white_48dp, 0, 0);
+                }
                 /*
                 btnStartPause.setBackgroundColor(0XFFAAAAAA);
                 btnStartPause.setImageResource(R.drawable.ic_play_arrow_white_48dp);
@@ -1025,10 +1042,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     }
 
     public void setGUIStateStarted() {
+        final Context context = this.getApplicationContext();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                btnStartPause.setCompoundDrawablesWithIntrinsicBounds (0, R.drawable.ic_pause_white_48dp, 0, 0);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    // Set the right icon and tinting color
+                    tintCompat(btnStartPause, R.drawable.ic_pause_white_48dp, R.color.colorPrimary, context);
+                }
+                else {
+                    btnStartPause.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_pause_white_48dp, 0, 0);
+                }
                 /*
                 btnStartPause.setBackgroundColor(0XFFD4D4D4);
                 btnStartPause.setImageResource(R.drawable.ic_play_arrow_blue_48dp);
@@ -1040,6 +1064,21 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 */
             }
         });
+    }
+
+    private void tintCompat(Button button, int drawableIcon, int tintColor, Context context) {
+        // Source: https://stackoverflow.com/a/29890717
+        Drawable drawable = ContextCompat.getDrawable(context, drawableIcon);
+        // TODO: test on Android 16 and > 23, works for 22.
+        Drawable wrapDrawable = DrawableCompat.wrap(drawable);
+        button.setCompoundDrawablesWithIntrinsicBounds(null, wrapDrawable, null, null);
+        DrawableCompat.setTint(wrapDrawable, getResources().getColor(tintColor));
+
+        /*// Other option, that should work for any version: Source: https://stackoverflow.com/a/30880522
+        drawable = drawable.mutate();
+        drawable.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_IN);
+        btnSettings.setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);*/
+
     }
 
     public void openStoredLocations(){
