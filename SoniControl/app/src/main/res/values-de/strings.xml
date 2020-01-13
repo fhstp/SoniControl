@@ -75,7 +75,16 @@
     </string>
     <string name="privacy_policy_label">Datenschutzerklärung</string>
     <string name="sonicontrolLink">https://sonicontrol.fhstp.ac.at</string>
-    <string name="instructionsText">Willkommen zur SoniControl Firewall.\n\nSonicontrol scannt nach Ultraschallnachrichten von anderen Smarphones oder Audiobeacons in der Umgebung und benachrichtigt Sie wenn eine Nachricht erkannt wurde. Sie können dann auswählen, ob diese Nachricht blockiert werden soll (auch zukünftig an diesem Ort) oder ob sie durchgelassen werden soll. \n\nSoniControl braucht die Mikrofonberechtigung, um ordnungsgemäß arbeiten zu können und braucht weiters die Standortfreigabe (optional), um den Ort zu einer erkannten Nachricht speichern zu können. \n\nWir versenden keine Daten von Ihrem Smartphone und speichern auch keine privaten, sensiblen Daten.\n\nUm den Scanvorgang zu starten, müssen Sie den Startbutton antippen.</string>
+    <string name="instructionsText">&lt;big>Willkommen zur SoniControl Firewall&lt;/big>
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Quick-Start&lt;/b>&lt;br>
+        Tippen Sie den Startbutton an, um den Scanvorgang zu starten.&lt;/p>
+
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Beschreibung&lt;/b>&lt;br>
+        Sonicontrol scannt nach Ultraschallnachrichten von anderen Smarphones oder Audiobeacons in der Umgebung und benachrichtigt Sie wenn eine Nachricht erkannt wurde. Sie können dann auswählen, ob diese Nachricht blockiert werden soll (auch zukünftig an diesem Ort) oder ob sie durchgelassen werden soll.&lt;/p>
+
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Berechtigungen&lt;/b>&lt;br>
+        SoniControl braucht die Mikrofonberechtigung, um ordnungsgemäß arbeiten zu können und braucht weiters die Standortfreigabe (optional), um den Ort zu einer erkannten Nachricht speichern zu können. \n\nWir versenden keine Daten von Ihrem Smartphone und speichern auch keine privaten, sensiblen Daten.&lt;/p>
+    </string>
     <string name="instructionsTitle">Anleitung</string>
     <string name="alert_no_json_file_message">Um erkannte Ultraschallsignale zu speichern/anzuzeigen, müssen Sie die Einstellung \'In JSON Datei speichern\' ankreuzen.</string>
     <string name="alert_no_json_file_title">Keine JSON Datei</string>

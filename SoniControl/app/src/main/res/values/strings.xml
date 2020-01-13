@@ -75,7 +75,16 @@
     </string>
     <string name="privacy_policy_label">Privacy policy</string>
     <string name="sonicontrolLink">https://sonicontrol.fhstp.ac.at</string>
-    <string name="instructionsText">Welcome to the SoniControl firewall.\n\nSoniControl scans for ultrasonic messages coming from other phones or audio beacons in your environment and notifies you about such detections. On a detection you can choose to block the messages (also future messages at the same location) or to let it pass. \n\nSoniControl needs access to the microphone to work properly, and to your location (optional) to remember places where ultrasounds should be blocked. \n\nWe do not transmit any data from your phone and do not store privacy-sensitive data.\n\nTap the play button to start scanning for ultrasonic signals.</string>
+    <string name="instructionsText">&lt;big>Welcome to the SoniControl firewall&lt;/big>
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Quick start&lt;/b>&lt;br>
+        Tap the Start Firewall button to start scanning for ultrasonic signals.&lt;/p>
+
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Description&lt;/b>&lt;br>
+        SoniControl scans for ultrasonic messages coming from other phones or audio beacons in your environment and notifies you about such detections. On a detection you can choose to block the messages (also future messages at the same location) or to let it pass.&lt;/p>
+
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Permissions&lt;/b>&lt;br>
+        SoniControl needs access to the microphone to work properly, and to your location (optional) to remember places where ultrasounds should be blocked. \n\nWe do not transmit any data from your phone and do not store privacy-sensitive data.&lt;/p>
+    </string>
     <string name="instructionsTitle">Instructions</string>
     <string name="alert_no_json_file_message">To save/see locations where ultrasonic communications were detected, you need to check the \'Save data in JSON file\' setting</string>
     <string name="alert_no_json_file_title">No JSON file</string>

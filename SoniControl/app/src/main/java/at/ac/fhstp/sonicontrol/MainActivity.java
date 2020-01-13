@@ -1230,13 +1230,6 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         return mediaPlayer;
     }
 
-    public void onFirstOpeningShowWelcome(){
-        new AlertDialog.Builder(this).
-                setTitle(R.string.instructionsTitle).
-                setMessage(R.string.instructionsText)
-            .setPositiveButton("OK", null).show();
-    }
-
     public void updateJSONHistory(){
         jsonMan.updateJSONHistory();
     }
@@ -1246,7 +1239,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         boolean isFirstRun = sp.getBoolean("isFirstRun", true);
         //Log.d("I am in First run", String.valueOf(isFirstRun));
         if (isFirstRun){
-            onFirstOpeningShowWelcome();
+            openInstructions();
             sp
                     .edit()
                     .putBoolean("isFirstRun", false)

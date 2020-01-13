@@ -24,12 +24,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+
+import static androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY;
 
 /**
  * Created by aringot on 17.01.2018.
@@ -125,7 +129,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void openInstructions(){
-        new AlertDialog.Builder(this).setTitle(R.string.instructionsTitle).setMessage(R.string.instructionsText).setPositiveButton("OK", null).show();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.instructionsTitle)
+                .setMessage(HtmlCompat.fromHtml(getString(R.string.instructionsText), FROM_HTML_MODE_LEGACY))
+                .setPositiveButton("OK", null)
+                .show();
     }
 
     public void openAboutUs(){
