@@ -20,6 +20,7 @@
 package at.ac.fhstp.sonicontrol;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -83,6 +84,7 @@ import retrofit2.Response;
 import uk.me.berndporr.iirj.Butterworth;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
+import static at.ac.fhstp.sonicontrol.ConfigConstants.ON_IGNORE_SNACKBAR_DURATION;
 import static at.ac.fhstp.sonicontrol.utils.Recognition.computeRecognition;
 
 
@@ -1280,6 +1282,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
     }
 
+    @SuppressLint("WrongConstant") // Bug in the linting, see https://stackoverflow.com/a/31979209
     @Override
     public void onAlertDismissAlways(DialogFragment dialog){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE);
@@ -1288,9 +1291,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
         Snackbar.make(((ViewGroup) MainActivity.this
-                .findViewById(android.R.id.content)).getChildAt(0), dialog.getContext().getString(R.string.onIgnorePauseFirewallHint), Snackbar.LENGTH_LONG).show();
+                .findViewById(android.R.id.content)).getChildAt(0),
+                dialog.getContext().getString(R.string.onIgnorePauseFirewallHint),
+                ON_IGNORE_SNACKBAR_DURATION).show();
     }
 
+    @SuppressLint("WrongConstant") // Bug in the linting, see https://stackoverflow.com/a/31979209
     @Override
     public void onAlertDismissThisTime(DialogFragment dialog){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME);
@@ -1298,7 +1304,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
 
         Snackbar.make(((ViewGroup) MainActivity.this
-                .findViewById(android.R.id.content)).getChildAt(0), dialog.getContext().getString(R.string.onIgnorePauseFirewallHint), Snackbar.LENGTH_LONG).show();
+                .findViewById(android.R.id.content)).getChildAt(0),
+                dialog.getContext().getString(R.string.onIgnorePauseFirewallHint),
+                ON_IGNORE_SNACKBAR_DURATION).show();
     }
 
     /*@Override
