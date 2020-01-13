@@ -53,6 +53,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -680,7 +681,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
 
         updateStateText();
-        Snackbar.make(findViewById(android.R.id.content).getRootView(), state.toString(),
+        Snackbar.make(((ViewGroup) MainActivity.this
+                        .findViewById(android.R.id.content)).getChildAt(0), state.toString(),
                 Snackbar.LENGTH_SHORT)
                 .show();
 
@@ -1285,6 +1287,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         checkForActivatedLocation();
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
+        Snackbar.make(((ViewGroup) MainActivity.this
+                .findViewById(android.R.id.content)).getChildAt(0), dialog.getContext().getString(R.string.onIgnorePauseFirewallHint), Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -1292,6 +1296,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         onAlertChoice(ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME);
         detector.startScanning(); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
+
+        Snackbar.make(((ViewGroup) MainActivity.this
+                .findViewById(android.R.id.content)).getChildAt(0), dialog.getContext().getString(R.string.onIgnorePauseFirewallHint), Snackbar.LENGTH_LONG).show();
     }
 
     /*@Override

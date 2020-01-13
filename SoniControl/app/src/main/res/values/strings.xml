@@ -191,6 +191,7 @@
     <string name="settings_title_dont_ask">Location permission dialog</string>
     <string name="textviewStatusInitializing">Initializing</string>
     <string name="button_start_firewall">Start Firewall</string>
+    <string name="onIgnorePauseFirewallHint">Ignored. If you like to use ultrasound, you should pause the firewall.</string>
     <string name="button_pause_firewall">Pause Firewall</string>
     <string name="button_stop_firewall">Stop Firewall</string>
     <string name="button_detection_list">Detections</string>
