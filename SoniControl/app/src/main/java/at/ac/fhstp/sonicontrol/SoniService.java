@@ -61,7 +61,7 @@ public class SoniService extends Service {
 
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             SharedPreferences.Editor ed = sp.edit();
-            ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+            ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.STOPPED.toString());
             ed.apply();
 
             SoniService.IS_SERVICE_RUNNING = false;

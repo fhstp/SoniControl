@@ -36,6 +36,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 //import android.support.design.widget.Snackbar;
@@ -167,6 +168,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     SharedPreferences sharedPref;
 
     AlertDialog alertLocation = null;
+    private long lastClickTime = 0;
+    private static final long MIN_CLICK_INTERVAL=400;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -233,6 +236,12 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         btnStartPause.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                // double-clicking prevention, using threshold MIN_CLICK_INTERVAL
+                if (SystemClock.elapsedRealtime() - lastClickTime < MIN_CLICK_INTERVAL){
+                    return;
+                }
+                lastClickTime = SystemClock.elapsedRealtime();
+
                 onBtnStartPauseClick(v);
             }
         });
@@ -286,31 +295,24 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             NotificationHelper.cancelStatusNotification(MainActivity.this);
         }
 
-        if (pitchShiftPlayer != null) {
-            pitchShiftPlayer.cleanup();
-            pitchShiftPlayer.removeDetectionListener();
-            pitchShiftPlayer = null;
+        if (alert.getDialog() != null) {
+            alert.getDialog().dismiss();
         }
+        setGUIStatePaused();
         
         // Reset state
         SharedPreferences sp = getSettingsObject();
         SharedPreferences.Editor ed = sp.edit();
-        ed.remove(ConfigConstants.PREFERENCES_APP_STATE);
+        //ed.remove(ConfigConstants.PREFERENCES_APP_STATE);
+        ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.STOPPED.toString());
         // Clean the technology on disk
         ed.remove(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF);
         // Note: this is blocking the thread, but we want to be sure that it gets persisted.
-        ed.commit();
-/*
-        NotificationHelper.mNotificationManager.cancelAll(); //cancel all notifications
+        //ed.commit();
+        ed.apply();
+        updateStateText();
 
-        // Cancel the pending intent corresponding to the notification
-        PendingIntent resultPendingIntent = NotificationHelper.getPendingIntentStatusNoCreate(getApplicationContext());
-        if (resultPendingIntent != null)
-            resultPendingIntent.cancel();
-*/
         NotificationHelper.cancelDetectionAlertStatusNotification(getApplicationContext());
-
-        locationFinder.removeGPSUpdates();
 
         detector.stopIO(); // release audio resources from the scanner
         Spoofer spoof = Spoofer.getInstance(); //get a spoofing object
@@ -319,9 +321,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         micCap.stopMicCapturingComplete(); //stop the whole capturing process via the microphone
         usedBlockingMethod = null;
 
+        if (pitchShiftPlayer != null) {
+            pitchShiftPlayer.cleanup();
+            pitchShiftPlayer.removeDetectionListener();
+            pitchShiftPlayer = null;
+        }
+        locationFinder.removeGPSUpdates();
+
+        // Stop instead of Exit
         // Stop all the background threads
-        threadPool.shutdownNow();
-        System.exit(0); //exit the application
+        //threadPool.shutdownNow();
+        //System.exit(0); //exit the application
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -337,24 +347,25 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     private void onBtnStartPauseClick(View v) {
         SharedPreferences sp = this.getSettingsObject();
-        String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+        String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.STOPPED.toString());
         StateEnum state;
         try {
             state = StateEnum.fromString(stateString);
         }
         catch (IllegalArgumentException e) {
             //Log.d(TAG, "onResume: " + e.getMessage());
-            state = StateEnum.ON_HOLD;
+            state = StateEnum.STOPPED;
         }
 
         switch (state) {
+            case STOPPED:
             case ON_HOLD:
                 startFirewall();
                 break;
             case JAMMING:
             case SCANNING:
                 pauseFirewall();
-
+                break;
         }
     }
 
@@ -565,18 +576,21 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean("active", true);
         ed.apply();
-        String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+        String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.STOPPED.toString());
         StateEnum state;
         try {
             state = StateEnum.fromString(stateString);
         }
         catch (IllegalArgumentException e) {
             //Log.d(TAG, "onResume: " + e.getMessage());
-            state = StateEnum.ON_HOLD;
+            state = StateEnum.STOPPED;
         }
 
         Intent intent = getIntent();
         switch (state) {
+            case STOPPED:
+                setGUIStatePaused();
+                break;
             case ON_HOLD:
                 NotificationHelper.activateOnHoldStatusNotification(getApplicationContext());
                 setGUIStatePaused();
@@ -693,20 +707,23 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         @Override
         public void run() {
             SharedPreferences sp = getSettingsObject();
-            String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+            String stateString = sp.getString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.STOPPED.toString());
             StateEnum state;
             try {
                 state = StateEnum.fromString(stateString);
             }
             catch (IllegalArgumentException e) {
                 Log.w(TAG, "updateStateText, StateEnum changed? Error: " + e.getMessage());
-                state = StateEnum.ON_HOLD;
+                state = StateEnum.STOPPED;
             }
 
             // Should not be visible by default, will be set to visible if initialization is ongoing
             statusLoadingBar.setVisibility(View.GONE);
             //Would it be better to retrieve both shared preferences here directly?
             switch (state) {
+                case STOPPED:
+                    textViewStatus.setText(getString(R.string.textviewStatusStopped));
+                    break;
                 case ON_HOLD:
                     textViewStatus.setText(getString(R.string.StatusNotificationOnHoldMessage));
                     break;
@@ -724,7 +741,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     }
                     break;
                 default:
-                    textViewStatus.setText(getString(R.string.StatusNotificationOnHoldMessage));
+                    textViewStatus.setText(getString(R.string.textviewStatusStopped));
                     break;
             }
         }

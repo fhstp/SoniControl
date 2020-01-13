@@ -196,4 +196,5 @@
     <string name="button_stop_firewall">Stop Firewall</string>
     <string name="button_detection_list">Erkennungen</string>
     <string name="button_settings">Einstellungen</string>
+    <string name="textviewStatusStopped">Gestoppt.</string>
 </resources>

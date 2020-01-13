@@ -30,7 +30,8 @@ public enum StateEnum {
      */
     ON_HOLD("On hold"),
     SCANNING("Scanning"),
-    JAMMING("Jamming");
+    JAMMING("Jamming"),
+    STOPPED("Stopped");
 
     private String stringValue;
 

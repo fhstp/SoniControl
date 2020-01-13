@@ -580,7 +580,17 @@ static void resumeIO() {
 }
 
 void stopIO() {
-    delete(audioIO);
+    if (audioIO != NULL) { // Safety check to avoid a crash, should not be needed
+        delete audioIO;
+        audioIO = NULL;
+
+        free(magnitudeLeft);
+        free(magnitudeRight);
+        free(phaseLeft);
+        free(phaseRight);
+        free(inputBufferFloat);
+        free(bufferHistory);
+    }
 }
 
 static void startIO() {

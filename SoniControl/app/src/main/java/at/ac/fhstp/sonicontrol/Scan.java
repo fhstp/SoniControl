@@ -201,6 +201,7 @@ public class Scan {
      * Will delete the audioIO object, thus releasing audio resources
      */
     public void stopIO() {
+        paused = false; // False, it is actually stopped. Should not be resumed but restarted.
         StopIO();
     }
 
