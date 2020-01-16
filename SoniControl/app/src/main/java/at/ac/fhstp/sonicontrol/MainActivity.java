@@ -229,7 +229,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         });
 
         btnExit.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){onBtnExitClick(v);
+            public void onClick(View v){
+                // double-clicking prevention, using threshold MIN_CLICK_INTERVAL
+                if (SystemClock.elapsedRealtime() - lastClickTime < MIN_CLICK_INTERVAL){
+                    return;
+                }
+                lastClickTime = SystemClock.elapsedRealtime();
+                onBtnExitClick(v);
             }
         });
 
