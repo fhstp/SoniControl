@@ -56,7 +56,7 @@
     <string name="alertDialog_option_dismiss_always_here">Hier immer ignorieren</string>
     <string name="alertDialog_option_jam_this_time">Dieses Mal blockieren</string>
     <string name="alertDialog_text_ultrasonic_signal_detected">Ultraschallsignal erkannt</string>
-    <string name="alertDialog_option_play">Abspielen</string>
+    <string name="alertDialog_option_play">Mach es hörbar!</string>
     <string name="storedLocationActivityTitle">Erkannte Signale</string>
     <string name="SettingsActivityTitle">Einstellungen</string>
     <string name="AboutUsActivityTitle">Über Uns</string>
@@ -207,4 +207,5 @@
     <string name="button_settings">Einstellungen</string>
     <string name="textviewStatusStopped">Gestoppt.</string>
     <string name="onIgnorePauseFirewallHint">Ignoriert. Wenn Sie Ultraschall verwenden möchten, sollten Sie die Firewall pausieren.</string>
+    <string name="alert_spectrogram_title">Fingerabdruck des Signals</string>
 </resources>

@@ -72,6 +72,18 @@
         app:layout_constraintTop_toBottomOf="@id/placeholderSpectrogram"
         />
 
+    <TextView
+        android:id="@+id/txtSpectrogramTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spectrogram_view"
+        tools:text="@string/alert_spectrogram_title" />
+
     <androidx.core.widget.ContentLoadingProgressBar
         android:id="@+id/progressBar"
         style="@android:style/Widget.ProgressBar.Small.Inverse"
@@ -86,15 +98,16 @@
 
     <Button
         android:id="@+id/btnReplay"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="@string/alertDialog_option_play"
         android:visibility="visible"
+        android:drawableLeft="@drawable/ic_play_arrow_blue_48dp"
         app:layout_constraintBottom_toTopOf="@id/txtProceed"
         app:layout_constraintEnd_toStartOf="@id/cbSharing"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spectrogram_view" />
+        app:layout_constraintTop_toBottomOf="@id/txtSpectrogramTitle" />
 
     <Button
         android:id="@+id/btnShare"
