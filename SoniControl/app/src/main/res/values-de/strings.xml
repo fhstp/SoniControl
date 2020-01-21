@@ -52,9 +52,9 @@
 \n\nBei Fragen, Bugs, Ideen, kontaktieren Sie uns bitte direkt unter https://sonicontrol.fhstp.ac.at/#contact oder der Email-Adresse sonicontrol@fhstp.ac.at.</string>
     <string name="toastMessageNoGeocoderConnection">Der Standort konnte nicht ermittelt werden</string>
     <string name="alertDialog_option_jam_always_here">Hier immer blockieren</string>
-    <string name="alertDialog_option_dismiss_this_time">Dieses Mal ignorieren</string>
+    <string name="alertDialog_option_dismiss_this_time">Zulassen</string>
     <string name="alertDialog_option_dismiss_always_here">Hier immer ignorieren</string>
-    <string name="alertDialog_option_jam_this_time">Dieses Mal blockieren</string>
+    <string name="alertDialog_option_jam_this_time">Blockieren</string>
     <string name="alertDialog_text_ultrasonic_signal_detected">Ultraschallsignal erkannt</string>
     <string name="alertDialog_option_play">Mach es hörbar!</string>
     <string name="storedLocationActivityTitle">Erkannte Signale</string>
@@ -166,7 +166,7 @@
     <string name="permission_explanation_map_button_positive">Das Berechtigungsmenü öffnen</string>
     <string name="import_filtered_detections_failure_snackbar">Der Server ist momentan nicht erreichbar. Bitte versuchen Sie es später nochmal!</string>
     <string name="map_dialog_legend_title">Legende</string>
-    <string name="alert_share_your_detection">Teile die Erkennung</string>
+    <string name="alert_share_your_detection">Halte die Erkennung für andere fest</string>
     <string name="filter_import_dialog_title">Möchten sie die Firewall-Regeln importieren?</string>
     <string name="filter_import_dialog_message">Das Filtern ergibt %s Firewall-Regeln.</string>
     <string name="stored_adapter_detection_counter_title">Erkennungen:</string>
@@ -208,4 +208,7 @@
     <string name="textviewStatusStopped">Gestoppt.</string>
     <string name="onIgnorePauseFirewallHint">Ignoriert. Wenn Sie Ultraschall verwenden möchten, sollten Sie die Firewall pausieren.</string>
     <string name="alert_spectrogram_title">Fingerabdruck des Signals</string>
+    <string name="on_alert_network_not_enabled">Keine Internetverbindung.</string>
+    <string name="alert_save_as_firewall_rule">Meine Entscheidung als Firewall-Regel speichern</string>
+    <string name="alert_unknown_date">Unbekanntes Datum</string>
 </resources>
