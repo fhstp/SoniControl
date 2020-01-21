@@ -21,7 +21,7 @@ package at.ac.fhstp.sonicontrol;
 
 
 public final class ConfigConstants {
-    public static final int ON_IGNORE_SNACKBAR_DURATION = 4000; //ms
+    public static final int ON_IGNORE_SNACKBAR_DURATION = 6000; //ms
 
     public static final String JSON_FILENAME = "soni.json";
     public static final String DIR_NAME_SAVED_RECORDINGS = "/detected-files";
