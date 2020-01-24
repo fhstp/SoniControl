@@ -191,9 +191,9 @@
     <string name="settings_share_detections_summary">Erkennungen mit der Community teilen</string>
     <string name="settings_title_dont_ask">Standortfreigabedialog</string>
     <string name="textviewStatusInitializing">Initialisierung</string>
-    <string name="button_pause_firewall">Pause Firewall</string>
-    <string name="button_start_firewall">Start Firewall</string>
-    <string name="button_stop_firewall">Stop Firewall</string>
+    <string name="button_pause_firewall">Firewall pausieren</string>
+    <string name="button_start_firewall">Firewall starten</string>
+    <string name="button_stop_firewall">Firewall stoppen</string>
     <string name="button_detection_list">Erkennungen</string>
     <string name="button_settings">Einstellungen</string>
     <string name="textviewStatusStopped">Gestoppt.</string>
