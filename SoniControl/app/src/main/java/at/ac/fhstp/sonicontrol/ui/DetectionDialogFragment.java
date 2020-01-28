@@ -185,7 +185,13 @@ public class DetectionDialogFragment extends DialogFragment {
         btnAlertDismissThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 setLastSharingDecision(cbSharing.isChecked());
-                listener.onAlertDismissThisTime(DetectionDialogFragment.this);
+
+                if (cbSaveAsFirewallRule.isChecked()) {
+                    listener.onAlertDismissAlways(DetectionDialogFragment.this);
+                }
+                else {
+                    listener.onAlertDismissThisTime(DetectionDialogFragment.this);
+                }
             }
         });
 /*
@@ -199,7 +205,13 @@ public class DetectionDialogFragment extends DialogFragment {
         btnAlertBlockThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 setLastSharingDecision(cbSharing.isChecked());
-                listener.onAlertBlockThisTime(DetectionDialogFragment.this);
+
+                if (cbSaveAsFirewallRule.isChecked()) {
+                    listener.onAlertBlockAlways(DetectionDialogFragment.this);
+                }
+                else {
+                    listener.onAlertBlockThisTime(DetectionDialogFragment.this);
+                }
             }
         });
 
@@ -236,7 +248,6 @@ public class DetectionDialogFragment extends DialogFragment {
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(ConfigConstants.LAST_DECISION_ON_SHARING, isChecked);
         editor.apply();
-        editor.commit();
     }
 
     /*package-private*/void setTechnologyText(String technology) {

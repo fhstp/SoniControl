@@ -34,7 +34,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/txtAlertDate"
-        tools:text="@string/gui_technology"
+        tools:text="Location_placeholder"
         android:layout_marginLeft="24dp" />
 
     <TextView
@@ -46,7 +46,7 @@
         app:layout_constraintStart_toStartOf="@id/txtAlertLocation"
         app:layout_constraintTop_toBottomOf="@id/txtAlertLocation"
         app:layout_constraintBottom_toTopOf="@id/txtSignalType"
-        android:text="@string/gui_technology" />
+        android:text="Date_placeholder" />
 
     <TextView
         android:id="@+id/txtSignalType"
@@ -127,15 +127,20 @@
 
     <TextView
         android:id="@+id/txtNoInternet"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/on_alert_network_not_enabled"
         android:textColor="@android:color/holo_orange_dark"
-        app:layout_constraintStart_toStartOf="@id/cbSharing"
+        android:visibility="visible"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/cbSaveAsFirewallRule"
-        app:layout_constraintTop_toBottomOf="@id/cbSharing"
-        android:visibility="gone" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/cbSharing"
+        app:layout_constraintTop_toBottomOf="@id/cbSharing" />
 
     <CheckBox
         android:id="@+id/cbSaveAsFirewallRule"
@@ -147,15 +152,20 @@
 
     <TextView
         android:id="@+id/txtNoLocation"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/on_alert_no_location_message"
         android:textColor="@android:color/holo_orange_dark"
-        app:layout_constraintStart_toStartOf="@id/cbSaveAsFirewallRule"
-        app:layout_constraintTop_toBottomOf="@id/cbSaveAsFirewallRule"
+        android:visibility="visible"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/btnDismissThisTime"
-        android:visibility="gone"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/cbSaveAsFirewallRule"
+        app:layout_constraintTop_toBottomOf="@id/cbSaveAsFirewallRule" />
 
     <Button
         android:id="@+id/btnDismissThisTime"

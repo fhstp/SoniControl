@@ -1163,8 +1163,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
 
         pitchShiftPlayer.playPause();
-        int playPauseText = pitchShiftPlayer.isPlaying() ? R.string.ButtonStopSignal : R.string.alertDialog_option_play;
-        alert.btnAlertReplay.setText(playPauseText); //set the button for playing/stopping
+        if (pitchShiftPlayer.isPlaying()) {
+            alert.btnAlertReplay.setText(R.string.ButtonStopSignal);
+            alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pause_white_48dp, 0, 0, 0);
+        }
+        else {
+            alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
+            alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_arrow_white_48dp, 0, 0, 0);
+        }
     }
 
     @Override
