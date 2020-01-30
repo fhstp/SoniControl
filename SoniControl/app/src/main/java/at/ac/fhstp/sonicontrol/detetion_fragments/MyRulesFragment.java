@@ -32,13 +32,13 @@ import at.ac.fhstp.sonicontrol.R;
 import at.ac.fhstp.sonicontrol.StoredLocations;
 import at.ac.fhstp.sonicontrol.Stored_Adapter;
 
-public class MyRulesFragment extends Fragment {
+public class MyRulesFragment extends Fragment implements Stored_Adapter.OnItemClickListener{
 
     MainActivity main = new MainActivity();
     private static StoredLocations instanceStoredLoc;
     JSONManager jsonMan;
     ArrayList<String[]> data;
-    ListAdapter stored_adapter;
+    Stored_Adapter stored_adapter;
     ListView lv;
     MainActivity nextMain;
     AlertDialog alertDelete = null;
@@ -74,6 +74,8 @@ public class MyRulesFragment extends Fragment {
     Long timeTo;
     DatePicker datePicker;
     TimePicker timePicker;
+    MyRulesFragment localContext;
+
 
     @Nullable
     @Override
@@ -89,6 +91,8 @@ public class MyRulesFragment extends Fragment {
         jsonMan = new JSONManager(nextMain);
 
         data = jsonMan.getJsonData();
+
+        localContext = this;
 
         txtNothingDiscovered = (TextView) rootView.findViewById(R.id.txtNoDetectionsYet);
         /*fabImportDetections = (FloatingActionButton) rootView.findViewById(R.id.fabImportDetections);
@@ -112,6 +116,7 @@ public class MyRulesFragment extends Fragment {
         lv.setAdapter(null);
         final Context listContext = getActivity();
         stored_adapter = new Stored_Adapter(getActivity(), data);
+        stored_adapter.addOnItemClickListener(localContext);
 
 
         final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(getActivity());
@@ -134,6 +139,7 @@ public class MyRulesFragment extends Fragment {
                         }
                         lv.setAdapter(null);
                         stored_adapter = new Stored_Adapter(listContext, data);
+                        stored_adapter.addOnItemClickListener(localContext);
                         lv.setAdapter(stored_adapter);
                     }
                 })
@@ -150,7 +156,9 @@ public class MyRulesFragment extends Fragment {
                 new AdapterView.OnItemClickListener(){
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String[] singleArrayItem = (String[]) parent.getItemAtPosition(position);
+
+                        Log.d("MyRulesFragment", "onItemClick");
+                        /*String[] singleArrayItem = (String[]) parent.getItemAtPosition(position);
                         double[] positionSignal = new double[2];
                         positionSignal[0] = Double.valueOf(singleArrayItem[0]);
                         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
@@ -159,7 +167,8 @@ public class MyRulesFragment extends Fragment {
                         data = jsonMan.getJsonData();
                         lv.setAdapter(null);
                         stored_adapter = new Stored_Adapter(listContext, data);
-                        lv.setAdapter(stored_adapter);
+                        stored_adapter.addOnItemClickListener(localContext);
+                        lv.setAdapter(stored_adapter);*/
 
                     }
                 }
@@ -185,4 +194,35 @@ public class MyRulesFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onAllowedClick(String[] singleArrayItem, int spoofingStatus) {
+        Log.d("MyRulesFragment", "onAllowedClick");
+        changeRuleItem(singleArrayItem, spoofingStatus);
+    }
+
+    @Override
+    public void onBlockedClick(String[] singleArrayItem, int spoofingStatus) {
+        Log.d("MyRulesFragment", "onBlockedClick");
+        changeRuleItem(singleArrayItem, spoofingStatus);
+    }
+
+    @Override
+    public void onAskAgainClick(String[] singleArrayItem, int spoofingStatus) {
+        Log.d("MyRulesFragment", "onAskAgainClick");
+        changeRuleItem(singleArrayItem, spoofingStatus);
+    }
+
+    private void changeRuleItem(String[] singleArrayItem, int spoofingStatus){
+        double[] positionSignal = new double[2];
+        positionSignal[0] = Double.valueOf(singleArrayItem[0]);
+        positionSignal[1] = Double.valueOf(singleArrayItem[1]);
+        Log.d("MyRulesFragment", "changeRuleItem "+ spoofingStatus);
+        jsonMan.setShouldBeSpoofedInStoredLoc(positionSignal,singleArrayItem[2], spoofingStatus);
+        jsonMan = new JSONManager(nextMain);
+        data = jsonMan.getJsonData();
+        lv.setAdapter(null);
+        stored_adapter = new Stored_Adapter(localContext.getContext(), data);
+        stored_adapter.addOnItemClickListener(localContext);
+        lv.setAdapter(stored_adapter);
+    }
 }

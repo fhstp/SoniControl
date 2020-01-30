@@ -30,18 +30,18 @@
         android:layout_height="match_parent"
         android:weightSum="1">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:autoLink="web|email"
-        android:linksClickable="true"
-        android:text="@string/aboutUsProject"
-        android:textColor="@android:color/black" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:autoLink="web|email"
+            android:linksClickable="true"
+            android:text="@string/aboutUsProject"
+            android:textColor="@android:color/black" />
 
 
 
