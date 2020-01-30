@@ -142,10 +142,10 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void setActiveRuleInfoMenuItem(boolean activate){
-        if(menu!=null) menu.findItem(R.id.show_rules_info).setVisible(activate);
+        if(menu!=null) menu.findItem(R.id.show_rules_info).setVisible(activate).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     }
 
     public void setActiveSettingsInfoMenuItem(boolean activate){
-        if(menu!=null) menu.findItem(R.id.show_settings_info).setVisible(activate);
+        if(menu!=null) menu.findItem(R.id.show_settings_info).setVisible(activate).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     }
 }

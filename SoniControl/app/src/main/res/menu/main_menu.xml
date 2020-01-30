@@ -26,19 +26,19 @@
     <item
         android:id="@+id/show_rules_info"
         android:orderInCategory="100"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/ic_info_outline_white_48dp"
-        android:title="Rules Info"/>
+        android:title="@string/menuitem_rules_info"/>
     <item
         android:id="@+id/show_settings_info"
         android:orderInCategory="100"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/ic_info_outline_white_48dp"
-        android:title="Rules Info"/>
+        android:title="@string/menuitem_settings_info"/>
     <item
         android:id="@+id/open_help"
         android:orderInCategory="100"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/ic_help_outline_white_48dp"
         android:title="@string/help_menuItem"/>
     <item
