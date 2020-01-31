@@ -34,6 +34,7 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
 import at.ac.fhstp.sonicontrol.ConfigConstants;
+import at.ac.fhstp.sonicontrol.R;
 import at.ac.fhstp.sonicontrol.SignalConverter;
 import at.ac.fhstp.sonicontrol.Technology;
 import at.ac.fhstp.sonicontrol.utils.Autocorrelation;
@@ -60,12 +61,19 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         // Do something like display a progress bar
         DetectionDialogFragment dialog = detectionDialogFragment.get();
         if (dialog != null) {
-            if (dialog.progressBar != null)
+            if (dialog.progressBar != null) {
                 dialog.progressBar.setVisibility(View.VISIBLE);
-            if(dialog.spectrogramView != null)
+            }
+            if(dialog.spectrogramView != null) {
                 dialog.spectrogramView.setVisibility(View.INVISIBLE);
-            if (dialog.btnAlertReplay != null)
+            }
+            if (dialog.btnAlertReplay != null) {
                 dialog.btnAlertReplay.setEnabled(false);
+                dialog.btnAlertReplay.setVisibility(View.INVISIBLE);
+            }
+            if (dialog.txtSpectrogramTitle != null) {
+                dialog.txtSpectrogramTitle.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -143,10 +151,15 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
                 }
                 if (dialog.btnAlertReplay != null) {
                     dialog.btnAlertReplay.setEnabled(true);
+                    dialog.btnAlertReplay.setVisibility(View.VISIBLE);
                 }
                 if (dialog.txtSignalType != null) {
                     String storedTechnology = PreferenceManager.getDefaultSharedPreferences(dialog.getContext()).getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, null);
                     dialog.setTechnologyText(storedTechnology);
+                }
+                if (dialog.txtSpectrogramTitle != null) {
+                    //dialog.txtSpectrogramTitle.setText(dialog.getContext().getString(R.string.alert_spectrogram_title));
+                    dialog.txtSpectrogramTitle.setVisibility(View.VISIBLE);
                 }
             }
         }

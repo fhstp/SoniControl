@@ -221,7 +221,6 @@ public class SettingsFragment extends PreferenceFragment {
         editor.putBoolean(ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS, ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS_DEFAULT);
         editor.putBoolean(ConfigConstants.SETTINGS_SHARING_DEFAULT, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
         editor.apply();
-        editor.commit();
 
         // Re-set the view content
         setPreferenceValues();

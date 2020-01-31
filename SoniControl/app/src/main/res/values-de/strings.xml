@@ -52,11 +52,11 @@
 \n\nBei Fragen, Bugs, Ideen, kontaktieren Sie uns bitte direkt unter https://sonicontrol.fhstp.ac.at/#contact oder der Email-Adresse sonicontrol@fhstp.ac.at.</string>
     <string name="toastMessageNoGeocoderConnection">Der Standort konnte nicht ermittelt werden</string>
     <string name="alertDialog_option_jam_always_here">Hier immer blockieren</string>
-    <string name="alertDialog_option_dismiss_this_time">Dieses Mal ignorieren</string>
+    <string name="alertDialog_option_dismiss_this_time">Zulassen</string>
     <string name="alertDialog_option_dismiss_always_here">Hier immer ignorieren</string>
-    <string name="alertDialog_option_jam_this_time">Dieses Mal blockieren</string>
+    <string name="alertDialog_option_jam_this_time">Blockieren</string>
     <string name="alertDialog_text_ultrasonic_signal_detected">Ultraschallsignal erkannt</string>
-    <string name="alertDialog_option_play">Abspielen</string>
+    <string name="alertDialog_option_play">Mach es hörbar!</string>
     <string name="storedLocationActivityTitle">Erkannte Signale</string>
     <string name="SettingsActivityTitle">Einstellungen</string>
     <string name="AboutUsActivityTitle">Über Uns</string>
@@ -75,7 +75,16 @@
     </string>
     <string name="privacy_policy_label">Datenschutzerklärung</string>
     <string name="sonicontrolLink">https://sonicontrol.fhstp.ac.at</string>
-    <string name="instructionsText">Willkommen zur SoniControl Firewall.\n\nSonicontrol scannt nach Ultraschallnachrichten von anderen Smarphones oder Audiobeacons in der Umgebung und benachrichtigt Sie wenn eine Nachricht erkannt wurde. Sie können dann auswählen, ob diese Nachricht blockiert werden soll (auch zukünftig an diesem Ort) oder ob sie durchgelassen werden soll. \n\nSoniControl braucht die Mikrofonberechtigung, um ordnungsgemäß arbeiten zu können und braucht weiters die Standortfreigabe (optional), um den Ort zu einer erkannten Nachricht speichern zu können. \n\nWir versenden keine Daten von Ihrem Smartphone und speichern auch keine privaten, sensiblen Daten.\n\nUm den Scanvorgang zu starten, müssen Sie den Startbutton antippen.</string>
+    <string name="instructionsText">&lt;big>Willkommen zur SoniControl Firewall&lt;/big>
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Quick-Start&lt;/b>&lt;br>
+        Tippen Sie den Startbutton an, um den Scanvorgang zu starten.&lt;/p>
+
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Beschreibung&lt;/b>&lt;br>
+        Sonicontrol scannt nach Ultraschallnachrichten von anderen Smarphones oder Audiobeacons in der Umgebung und benachrichtigt Sie wenn eine Nachricht erkannt wurde. Sie können dann auswählen, ob diese Nachricht blockiert werden soll (auch zukünftig an diesem Ort) oder ob sie durchgelassen werden soll.&lt;/p>
+
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Berechtigungen&lt;/b>&lt;br>
+        SoniControl braucht die Mikrofonberechtigung, um ordnungsgemäß arbeiten zu können und braucht weiters die Standortfreigabe (optional), um den Ort zu einer erkannten Nachricht speichern zu können. \n\nWir versenden keine Daten von Ihrem Smartphone und speichern auch keine privaten, sensiblen Daten.&lt;/p>
+    </string>
     <string name="instructionsTitle">Anleitung</string>
     <string name="alert_no_json_file_message">Um erkannte Ultraschallsignale zu speichern/anzuzeigen, müssen Sie die Einstellung \'In JSON Datei speichern\' ankreuzen.</string>
     <string name="alert_no_json_file_title">Keine JSON Datei</string>
@@ -157,7 +166,7 @@
     <string name="permission_explanation_map_button_positive">Das Berechtigungsmenü öffnen</string>
     <string name="import_filtered_detections_failure_snackbar">Der Server ist momentan nicht erreichbar. Bitte versuchen Sie es später nochmal!</string>
     <string name="map_dialog_legend_title">Legende</string>
-    <string name="alert_share_your_detection">Teile die Erkennung</string>
+    <string name="alert_share_your_detection">Halte die Erkennung für andere fest</string>
     <string name="filter_import_dialog_title">Möchten sie die Firewall-Regeln importieren?</string>
     <string name="filter_import_dialog_message">Das Filtern ergibt %s Firewall-Regeln.</string>
     <string name="stored_adapter_detection_counter_title">Erkennungen:</string>
@@ -198,4 +207,8 @@
     <string name="button_settings">Einstellungen</string>
     <string name="textviewStatusStopped">Gestoppt.</string>
     <string name="onIgnorePauseFirewallHint">Ignoriert. Wenn Sie Ultraschall verwenden möchten, sollten Sie die Firewall pausieren.</string>
+    <string name="alert_spectrogram_title">Fingerabdruck des Signals</string>
+    <string name="on_alert_network_not_enabled">Keine Internetverbindung.</string>
+    <string name="alert_save_as_firewall_rule">Meine Entscheidung als Firewall-Regel speichern</string>
+    <string name="alert_unknown_date">Unbekanntes Datum</string>
 </resources>

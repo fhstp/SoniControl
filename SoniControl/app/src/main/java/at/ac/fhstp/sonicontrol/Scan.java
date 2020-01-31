@@ -24,6 +24,9 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
 
+/**
+ * This class makes the link with the native scanner/detector based on Superpowered library.
+ */
 public class Scan {
     private static final String TAG = "Scan";
     public interface DetectionListener {

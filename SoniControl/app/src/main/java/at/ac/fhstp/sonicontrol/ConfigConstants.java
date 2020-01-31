@@ -21,7 +21,7 @@ package at.ac.fhstp.sonicontrol;
 
 
 public final class ConfigConstants {
-    public static final int ON_IGNORE_SNACKBAR_DURATION = 4000; //ms
+    public static final int ON_IGNORE_SNACKBAR_DURATION = 6000; //ms
 
     public static final String JSON_FILENAME = "soni.json";
     public static final String DIR_NAME_SAVED_RECORDINGS = "/detected-files";
@@ -69,6 +69,7 @@ public final class ConfigConstants {
     public static final float BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT = 0.5f;
     public static final String LAST_DETECTED_TECHNOLOGY_SHARED_PREF = "lastDetectedTechnology";
     public static final String LAST_DETECTED_DATE_SHARED_PREF = "lastDetectedDateAndTime";
+    public static final String LAST_DETECTED_LOCATION_SHARED_PREF = "lastDetectedLocation";
     public static String EXTRA_TECHNOLOGY_DETECTED = "at.ac.fhstp.sonicontrol.TECHNOLOGY_DETECTED";
 
     public final static String PREFERENCES_APP_STATE = "PREFERENCES_APP_STATE";

@@ -19,6 +19,9 @@
 
 package at.ac.fhstp.sonicontrol;
 
+/**
+ * This class offers a simple pitch shifting audio player based on Superpowered library.
+ */
 public class PitchShiftPlayer {
     public interface PitchShiftPlayerListener {
         void onPlayCompleted();
@@ -27,35 +30,11 @@ public class PitchShiftPlayer {
     private boolean playing = false;
 
     public PitchShiftPlayer() {
-        // Not needed, done in Scan (load library "Superpowered")
+        // Superpowered library is loaded in Scan (load library "Superpowered")
         //System.loadLibrary("pitchShiftedPlayer");    // load native library
-        /*
-        // Get the device's sample rate and buffer size to enable
-        // low-latency Android audio output, if available.
-        String samplerateString = null, buffersizeString = null;
-        if (Build.VERSION.SDK_INT >= 17) {
-            AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-            if (audioManager != null) {
-                samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
-                buffersizeString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-            }
-        }
-        if (samplerateString == null) samplerateString = "48000";
-        if (buffersizeString == null) buffersizeString = "480";
-        int samplerate = Integer.parseInt(samplerateString);
-        int buffersize = Integer.parseInt(buffersizeString);
-        */
+
         // If the application crashes, please disable Instant Run under Build, Execution, Deployment in preferences.
     }
-    // Handle Play/Pause button toggle.
-    /*
-    public void PlayerExample_PlayPause (View button) {
-        TogglePlayback();
-        playing = !playing;
-        Button b = findViewById(R.id.playPause);
-        b.setText(playing ? "Pause" : "Play");
-    }
-    */
 
     public void setDetectionListener(PitchShiftPlayerListener listener) {
         this.playerListener = listener;
