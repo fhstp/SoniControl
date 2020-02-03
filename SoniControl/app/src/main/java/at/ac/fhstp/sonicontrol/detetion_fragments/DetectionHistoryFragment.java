@@ -32,7 +32,7 @@ public class DetectionHistoryFragment extends Fragment {
     private static StoredLocations instanceStoredLoc;
     JSONManager jsonMan;
     ArrayList<String[]> data;
-    ListAdapter historyAdapter;
+    HistoryDetectionAdapter historyAdapter;
     ListView lv;
     MainActivity nextMain;
     AlertDialog alertDelete = null;

@@ -47,24 +47,31 @@ public class HistoryDetectionAdapter extends ArrayAdapter<String[]> {
 
         String[] singleArrayItem = getItem(position);
 
-        TextView txtLat = (TextView) customView.findViewById(R.id.latitude);
-        TextView txtLon = (TextView) customView.findViewById(R.id.longitude);
+        //TextView txtLat = (TextView) customView.findViewById(R.id.latitude);
+        //TextView txtLon = (TextView) customView.findViewById(R.id.longitude);
         TextView txtTech = (TextView) customView.findViewById(R.id.technologyName);
         TextView txtLastDet = (TextView) customView.findViewById(R.id.lastdetection);
         TextView txtAddress = (TextView) customView.findViewById(R.id.txtAddress);
 
-        txtLon.setText("Lon " + singleArrayItem[0].substring(0, 6));
-        txtLat.setText("Lat " + singleArrayItem[1].substring(0, 6));
+        //txtLon.setText("Lon " + singleArrayItem[0].substring(0, 6));
+        //txtLat.setText("Lat " + singleArrayItem[1].substring(0, 6));
 
         //txtLon.setText("Lon " + singleArrayItem[0]);
         //txtLat.setText("Lat " + singleArrayItem[1]);
-        txtTech.setText(singleArrayItem[2]);
+        txtTech.setText(customView.getContext().getString(R.string.gui_technology) + " " + singleArrayItem[2]);
         String formattedDate = singleArrayItem[3];
         formattedDate = formattedDate.replace("T"," ");
         formattedDate = formattedDate.replace("Z","");
 
         txtLastDet.setText(formattedDate);
-        txtAddress.setText(singleArrayItem[5]);
+        if(singleArrayItem[5].equals("Unknown")){
+            String unknownAddress = getContext().getString(R.string.stored_adapter_unknown_address);
+            txtAddress.setText(unknownAddress + " (Lat "+singleArrayItem[1].substring(0, 9)+", Lon "+ singleArrayItem[0].substring(0, 9)+")");
+            //txtLat.setVisibility(View.GONE);
+            //txtLon.setVisibility(View.GONE);
+        }else{
+            txtAddress.setText(singleArrayItem[5]);
+        }
 
         customView.setBackgroundColor(0x00ffffff);
 
