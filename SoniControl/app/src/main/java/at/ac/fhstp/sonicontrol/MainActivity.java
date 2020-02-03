@@ -806,14 +806,13 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     private void handleSignal(float[] bufferHistory) {
         String detectionDateAndTime = getTimeAndDateForAlert();
 
-        SharedPreferences sp = getSettingsObject();
-        SharedPreferences.Editor ed = sp.edit();
-
         bufferHistory = preProcessing(bufferHistory);
 
         Technology technology = computeRecognition(bufferHistory, this.getApplicationContext());
         //Log.d("handleSignal", "Done computing recognition");
 
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
         // Stores the technology on disk in case the Activity was destroyed
         ed.putString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, technology.toString());
         ed.putString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, detectionDateAndTime);
@@ -841,6 +840,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         if (locationTrack) {
             lastPosition = locationFinder.getLocation(); //get the latest position
             locationFinder.saveLocationGPSTrackerObject();
+            ed.putString(ConfigConstants.LAST_DETECTED_LOCATION_SHARED_PREF, locationFinder.getDetectedDBEntryAddres());
+            ed.apply();
         }
 
         // Checks if the user prefers to block every location
@@ -1162,8 +1163,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
 
         pitchShiftPlayer.playPause();
-        int playPauseText = pitchShiftPlayer.isPlaying() ? R.string.ButtonStopSignal : R.string.alertDialog_option_play;
-        alert.btnAlertReplay.setText(playPauseText); //set the button for playing/stopping
+        if (pitchShiftPlayer.isPlaying()) {
+            alert.btnAlertReplay.setText(R.string.ButtonStopSignal);
+            alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pause_white_48dp, 0, 0, 0);
+        }
+        else {
+            alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
+            alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_arrow_white_48dp, 0, 0, 0);
+        }
     }
 
     @Override
@@ -1357,7 +1364,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SimpleDateFormat leftFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dateLeft = String.valueOf(leftFormat.format(currentTime));
         String dateRight = String.valueOf(rightFormat.format(currentTime));
-        String dateString = " " + dateRight + " - " + dateLeft;
+        String dateString = dateRight + " - " + dateLeft;
         return dateString;
     }
 

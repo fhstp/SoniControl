@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -75,16 +74,20 @@ public class DetectionDialogFragment extends DialogFragment {
     public ProgressBar progressBar;
 
     public Button btnAlertReplay;
-    public Button btnAlertBlockAlways;
+    //public Button btnAlertBlockAlways;
     public Button btnAlertDismissThisTime;
-    public Button btnAlertDismissAlways;
+    //public Button btnAlertDismissAlways;
     public Button btnAlertBlockThisTime;
 
     public TextView txtSignalType;
     public TextView txtAlertDate;
+    public TextView txtAlertLocation;
     public TextView txtNoLocation;
+    public TextView txtNoInternet;
+    public TextView txtSpectrogramTitle;
 
     public CheckBox cbSharing;
+    public CheckBox cbSaveAsFirewallRule;
 
     // Use this instance of the interface to deliver action events
     DetectionDialogListener listener;
@@ -123,11 +126,14 @@ public class DetectionDialogFragment extends DialogFragment {
 
         txtSignalType = (TextView)view.findViewById(R.id.txtSignalType); //this line can be deleted it's only for debug in the alert
         txtAlertDate = (TextView)view.findViewById(R.id.txtAlertDate);
+        txtAlertLocation = (TextView)view.findViewById(R.id.txtAlertLocation);
         txtNoLocation = (TextView)view.findViewById(R.id.txtNoLocation);
+        txtNoInternet = (TextView)view.findViewById(R.id.txtNoInternet);
+        txtSpectrogramTitle = (TextView)view.findViewById(R.id.txtSpectrogramTitle);
 
-        btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
+        //btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
         btnAlertDismissThisTime = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
-        btnAlertBlockAlways = (Button) view.findViewById(R.id.btnBlockAlways); //button of the alert for starting the spoofing process after finding a signal
+        //btnAlertBlockAlways = (Button) view.findViewById(R.id.btnBlockAlways); //button of the alert for starting the spoofing process after finding a signal
         btnAlertBlockThisTime = (Button) view.findViewById(R.id.btnBlockThisTime);
         btnAlertReplay = (Button) view.findViewById(R.id.btnReplay); //button of the alert for playing the found signal with fs/3
 
@@ -135,14 +141,16 @@ public class DetectionDialogFragment extends DialogFragment {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         boolean willBeShared = sp.getBoolean(ConfigConstants.SETTINGS_SHARING_DEFAULT, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
         cbSharing.setChecked(willBeShared);
-        if(!checkInternetForSharing(getActivity())){
+        /*if(!checkInternetForSharing(getActivity())){
             cbSharing.setChecked(false);
             cbSharing.setClickable(false);
             cbSharing.setTextColor(Color.parseColor("#A4A4A4"));
         }else{
             cbSharing.setClickable(true);
             cbSharing.setTextColor(Color.parseColor("#000000"));
-        }
+        }*/
+
+        cbSaveAsFirewallRule = (CheckBox) view.findViewById(R.id.cbSaveAsFirewallRule);
 
         // Initialize spectrogram view.
         spectrogramView = (SpectrogramView) view.findViewById(R.id.spectrogram_view);
@@ -159,37 +167,51 @@ public class DetectionDialogFragment extends DialogFragment {
             btnAlertReplay.setEnabled(true);
         }
         else {
-            spectrogramView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.VISIBLE);
+            spectrogramView.setVisibility(View.INVISIBLE);
+            btnAlertReplay.setVisibility(View.INVISIBLE);
             btnAlertReplay.setEnabled(false);
         }
 
         // OnClickListeners --------
-
+/*
         btnAlertDismissAlways.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 setLastSharingDecision(cbSharing.isChecked());
                 listener.onAlertDismissAlways(DetectionDialogFragment.this);
             }
         });
+        */
         btnAlertDismissThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 setLastSharingDecision(cbSharing.isChecked());
-                listener.onAlertDismissThisTime(DetectionDialogFragment.this);
+
+                if (cbSaveAsFirewallRule.isChecked()) {
+                    listener.onAlertDismissAlways(DetectionDialogFragment.this);
+                }
+                else {
+                    listener.onAlertDismissThisTime(DetectionDialogFragment.this);
+                }
             }
         });
-
+/*
         btnAlertBlockAlways.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 setLastSharingDecision(cbSharing.isChecked());
                 listener.onAlertBlockAlways(DetectionDialogFragment.this);
             }
         });
-
+*/
         btnAlertBlockThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 setLastSharingDecision(cbSharing.isChecked());
-                listener.onAlertBlockThisTime(DetectionDialogFragment.this);
+
+                if (cbSaveAsFirewallRule.isChecked()) {
+                    listener.onAlertBlockAlways(DetectionDialogFragment.this);
+                }
+                else {
+                    listener.onAlertBlockThisTime(DetectionDialogFragment.this);
+                }
             }
         });
 
@@ -226,7 +248,6 @@ public class DetectionDialogFragment extends DialogFragment {
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(ConfigConstants.LAST_DECISION_ON_SHARING, isChecked);
         editor.apply();
-        editor.commit();
     }
 
     /*package-private*/void setTechnologyText(String technology) {
@@ -249,8 +270,8 @@ public class DetectionDialogFragment extends DialogFragment {
 
     private void setupButtonState(FragmentActivity currentActivity) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(currentActivity);
-        boolean gpsEnabled = settings.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
-        boolean networkEnabled = settings.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
+        boolean gpsAllowed = settings.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
+        boolean networkAllowed = settings.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
         LocationManager locationManager = (LocationManager) currentActivity.getSystemService(currentActivity.LOCATION_SERVICE);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -260,38 +281,43 @@ public class DetectionDialogFragment extends DialogFragment {
         int status = ActivityCompat.checkSelfPermission(currentActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
-        if((!(isGPSEnabled && gpsEnabled) && !(isNetworkEnabled && networkEnabled)) || status != PackageManager.PERMISSION_GRANTED){
-            currentActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    btnAlertBlockAlways.setEnabled(false);
-                    btnAlertDismissAlways.setEnabled(false);
-                    txtNoLocation.setText(R.string.on_alert_no_location_message);
-                }
-            });
+        // Set rule saving state
+        if((!(isGPSEnabled && gpsAllowed) && !(isNetworkEnabled && networkAllowed)) || status != PackageManager.PERMISSION_GRANTED){
+            //btnAlertBlockAlways.setEnabled(false);
+            //btnAlertDismissAlways.setEnabled(false);
+            cbSaveAsFirewallRule.setEnabled(false);
+            txtNoLocation.setVisibility(View.VISIBLE);
+            txtNoLocation.setText(R.string.on_alert_no_location_message);
         }else if(!saveJsonFile){
-            currentActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    btnAlertBlockAlways.setEnabled(false);
-                    btnAlertDismissAlways.setEnabled(false);
-                    txtNoLocation.setText(R.string.alert_no_json_file_message);
-                }
-            });
+            //btnAlertBlockAlways.setEnabled(false);
+            //btnAlertDismissAlways.setEnabled(false);
+            cbSaveAsFirewallRule.setEnabled(false);
+            txtNoLocation.setVisibility(View.VISIBLE);
+            txtNoLocation.setText(R.string.alert_no_json_file_message);
         }else{
-            currentActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    btnAlertBlockAlways.setEnabled(true);
-                    btnAlertDismissAlways.setEnabled(true);
-                    txtNoLocation.setText("");
-                }
-            });
+            //btnAlertBlockAlways.setEnabled(true);
+            //btnAlertDismissAlways.setEnabled(true);
+            cbSaveAsFirewallRule.setEnabled(true);
+            txtNoLocation.setVisibility(View.GONE);
+            txtNoLocation.setText("");
+        }
+
+        // Set sharing state
+        if (checkInternetForSharing(getActivity())) {
+            cbSharing.setEnabled(true);
+            txtNoInternet.setVisibility(View.GONE);
+        }
+        else {
+            cbSharing.setEnabled(false);
+            txtNoInternet.setVisibility(View.VISIBLE);
+            txtNoInternet.setText(R.string.on_alert_network_not_enabled);
         }
 
         setTechnologyText(currentActivity);
 
-        txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + settings.getString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, "unknown"));
+        //txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + settings.getString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, "unknown"));
+        txtAlertDate.setText(settings.getString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getString(R.string.alert_unknown_date)));
+        txtAlertLocation.setText(settings.getString(ConfigConstants.LAST_DETECTED_LOCATION_SHARED_PREF, getString(R.string.json_detections_unknown_address)));
     }
 
     @Override

@@ -25,32 +25,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- NOTE: txtDiscovered is replaced by the dialog title.-->
     <TextView
-        android:id="@+id/txtDiscovered"
-        android:layout_width="0dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/alertDialog_text_ultrasonic_signal_detected"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"/>
-
-    <TextView
-        android:id="@+id/txtSignalType"
+        android:id="@+id/txtAlertLocation"
         android:layout_marginStart="24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/placeholderSpectrogram"
-        tools:text="@string/gui_technology"
+        app:layout_constraintBottom_toTopOf="@id/txtAlertDate"
+        tools:text="Location_placeholder"
         android:layout_marginLeft="24dp" />
+
+    <TextView
+        android:id="@+id/txtAlertDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/txtAlertLocation"
+        app:layout_constraintTop_toBottomOf="@id/txtAlertLocation"
+        app:layout_constraintBottom_toTopOf="@id/txtSignalType"
+        android:text="Date_placeholder" />
+
+    <TextView
+        android:id="@+id/txtSignalType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/txtAlertDate"
+        app:layout_constraintTop_toBottomOf="@id/txtAlertDate"
+        app:layout_constraintBottom_toTopOf="@+id/txtSpectrogramTitle"
+        android:text="@string/gui_technology" />
+
+    <TextView
+        android:id="@+id/txtSpectrogramTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="@id/txtSignalType"
+        app:layout_constraintTop_toBottomOf="@id/txtSignalType"
+        android:text="@string/alert_spectrogram_title" />
 
     <ImageView
         android:id="@+id/placeholderSpectrogram"
@@ -58,31 +76,19 @@
         android:layout_height="204dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtSignalType"
+        app:layout_constraintTop_toBottomOf="@+id/txtSpectrogramTitle"
         app:srcCompat="@drawable/spectrum_landscape"
         android:visibility="gone"/>
 
     <at.ac.fhstp.sonicontrol.ui.SpectrogramView
         android:id="@+id/spectrogram_view"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="204dp"
         android:layout_marginTop="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/placeholderSpectrogram"
         />
-
-    <TextView
-        android:id="@+id/txtSpectrogramTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textAlignment="center"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spectrogram_view"
-        tools:text="@string/alert_spectrogram_title" />
 
     <androidx.core.widget.ContentLoadingProgressBar
         android:id="@+id/progressBar"
@@ -98,109 +104,85 @@
 
     <Button
         android:id="@+id/btnReplay"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:background="@android:color/black"
         android:text="@string/alertDialog_option_play"
-        android:visibility="visible"
-        android:drawableLeft="@drawable/ic_play_arrow_blue_48dp"
-        app:layout_constraintBottom_toTopOf="@id/txtProceed"
-        app:layout_constraintEnd_toStartOf="@id/cbSharing"
+        android:textColor="@android:color/white"
+        android:textAlignment="textStart"
+        android:drawableLeft="@drawable/ic_play_arrow_white_48dp"
+        app:layout_constraintTop_toBottomOf="@id/spectrogram_view"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtSpectrogramTitle" />
+        android:layout_gravity="start" />
 
-    <Button
-        android:id="@+id/btnShare"
-        android:layout_width="100dp"
+    <CheckBox
+        android:id="@+id/cbSharing"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:text="Share"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnReplay"
-        app:layout_constraintTop_toTopOf="@id/btnReplay" />
+        android:layout_marginTop="32dp"
+        android:text="@string/alert_share_your_detection"
+        app:layout_constraintStart_toStartOf="@id/btnDismissThisTime"
+        app:layout_constraintTop_toBottomOf="@+id/btnReplay" />
 
     <TextView
-        android:id="@+id/txtProceed"
+        android:id="@+id/txtNoInternet"
         android:layout_width="0dp"
-        android:layout_height="25dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/how_to_proceed"
-        android:textAlignment="center"
-        android:textSize="14sp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/on_alert_network_not_enabled"
+        android:textColor="@android:color/holo_orange_dark"
+        android:visibility="visible"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/cbSaveAsFirewallRule"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnReplay"
-        app:layout_constraintBottom_toTopOf="@id/btnBlockAlways"/>
+        app:layout_constraintStart_toStartOf="@id/cbSharing"
+        app:layout_constraintTop_toBottomOf="@id/cbSharing" />
 
-    <Button
-        android:id="@+id/btnBlockAlways"
-        android:layout_width="150dp"
+    <CheckBox
+        android:id="@+id/cbSaveAsFirewallRule"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/alertDialog_option_jam_always_here"
-        app:layout_constraintEnd_toStartOf="@id/btnDismissAlwaysHere"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnBlockThisTime" />
-
-    <Button
-        android:id="@+id/btnDismissAlwaysHere"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="@string/alertDialog_option_dismiss_always_here"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnBlockAlways"
-        app:layout_constraintBottom_toTopOf="@id/btnDismissThisTime" />
-
-    <Button
-        android:id="@+id/btnBlockThisTime"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="@string/alertDialog_option_jam_this_time"
-        app:layout_constraintEnd_toStartOf="@id/btnDismissThisTime"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/txtNoLocation"/>
-
-    <Button
-        android:id="@+id/btnDismissThisTime"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="@string/alertDialog_option_dismiss_this_time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnBlockThisTime"
-        app:layout_constraintBottom_toTopOf="@id/txtNoLocation"/>
+        android:text="@string/alert_save_as_firewall_rule"
+        app:layout_constraintStart_toStartOf="@id/cbSharing"
+        app:layout_constraintTop_toBottomOf="@+id/txtNoInternet" />
 
     <TextView
         android:id="@+id/txtNoLocation"
         android:layout_width="0dp"
-        android:layout_height="35dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/txtAlertDate" />
-
-    <TextView
-        android:id="@+id/txtAlertDate"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <CheckBox
-        android:id="@+id/cbSharing"
-        android:layout_width="165dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/alert_share_your_detection"
-        android:textColor="@android:color/black"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/on_alert_no_location_message"
+        android:textColor="@android:color/holo_orange_dark"
+        android:visibility="visible"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/btnDismissThisTime"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btnReplay"
-        app:layout_constraintTop_toTopOf="@+id/btnReplay" />
+        app:layout_constraintStart_toStartOf="@id/cbSaveAsFirewallRule"
+        app:layout_constraintTop_toBottomOf="@id/cbSaveAsFirewallRule" />
+
+    <Button
+        android:id="@+id/btnDismissThisTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_dismiss_this_time"
+        app:layout_constraintTop_toBottomOf="@id/txtNoLocation"
+        app:layout_constraintEnd_toStartOf="@id/btnBlockThisTime"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/btnBlockThisTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alertDialog_option_jam_this_time"
+        app:layout_constraintTop_toTopOf="@id/btnDismissThisTime"
+        app:layout_constraintStart_toEndOf="@id/btnDismissThisTime"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
