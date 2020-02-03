@@ -53,8 +53,8 @@ public class HistoryDetectionAdapter extends ArrayAdapter<String[]> {
         TextView txtLastDet = (TextView) customView.findViewById(R.id.lastdetection);
         TextView txtAddress = (TextView) customView.findViewById(R.id.txtAddress);
 
-        txtLon.setText("Lon " + singleArrayItem[0].substring(0, 7));
-        txtLat.setText("Lat " + singleArrayItem[1].substring(0, 7));
+        txtLon.setText("Lon " + singleArrayItem[0].substring(0, 6));
+        txtLat.setText("Lat " + singleArrayItem[1].substring(0, 6));
 
         //txtLon.setText("Lon " + singleArrayItem[0]);
         //txtLat.setText("Lat " + singleArrayItem[1]);

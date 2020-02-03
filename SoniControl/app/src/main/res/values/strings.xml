@@ -209,4 +209,9 @@
     <string name="alert_spectrogram_title">Fingerprint of the signal</string>
     <string name="menuitem_rules_info">Rules Info</string>
     <string name="menuitem_settings_info">Settings Info</string>
+    <string name="toast_on_success_audiodata_upload">The audiodata was successfully uploaded.</string>
+    <string name="toast_on_failure_audiodata_upload">The server is not reachable. Your audiodata could not be shared.</string>
+    <string name="rules_item_button_blocked">Blocked</string>
+    <string name="rules_item_button_allowed">Allowed</string>
+    <string name="rules_item_button_ask_again">Ask Again</string>
 </resources>

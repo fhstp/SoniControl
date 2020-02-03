@@ -131,16 +131,22 @@ public class MyRulesFragment extends Fragment implements Stored_Adapter.OnItemCl
                         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
                         jsonMan.deleteEntryInStoredLoc(positionSignal,singleArrayItem[2]);
                         jsonMan = new JSONManager(nextMain);
-                        data = jsonMan.getJsonData();
+                        //data = jsonMan.getJsonData();
                         if(data.size()==0){
                             txtNothingDiscovered.setVisibility(View.VISIBLE);
                         }else {
                             txtNothingDiscovered.setVisibility(View.INVISIBLE);
                         }
-                        lv.setAdapter(null);
+                        /*lv.setAdapter(null);
                         stored_adapter = new Stored_Adapter(listContext, data);
                         stored_adapter.addOnItemClickListener(localContext);
-                        lv.setAdapter(stored_adapter);
+                        lv.setAdapter(stored_adapter);*/
+                        for(String[] listitem : data){
+                            if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1])){
+                                data.remove(listitem);
+                            }
+                        }
+                        stored_adapter.notifyDataSetChanged();
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -219,10 +225,17 @@ public class MyRulesFragment extends Fragment implements Stored_Adapter.OnItemCl
         Log.d("MyRulesFragment", "changeRuleItem "+ spoofingStatus);
         jsonMan.setShouldBeSpoofedInStoredLoc(positionSignal,singleArrayItem[2], spoofingStatus);
         jsonMan = new JSONManager(nextMain);
-        data = jsonMan.getJsonData();
-        lv.setAdapter(null);
-        stored_adapter = new Stored_Adapter(localContext.getContext(), data);
-        stored_adapter.addOnItemClickListener(localContext);
-        lv.setAdapter(stored_adapter);
+        for(String[] listitem : data){
+            if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1])){
+                Log.d("MyRulesFragment", "found listitem");
+                listitem[4] = String.valueOf(spoofingStatus);
+            }
+        }
+        stored_adapter.notifyDataSetChanged();
+        //data = jsonMan.getJsonData();
+        //lv.setAdapter(null);
+        //stored_adapter = new Stored_Adapter(localContext.getContext(), data);
+        //stored_adapter.addOnItemClickListener(localContext);
+        //lv.setAdapter(stored_adapter);
     }
 }

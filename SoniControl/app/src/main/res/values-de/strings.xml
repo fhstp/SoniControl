@@ -210,4 +210,9 @@
     <string name="alert_spectrogram_title">Fingerabdruck des Signals</string>
     <string name="menuitem_rules_info">Firewallregelinformatinoen</string>
     <string name="menuitem_settings_info">Einstellungsinformationen</string>
+    <string name="toast_on_success_audiodata_upload">Die Audiodaten des erkannten Signals konnten erfolgreich hochgeladen werden.</string>
+    <string name="toast_on_failure_audiodata_upload">Der Server ist nicht erreichbar. Ihre Audiodaten des erkannten Signals konnten nicht geteilt werden.</string>
+    <string name="rules_item_button_blocked">Blockiert</string>
+    <string name="rules_item_button_allowed">Zugelassen</string>
+    <string name="rules_item_button_ask_again">Nachfragen</string>
 </resources>
