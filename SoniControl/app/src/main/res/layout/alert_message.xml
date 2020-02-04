@@ -27,15 +27,18 @@
 
     <TextView
         android:id="@+id/txtAlertLocation"
-        android:layout_marginStart="24dp"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
         android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/txtAlertDate"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/txtAlertDate"
-        tools:text="Location_placeholder"
-        android:layout_marginLeft="24dp" />
+        tools:text="Location_placeholder" />
 
     <TextView
         android:id="@+id/txtAlertDate"
@@ -114,15 +117,21 @@
         android:drawableLeft="@drawable/ic_play_arrow_white_48dp"
         app:layout_constraintTop_toBottomOf="@id/spectrogram_view"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_gravity="start" />
+        android:layout_gravity="start"
+        android:drawableStart="@drawable/ic_play_arrow_white_48dp" />
 
     <CheckBox
         android:id="@+id/cbSharing"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:text="@string/alert_share_your_detection"
-        app:layout_constraintStart_toStartOf="@id/btnDismissThisTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/txtAlertLocation"
         app:layout_constraintTop_toBottomOf="@+id/btnReplay" />
 
     <TextView
@@ -131,22 +140,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:text="@string/on_alert_network_not_enabled"
         android:textColor="@android:color/holo_orange_dark"
         android:visibility="visible"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/cbSaveAsFirewallRule"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/cbSharing"
         app:layout_constraintStart_toStartOf="@id/cbSharing"
         app:layout_constraintTop_toBottomOf="@id/cbSharing" />
 
     <CheckBox
         android:id="@+id/cbSaveAsFirewallRule"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/alert_save_as_firewall_rule"
+        app:layout_constraintEnd_toEndOf="@+id/cbSharing"
         app:layout_constraintStart_toStartOf="@id/cbSharing"
         app:layout_constraintTop_toBottomOf="@+id/txtNoInternet" />
 
@@ -156,14 +164,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:text="@string/on_alert_no_location_message"
         android:textColor="@android:color/holo_orange_dark"
         android:visibility="visible"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toTopOf="@id/btnDismissThisTime"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/cbSaveAsFirewallRule"
         app:layout_constraintStart_toStartOf="@id/cbSaveAsFirewallRule"
         app:layout_constraintTop_toBottomOf="@id/cbSaveAsFirewallRule" />
 
@@ -171,18 +176,22 @@
         android:id="@+id/btnDismissThisTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/alertDialog_option_dismiss_this_time"
-        app:layout_constraintTop_toBottomOf="@id/txtNoLocation"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnBlockThisTime"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/txtNoLocation" />
 
     <Button
         android:id="@+id/btnBlockThisTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:text="@string/alertDialog_option_jam_this_time"
-        app:layout_constraintTop_toTopOf="@id/btnDismissThisTime"
-        app:layout_constraintStart_toEndOf="@id/btnDismissThisTime"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnDismissThisTime" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
