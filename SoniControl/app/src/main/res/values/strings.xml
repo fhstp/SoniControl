@@ -18,7 +18,7 @@
   -->
 
 <resources>
-    <string name="app_name">SoniControl</string>
+    <string name="app_name">SoniControl firewall</string>
     <string name="spoofOnEachLoc">Block always</string>
     <string name="addressData">Not available</string>
     <string name="deleteJsonAlertTitle">Empty detection cache</string>
