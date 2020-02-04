@@ -33,42 +33,40 @@
     android:background="@android:color/holo_blue_bright"
     android:padding="10dp">-->
 
+
     <TextView
         android:id="@+id/technologyName"
-        android:layout_width="110dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/linearLayout"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:gravity="end"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
         android:text="Technology"
-        android:textAlignment="textEnd"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/black"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/lastdetection"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtAddress"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
-
 
     <TextView
         android:id="@+id/lastdetection"
-        android:layout_width="160dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/technologyName"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
         android:gravity="end"
         android:text="Time"
         android:textColor="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/technologyName"
         tools:visibility="visible" />
     <!---->
     <!--
@@ -95,44 +93,21 @@
 
     <TextView
         android:id="@+id/txtAddress"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:drawableLeft="@drawable/baseline_room_black_18"
         android:text="Address"
         android:textColor="@android:color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtDetectionCounter"
         app:layout_constraintWidth_max="wrap" />
-
-    <TextView
-        android:id="@+id/latitude"
-        android:layout_width="90dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:text="48.213999"
-        android:textColor="@android:color/black"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/txtDetectionCounter" />
-
-    <TextView
-        android:id="@+id/longitude"
-        android:layout_width="90dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="15.631"
-        android:textColor="@android:color/black"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/latitude" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -168,38 +143,77 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/txtSpoofingStatus"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/technologyName"
-        android:layout_alignBottom="@+id/technologyName"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginBottom="8dp"
-        android:layout_toStartOf="@+id/technologyName"
-        android:layout_toLeftOf="@+id/technologyName"
-        android:text="SpoofingStatus"
-        android:textColor="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/longitude"
-        app:layout_constraintEnd_toStartOf="@id/lastdetection"
-        app:layout_constraintTop_toBottomOf="@+id/txtDetectionCounter"
-        app:layout_constraintVertical_bias="0.0"
-        tools:visibility="visible" />
-
-    <TextView
         android:id="@+id/txtDetectionCounter"
-        android:layout_width="140dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/technologyName"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
         android:text="DetectionCounter"
         android:textColor="@android:color/black"
-        app:layout_constraintStart_toEndOf="@+id/latitude"
-        app:layout_constraintEnd_toStartOf="@id/technologyName"
-        app:layout_constraintTop_toBottomOf="@+id/txtAddress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/technologyName"
         tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btnAllowed"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:drawableLeft="@drawable/baseline_check_circle_outline_black_18"
+        android:drawableTint="#535353"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="@string/rules_item_button_allowed"
+        android:textColor="#535353"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnBlocked"
+        app:layout_constraintStart_toEndOf="@+id/btnAskAgain"
+        app:layout_constraintTop_toBottomOf="@+id/txtAddress"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_default="spread" />
+
+    <Button
+        android:id="@+id/btnBlocked"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:drawableLeft="@drawable/baseline_block_black_18"
+        android:drawableTint="#535353"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="@string/rules_item_button_blocked"
+        android:textColor="#535353"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnAllowed"
+        app:layout_constraintTop_toBottomOf="@+id/txtAddress"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_default="spread" />
+
+    <Button
+        android:id="@+id/btnAskAgain"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:drawableLeft="@drawable/baseline_autorenew_black_18"
+        android:drawableTint="#535353"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="@string/rules_item_button_ask_again"
+        android:textColor="#535353"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnAllowed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtAddress"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_default="spread" />
 
     <!--</RelativeLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>

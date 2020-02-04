@@ -682,13 +682,13 @@ public class JSONManager {
 
     public void setShouldBeSpoofed(double[] position, String signalType, int spoofStatus, String jsonArrayName){
         int shouldBeSpoofed = spoofStatus;
-        if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if spoofStatus is 1 change it to 0
+        /*if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if spoofStatus is 1 change it to 0
             shouldBeSpoofed = ConfigConstants.DETECTION_TYPE_ASK_AGAIN;
         }else if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ASK_AGAIN){ //if spoofStatus is 1 change it to 0
             shouldBeSpoofed = ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE;
         }else if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){ //if spoofStatus is 0 change it to 1
             shouldBeSpoofed = ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE;
-        }
+        }*/
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json-file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 

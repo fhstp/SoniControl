@@ -22,4 +22,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorRuleItemGrey">#FF535353</color>
+    <color name="colorRuleItemAllowed">#FF00c200</color>
+    <color name="colorRuleItemBlocked">#FFff0015</color>
+    <color name="colorRuleItemAskAgain">#FFe39b26</color>
 </resources>

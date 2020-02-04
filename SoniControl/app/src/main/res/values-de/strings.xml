@@ -57,7 +57,7 @@
     <string name="alertDialog_option_jam_this_time">Blockieren</string>
     <string name="alertDialog_text_ultrasonic_signal_detected">Ultraschallsignal erkannt</string>
     <string name="alertDialog_option_play">Mach es hörbar!</string>
-    <string name="storedLocationActivityTitle">Erkannte Signale</string>
+    <string name="storedLocationActivityTitle">Regeln &amp; Erkennungen</string>
     <string name="SettingsActivityTitle">Einstellungen</string>
     <string name="AboutUsActivityTitle">Über Uns</string>
     <string name="creditsText">Credits \n\n Audio by Superpowered (https://www.superpowered.com/)\n\nMaterial-Icons wurden verwendet. Diese stehen unter der Lizenz "Apache License Version 2.0"(https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
@@ -101,7 +101,7 @@
     <string name="alert_detection_date">Erkannt um:</string>
     <string name="toast_no_location_text">Standort wurde nicht gefunden. Daher konnte das letzte erkannte Signal nicht gespeichert werden.</string>
     <string name="json_detections_unknown_address">Unbekannte Adresse</string>
-    <string name="alert_microphone_already_used_title">Das Mikrofon wird bereits von einer anderen Anwendung verwendet</string>
+    <string name="alert_microphone_already_used_title">Das Mikrofon wird bereits verwendet</string>
     <string name="alert_microphone_already_used_message">Wir konnten die Erkennung nicht starten, da das Mikrofon schon von einer anderen App verwendet wird.</string>
     <string name="on_alert_no_location_message">Bitte aktivieren Sie die Standortfreigabe, um erkannte Ultraschallsignale verortet zu speichern.</string>
     <string name="action_reset_settings_message">Wollen Sie alle Einstellungen zurücksetzen?</string>
@@ -200,10 +200,10 @@
     <string name="settings_share_detections_summary">Erkennungen mit der Community teilen</string>
     <string name="settings_title_dont_ask">Standortfreigabedialog</string>
     <string name="textviewStatusInitializing">Initialisierung</string>
-    <string name="button_pause_firewall">Pause Firewall</string>
-    <string name="button_start_firewall">Start Firewall</string>
-    <string name="button_stop_firewall">Stop Firewall</string>
-    <string name="button_detection_list">Erkennungen</string>
+    <string name="button_pause_firewall">Firewall pausieren</string>
+    <string name="button_start_firewall">Firewall starten</string>
+    <string name="button_stop_firewall">Firewall stoppen</string>
+    <string name="button_detection_list">Regeln &amp; \nErkennungen</string>
     <string name="button_settings">Einstellungen</string>
     <string name="textviewStatusStopped">Gestoppt.</string>
     <string name="onIgnorePauseFirewallHint">Ignoriert. Wenn Sie Ultraschall verwenden möchten, sollten Sie die Firewall pausieren.</string>
@@ -211,4 +211,11 @@
     <string name="on_alert_network_not_enabled">Keine Internetverbindung.</string>
     <string name="alert_save_as_firewall_rule">Meine Entscheidung als Firewall-Regel speichern</string>
     <string name="alert_unknown_date">Unbekanntes Datum</string>
+    <string name="menuitem_rules_info">Firewallregelinformatinoen</string>
+    <string name="menuitem_settings_info">Einstellungsinformationen</string>
+    <string name="toast_on_success_audiodata_upload">Die Audiodaten des erkannten Signals konnten erfolgreich hochgeladen werden.</string>
+    <string name="toast_on_failure_audiodata_upload">Der Server ist nicht erreichbar. Ihre Audiodaten des erkannten Signals konnten nicht geteilt werden.</string>
+    <string name="rules_item_button_blocked">Blockiert</string>
+    <string name="rules_item_button_allowed">Zugelassen</string>
+    <string name="rules_item_button_ask_again">Nachfragen</string>
 </resources>

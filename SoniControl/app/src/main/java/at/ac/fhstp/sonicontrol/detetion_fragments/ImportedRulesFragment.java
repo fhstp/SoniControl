@@ -71,12 +71,12 @@ import retrofit2.Response;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class ImportedRulesFragment extends Fragment {
+public class ImportedRulesFragment extends Fragment implements Stored_Adapter.OnItemClickListener{
     MainActivity main = new MainActivity();
     private static StoredLocations instanceStoredLoc;
     JSONManager jsonMan;
     ArrayList<String[]> data;
-    ListAdapter stored_adapter;
+    Stored_Adapter stored_adapter;
     ListView lv;
     MainActivity nextMain;
     AlertDialog alertDelete = null;
@@ -135,6 +135,7 @@ public class ImportedRulesFragment extends Fragment {
     //int AUTOCOMPLETE_REQUEST_CODE = 1;
     //List<Place.Field> fields;
 
+    ImportedRulesFragment localContext;
 
     @Nullable
     @Override
@@ -163,6 +164,8 @@ public class ImportedRulesFragment extends Fragment {
 
         data = jsonMan.getImportJsonData();
 
+        localContext = this;
+
         txtNothingDiscovered = (TextView) rootView.findViewById(R.id.txtNoDetectionsYet);
         fabImportDetections = (FloatingActionButton) rootView.findViewById(R.id.fabImportDetections);
         fabImportDetections.setOnClickListener(new View.OnClickListener() {
@@ -185,6 +188,7 @@ public class ImportedRulesFragment extends Fragment {
         lv.setAdapter(null);
         final Context listContext = getActivity();
         stored_adapter = new Stored_Adapter(getActivity(), data);
+        stored_adapter.addOnItemClickListener(localContext);
 
 
         final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(getActivity());
@@ -199,15 +203,21 @@ public class ImportedRulesFragment extends Fragment {
                         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
                         jsonMan.deleteImportEntry(positionSignal,singleArrayItem[2]);
                         jsonMan = new JSONManager(nextMain);
-                        data = jsonMan.getImportJsonData();
+                        //data = jsonMan.getImportJsonData();
                         if(data.size()==0){
                             txtNothingDiscovered.setVisibility(View.VISIBLE);
                         }else {
                             txtNothingDiscovered.setVisibility(View.INVISIBLE);
                         }
-                        lv.setAdapter(null);
+                        /*lv.setAdapter(null);
                         stored_adapter = new Stored_Adapter(listContext, data);
-                        lv.setAdapter(stored_adapter);
+                        lv.setAdapter(stored_adapter);*/
+                        for(String[] listitem : data){
+                            if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1])){
+                                data.remove(listitem);
+                            }
+                        }
+                        stored_adapter.notifyDataSetChanged();
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -223,7 +233,7 @@ public class ImportedRulesFragment extends Fragment {
                 new AdapterView.OnItemClickListener(){
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String[] singleArrayItem = (String[]) parent.getItemAtPosition(position);
+                        /*String[] singleArrayItem = (String[]) parent.getItemAtPosition(position);
                         double[] positionSignal = new double[2];
                         positionSignal[0] = Double.valueOf(singleArrayItem[0]);
                         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
@@ -232,7 +242,7 @@ public class ImportedRulesFragment extends Fragment {
                         data = jsonMan.getImportJsonData();
                         lv.setAdapter(null);
                         stored_adapter = new Stored_Adapter(listContext, data);
-                        lv.setAdapter(stored_adapter);
+                        lv.setAdapter(stored_adapter);*/
 
                     }
                 }
@@ -721,5 +731,39 @@ public class ImportedRulesFragment extends Fragment {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert);
         filterImportDialog = filterImport.show();
+    }
+
+    @Override
+    public void onAllowedClick(String[] singleArrayItem, int spoofingStatus) {
+        Log.d("ImportedRulesFragment", "onAllowedClick");
+        changeRuleItem(singleArrayItem, spoofingStatus);
+    }
+
+    @Override
+    public void onBlockedClick(String[] singleArrayItem, int spoofingStatus) {
+        Log.d("ImportedRulesFragment", "onBlockedClick");
+        changeRuleItem(singleArrayItem, spoofingStatus);
+    }
+
+    @Override
+    public void onAskAgainClick(String[] singleArrayItem, int spoofingStatus) {
+        Log.d("ImportedRulesFragment", "onAskAgainClick");
+        changeRuleItem(singleArrayItem, spoofingStatus);
+    }
+
+    private void changeRuleItem(String[] singleArrayItem, int spoofingStatus){
+        double[] positionSignal = new double[2];
+        positionSignal[0] = Double.valueOf(singleArrayItem[0]);
+        positionSignal[1] = Double.valueOf(singleArrayItem[1]);
+        Log.d("ImportedRulesFragment", "changeRuleItem "+ spoofingStatus);
+        jsonMan.setShouldBeSpoofedInImportedLoc(positionSignal,singleArrayItem[2], spoofingStatus);
+        jsonMan = new JSONManager(nextMain);
+        for(String[] listitem : data){
+            if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1])){
+                Log.d("ImportedRulesFragment", "found listitem");
+                listitem[4] = String.valueOf(spoofingStatus);
+            }
+        }
+        stored_adapter.notifyDataSetChanged();
     }
 }

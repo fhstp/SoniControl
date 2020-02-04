@@ -1459,7 +1459,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
                 //Toast toast = Toast.makeText(MainActivity.this, "The audiofile was successfully uploaded.", Toast.LENGTH_LONG);
-                Toast toast = Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.toast_on_success_detection_upload), Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.toast_on_success_audiodata_upload), Toast.LENGTH_LONG);
                 toast.show();
                 Log.v("Upload", "success");
             }
@@ -1467,7 +1467,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 //Toast toast = Toast.makeText(MainActivity.this, "The audiofile was not uploaded.", Toast.LENGTH_LONG);
-                Toast toast = Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.toast_on_failure_detection_upload), Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.toast_on_failure_audiodata_upload), Toast.LENGTH_LONG);
                 toast.show();
                 Log.e("Upload error:", t.getMessage());
             }
