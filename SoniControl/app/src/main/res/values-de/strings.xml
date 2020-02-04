@@ -101,7 +101,7 @@
     <string name="alert_detection_date">Erkannt um:</string>
     <string name="toast_no_location_text">Standort wurde nicht gefunden. Daher konnte das letzte erkannte Signal nicht gespeichert werden.</string>
     <string name="json_detections_unknown_address">Unbekannte Adresse</string>
-    <string name="alert_microphone_already_used_title">Das Mikrofon wird bereits von einer anderen Anwendung verwendet</string>
+    <string name="alert_microphone_already_used_title">Das Mikrofon wird bereits verwendet</string>
     <string name="alert_microphone_already_used_message">Wir konnten die Erkennung nicht starten, da das Mikrofon schon von einer anderen App verwendet wird.</string>
     <string name="on_alert_no_location_message">Bitte aktivieren Sie die Standortfreigabe, um erkannte Ultraschallsignale verortet zu speichern.</string>
     <string name="action_reset_settings_message">Wollen Sie alle Einstellungen zurücksetzen?</string>
