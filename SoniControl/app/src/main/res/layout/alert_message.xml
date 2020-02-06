@@ -110,15 +110,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:background="@android:color/black"
-        android:text="@string/alertDialog_option_play"
-        android:textColor="@android:color/white"
-        android:textAlignment="textStart"
-        android:drawableLeft="@drawable/ic_play_arrow_white_48dp"
-        app:layout_constraintTop_toBottomOf="@id/spectrogram_view"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_gravity="start"
-        android:drawableStart="@drawable/ic_play_arrow_white_48dp" />
+        android:background="@android:color/black"
+        android:drawableStart="@drawable/baseline_play_arrow_white_36"
+        android:drawableLeft="@drawable/baseline_play_arrow_white_36"
+        android:text="@string/alertDialog_option_play"
+        android:textAlignment="textStart"
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spectrogram_view" />
 
     <CheckBox
         android:id="@+id/cbSharing"

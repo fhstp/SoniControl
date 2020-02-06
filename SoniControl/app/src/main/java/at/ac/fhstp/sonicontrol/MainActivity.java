@@ -1491,11 +1491,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     private void setAlertUIReplayStopped() {
         alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
-        alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_arrow_white_48dp, 0, 0, 0);
+        alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_white_36, 0, 0, 0);
     }
 
     private void setAlertUIReplayStarted() {
         alert.btnAlertReplay.setText(R.string.ButtonStopSignal);
-        alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pause_white_48dp, 0, 0, 0);
+        alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_pause_white_36, 0, 0, 0);
     }
 }
