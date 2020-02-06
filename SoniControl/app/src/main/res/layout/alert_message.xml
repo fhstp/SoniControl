@@ -172,26 +172,42 @@
         app:layout_constraintStart_toStartOf="@id/cbSaveAsFirewallRule"
         app:layout_constraintTop_toBottomOf="@id/cbSaveAsFirewallRule" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDismissThisTime"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/alertDialog_option_dismiss_this_time"
+        android:textColor="@color/colorRuleItemAllowed"
+        android:theme="@style/Theme.MaterialComponents"
+        app:icon="@drawable/baseline_check_circle_outline_black_18"
+        app:iconGravity="start"
+        app:iconTint="@color/colorRuleItemAllowed"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btnBlockThisTime"
-        app:layout_constraintTop_toBottomOf="@id/txtNoLocation" />
+        app:layout_constraintTop_toBottomOf="@id/txtNoLocation"
+        app:strokeColor="@color/colorRuleItemAllowed"
+        app:strokeWidth="2dp" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBlockThisTime"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:text="@string/alertDialog_option_jam_this_time"
+        android:textColor="@color/colorRuleItemBlocked"
+        android:theme="@style/Theme.MaterialComponents"
+        app:icon="@drawable/baseline_block_black_18"
+        app:iconGravity="start"
+        app:iconTint="@color/colorRuleItemBlocked"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btnDismissThisTime" />
+        app:layout_constraintTop_toTopOf="@id/btnDismissThisTime"
+        app:strokeColor="@color/colorRuleItemBlocked"
+        app:strokeWidth="2dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
