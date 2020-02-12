@@ -240,6 +240,9 @@ public class DetectionDialogFragment extends DialogFragment {
 
     private void setTechnologyText(FragmentActivity currentActivity) {
         String storedTechnology = PreferenceManager.getDefaultSharedPreferences(currentActivity).getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF, null);
+        if(Technology.GOOGLE_NEARBY.toString().equals(storedTechnology)){
+            storedTechnology = "Google Nearby";
+        }
         setTechnologyText(storedTechnology);
     }
 

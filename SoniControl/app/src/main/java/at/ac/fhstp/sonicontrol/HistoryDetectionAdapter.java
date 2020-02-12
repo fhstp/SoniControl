@@ -64,16 +64,36 @@ public class HistoryDetectionAdapter extends ArrayAdapter<String[]> {
         formattedDate = formattedDate.replace("Z","");
 
         txtLastDet.setText(formattedDate);
-        if(singleArrayItem[5].equals("Unknown")){
+        if(DetectionAddressStateEnum.fromId(Integer.valueOf(singleArrayItem[10])).equals(DetectionAddressStateEnum.NOT_AVAILABLE)){
+            txtAddress.setText(getContext().getString(R.string.rules_location_not_available));
+        }else if(DetectionAddressStateEnum.fromId(Integer.valueOf(singleArrayItem[10])).equals(DetectionAddressStateEnum.UNKNOWN)){
             String unknownAddress = getContext().getString(R.string.stored_adapter_unknown_address);
-            txtAddress.setText(unknownAddress + " (Lat "+singleArrayItem[1].substring(0, 9)+", Lon "+ singleArrayItem[0].substring(0, 9)+")");
+            int latLength;
+            int lonLength;
+            if(singleArrayItem[1].length()<9){
+                latLength = singleArrayItem[1].length();
+            }else{
+                latLength = 9;
+            }
+            if(singleArrayItem[0].length()<9){
+                lonLength = singleArrayItem[0].length();
+            }else{
+                lonLength = 9;
+            }
+            if(latLength>=9||lonLength>=9) {
+                txtAddress.setText(unknownAddress + " (Lat " + singleArrayItem[1].substring(0, 9) + ", Lon " + singleArrayItem[0].substring(0, 9) + ")");
+            }else if(latLength<=lonLength){
+                txtAddress.setText(unknownAddress + " (Lat " + singleArrayItem[1].substring(0, latLength) + ", Lon " + singleArrayItem[0].substring(0, latLength) + ")");
+            }else{
+                txtAddress.setText(unknownAddress + " (Lat " + singleArrayItem[1].substring(0, lonLength) + ", Lon " + singleArrayItem[0].substring(0, lonLength) + ")");
+            }
             //txtLat.setVisibility(View.GONE);
             //txtLon.setVisibility(View.GONE);
         }else{
             txtAddress.setText(singleArrayItem[5]);
         }
 
-        customView.setBackgroundColor(0x00ffffff);
+        //customView.setBackgroundColor(0x00ffffff);
 
         return customView;
     }

@@ -251,10 +251,13 @@ public class GPSTracker extends Service implements LocationListener {
         if (addresses != null && !addresses.isEmpty()) {
             Address address = addresses.get(0);
             String addressLine = address.getAddressLine(0);
-
             return addressLine;
         } else {
-            return this.activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
+            if(latitude==0 && longitude==0){
+                return DetectionAddressStateEnum.NOT_AVAILABLE.toString();
+            }else {
+                return DetectionAddressStateEnum.UNKNOWN.toString();//this.activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
+            }
         }
     }
 

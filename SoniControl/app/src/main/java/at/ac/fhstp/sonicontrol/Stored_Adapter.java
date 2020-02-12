@@ -136,7 +136,11 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
         formattedDate = formattedDate.substring(0, 19);
 
         txtLastDet.setText(formattedDate);
-        if(singleArrayItem[5].equals("Unknown")){
+        /*if((singleArrayItem[5].equals("Unknown address") || singleArrayItem[5].equals("Unbekannte Adresse")) && singleArrayItem[1].equals("0") && singleArrayItem[0].equals("0")) {
+            txtAddress.setText(getContext().getString(R.string.rules_location_not_available));
+        }else if(singleArrayItem[5].equals("Not available")){
+            txtAddress.setText(getContext().getString(R.string.rules_location_not_available));
+        }else */if(DetectionAddressStateEnum.fromId(Integer.valueOf(singleArrayItem[10])).equals(DetectionAddressStateEnum.UNKNOWN)){
             String unknownAddress = getContext().getString(R.string.stored_adapter_unknown_address);
             txtAddress.setText(unknownAddress + " (Lat "+singleArrayItem[1].substring(0, 9)+", Lon "+ singleArrayItem[0].substring(0, 9)+")");
             //txtLat.setVisibility(View.GONE);
@@ -144,7 +148,7 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
         }else{
             txtAddress.setText(singleArrayItem[5]);
         }
-        txtDetectionCounter.setText(getContext().getString(R.string.stored_adapter_detection_counter_title)+singleArrayItem[8]);
+        txtDetectionCounter.setText(getContext().getString(R.string.stored_adapter_detection_counter_title) + " " + singleArrayItem[8]);
 
         /*String spoofingStatus = null;
         if(Integer.valueOf(singleArrayItem[4])==1){
@@ -160,7 +164,7 @@ public class Stored_Adapter extends ArrayAdapter<String[]>{
             customView.setBackgroundColor(0xFFE39B26);
         }*/
         //txtSpoofingStatus.setText(spoofingStatus);
-        customView.setBackgroundColor(0x00ffffff);
+        //customView.setBackgroundColor(0x00ffffff);
 
         return customView;
     }

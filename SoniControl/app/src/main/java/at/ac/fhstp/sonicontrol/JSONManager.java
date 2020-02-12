@@ -64,6 +64,7 @@ public class JSONManager {
     private static final String JSON_ARRAY_SIGNAL_TECHNOLOGY_ID = "technologyId";
     private static final String JSON_ARRAY_SIGNAL_DETECTIONCOUNTER = "detectioncounter";
     private static final String JSON_ARRAY_SIGNAL_AMPLITUDE = "detectionamplitude";
+    private static final String JSON_ARRAY_SIGNAL_ADDRESS_STATUS = "addressstatus";
 
 
     public JSONManager(MainActivity main){
@@ -194,22 +195,27 @@ public class JSONManager {
             String technologyid = "";
             String detectioncounter = "";
             String amplitude = "";
+            String addressstate = "";
 
             //boolean needsUpdate = false;
             for (int i = 0; i < jArray.length(); i++) { //go through the array
                 try {
-                    lon = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LONGITUDE); //save longitude
-                    lat = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LATITUDE); //save latitude
-                    tech = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_TECHNOLOGY); //save technology
-                    lastDet = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LAST_DETECTION); //save spoofingStatus
-                    spoof = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_SPOOFING_STATUS); //save spoofingStatus
+                    lon = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LONGITUDE);
+                    lat = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LATITUDE);
+                    if(jArray.getJSONObject(i).optString(JSON_ARRAY_SIGNAL_TECHNOLOGY).equals(Technology.GOOGLE_NEARBY.toString())) {
+                        tech = "Google Nearby";
+                    }else{
+                        tech = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_TECHNOLOGY);
+                    }
+                    lastDet = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LAST_DETECTION);
+                    spoof = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_SPOOFING_STATUS);
                     if(jArray.getJSONObject(i).optString(JSON_ARRAY_SIGNAL_ADDRESS).equals("")){
                         address = "Unknown";
                         //needsUpdate = true;
                     }else {
-                        address = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_ADDRESS); //save spoofingStatus
+                        address = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_ADDRESS);
                     }
-                    url = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_URL); //save fileUrl
+                    url = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_URL);
                     if(jArray.getJSONObject(i).optString(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID).equals("")){
                         int techId = Technology.fromString(tech).getId();
                         technologyid = String.valueOf(techId);
@@ -228,10 +234,29 @@ public class JSONManager {
                     }else{
                         amplitude = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_AMPLITUDE);
                     }
+                    if(jArray.getJSONObject(i).optString(JSON_ARRAY_SIGNAL_ADDRESS_STATUS).equals("")){
+                        if(((address.equals("Unknown address") || address.equals("Unbekannte Adresse") || address.equals("Unknown")) && lon.equals("0") && lat.equals("0")) || address.equals("Not available") || address.equals("Nicht verfügbar")){
+                            addressstate = String.valueOf(DetectionAddressStateEnum.NOT_AVAILABLE.getId());
+                        }else if(address.equals("Unknown address") || address.equals("Unbekannte Adresse") || address.equals("Unknown")){
+                            addressstate = String.valueOf(DetectionAddressStateEnum.UNKNOWN.getId());
+                        }else {
+                            addressstate = String.valueOf(DetectionAddressStateEnum.RESOLVED.getId());
+                        }
+                    }else{
+                        addressstate = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_ADDRESS_STATUS);
+                    }/*else{
+                        if(){
+                            addressstate = String.valueOf(DetectionAddressStateEnum.NOT_AVAILABLE.getId());
+                        }else if(address.equals("Unknown address") || address.equals("Unbekannte Adresse") || address.equals("Unknown")){
+                            addressstate = String.valueOf(DetectionAddressStateEnum.UNKNOWN.getId());
+                        }else {
+                            addressstate = String.valueOf(DetectionAddressStateEnum.RESOLVED.getId());
+                        }
+                    }*/
                     //Log.d("Longitude", lon);
                     //Log.d("Latitude", lat);
                     //Log.d("Technology", tech);
-                    data.add(new String[]{lon, lat, tech, lastDet, spoof, address, url, technologyid, detectioncounter, amplitude}); //add every data of one array-index in the data-list
+                    data.add(new String[]{lon, lat, tech, lastDet, spoof, address, url, technologyid, detectioncounter, amplitude, addressstate}); //add every data of one array-index in the data-list
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -297,7 +322,7 @@ public class JSONManager {
         }
     }
 
-    public void addJsonObject(double[] position, String technology, int spoof, String address, boolean justHistoryEntry, float amplitude){
+    public void addJsonObject(double[] position, String technology, int spoof, String address, boolean justHistoryEntry, float amplitude, int addressStatus){
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
         ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
@@ -336,6 +361,8 @@ public class JSONManager {
             addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID, technologyId);
             addArray.put(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER, 1);
             addArray.put(JSON_ARRAY_SIGNAL_AMPLITUDE, amplitude);
+            addArray.put(JSON_ARRAY_SIGNAL_ADDRESS_STATUS, addressStatus);
+            Log.d("JSONManager", String.valueOf(address));
 
             if(!justHistoryEntry){
                 jArray.put(addArray); //add the created object to the json array
@@ -548,6 +575,13 @@ public class JSONManager {
                     addArray.put(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID, arrayData[7]);
                     addArray.put(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER, 1);
                     addArray.put(JSON_ARRAY_SIGNAL_AMPLITUDE, 0.005);
+                    if(((arrayData[5].equals("Unknown address") || arrayData[5].equals("Unbekannte Adresse") || arrayData[5].equals("Unknown")) && arrayData[0].equals("0") && arrayData[1].equals("0")) || arrayData[5].equals("Not available") || arrayData[5].equals("Nicht verfügbar")){
+                        addArray.put(JSON_ARRAY_SIGNAL_ADDRESS_STATUS, DetectionAddressStateEnum.NOT_AVAILABLE.getId());
+                    }else if(arrayData[5].equals("Unknown address") || arrayData[5].equals("Unbekannte Adresse") || arrayData[5].equals("Unknown")){
+                        addArray.put(JSON_ARRAY_SIGNAL_ADDRESS_STATUS, DetectionAddressStateEnum.UNKNOWN.getId());
+                    }else {
+                        addArray.put(JSON_ARRAY_SIGNAL_ADDRESS_STATUS, DetectionAddressStateEnum.RESOLVED.getId());
+                    }
 
                     jArray.put(addArray); //add the created object to the json array
                 }

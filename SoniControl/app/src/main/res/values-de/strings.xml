@@ -30,7 +30,7 @@
     <string name="StatusNotificationOnHoldTitle">SoniControl</string>
     <string name="StatusNotificationOnHoldMessage">Pausiert.</string>
     <string name="StatusNotificationScanningTitle">SoniControl</string>
-    <string name="StatusNotificationScanningMessage">Suche nach Ultraschallsignalen...</string>
+    <string name="StatusNotificationScanningMessage">Scanne nach Ultraschallsignalen...</string>
     <string name="NotificationDetectionTitle">SoniControl</string>
     <string name="NotificationDetectionMessage">Ultraschallsignal erkannt!</string>
     <string name="ButtonStopSignal">Stoppen</string>
@@ -59,10 +59,10 @@
     <string name="alertDialog_option_play">Mach es hörbar!</string>
     <string name="storedLocationActivityTitle">Regeln &amp; Erkennungen</string>
     <string name="SettingsActivityTitle">Einstellungen</string>
-    <string name="AboutUsActivityTitle">Über Uns</string>
+    <string name="AboutUsActivityTitle">Über uns</string>
     <string name="creditsText">Credits \n\n Audio by Superpowered (https://www.superpowered.com/)\n\nMaterial-Icons wurden verwendet. Diese stehen unter der Lizenz "Apache License Version 2.0"(https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
     <string name="privacy_policy_menuItem">Datenschutzerklärung</string>
-    <string name="about_us_menuItem">Über Uns</string>
+    <string name="about_us_menuItem">Über uns</string>
     <string name="instructions_menuItem">Anleitung</string>
     <string name="help_menuItem">Hilfe</string>
     <string name="privacy_policy_text">Datenerhebung und Datenverarbeitung:\n\n
@@ -218,4 +218,5 @@
     <string name="rules_item_button_blocked">Blockiert</string>
     <string name="rules_item_button_allowed">Zugelassen</string>
     <string name="rules_item_button_ask_again">Nachfragen</string>
+    <string name="rules_location_not_available">Ort nicht verfügbar</string>
 </resources>

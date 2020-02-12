@@ -169,7 +169,7 @@
     <string name="alert_share_your_detection">Make it available to the community</string>
     <string name="filter_import_dialog_title">Do you want to import the rules?</string>
     <string name="filter_import_dialog_message">The filter resulted in %s rules.</string>
-    <string name="stored_adapter_detection_counter_title">previous Detections:</string>
+    <string name="stored_adapter_detection_counter_title">Previous detections:</string>
     <string name="stored_adapter_unknown_address">Unknown Address</string>
     <string name="rules_info_title">Rules</string>
     <string name="filter_dialog_reset_date">reset</string>
@@ -210,11 +210,12 @@
     <string name="on_alert_network_not_enabled">Please check your internet connection.</string>
     <string name="alert_save_as_firewall_rule">Save as firewall rule (remember)</string>
     <string name="alert_unknown_date">Unknown date</string>
-    <string name="menuitem_rules_info">Rules Info</string>
-    <string name="menuitem_settings_info">Settings Info</string>
+    <string name="menuitem_rules_info">Rules info</string>
+    <string name="menuitem_settings_info">Settings info</string>
     <string name="toast_on_success_audiodata_upload">The audiodata was successfully uploaded.</string>
     <string name="toast_on_failure_audiodata_upload">The server is not reachable. Your audiodata could not be shared.</string>
     <string name="rules_item_button_blocked">Blocked</string>
     <string name="rules_item_button_allowed">Allowed</string>
     <string name="rules_item_button_ask_again">Ask Again</string>
+    <string name="rules_location_not_available">Location not available</string>
 </resources>
