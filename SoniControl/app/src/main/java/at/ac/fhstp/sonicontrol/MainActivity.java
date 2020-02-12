@@ -740,14 +740,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             sigPlayer.release(); //release the resources of the player
             sigPlayer = null; //set the player variable to null
             isSignalPlayerGenerated = false; //now there is no player anymore so it's false
-            alert.btnAlertReplay.setText(R.string.alertDialog_option_play); //set the button for playing/stopping to "play"
+            setAlertUIReplayStopped(); //set the button for playing/stopping to "play"
         }
         if (isSignalPlayerGenerated && pitchShiftPlayer != null) {
             pitchShiftPlayer.cleanup();
             pitchShiftPlayer.removeDetectionListener();
             pitchShiftPlayer = null;
             isSignalPlayerGenerated = false;
-            alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
+            setAlertUIReplayStopped();
         }
     }
 
@@ -1200,7 +1200,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             pitchShiftPlayer.removeDetectionListener();
             pitchShiftPlayer = null;
             isSignalPlayerGenerated = false;
-            alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
+            setAlertUIReplayStopped();
         }
     }
 
@@ -1238,12 +1238,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         pitchShiftPlayer.playPause();
         if (pitchShiftPlayer.isPlaying()) {
-            alert.btnAlertReplay.setText(R.string.ButtonStopSignal);
-            alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pause_white_48dp, 0, 0, 0);
+            setAlertUIReplayStarted();
         }
         else {
-            alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
-            alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_arrow_white_48dp, 0, 0, 0);
+            setAlertUIReplayStopped();
         }
     }
 
@@ -1564,9 +1562,19 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
+                    setAlertUIReplayStopped();
                 }
             });
         }
+    }
+
+    private void setAlertUIReplayStopped() {
+        alert.btnAlertReplay.setText(R.string.alertDialog_option_play);
+        alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_play_arrow_white_36, 0, 0, 0);
+    }
+
+    private void setAlertUIReplayStarted() {
+        alert.btnAlertReplay.setText(R.string.ButtonStopSignal);
+        alert.btnAlertReplay.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_pause_white_36, 0, 0, 0);
     }
 }
