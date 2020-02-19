@@ -139,11 +139,17 @@
     <string name="extendedDiagnosticsSummary">Notify of detection after signal end (more accurate recognition)</string>
     <string name="rules_info_text">Detections are shown in four tabs: \"Detection History\", \"My Rules\", \"Imported Rules\" and a map visualization.
         \n\n- The history tab shows all detections.
-        \n\n- The next two tabs contain the firewall rules. Their color shows, for each location where a signal was detected, if a technology will be blocked (red), ignored (green) or if you should be asked again on the next detection (orange).
-        \nYou can change the status by tapping on them several times. You can delete a rule by pressing longer on it.
+        \n\n- The “My Rules” tab shows firewall rules, that is, ultrasonic detections for which the “Save it as a firewall rule (remember)” checkbox was checked in the detection alert dialog.
+        \n\n- The “Imported Rules” tab allows users to import firewall rules that were shared by other users by checking the “Make it available to the community” checkbox in the detection alert dialog.
+        \n\nThe rule status indicates if a technology will be blocked (red), allowed (green) or if you should be asked again on the next detection (orange).
+        \nYou can change the rule status by tapping on the corresponding button. You can delete a rule by pressing longer on it.
         \n\n- The map shows all your firewall rules geographically.</string>
     <string name="settings_share_detections">Share detections</string>
-    <string name="map_legend">The color of the markers stands for the action of the firewall rule. \n- Red markers will be always blocked \n- Green markers will be always ignored \n- Orange markers will be asked again for a decision on the next detection of it. \n\nOn tapping on the marker a circle will appear where its size represents the signal strength. The radius of the circle is NOT representing the distance of the signal source.</string>
+    <string name="map_legend">The color of the markers stands for the action of the firewall rule.
+        \n- Red markers will always be blocked
+        \n- Green markers will always be ignored
+        \n- Orange markers will trigger the detection alert dialog asking again for a decision on the next detection of the corresponding signal at this place.
+        \n\nIf you tap on a marker, a circle will appear whose size represents the signal strength. The radius of the circle is NOT representing the distance reached by the signal.</string>
     <string name="import_timeto_title">Time to</string>
     <string name="import_timeto_button">Pick date</string>
     <string name="import_location">Location</string>
@@ -171,7 +177,7 @@
     <string name="filter_import_dialog_message">The filter resulted in %s rules.</string>
     <string name="stored_adapter_detection_counter_title">previous Detections:</string>
     <string name="stored_adapter_unknown_address">Unknown Address</string>
-    <string name="rules_info_title">Rules</string>
+    <string name="rules_info_title">Rules info</string>
     <string name="filter_dialog_reset_date">reset</string>
     <string name="loading_dialog_import_detections">Importing Detections</string>
     <string name="settings_info_title">Settings</string>
