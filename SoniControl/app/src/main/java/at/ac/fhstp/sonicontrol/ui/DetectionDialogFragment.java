@@ -232,10 +232,23 @@ public class DetectionDialogFragment extends DialogFragment {
         });*/
 
         // Should be executed after initialization of all buttons AND before setting the view
-        setupButtonState(currentActivity);
+        setTechnologyText(currentActivity);
+        //txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + settings.getString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, "unknown"));
+        txtAlertDate.setText(sp.getString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getString(R.string.alert_unknown_date)));
+        txtAlertLocation.setText(sp.getString(ConfigConstants.LAST_DETECTED_LOCATION_SHARED_PREF, getString(R.string.json_detections_unknown_address)));
+        //setupButtonState(getContext()); //Done in onResume()
+
         builder.setView(view);
         builder.setTitle(R.string.alertDialog_text_ultrasonic_signal_detected);
         return builder.create();
+    }
+
+        @Override
+    public void onResume() {
+        super.onResume();
+        // Update state on resume, but the quick settings menu does not trigger onPause/onResume,
+        // so users need to close/reopen the app to see a change, e.g. if they activated internet.
+        setupButtonState(getContext());
     }
 
     private void setTechnologyText(FragmentActivity currentActivity) {
@@ -268,17 +281,17 @@ public class DetectionDialogFragment extends DialogFragment {
         }
     }
 
-    private void setupButtonState(FragmentActivity currentActivity) {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(currentActivity);
+    private void setupButtonState(Context context) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         boolean gpsAllowed = settings.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
         boolean networkAllowed = settings.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
-        LocationManager locationManager = (LocationManager) currentActivity.getSystemService(currentActivity.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         boolean saveJsonFile = settings.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
-        int status = ActivityCompat.checkSelfPermission(currentActivity,
+        int status = ActivityCompat.checkSelfPermission(context,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
         // Set rule saving state
@@ -312,12 +325,6 @@ public class DetectionDialogFragment extends DialogFragment {
             txtNoInternet.setVisibility(View.VISIBLE);
             txtNoInternet.setText(R.string.on_alert_network_not_enabled);
         }
-
-        setTechnologyText(currentActivity);
-
-        //txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + settings.getString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, "unknown"));
-        txtAlertDate.setText(settings.getString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getString(R.string.alert_unknown_date)));
-        txtAlertLocation.setText(settings.getString(ConfigConstants.LAST_DETECTED_LOCATION_SHARED_PREF, getString(R.string.json_detections_unknown_address)));
     }
 
     @Override
