@@ -243,7 +243,7 @@ public class DetectionDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-        @Override
+    @Override
     public void onResume() {
         super.onResume();
         // Update state on resume, but the quick settings menu does not trigger onPause/onResume,

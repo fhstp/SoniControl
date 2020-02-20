@@ -156,7 +156,7 @@ public class SpectrogramView extends View {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        invalidate();
+        //invalidate();
         return true;
     }
 
