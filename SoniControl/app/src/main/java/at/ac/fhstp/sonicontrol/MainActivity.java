@@ -643,24 +643,19 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         saveJsonFile = sp.getBoolean(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE, ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT);
 
-        if(saveJsonFile) {
-            if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
-                threadPool.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        jsonMan.createJsonFile(); //create a JSON file
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                if(saveJsonFile) {
+                    if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
+                            jsonMan.createJsonFile(); //create a JSON file
                     }
-                });
-            }
-            if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
-                threadPool.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        jsonMan.createSaveFolder(); //create a folder for the audio files
+                    if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
+                            jsonMan.createSaveFolder(); //create a folder for the audio files
                     }
-                });
+                }
             }
-        }
+        });
     }
 
     /**
@@ -868,32 +863,21 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             final float amplitude = getSettingsObject().getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
             if (saveJsonFile && locationTrack) {
                 final String address = locationFinder.getDetectedDBEntryAddres();
-                threadPool.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, address, false, amplitude, getDetectionAddressState(address)); //adding the found signal in the JSON file
-                    }
-                });
+                jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, address, false, amplitude, getDetectionAddressState(address)); //adding the found signal in the JSON file
             }
             if (saveJsonFile && !locationTrack) {
                 final double[] noLocation = {0,0};
                 /*double[] noLocation = new double[2];
                 noLocation[0] = 0;
                 noLocation[1] = 0;*/
-
-                threadPool.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        jsonMan.addJsonObject(noLocation, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, DetectionAddressStateEnum.NOT_AVAILABLE.toString(), false, amplitude, DetectionAddressStateEnum.NOT_AVAILABLE.getId());
-                    }
-                });
+                jsonMan.addJsonObject(noLocation, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, DetectionAddressStateEnum.NOT_AVAILABLE.toString(), false, amplitude, DetectionAddressStateEnum.NOT_AVAILABLE.getId());
             }
 
             locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
         } else { // The user does not prefer to block every location
             //Log.d("Not spoof", "Not spoof continuous");
             if (locationTrack && jsonMan.checkIfJsonFileIsAvailable()) { // If the user allowed location and has a JSON file
-                locationFinder.checkExistingLocationDB(lastPosition, technology, threadPool); // Check our detection DB and follow user (stored) preference if it is not a new location
+                locationFinder.checkExistingLocationDB(lastPosition, technology); // Check our detection DB and follow user (stored) preference if it is not a new location
             }
             else {
                 // Notify the user
@@ -957,12 +941,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 @Override
                 public void run() {
                     if (!jsonMan.checkIfJsonFileIsAvailable()) { //check if a JSON File is already there in the storage
-                        threadPool.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                jsonMan.createJsonFile(); //create a JSON file
-                            }
-                        });
+                        jsonMan.createJsonFile(); //create a JSON file
                     }
                 }
             });
@@ -970,12 +949,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 @Override
                 public void run() {
                     if (!jsonMan.checkIfSavefolderIsAvailable()) { //check if a folder for the audio files is already there in the storage
-                        threadPool.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                jsonMan.createSaveFolder(); //create a folder for the audio files
-                            }
-                        });
+                        jsonMan.createSaveFolder(); //create a folder for the audio files
                     }
                 }
             });

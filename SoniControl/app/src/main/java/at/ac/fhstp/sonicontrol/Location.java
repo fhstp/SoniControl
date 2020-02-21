@@ -106,26 +106,18 @@ public class Location {
     }
 
 
-    public void checkExistingLocationDB(double[] position, Technology signalType, ScheduledExecutorService threadpool){
+    public void checkExistingLocationDB(double[] position, Technology signalType){
         signalTech = signalType;
         boolean isNewSignal = true;
         double[] positionDBEntry = new double[2];
         boolean shouldBeSpoofed = false;
 
         final JSONManager jsonMan = new JSONManager(main);
-        threadpool.execute(new Runnable() {
-            @Override
-            public void run() {
-                data = jsonMan.getJsonData(); //get the Json data saved in "data"
-            }
-        });
-        threadpool.execute(new Runnable() {
-            @Override
-            public void run() {
-                importedData = jsonMan.getImportJsonData();
-                data.addAll(importedData);
-            }
-        });
+
+        data = jsonMan.getJsonData(); //get the Json data saved in "data"
+        importedData = jsonMan.getImportJsonData();
+        data.addAll(importedData);
+
         //jsonMan = null;
         int spoofStatus = -1;
         for (String[] array : data){ //iterate through the list
@@ -162,16 +154,18 @@ public class Location {
                 break;
             }
         }
+        //Log.d("Location", "SpoofStatus " + spoofStatus);
         if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
             shouldBeSpoofed = true;
-            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus, threadpool);
+            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
         }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){
             shouldBeSpoofed = false;
-            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus, threadpool);
+            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
         }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ASK_AGAIN){
+            Log.d("Location", "ConfigConstants.DETECTION_TYPE_ASK_AGAIN");
             openAlertToAskAgain(position);
         }else {
-            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus, threadpool);
+            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
         }
     }
 
@@ -195,27 +189,20 @@ public class Location {
         detectedSignalPosition = positionLatest; //set the latest position to the detected position if the continuous spoofing setting is active
     }
 
-    private void shouldDBEntrySpoofed(boolean shouldBeSpoofed, final double[] position, final double[] positionDBEntry, final Technology signalType, final int spoofStatus, ScheduledExecutorService threadpool){
+    private void shouldDBEntrySpoofed(boolean shouldBeSpoofed, final double[] position, final double[] positionDBEntry, final Technology signalType, final int spoofStatus){
         final JSONManager jsonMan = new JSONManager(main);
-        threadpool.execute(new Runnable() {
-            @Override
-            public void run() {
-                jsonMan.setLatestDate(positionDBEntry, signalTech); //update the date in the json-file at the detected position
-            }
-        });
+
+        jsonMan.setLatestDate(positionDBEntry, signalTech); //update the date in the json-file at the detected position
+
         //TODO: Update Detection Counter
         Log.d("Location", "ShouldDBEntrySpoofed");
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main.getApplicationContext());
         final float amplitude = sp.getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
         final String address = getDetectedDBEntryAddres();
 
-        threadpool.execute(new Runnable() {
-            @Override
-            public void run() {
-                jsonMan.addJsonObject(position, signalType.toString(), spoofStatus, address, true, amplitude, getAddressStatus(address));
-                jsonMan.updateSignalAndImportedDetectionCounter(position, signalType.toString());
-            }
-        });
+        jsonMan.addJsonObject(position, signalType.toString(), spoofStatus, address, true, amplitude, getAddressStatus(address));
+        jsonMan.updateSignalAndImportedDetectionCounter(position, signalType.toString());
+
         if(shouldBeSpoofed){ //if it should be spoofed
             //Log.d("Location", "I should be spoofed");
             /*if (!main.getBackgroundStatus()) { //if the app is not in the background
@@ -350,7 +337,7 @@ public class Location {
         main.activateAlertOnAskAgain(signalType);
     }
 
-    public void decideIfNewSignalOrNot(boolean isNewSignal, boolean shouldBeSpoofed, double[] position, double[] positionDBEntry, Technology signalType, int spoofStatus, ScheduledExecutorService threadpool){
+    public void decideIfNewSignalOrNot(boolean isNewSignal, boolean shouldBeSpoofed, double[] position, double[] positionDBEntry, Technology signalType, int spoofStatus){
         if(isNewSignal){ //if its a new signal
             detectedSignalPosition = position; //save the new signal as the detected Position
             //Log.d("Location", "I am a new Signal");
@@ -364,7 +351,7 @@ public class Location {
         }else{
             detectedSignalPosition = positionDBEntry; //save the new signal as the detected Position
             //Log.d("Location", "I am not a new Signal");
-            shouldDBEntrySpoofed(shouldBeSpoofed,position, positionDBEntry, signalType, spoofStatus, threadpool); //check the spoofed status from the json-file
+            shouldDBEntrySpoofed(shouldBeSpoofed,position, positionDBEntry, signalType, spoofStatus); //check the spoofed status from the json-file
 
         }
     }
