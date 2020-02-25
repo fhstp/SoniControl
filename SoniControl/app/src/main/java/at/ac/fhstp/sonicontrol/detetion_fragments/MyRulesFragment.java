@@ -129,7 +129,6 @@ public class MyRulesFragment extends Fragment implements Stored_Adapter.OnItemCl
                         double[] positionSignal = new double[2];
                         positionSignal[0] = Double.valueOf(singleArrayItem[0]);
                         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
-                        jsonMan.deleteEntryInStoredLoc(positionSignal,singleArrayItem[2]);
                         jsonMan = new JSONManager(nextMain);
                         //data = jsonMan.getJsonData();
                         if(data.size()==0){
@@ -141,11 +140,12 @@ public class MyRulesFragment extends Fragment implements Stored_Adapter.OnItemCl
                         stored_adapter = new Stored_Adapter(listContext, data);
                         stored_adapter.addOnItemClickListener(localContext);
                         lv.setAdapter(stored_adapter);*/
-                        for(String[] listitem : data){
-                            if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1])){
-                                data.remove(listitem);
-                            }
-                        }
+                        //for(String[] listitem : data){
+                        //    if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1]) && singleArrayItem[2].equals(listitem[2])){
+                        data.remove(positionLongClick);
+                        jsonMan.deleteEntryInStoredLoc(positionSignal,singleArrayItem[2]);
+                        //    }
+                        //}
                         stored_adapter.notifyDataSetChanged();
                     }
                 })
@@ -226,7 +226,7 @@ public class MyRulesFragment extends Fragment implements Stored_Adapter.OnItemCl
         jsonMan.setShouldBeSpoofedInStoredLoc(positionSignal,singleArrayItem[2], spoofingStatus);
         jsonMan = new JSONManager(nextMain);
         for(String[] listitem : data){
-            if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1])){
+            if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1]) && singleArrayItem[2].equals(listitem[2])){
                 Log.d("MyRulesFragment", "found listitem");
                 listitem[4] = String.valueOf(spoofingStatus);
             }
