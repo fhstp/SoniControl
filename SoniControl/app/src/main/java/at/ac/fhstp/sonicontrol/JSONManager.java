@@ -392,11 +392,11 @@ public class JSONManager {
                 }
                 jHistoryArray.put(addArray);
 
-                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
+                /*SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
                 boolean shouldBeShared = sp.getBoolean(ConfigConstants.LAST_DECISION_ON_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
                 if (shouldBeShared) {
                     main.sendDetection(position[0], position[1], Technology.fromString(technology).getId(), technology, returnDateString(), spoof, amplitude);
-                }
+                }*/
 
                 try {
                     FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //get the json file
@@ -689,7 +689,7 @@ public class JSONManager {
         }
     }
 
-    public String returnDateString(){
+    public static String returnDateString(){
         Long currentTime = Calendar.getInstance().getTimeInMillis(); //get the current time in milliseconds
         //SimpleDateFormat rightFormat = new SimpleDateFormat("HH:mm:ss.SSS"); //get the time formatted old with milliseconds
         SimpleDateFormat rightFormat = new SimpleDateFormat("HH:mm:ss"); //get the time formatted

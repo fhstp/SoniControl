@@ -866,6 +866,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             if (saveJsonFile && locationTrack) {
                 final String address = locationFinder.getDetectedDBEntryAddres();
                 jsonMan.addJsonObject(locationFinder.getDetectedDBEntry(), technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, address, false, amplitude, getDetectionAddressState(address)); //adding the found signal in the JSON file
+                checkIfShouldBeSharedAndSendDetection(locationFinder.getDetectedDBEntry(), technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, amplitude);
             }
             if (saveJsonFile && !locationTrack) {
                 final double[] noLocation = {0,0};
@@ -873,13 +874,17 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 noLocation[0] = 0;
                 noLocation[1] = 0;*/
                 jsonMan.addJsonObject(noLocation, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, DetectionAddressStateEnum.NOT_AVAILABLE.toString(), false, amplitude, DetectionAddressStateEnum.NOT_AVAILABLE.getId());
+                checkIfShouldBeSharedAndSendDetection(noLocation, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, amplitude);
             }
 
             locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
         } else { // The user does not prefer to block every location
             //Log.d("Not spoof", "Not spoof continuous");
             if (locationTrack && jsonMan.checkIfJsonFileIsAvailable()) { // If the user allowed location and has a JSON file
-                locationFinder.checkExistingLocationDB(lastPosition, technology); // Check our detection DB and follow user (stored) preference if it is not a new location
+                if(locationFinder.checkExistingLocationDB(lastPosition, technology)){ // Check our detection DB and follow user (stored) preference if it is not a new location
+                    final float amplitude = sp.getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
+                    checkIfShouldBeSharedAndSendDetection(lastPosition, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, amplitude);
+                }
             }
             else {
                 // Notify the user
@@ -1130,6 +1135,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     jsonMan.setLatestDate(detectedSignalPosition, sigType);
                     String address = locationFinder.getDetectedDBEntryAddres();
                     jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, address, true, amplitude, getDetectionAddressState(address));
+                    checkIfShouldBeSharedAndSendDetection(detectedSignalPosition, sigType.toString(), spoofDecision, amplitude);
                     //jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, locationFinder.getDetectedDBEntryAddres()); //adding the found signal in the JSON file
                 }
             });
@@ -1141,6 +1147,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 @Override
                 public void run() {
                     jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, address, false, amplitude, getDetectionAddressState(address)); //adding the found signal in the JSON file
+                    checkIfShouldBeSharedAndSendDetection(detectedSignalPosition, sigType.toString(), spoofDecision, amplitude);
                 }
             });
             if (detectedSignalPosition[0] == 0 && detectedSignalPosition[1] == 0) {
@@ -1158,6 +1165,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 @Override
                 public void run() {
                     jsonMan.addJsonObject(noLocation, sigType.toString(), spoofDecision, DetectionAddressStateEnum.NOT_AVAILABLE.toString(), false, amplitude, DetectionAddressStateEnum.NOT_AVAILABLE.getId());
+                    checkIfShouldBeSharedAndSendDetection(noLocation, sigType.toString(), spoofDecision, amplitude);
                 }
             });
         }
@@ -1187,6 +1195,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             return DetectionAddressStateEnum.NOT_AVAILABLE.getId();
         }else{
             return DetectionAddressStateEnum.RESOLVED.getId();
+        }
+    }
+
+    public void checkIfShouldBeSharedAndSendDetection(double[] position, String technology, int spoof, float amplitude){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean shouldBeShared = sp.getBoolean(ConfigConstants.LAST_DECISION_ON_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
+        if (shouldBeShared) {
+            sendDetection(position[0], position[1], Technology.fromString(technology).getId(), technology, JSONManager.returnDateString(), spoof, amplitude);
         }
     }
 

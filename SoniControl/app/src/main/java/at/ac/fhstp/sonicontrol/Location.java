@@ -106,7 +106,7 @@ public class Location {
     }
 
 
-    public void checkExistingLocationDB(double[] position, Technology signalType){
+    public boolean checkExistingLocationDB(double[] position, Technology signalType){
         signalTech = signalType;
         boolean isNewSignal = true;
         double[] positionDBEntry = new double[2];
@@ -157,15 +157,16 @@ public class Location {
         //Log.d("Location", "SpoofStatus " + spoofStatus);
         if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
             shouldBeSpoofed = true;
-            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
+            return decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
         }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){
             shouldBeSpoofed = false;
-            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
+            return decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
         }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ASK_AGAIN){
             Log.d("Location", "ConfigConstants.DETECTION_TYPE_ASK_AGAIN");
             openAlertToAskAgain(position);
+            return false;
         }else {
-            decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
+            return decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus);
         }
     }
 
@@ -337,7 +338,7 @@ public class Location {
         main.activateAlertOnAskAgain(signalType);
     }
 
-    public void decideIfNewSignalOrNot(boolean isNewSignal, boolean shouldBeSpoofed, double[] position, double[] positionDBEntry, Technology signalType, int spoofStatus){
+    public boolean decideIfNewSignalOrNot(boolean isNewSignal, boolean shouldBeSpoofed, double[] position, double[] positionDBEntry, Technology signalType, int spoofStatus){
         if(isNewSignal){ //if its a new signal
             detectedSignalPosition = position; //save the new signal as the detected Position
             //Log.d("Location", "I am a new Signal");
@@ -347,12 +348,12 @@ public class Location {
                 main.activateDetectionNotification(); //activate the detection notification
             }*/
             main.activateAlert(signalType); //open the alert dialog with the found technology
-
+            return false;
         }else{
             detectedSignalPosition = positionDBEntry; //save the new signal as the detected Position
             //Log.d("Location", "I am not a new Signal");
             shouldDBEntrySpoofed(shouldBeSpoofed,position, positionDBEntry, signalType, spoofStatus); //check the spoofed status from the json-file
-
+            return true;
         }
     }
 
