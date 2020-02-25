@@ -88,7 +88,7 @@ public class MyRulesFragment extends Fragment implements Stored_Adapter.OnItemCl
         //loadFragment(new DetectionHistoryFragment());
 
         nextMain = main.getMainIsMain();
-        jsonMan = new JSONManager(nextMain);
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
 
         data = jsonMan.getJsonData();
 
@@ -129,7 +129,7 @@ public class MyRulesFragment extends Fragment implements Stored_Adapter.OnItemCl
                         double[] positionSignal = new double[2];
                         positionSignal[0] = Double.valueOf(singleArrayItem[0]);
                         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
-                        jsonMan = new JSONManager(nextMain);
+                        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
                         //data = jsonMan.getJsonData();
                         if(data.size()==0){
                             txtNothingDiscovered.setVisibility(View.VISIBLE);
@@ -224,7 +224,7 @@ public class MyRulesFragment extends Fragment implements Stored_Adapter.OnItemCl
         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
         Log.d("MyRulesFragment", "changeRuleItem "+ spoofingStatus);
         jsonMan.setShouldBeSpoofedInStoredLoc(positionSignal,singleArrayItem[2], spoofingStatus);
-        jsonMan = new JSONManager(nextMain);
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
         for(String[] listitem : data){
             if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1]) && singleArrayItem[2].equals(listitem[2])){
                 Log.d("MyRulesFragment", "found listitem");

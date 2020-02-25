@@ -64,7 +64,7 @@ public class SettingsFragment extends PreferenceFragment {
         settingsFragment = this;
 
         nextMain = main.getMainIsMain();
-        jsonMan = new JSONManager(nextMain);
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
 
         cbContinuousSpoofing = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_CONTINOUS_SPOOFING);
         cbGPSUse = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_GPS);

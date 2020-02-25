@@ -51,7 +51,7 @@ public class DetectionHistoryFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.detection_history_fragment, container, false);
 
         nextMain = main.getMainIsMain();
-        jsonMan = new JSONManager(nextMain);
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
 
         //data = jsonMan.getAllJsonData();
         data = jsonMan.getHistoryJsonData();
@@ -92,7 +92,7 @@ public class DetectionHistoryFragment extends Fragment {
                         positionSignal[0] = Double.valueOf(singleArrayItem[0]);
                         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
                         jsonMan.deleteEntryInStoredLoc(positionSignal,singleArrayItem[2]);
-                        jsonMan = new JSONManager(nextMain);
+                        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
                         data = jsonMan.getJsonData();
                         if(data.size()==0){
                             txtNothingDiscovered.setVisibility(View.VISIBLE);

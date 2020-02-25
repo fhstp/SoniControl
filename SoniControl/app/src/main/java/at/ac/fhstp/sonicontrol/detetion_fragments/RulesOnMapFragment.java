@@ -144,7 +144,7 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
     public void addMapMarkers(){
         MainActivity main = new MainActivity();
         MainActivity nextMain = main.getMainIsMain();
-        JSONManager jsonMan = new JSONManager(nextMain);
+        JSONManager jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
         ArrayList<String[]> locationData = jsonMan.getJsonData();
         locationData.addAll(jsonMan.getImportJsonData());
 

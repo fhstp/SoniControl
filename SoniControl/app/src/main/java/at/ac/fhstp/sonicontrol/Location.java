@@ -112,7 +112,7 @@ public class Location {
         double[] positionDBEntry = new double[2];
         boolean shouldBeSpoofed = false;
 
-        final JSONManager jsonMan = new JSONManager(main);
+        final JSONManager jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(main);
 
         data = jsonMan.getJsonData(); //get the Json data saved in "data"
         importedData = jsonMan.getImportJsonData();
@@ -190,7 +190,7 @@ public class Location {
     }
 
     private void shouldDBEntrySpoofed(boolean shouldBeSpoofed, final double[] position, final double[] positionDBEntry, final Technology signalType, final int spoofStatus){
-        final JSONManager jsonMan = new JSONManager(main);
+        final JSONManager jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(main);
 
         jsonMan.setLatestDate(positionDBEntry, signalTech); //update the date in the json-file at the detected position
 

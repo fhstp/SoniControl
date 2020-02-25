@@ -160,7 +160,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 return;
             }
         }
-        jsonMan = new JSONManager(this);
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(this);
+        jsonMan.init(this);
 
         // Used by SpectrogramView
         Misc.setAttribute("activity", this);
@@ -859,7 +860,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
             saveJsonFile = this.checkJsonAndLocationPermissions()[0];
 
-            final JSONManager jsonMan = new JSONManager(this);
+            //final JSONManager jsonMan = new JSONManager(this);
+            final JSONManager jsonMan = JSONManager.getInstanceJSONManager();
             final float amplitude = getSettingsObject().getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
             if (saveJsonFile && locationTrack) {
                 final String address = locationFinder.getDetectedDBEntryAddres();

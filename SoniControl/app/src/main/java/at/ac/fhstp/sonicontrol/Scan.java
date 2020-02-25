@@ -150,7 +150,7 @@ public class Scan {
         savedFileUrl = applicationContext.getFilesDir() + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
 
         locFinder = Location.getInstanceLoc(); //get an instance of location
-        jsonMan = new JSONManager(main);
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(main);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
         SharedPreferences.Editor ed = sp.edit();

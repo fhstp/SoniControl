@@ -160,7 +160,7 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
         //PlacesClient placesClient = Places.createClient(getActivity());
 
         nextMain = main.getMainIsMain();
-        jsonMan = new JSONManager(nextMain);
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
 
         data = jsonMan.getImportJsonData();
 
@@ -201,7 +201,7 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                         double[] positionSignal = new double[2];
                         positionSignal[0] = Double.valueOf(singleArrayItem[0]);
                         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
-                        jsonMan = new JSONManager(nextMain);
+                        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
                         //data = jsonMan.getImportJsonData();
                         if(data.size()==0){
                             txtNothingDiscovered.setVisibility(View.VISIBLE);
@@ -758,7 +758,7 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
         Log.d("ImportedRulesFragment", "changeRuleItem "+ spoofingStatus);
         jsonMan.setShouldBeSpoofedInImportedLoc(positionSignal,singleArrayItem[2], spoofingStatus);
-        jsonMan = new JSONManager(nextMain);
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
         for(String[] listitem : data){
             if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1]) && singleArrayItem[2].equals(listitem[2])){
                 Log.d("ImportedRulesFragment", "found listitem");
