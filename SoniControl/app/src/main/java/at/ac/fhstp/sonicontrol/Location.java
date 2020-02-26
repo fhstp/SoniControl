@@ -228,9 +228,9 @@ public class Location {
         }
     }
     public int getAddressStatus(String address){
-        if(DetectionAddressStateEnum.fromString(address).equals(DetectionAddressStateEnum.UNKNOWN)){
+        if(DetectionAddressStateEnum.UNKNOWN.toString().equals(address)){
             return DetectionAddressStateEnum.UNKNOWN.getId();
-        }else if(DetectionAddressStateEnum.fromString(address).equals(DetectionAddressStateEnum.NOT_AVAILABLE)){
+        }else if(DetectionAddressStateEnum.NOT_AVAILABLE.toString().equals(address)){
             return DetectionAddressStateEnum.NOT_AVAILABLE.getId();
         }else{
             return DetectionAddressStateEnum.RESOLVED.getId();
