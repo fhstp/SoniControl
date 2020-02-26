@@ -243,8 +243,8 @@ static bool isSignalDetected()
                 for (int i = medianBuffer.size() - 1; i > medianBuffer.size() - postMessageNbItems; i--) {
                     postMessageSum += medianBuffer[i];
                 }
-                if (postMessageSum < (int) ceil(
-                        postMessageNbItems / 4)) { // At least 75% of the post message time is non detection
+                // If at least 75% of the post message time is non detection
+                if (postMessageSum < (int) ceil(postMessageNbItems / 4)) {
                     messageIsOver = true;
                 }
             }

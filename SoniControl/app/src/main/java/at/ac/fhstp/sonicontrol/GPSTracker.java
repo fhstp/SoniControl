@@ -236,8 +236,8 @@ public class GPSTracker extends Service implements LocationListener {
 
                 return addresses;
             } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(TAG, "Impossible to connect to Geocoder", e);
+                //e.printStackTrace();
+                Log.w(TAG, "Impossible to connect to Geocoder", e);
             }
         }
 
