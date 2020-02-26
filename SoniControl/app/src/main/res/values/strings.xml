@@ -53,7 +53,7 @@
     <string name="toastMessageNoGeocoderConnection">Not able to access location</string>
     <string name="alertDialog_option_jam_always_here">Block always here</string>
     <string name="alertDialog_option_dismiss_this_time">Allow</string>
-    <string name="alertDialog_option_dismiss_always_here">Ignore always here</string>
+    <string name="alertDialog_option_dismiss_always_here">Allow always here</string>
     <string name="alertDialog_option_jam_this_time">Block</string>
     <string name="alertDialog_text_ultrasonic_signal_detected">Ultrasonic signal detected</string>
     <string name="alertDialog_option_play">Make it audible!</string>
@@ -113,7 +113,7 @@
     <string name="settings_blocking_duration_singular">Blocking duration (%s minute)</string>
     <string name="settings_blocking_duration_plural">Blocking duration (%s minutes)</string>
     <string name="stored_detections_will_be_blocked">will be blocked</string>
-    <string name="stored_detections_will_be_ignored">will be ignored</string>
+    <string name="stored_detections_will_be_allowed">will be allowed</string>
     <string name="settings_category_jammer">Advanced settings - Jammer (active blocking)</string>
     <string name="settings_category_blocking">Blocking</string>
     <string name="settings_category_expert">Advanced - RESET</string>
@@ -147,13 +147,13 @@
     <string name="settings_share_detections">Share detections</string>
     <string name="map_legend">The color of the markers stands for the action of the firewall rule.
         \n- Red markers will always be blocked
-        \n- Green markers will always be ignored
+        \n- Green markers will always be allowed
         \n- Orange markers will trigger the detection alert dialog asking again for a decision on the next detection of the corresponding signal at this place.
         \n\nIf you tap on a marker, a circle will appear whose size represents the signal strength. The radius of the circle is NOT representing the distance reached by the signal.</string>
     <string name="import_timeto_title">Time to</string>
     <string name="import_timeto_button">Pick date</string>
     <string name="import_location">Location</string>
-    <string name="import_range">Range</string>
+    <string name="import_range">Range (in meters)</string>
     <string name="import_filter_info">Please set your filters for importing detections!</string>
     <string name="import_button">Import</string>
     <string name="import_timefrom_title">Time from</string>
@@ -181,7 +181,7 @@
     <string name="filter_dialog_reset_date">reset</string>
     <string name="loading_dialog_import_detections">Importing Detections</string>
     <string name="settings_info_title">Settings</string>
-    <string name="settings_info_text">"Extended diagnostics" - \n
+    <string name="settings_info_text">"Extended diagnostics" - A detection will be triggered once the signal is over. This could capture the whole signal for analysis and diagnostic purposes.\n
         \n
         "Block on each location" - Every detection will be blocked automatically and no alert will be shown.\n
         \n
@@ -206,7 +206,7 @@
     <string name="settings_title_dont_ask">Location permission dialog</string>
     <string name="textviewStatusInitializing">Initializing</string>
     <string name="button_start_firewall">Start Firewall</string>
-    <string name="onIgnorePauseFirewallHint">Ignored. If you like to use ultrasound, you should pause the firewall.</string>
+    <string name="onAllowPauseFirewallHint">Allowed. If you like to use ultrasound, you should pause the firewall.</string>
     <string name="button_pause_firewall">Pause Firewall</string>
     <string name="button_stop_firewall">Stop Firewall</string>
     <string name="button_detection_list">Rules &amp; \nDetections</string>

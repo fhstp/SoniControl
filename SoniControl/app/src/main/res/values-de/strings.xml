@@ -113,7 +113,7 @@
     <string name="settings_blocking_duration_singular">Blockierdauer (%s Minute)</string>
     <string name="settings_blocking_duration_plural">Blockierdauer (%s Minuten)</string>
     <string name="stored_detections_will_be_blocked">wird blockiert</string>
-    <string name="stored_detections_will_be_ignored">wird ignoriert</string>
+    <string name="stored_detections_will_be_allowed">wird zugelassen</string>
     <string name="settings_category_jammer">Experteneinstellungen - Blockiervorgang</string>
     <string name="settings_category_blocking">Blockieren</string>
     <string name="settings_category_expert">Experteneinstellungen - Zurücksetzen</string>
@@ -147,7 +147,7 @@
     <string name="import_timeto_title">Zeit von</string>
     <string name="import_timeto_button">Wähle ein Datum</string>
     <string name="import_location">Position</string>
-    <string name="import_range">Umkreis</string>
+    <string name="import_range">Umkreis (in Meter)</string>
     <string name="import_filter_info">Bitte stellen Sie einen Filter ein um zu importieren!</string>
     <string name="import_button">Importieren</string>
     <string name="import_timefrom_title">Zeit bis</string>
@@ -176,7 +176,7 @@
     <string name="loading_dialog_import_detections">Importiere Erkennungen</string>
     <string name="settings_info_title">Einstellungen</string>
     <string name="settings_info_text">
-        "Erweiterte Diagnose" -
+        "Erweiterte Diagnose" - Eine Erkennung wird erst angzeigt, sobald das komplette Signal durch ist. Dies könnte das komplette Signal erfassen für Analyse- und Diagnosezwecke.
         \n
         \n"An jedem Ort blockieren" - Jede Erkennung wird automatisch blockiert und kein Popup wird angezeigt.
         \n
@@ -206,7 +206,7 @@
     <string name="button_detection_list">Regeln &amp; \nErkennungen</string>
     <string name="button_settings">Einstellungen</string>
     <string name="textviewStatusStopped">Gestoppt.</string>
-    <string name="onIgnorePauseFirewallHint">Ignoriert. Wenn Sie Ultraschall verwenden möchten, sollten Sie die Firewall pausieren.</string>
+    <string name="onAllowPauseFirewallHint">Zugelassen. Wenn Sie Ultraschall verwenden möchten, sollten Sie die Firewall pausieren.</string>
     <string name="alert_spectrogram_title">Fingerabdruck des Signals</string>
     <string name="on_alert_network_not_enabled">Keine Internetverbindung.</string>
     <string name="alert_save_as_firewall_rule">Meine Entscheidung als Firewall-Regel speichern</string>

@@ -84,7 +84,7 @@ import retrofit2.Response;
 import uk.me.berndporr.iirj.Butterworth;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
-import static at.ac.fhstp.sonicontrol.ConfigConstants.ON_IGNORE_SNACKBAR_DURATION;
+import static at.ac.fhstp.sonicontrol.ConfigConstants.ON_ALLOW_SNACKBAR_DURATION;
 import static at.ac.fhstp.sonicontrol.utils.Recognition.computeRecognition;
 
 
@@ -1263,8 +1263,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
         Snackbar.make(((ViewGroup) MainActivity.this
                 .findViewById(android.R.id.content)).getChildAt(0),
-                dialog.getContext().getString(R.string.onIgnorePauseFirewallHint),
-                ON_IGNORE_SNACKBAR_DURATION).show();
+                dialog.getContext().getString(R.string.onAllowPauseFirewallHint),
+                ON_ALLOW_SNACKBAR_DURATION).show();
     }
 
     @SuppressLint("WrongConstant") // Bug in the linting, see https://stackoverflow.com/a/31979209
@@ -1276,8 +1276,8 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         Snackbar.make(((ViewGroup) MainActivity.this
                 .findViewById(android.R.id.content)).getChildAt(0),
-                dialog.getContext().getString(R.string.onIgnorePauseFirewallHint),
-                ON_IGNORE_SNACKBAR_DURATION).show();
+                dialog.getContext().getString(R.string.onAllowPauseFirewallHint),
+                ON_ALLOW_SNACKBAR_DURATION).show();
     }
 
     /*@Override
