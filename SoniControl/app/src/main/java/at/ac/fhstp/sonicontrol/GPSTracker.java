@@ -48,7 +48,7 @@ import java.util.Locale;
 public class GPSTracker extends Service implements LocationListener {
 
     private static String TAG = GPSTracker.class.getName();
-    private final Activity activity;
+    //private final Activity activity;
 
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
@@ -73,12 +73,12 @@ public class GPSTracker extends Service implements LocationListener {
     Geocoder geocoder = null;
 
     public GPSTracker(Activity activity) {
-        this.activity = activity;
-        initGPSTracker();
+        //this.activity = activity;
+        initGPSTracker(activity);
     }
 
 
-    public void initGPSTracker() {
+    public void initGPSTracker(Activity activity) {
         try {
             //activity.displayToast("I am in initGPS", Toast.LENGTH_LONG);
             locationManager = (LocationManager) activity.getApplicationContext().getSystemService(LOCATION_SERVICE);
@@ -261,9 +261,9 @@ public class GPSTracker extends Service implements LocationListener {
         }
     }
 
-    public String getAddressFromPoint(double latitude, double longitude, Context context){
+    public String getAddressFromPoint(double latitude, double longitude, Activity activity){
         try {
-            List<Address> addresses = getGeocoder(context, Locale.getDefault()).getFromLocation(latitude, longitude, this.geocoderMaxResults);
+            List<Address> addresses = getGeocoder(activity, Locale.getDefault()).getFromLocation(latitude, longitude, this.geocoderMaxResults);
 
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
@@ -271,13 +271,13 @@ public class GPSTracker extends Service implements LocationListener {
 
                 return addressLine;
             } else {
-                return this.activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
+                return activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
             }
         } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG, "Impossible to connect to Geocoder", e);
         }
-        return this.activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
+        return activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
     }
 
 

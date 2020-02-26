@@ -123,13 +123,13 @@ public class MicCapture {
                 }
                 // TODO: Should this else redirect to some controller ? (MainActivity ?)
                 else {
-                    executeRoutineAfterExpiredTime();
+                    executeRoutineAfterExpiredTime(main);
                 }
             }
         }
     };
 
-    public void executeRoutineAfterExpiredTime(){
+    public void executeRoutineAfterExpiredTime(MainActivity main){
         SharedPreferences sharedPref = main.getSettingsObject();
         //Log.d("Capture", "I captured the microphonesignal!");
         startTime = 0;
@@ -146,7 +146,7 @@ public class MicCapture {
             locationTrack = true;
         }
         if(/*locationTrack||*/(locFinder.getDetectedDBEntry()[0]!=0&&locFinder.getDetectedDBEntry()[1]!=0)) {
-            positionLatest = locFinder.getLocation(); //get the latest position
+            positionLatest = locFinder.getLocation(main); //get the latest position
             positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
             distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
             //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
@@ -158,17 +158,17 @@ public class MicCapture {
             Log.d("OldPosition", Double.toString(positionOld[1]));*/
             // TODO: Check if we are thread safe. Are we sure that a spoofer / scan is not already on ?
             if (distance < locationRadius) { //if in distance
-                locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access
+                locFinder.blockMicOrSpoof(main); //start the blocking again with trying to get microphone access
             } else {
                 // Note: It is okay to update notification from a worker thread, see : https://stackoverflow.com/a/15803726/5232306
                 //main.cancelSpoofingStatusNotification();
                 NotificationHelper.activateScanningStatusNotification(main.getApplicationContext());
-                detector.startScanning(); //start scanning again
+                detector.startScanning(main); //start scanning again
             }
         } else {
             //main.cancelSpoofingStatusNotification();
             NotificationHelper.activateScanningStatusNotification(main.getApplicationContext());
-            detector.startScanning(); //start scanning again
+            detector.startScanning(main); //start scanning again
         }
     }
 }

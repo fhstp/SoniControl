@@ -40,7 +40,7 @@ public class Scan {
     private JSONManager jsonMan;
 
     Context applicationContext;
-    MainActivity main;
+    //MainActivity main;
     Location locFinder;
     Spoofer spoof = null;
 
@@ -70,7 +70,7 @@ public class Scan {
     public void init(MainActivity main){
         this.applicationContext = main.getApplicationContext();
         //TODO: Remove references to main
-        this.main = main; //initialize the Scan with a main object
+        //this.main = main; //initialize the Scan with a main object
         System.loadLibrary("Superpowered");
     }
 
@@ -120,7 +120,7 @@ public class Scan {
      */
     public void onDetectorInitialized() {
         // Update initialized state, and then callback the main activity for GUI update
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(applicationContext);
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, true);
         ed.apply();
@@ -136,7 +136,7 @@ public class Scan {
         }
     };
 
-    public void startScanning() {
+    public void startScanning(MainActivity main) {
         if(spoof != null) { //if there is an existing spoofer
             if (spoof.isNoiseGenerated()) { //if a spoofer is already generated
                 spoof.setNoiseGeneratedFalse(); //set the boolean for the generation to false
@@ -152,7 +152,7 @@ public class Scan {
         locFinder = Location.getInstanceLoc(); //get an instance of location
         jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(main);
 
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(applicationContext);
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
         ed.apply();
@@ -193,7 +193,7 @@ public class Scan {
 
     public void resume() {
         paused = false;
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(applicationContext);
         SharedPreferences.Editor ed = sp.edit();
         ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
         ed.apply();

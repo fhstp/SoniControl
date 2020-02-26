@@ -19,8 +19,8 @@
 
 package at.ac.fhstp.sonicontrol;
 
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -42,13 +42,14 @@ import java.util.Date;
 
 public class JSONManager {
 
-    MainActivity main;
+    //MainActivity main;
     private Scan detector;
     private Location locationFinder;
-    private static final Object lock = new Object();
+    private static final Object ioLock = new Object();
+    private static final Object creationLock = new Object();
 
     private File fileDir;
-    private static JSONManager instanceJSONManager;
+    private static volatile JSONManager instanceJSONManager;
 
     private static final String JSON_LIST_NAME = "items";
     private static final String JSON_ARRAY_SIGNALS = "signal";
@@ -77,19 +78,26 @@ public class JSONManager {
     }*/
 
     public static JSONManager getInstanceJSONManager() {
-        if(instanceJSONManager == null) {
-            instanceJSONManager = new JSONManager();
+        JSONManager jsonM = instanceJSONManager;
+        if(jsonM == null) {
+            synchronized (creationLock) {
+                jsonM = instanceJSONManager;
+                if (jsonM == null) {
+                    jsonM = new JSONManager();
+                    instanceJSONManager = jsonM;
+                }
+            }
         }
-        return instanceJSONManager;
+        return jsonM;
     }
 
-    public void init(MainActivity main){
-        this.main = main;
-        this.fileDir = main.getFilesDir();
+    public void init(Context context){
+        //this.main = main;
+        this.fileDir = context.getFilesDir();
     }
 
     public ArrayList<String[]> getImportJsonData(){
-        synchronized(lock) {
+        synchronized(ioLock) {
         ArrayList<String[]> data = new ArrayList<String[]>();
 
         File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME);
@@ -184,7 +192,7 @@ public class JSONManager {
     }
 
     public ArrayList<String[]> retrieveSavedJsonData(String jsonArrayName){
-        synchronized(lock) {
+        synchronized(ioLock) {
             ArrayList<String[]> data = new ArrayList<String[]>();
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
@@ -286,13 +294,13 @@ public class JSONManager {
         return retrieveSavedJsonData(JSON_ARRAY_SIGNALS);
     }
 
-    public void updateSignalAndImportedDetectionCounter(double[] position, String technology){
-        updateDetectionCounter(position, technology, JSON_ARRAY_SIGNALS);
-        updateDetectionCounter(position, technology, JSON_ARRAY_IMPORT_SIGNALS);
+    public void updateSignalAndImportedDetectionCounter(double[] position, String technology, MainActivity main){
+        updateDetectionCounter(position, technology, JSON_ARRAY_SIGNALS, main);
+        updateDetectionCounter(position, technology, JSON_ARRAY_IMPORT_SIGNALS, main);
     }
 
-    public void updateDetectionCounter(double[] position, String technology, String jsonArrayName){
-        synchronized(lock) {
+    public void updateDetectionCounter(double[] position, String technology, String jsonArrayName, MainActivity main){
+        synchronized(ioLock) {
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
@@ -345,7 +353,7 @@ public class JSONManager {
     }
 
     public void addJsonObject(double[] position, String technology, int spoof, String address, boolean justHistoryEntry, float amplitude, int addressStatus){
-        synchronized(lock) {
+        synchronized(ioLock) {
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
@@ -415,7 +423,7 @@ public class JSONManager {
     }
 
     public void addImportedJsonObject(double[] position, String technology, int spoof, String address, String timestamp, int technologyid, float amplitude){
-        synchronized(lock) {
+        synchronized(ioLock) {
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
@@ -481,13 +489,13 @@ public class JSONManager {
         }
     }
 
-    public void updateSpoofStatusOfRules(double[] position, String technology, int spoof) {
-        updateSpoofStatusOfJsonObject(position, technology, spoof, JSON_ARRAY_SIGNALS);
-        updateSpoofStatusOfJsonObject(position, technology, spoof, JSON_ARRAY_IMPORT_SIGNALS);
+    public void updateSpoofStatusOfRules(double[] position, String technology, int spoof, MainActivity main) {
+        updateSpoofStatusOfJsonObject(position, technology, spoof, JSON_ARRAY_SIGNALS, main);
+        updateSpoofStatusOfJsonObject(position, technology, spoof, JSON_ARRAY_IMPORT_SIGNALS, main);
     }
 
-    public void updateSpoofStatusOfJsonObject(double[] position, String technology, int spoof, String jsonArrayName){
-        synchronized(lock) {
+    public void updateSpoofStatusOfJsonObject(double[] position, String technology, int spoof, String jsonArrayName, MainActivity main){
+        synchronized(ioLock) {
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
             //Log.d("Text Data", byteArrayOutputStream.toString());
@@ -542,7 +550,7 @@ public class JSONManager {
     }
 
     public void createJsonFile(){
-        synchronized(lock) {
+        synchronized(ioLock) {
             JSONObject jObject = new JSONObject(); //create a new json-object
             JSONObject jsObject = new JSONObject(); //create a second json-object
             JSONArray jArray = new JSONArray(); //create a json-array
@@ -570,7 +578,7 @@ public class JSONManager {
     }
 
     public void deleteJsonFile(){
-        synchronized(lock) {
+        synchronized(ioLock) {
             File file = new File(this.fileDir, ConfigConstants.JSON_FILENAME);
             file.delete();
             deleteWaveFilesInDirectory();
@@ -578,7 +586,7 @@ public class JSONManager {
     }
 
     public void updateJSONHistory(){
-        synchronized(lock) {
+        synchronized(ioLock) {
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
             if (jsonFile.exists()) {
                 ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
@@ -638,7 +646,7 @@ public class JSONManager {
     }
 
     public void deleteWaveFilesInDirectory(){
-        synchronized(lock) {
+        synchronized(ioLock) {
             File fileOrDirectory = new File(this.fileDir + ConfigConstants.DIR_NAME_SAVED_RECORDINGS);
             if (fileOrDirectory.isDirectory())
                 for (File child : fileOrDirectory.listFiles())
@@ -649,7 +657,7 @@ public class JSONManager {
     }
 
     public void deleteWaveFilesInDirectory(File fileOrDirectory){
-        synchronized(lock) {
+        synchronized(ioLock) {
             if (fileOrDirectory.isDirectory())
                 for (File child : fileOrDirectory.listFiles())
                     deleteWaveFilesInDirectory(child);
@@ -659,7 +667,7 @@ public class JSONManager {
     }
 
     public boolean checkIfJsonFileIsAvailable(){
-        synchronized(lock) {
+        synchronized(ioLock) {
             File file = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //"make" a new file where the file normally should be
             if (file.exists()) { //if it exists
                 //Log.d("Filecheck","The file is here");
@@ -672,7 +680,7 @@ public class JSONManager {
     }
 
     public boolean checkIfSavefolderIsAvailable(){
-        synchronized(lock) {
+        synchronized(ioLock) {
             File file = new File(this.fileDir + ConfigConstants.DIR_NAME_SAVED_RECORDINGS); //get the folder for the audio files
             if (file.isDirectory()) { //if directory is available
                 return true;
@@ -683,7 +691,7 @@ public class JSONManager {
     }
 
     public void createSaveFolder() {
-        synchronized(lock) {
+        synchronized(ioLock) {
             File file = new File(this.fileDir + ConfigConstants.DIR_NAME_SAVED_RECORDINGS); //create a new folder for the audio files
             file.mkdir(); //save the folder
         }
@@ -714,8 +722,8 @@ public class JSONManager {
     }
 
 
-    public void setLatestDate(double[] position, Technology signalType){
-        synchronized(lock) {
+    public void setLatestDate(double[] position, Technology signalType, MainActivity main){
+        synchronized(ioLock) {
             Log.d("JSONManager", "setLatestDate");
             locationFinder = Location.getInstanceLoc();
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
@@ -764,7 +772,7 @@ public class JSONManager {
     }
 
     public void setShouldBeSpoofed(double[] position, String signalType, int spoofStatus, String jsonArrayName){
-        synchronized(lock) {
+        synchronized(ioLock) {
             int shouldBeSpoofed = spoofStatus;
         /*if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if spoofStatus is 1 change it to 0
             shouldBeSpoofed = ConfigConstants.DETECTION_TYPE_ASK_AGAIN;
@@ -831,7 +839,7 @@ public class JSONManager {
     }
 
     public void deleteJSONEntry(double[] position, String signalType, String jsonArrayName){
-        synchronized(lock) {
+        synchronized(ioLock) {
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json-file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
@@ -887,7 +895,7 @@ public class JSONManager {
     }
 
     private ByteArrayOutputStream getByteArrayOutputStreamWithJsonData(File jsonFile) {
-        synchronized (lock) {
+        synchronized (ioLock) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             FileInputStream inputStream = null;
             int ctr;

@@ -84,7 +84,7 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
         if(status == 0) {
             if (locationData == null) {
                 locationData = new GPSTracker(getActivity());
-                locationData.initGPSTracker();
+                //locationData.initGPSTracker(getActivity());
             }
             Log.d("RulesOnMap-Lat",String.valueOf(locationData.getLatitude()));
             Log.d("RulesOnMap-Lon",String.valueOf(locationData.getLongitude()));

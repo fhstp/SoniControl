@@ -105,7 +105,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     Scan detector;
     Location locationFinder;
-    JSONManager jsonMan;
+    private final JSONManager jsonMan = JSONManager.getInstanceJSONManager();
 
     DetectionDialogFragment alert;
     AsyncTask detectionAsyncTask;
@@ -160,8 +160,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 return;
             }
         }
-        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(this);
-        jsonMan.init(this);
+        jsonMan.init(this.getApplicationContext());
 
         // Used by SpectrogramView
         Misc.setAttribute("activity", this);
@@ -432,7 +431,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                     for (int i = 0; i < permissions.length; i++) {
                         if (Manifest.permission.ACCESS_FINE_LOCATION.equals(permissions[i])) {
                             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                                locationFinder.requestGPSUpdates();
+                                locationFinder.requestGPSUpdates(this);
                             }
                             else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                                 runOnUiThread(new Runnable() {
@@ -795,6 +794,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
     @Override
     public void onDetection(final Technology detectedTechnology, final float[] bufferHistory) {//, final int maxValueIndex) {
+        Log.d("MainActivity", "Detection");
         // Should we start this as an AsyncTask already ?
         threadPool.execute(new Runnable() {
             @Override
@@ -829,7 +829,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         if(preventiveSpoof) {
             if (usedBlockingMethod == null) {
                 NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
-                usedBlockingMethod = locationFinder.blockMicOrSpoof();
+                usedBlockingMethod = locationFinder.blockMicOrSpoof(this);
             }
         }
 
@@ -844,7 +844,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         locationTrack = this.checkJsonAndLocationPermissions()[1];
 
         if (locationTrack) {
-            lastPosition = locationFinder.getLocation(); //get the latest position
+            lastPosition = locationFinder.getLocation(this); //get the latest position
             locationFinder.saveLocationGPSTrackerObject();
             ed.putString(ConfigConstants.LAST_DETECTED_LOCATION_SHARED_PREF, locationFinder.getDetectedDBEntryAddres());
             ed.apply();
@@ -861,7 +861,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             saveJsonFile = this.checkJsonAndLocationPermissions()[0];
 
             //final JSONManager jsonMan = new JSONManager(this);
-            final JSONManager jsonMan = JSONManager.getInstanceJSONManager();
+            //final JSONManager jsonMan = JSONManager.getInstanceJSONManager();
             final float amplitude = getSettingsObject().getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
             if (saveJsonFile && locationTrack) {
                 final String address = locationFinder.getDetectedDBEntryAddres();
@@ -877,11 +877,11 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 checkIfShouldBeSharedAndSendDetection(noLocation, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, amplitude);
             }
 
-            locationFinder.blockMicOrSpoof(); //try for microphone access and choose the blocking method
+            locationFinder.blockMicOrSpoof(this); //try for microphone access and choose the blocking method
         } else { // The user does not prefer to block every location
             //Log.d("Not spoof", "Not spoof continuous");
             if (locationTrack && jsonMan.checkIfJsonFileIsAvailable()) { // If the user allowed location and has a JSON file
-                if(locationFinder.checkExistingLocationDB(lastPosition, technology)){ // Check our detection DB and follow user (stored) preference if it is not a new location
+                if(locationFinder.checkExistingLocationDB(lastPosition, technology, this)){ // Check our detection DB and follow user (stored) preference if it is not a new location
                     final float amplitude = sp.getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
                     checkIfShouldBeSharedAndSendDetection(lastPosition, technology.toString(), ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE, amplitude);
                 }
@@ -964,7 +964,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
 
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //start the scanning-status notification
         setGUIStateStarted();
-        detector.startScanning(); //start scanning for signals
+        detector.startScanning(this); //start scanning for signals
     }
 
     /**
@@ -1129,10 +1129,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             threadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    jsonMan.updateSpoofStatusOfRules(detectedSignalPosition, sigType.toString(), spoofDecision);
+                    jsonMan.updateSpoofStatusOfRules(detectedSignalPosition, sigType.toString(), spoofDecision, MainActivity.this);
                     //Update Detection Counter
-                    jsonMan.updateSignalAndImportedDetectionCounter(detectedSignalPosition, sigType.toString());
-                    jsonMan.setLatestDate(detectedSignalPosition, sigType);
+                    jsonMan.updateSignalAndImportedDetectionCounter(detectedSignalPosition, sigType.toString(), MainActivity.this);
+                    jsonMan.setLatestDate(detectedSignalPosition, sigType, MainActivity.this);
                     String address = locationFinder.getDetectedDBEntryAddres();
                     jsonMan.addJsonObject(detectedSignalPosition, sigType.toString(), spoofDecision, address, true, amplitude, getDetectionAddressState(address));
                     checkIfShouldBeSharedAndSendDetection(detectedSignalPosition, sigType.toString(), spoofDecision, amplitude);
@@ -1242,14 +1242,14 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE);
         showToastOnNoLocation();
         checkForActivatedLocation();
-        locationFinder.blockMicOrSpoof();
+        locationFinder.blockMicOrSpoof(this);
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext()); //activates the notification for the spoofing process
     }
 
     @Override
     public void onAlertBlockThisTime(DialogFragment dialog){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME);
-        locationFinder.blockMicOrSpoof();
+        locationFinder.blockMicOrSpoof(this);
         NotificationHelper.activateSpoofingStatusNotification(getApplicationContext());
     }
 
@@ -1259,7 +1259,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         onAlertChoice(ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE);
         showToastOnNoLocation();
         checkForActivatedLocation();
-        detector.startScanning(); //start scanning again
+        detector.startScanning(this); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
         Snackbar.make(((ViewGroup) MainActivity.this
                 .findViewById(android.R.id.content)).getChildAt(0),
@@ -1271,7 +1271,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     @Override
     public void onAlertDismissThisTime(DialogFragment dialog){
         onAlertChoice(ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME);
-        detector.startScanning(); //start scanning again
+        detector.startScanning(this); //start scanning again
         NotificationHelper.activateScanningStatusNotification(getApplicationContext()); //activates the notification for the scanning process
 
         Snackbar.make(((ViewGroup) MainActivity.this

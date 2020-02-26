@@ -69,19 +69,20 @@ public class Spoofer {
         return instance;
     }
 
-    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler/*, Technology sigType*/){  //initialize the Scan with a main object
-        this.main = main;
+    public void init(/*MainActivity main, */boolean playingGlobal, boolean playingHandler/*, Technology sigType*/){  //initialize the Scan with a main object
+        //this.main = main;
 
         // TODO: init() could be called only once. We create a new NoiseGenerator object every time we want to spoof.
 
-        this.genNoise = new NoiseGenerator(main);
+        this.genNoise = new NoiseGenerator();
         this.playingGlobal = playingGlobal;
         this.playingHandler = playingHandler;
         //this.signalType = sigType;
     }
 
-    public void startSpoofing(){
-        onPulsing(); //start the onPulsing method
+    public void startSpoofing(MainActivity main){
+        this.main = main;
+        onPulsing(main); //start the onPulsing method
     }
 
 
@@ -101,7 +102,7 @@ public class Spoofer {
         }
     }
 
-    public void onPulsing() {
+    public void onPulsing(MainActivity main) {
         MainActivity.threadPool.schedule(spoofRun, playtime, TimeUnit.MILLISECONDS);
     }
 
@@ -136,7 +137,7 @@ public class Spoofer {
                         Log.d("Spoofer", "spoofRun - technology string stored not recognized: " + e.getMessage());
                         detectedTechnology = Technology.UNKNOWN;
                     }
-                    genNoise.generateWhitenoise(detectedTechnology); //generate noise
+                    genNoise.generateWhitenoise(detectedTechnology, main); //generate noise
                     audioTrack = genNoise.getGeneratedPlayer(); //get the generated player
                     noiseGenerated = true; //noise and player are generated so its true
                     startTime = Calendar.getInstance().getTimeInMillis(); //get the starttime
@@ -145,7 +146,7 @@ public class Spoofer {
                     startStop(playingHandler); //starting it depending on the playingHandler boolean
                     playingHandler = !playingHandler; //change the variable for the next run
                     isFirstPlay = false; //set the first play to false
-                    onPulsing(); //execute the method again
+                    onPulsing(main); //execute the method again
                 } else {
                     if (playingGlobal) {
                         startStop(playingHandler); //starting it depending on the playingHandler boolean
@@ -161,9 +162,9 @@ public class Spoofer {
                         String logTime = String.valueOf(logLong);
                         //Log.d("HowLongSpoofed", logTime);
                         if (logLong > (spoofingTime * 60)) { //check if its over the spoofing time from the settings
-                            executeRoutineAfterExpiredTime();
+                            executeRoutineAfterExpiredTime(main);
                         } else {
-                            onPulsing(); //start the pulsing again
+                            onPulsing(main); //start the pulsing again
                         }
                     } else {
                     }
@@ -208,7 +209,7 @@ public class Spoofer {
         }
     }
 
-    private void executeRoutineAfterExpiredTime(){
+    private void executeRoutineAfterExpiredTime(MainActivity main){
         stopped = true;
         startStop(false); //stop the spoofer
         playingGlobal = false; //set to false because its not playing anymore
@@ -220,7 +221,7 @@ public class Spoofer {
             locationTrack = true;
         }
         if(/*locationTrack||*/(locFinder.getDetectedDBEntry()[0]!=0&&locFinder.getDetectedDBEntry()[1]!=0)) {
-            positionLatest = locFinder.getLocation(); //get the latest position
+            positionLatest = locFinder.getLocation(main); //get the latest position
             positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
             distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
             /*Log.d("Distance", Double.toString(distance));
@@ -229,29 +230,29 @@ public class Spoofer {
             Log.d("OldPosition", Double.toString(positionOld[0]));
             Log.d("OldPosition", Double.toString(positionOld[1]));*/
             if (distance < locationRadius) { //if we are still in the locationRadius
-                setSpoofingNoiseToNullAndTryGettingMicAccessAgain();
+                setSpoofingNoiseToNullAndTryGettingMicAccessAgain(main);
             } else {
-                startScanningAgain();
+                startScanningAgain(main);
             }
         }else {
-            startScanningAgain();
+            startScanningAgain(main);
         }
     }
 
-    private void startScanningAgain(){
+    private void startScanningAgain(MainActivity main){
         setInstanceNull(); //set the NoiseGenerator instance to null
         NotificationHelper.activateScanningStatusNotification(main.getApplicationContext()); //activate the scanning status notification
         detector.getTheOldSpoofer(Spoofer.this); //update the spoofer object in the detector
-        detector.startScanning(); //start scanning again
+        detector.startScanning(main); //start scanning again
     }
 
-    private void setSpoofingNoiseToNullAndTryGettingMicAccessAgain(){
+    private void setSpoofingNoiseToNullAndTryGettingMicAccessAgain(MainActivity main){
         // TODO: Keep the generated noise in case of reuse ?
         genNoise.setGeneratedPlayerToNull(); //set the noiseplayer to null
         audioTrack.release(); //release the player resources
         audioTrack = null; //set the player to null
         genNoise = null; //set the the noisegenerator object to null
         setInstanceNull(); //set the NoiseGenerator instance to null
-        locFinder.blockMicOrSpoof(); //try again to get access to the microphone and then choose the spoofing method
+        locFinder.blockMicOrSpoof(main); //try again to get access to the microphone and then choose the spoofing method
     }
 }

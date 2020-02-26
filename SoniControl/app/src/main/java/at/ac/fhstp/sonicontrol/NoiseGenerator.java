@@ -58,28 +58,28 @@ public class NoiseGenerator {
     private int playertime;
     private boolean noiseGenerated = false;
     private AudioTrack audioTrack = null;
-    private MainActivity main;
+    //private MainActivity main;
     private AudioTrack generatedWhitenoisePlayer;
 
     private double bandWidth; //the bandwith for every specified frequencyband
 
-    public NoiseGenerator(MainActivity main){
-        this.main = main;
+    public NoiseGenerator(/*MainActivity main*/){
+        //this.main = main;
     }
 
-    public void generateWhitenoise(final Technology signalType){
+    public void generateWhitenoise(final Technology signalType, MainActivity main){
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
         lastSignalTechDetected = signalType;
         //If Clauses only for Debug
          //Log.d("Generator", "I generated a whitenoisesignal to spoof " + signalType.toString());
 
-        generatedWhitenoisePlayer = generateWhitenoisePlayer(signalType); //get the generated whitenoise for spoofing
+        generatedWhitenoisePlayer = generateWhitenoisePlayer(signalType, main); //get the generated whitenoise for spoofing
     }
 
-    public double[] produceWhiteNoise(Technology signalType){
+    public double[] produceWhiteNoise(Technology signalType, MainActivity main){
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
         winLen = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_PULSE_DURATION, ConfigConstants.SETTING_PULSE_DURATION_DEFAULT)); //read the windowLength from the settings - NOTE: This setting will not be updated dynamically once the signal is created. Next update when new Signal is created.
-        whiteNoiseBands = importSpecificSignal(signalType); //import the frequencies /has to be changed to the detected technology
+        whiteNoiseBands = importSpecificSignal(signalType, main); //import the frequencies /has to be changed to the detected technology
 
         if (winLen==0){winLen= 80;} //if the windowLength is still 0 after the start, set to 80
         winLenSamples = winLen*fs/1000; //windowSamples according to the windowLength
@@ -127,8 +127,8 @@ public class NoiseGenerator {
         return complexWhiteNoise;
     }
 
-    private double[] normalizeWhitenoiseSignal(Technology signalType){
-        double[] complexWhiteNoise = produceWhiteNoise(signalType);
+    private double[] normalizeWhitenoiseSignal(Technology signalType, MainActivity main){
+        double[] complexWhiteNoise = produceWhiteNoise(signalType, main);
         for (int i = 0; i < (winLenSamples * 2); i++) {
             if (Math.abs(complexWhiteNoise[i]) > max) {
                 max = Math.abs(complexWhiteNoise[i]); //searching for the maximum value of the whitenoisesignal
@@ -147,8 +147,8 @@ public class NoiseGenerator {
         return helpNoise;
     }
 
-    private double[] makeFadeInAndFadeOut(Technology signalType){
-        double[] helpNoise = normalizeWhitenoiseSignal(signalType);
+    private double[] makeFadeInAndFadeOut(Technology signalType, MainActivity main){
+        double[] helpNoise = normalizeWhitenoiseSignal(signalType, main);
         int fadeAmount = 10;
         int fadeSamples = Math.round(helpNoise.length/fadeAmount);
         //int fadeSamples = Math.round(helpNoise.length / 10); //value for the length of the fade in/fade out
@@ -164,8 +164,8 @@ public class NoiseGenerator {
         return helpNoise;
     }
 
-    private short[] transformDoubleArrayIntoShortArray(Technology signalType){
-        double[] helpNoise = makeFadeInAndFadeOut(signalType);
+    private short[] transformDoubleArrayIntoShortArray(Technology signalType, MainActivity main){
+        double[] helpNoise = makeFadeInAndFadeOut(signalType, main);
         if(whiteNoiseVolume == 0){whiteNoiseVolume = 1;}
         for (int i = 0; i < winLenSamples; i++) {
             //helpNoise[i] = (helpNoise[i]*(1+(whiteNoiseVolume/100))); //multiplay every value of the array with numbers between 1.0 to 3.0 (depending on the whiteNoiseValue = Slidervalue)
@@ -283,7 +283,7 @@ public class NoiseGenerator {
      * @param signalTechnology
      * @return
      */
-    private double[][] importSpecificSignal(Technology signalTechnology) {
+    private double[][] importSpecificSignal(Technology signalTechnology, MainActivity main) {
 
         double[][] test; //helparray for storing the frequencybands of the technologies
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
@@ -349,8 +349,8 @@ public class NoiseGenerator {
 
     }
 
-    private AudioTrack generateWhitenoisePlayer(Technology signalType){
-        short[] whiteNoise = transformDoubleArrayIntoShortArray(signalType);
+    private AudioTrack generateWhitenoisePlayer(Technology signalType, MainActivity main){
+        short[] whiteNoise = transformDoubleArrayIntoShortArray(signalType, main);
         //AudioTrack generatedNoisePlayer;
         //generatedNoisePlayer = generatePlayer(whiteNoise); //create the audiotrack player
         noiseGenerated = true; //after creation of the noise, set the flag to true
