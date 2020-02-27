@@ -83,7 +83,7 @@ public final class ConfigConstants {
     public static final int VIZ_FFT_SIZE = 4096; //2048 is 46.440ms //2205 is 50 ms (5x 441)
     public static final int SPECTROGRAM_OVERLAP_FACTOR = 8;
     public static final int LOWER_CUTOFF_FREQUENCY = 16800; // ! Redefined in C++ for the detection. Lower limit for prontoly! All other technologies send above 18kHz
-    public static final int UPPER_CUTOFF_FREQUENCY = 21000; //Only visual as most phones cannot really use frequencies above 21000Hz, we might detect something higher.
+    public static final int UPPER_CUTOFF_FREQUENCY = 21999; //Only visual as most phones cannot really use frequencies above 21000Hz, we might detect something higher.
 
     // Bandpass / Highpass filtering parameters
     public static final int BANDPASS_FILTER_ORDER = 16;
