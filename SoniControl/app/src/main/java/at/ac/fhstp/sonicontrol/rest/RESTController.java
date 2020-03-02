@@ -30,7 +30,6 @@ public class RESTController {
 
     private static Retrofit retrofit;
 
-
     private static final String BASE_URL = BuildConfig.BASE_URL;
 
     public static Retrofit getRetrofitInstance() {

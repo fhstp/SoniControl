@@ -65,8 +65,6 @@ public class DetectionDialogFragment extends DialogFragment {
         public void onAlertBlockAlways(DialogFragment dialog);
         public void onAlertBlockThisTime(DialogFragment dialog);
         public void onAlertPlayDetectedSignal(DialogFragment dialog);
-        //public void onAlertSharing(DialogFragment dialog, boolean isChecked);
-        //public void onAlertShare(DialogFragment dialog);
     }
 
     float[][] lastDetectedSpectrum = null;
@@ -131,9 +129,7 @@ public class DetectionDialogFragment extends DialogFragment {
         txtNoInternet = (TextView)view.findViewById(R.id.txtNoInternet);
         txtSpectrogramTitle = (TextView)view.findViewById(R.id.txtSpectrogramTitle);
 
-        //btnAlertDismissAlways = (Button) view.findViewById(R.id.btnDismissAlwaysHere); //button of the alert for always dismiss the found signal
         btnAlertDismissThisTime = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
-        //btnAlertBlockAlways = (Button) view.findViewById(R.id.btnBlockAlways); //button of the alert for starting the spoofing process after finding a signal
         btnAlertBlockThisTime = (Button) view.findViewById(R.id.btnBlockThisTime);
         btnAlertReplay = (Button) view.findViewById(R.id.btnReplay); //button of the alert for playing the found signal with fs/3
 
@@ -141,14 +137,6 @@ public class DetectionDialogFragment extends DialogFragment {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         boolean willBeShared = sp.getBoolean(ConfigConstants.SETTINGS_SHARING_DEFAULT, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
         cbSharing.setChecked(willBeShared);
-        /*if(!checkInternetForSharing(getActivity())){
-            cbSharing.setChecked(false);
-            cbSharing.setClickable(false);
-            cbSharing.setTextColor(Color.parseColor("#A4A4A4"));
-        }else{
-            cbSharing.setClickable(true);
-            cbSharing.setTextColor(Color.parseColor("#000000"));
-        }*/
 
         cbSaveAsFirewallRule = (CheckBox) view.findViewById(R.id.cbSaveAsFirewallRule);
 
@@ -162,7 +150,6 @@ public class DetectionDialogFragment extends DialogFragment {
 
         // If spectrum available show it, else make it invisible and show a loading symbol
         if (lastDetectedSpectrum != null) {
-            //onSpectrum();
             progressBar.setVisibility(View.INVISIBLE);
             btnAlertReplay.setEnabled(true);
         }
@@ -174,14 +161,7 @@ public class DetectionDialogFragment extends DialogFragment {
         }
 
         // OnClickListeners --------
-/*
-        btnAlertDismissAlways.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                setLastSharingDecision(cbSharing.isChecked());
-                listener.onAlertDismissAlways(DetectionDialogFragment.this);
-            }
-        });
-        */
+
         btnAlertDismissThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 setLastSharingDecision(cbSharing.isChecked());
@@ -194,14 +174,7 @@ public class DetectionDialogFragment extends DialogFragment {
                 }
             }
         });
-/*
-        btnAlertBlockAlways.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                setLastSharingDecision(cbSharing.isChecked());
-                listener.onAlertBlockAlways(DetectionDialogFragment.this);
-            }
-        });
-*/
+
         btnAlertBlockThisTime.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 setLastSharingDecision(cbSharing.isChecked());
@@ -221,22 +194,10 @@ public class DetectionDialogFragment extends DialogFragment {
             }
         });
 
-
-        // OnCheckedChangeListener ---
-
-        /*cbSharing.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                listener.onAlertSharing(DetectionDialogFragment.this, isChecked);
-            }
-        });*/
-
         // Should be executed after initialization of all buttons AND before setting the view
         setTechnologyText(currentActivity);
-        //txtAlertDate.setText(getString(R.string.alert_detection_date) + " " + settings.getString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, "unknown"));
         txtAlertDate.setText(sp.getString(ConfigConstants.LAST_DETECTED_DATE_SHARED_PREF, getString(R.string.alert_unknown_date)));
         txtAlertLocation.setText(sp.getString(ConfigConstants.LAST_DETECTED_LOCATION_SHARED_PREF, getString(R.string.json_detections_unknown_address)));
-        //setupButtonState(getContext()); //Done in onResume()
 
         builder.setView(view);
         builder.setTitle(R.string.alertDialog_text_ultrasonic_signal_detected);
@@ -299,20 +260,14 @@ public class DetectionDialogFragment extends DialogFragment {
 
         // Set rule saving state
         if((!(isGPSEnabled && gpsAllowed) && !(isNetworkEnabled && networkAllowed)) || status != PackageManager.PERMISSION_GRANTED){
-            //btnAlertBlockAlways.setEnabled(false);
-            //btnAlertDismissAlways.setEnabled(false);
             cbSaveAsFirewallRule.setEnabled(false);
             txtNoLocation.setVisibility(View.VISIBLE);
             txtNoLocation.setText(R.string.on_alert_no_location_message);
         }else if(!saveJsonFile){
-            //btnAlertBlockAlways.setEnabled(false);
-            //btnAlertDismissAlways.setEnabled(false);
             cbSaveAsFirewallRule.setEnabled(false);
             txtNoLocation.setVisibility(View.VISIBLE);
             txtNoLocation.setText(R.string.alert_no_json_file_message);
         }else{
-            //btnAlertBlockAlways.setEnabled(true);
-            //btnAlertDismissAlways.setEnabled(true);
             cbSaveAsFirewallRule.setEnabled(true);
             txtNoLocation.setVisibility(View.GONE);
             txtNoLocation.setText("");
@@ -346,9 +301,6 @@ public class DetectionDialogFragment extends DialogFragment {
 
     public void setSpectrum(float[][] spectrum) {
         lastDetectedSpectrum = spectrum;
-        /*if (spectrogramView != null) {
-            onSpectrum();
-        }*/
     }
 
     public void onSpectrum() {

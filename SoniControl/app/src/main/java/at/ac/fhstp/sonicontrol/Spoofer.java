@@ -69,15 +69,11 @@ public class Spoofer {
         return instance;
     }
 
-    public void init(/*MainActivity main, */boolean playingGlobal, boolean playingHandler/*, Technology sigType*/){  //initialize the Scan with a main object
-        //this.main = main;
-
+    public void init(boolean playingGlobal, boolean playingHandler){  //initialize the Scan with a main object
         // TODO: init() could be called only once. We create a new NoiseGenerator object every time we want to spoof.
-
         this.genNoise = new NoiseGenerator();
         this.playingGlobal = playingGlobal;
         this.playingHandler = playingHandler;
-        //this.signalType = sigType;
     }
 
     public void startSpoofing(MainActivity main){
@@ -118,7 +114,6 @@ public class Spoofer {
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
                 AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
                 // not used ? int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-                //Log.d("Spoofer", "Streamtype: " + String.valueOf(AudioManager.STREAM_MUSIC));
                 audioManager.setStreamVolume(3, (int) Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 0.70D)), 0);
 
                 if (playingHandler) {
@@ -128,7 +123,6 @@ public class Spoofer {
                 }
                 if (!noiseGenerated) { //if no whitenoise is available generate a new one
                     String technologyName = sp.getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF,Technology.UNKNOWN.toString());
-                    Log.d("Spoofer", "spoofRun - technologyNama " + technologyName);
                     Technology detectedTechnology = null;
                     try {
                         detectedTechnology = Technology.fromString(technologyName);
@@ -151,16 +145,12 @@ public class Spoofer {
                     if (playingGlobal) {
                         startStop(playingHandler); //starting it depending on the playingHandler boolean
                         playingHandler = !playingHandler; //change the variable for the next run
-                        //Log.d("Spoofer", "I spoof now!");
                         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                         locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the location radius in metres
                         int spoofingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
                         stopTime = Calendar.getInstance().getTimeInMillis(); //get the stoptime
-                        //Log.d("StartTime", String.valueOf(startTime));
-                        //Log.d("StopTime", String.valueOf(stopTime));
                         Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
                         String logTime = String.valueOf(logLong);
-                        //Log.d("HowLongSpoofed", logTime);
                         if (logLong > (spoofingTime * 60)) { //check if its over the spoofing time from the settings
                             executeRoutineAfterExpiredTime(main);
                         } else {
@@ -220,15 +210,10 @@ public class Spoofer {
         if(locationTrackGps||locationTrackNet){
             locationTrack = true;
         }
-        if(/*locationTrack||*/(locFinder.getDetectedDBEntry()[0]!=0&&locFinder.getDetectedDBEntry()[1]!=0)) {
+        if((locFinder.getDetectedDBEntry()[0]!=0&&locFinder.getDetectedDBEntry()[1]!=0)) {
             positionLatest = locFinder.getLocation(main); //get the latest position
             positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
             distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
-            /*Log.d("Distance", Double.toString(distance));
-            Log.d("LatestPosition", Double.toString(positionLatest[0]));
-            Log.d("LatestPosition", Double.toString(positionLatest[1]));
-            Log.d("OldPosition", Double.toString(positionOld[0]));
-            Log.d("OldPosition", Double.toString(positionOld[1]));*/
             if (distance < locationRadius) { //if we are still in the locationRadius
                 setSpoofingNoiseToNullAndTryGettingMicAccessAgain(main);
             } else {

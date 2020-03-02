@@ -39,11 +39,9 @@ public class SignalConverter {
     }
 
     public static void writeFloatArray(float[] floatArray, String filePath, boolean shouldAppend) {
-        Log.d("writeFloatBuffer", filePath);
         RandomAccessFile randomAccessWriter = null;
         try {
             randomAccessWriter = new RandomAccessFile(filePath, "rw");
-            Log.d("writeFloatBuffer", "File created");
 
             FileChannel outChannel = randomAccessWriter.getChannel();
             if (shouldAppend) {
@@ -58,7 +56,6 @@ public class SignalConverter {
             outChannel.write(buf);
 
             outChannel.close();
-            Log.d("writeFloatBuffer", "File written");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -80,11 +77,9 @@ public class SignalConverter {
     }
 
     public static void writeIntArray(int[] intArray, String filePath, boolean shouldAppend) {
-        Log.d("writeIntArray", filePath);
         RandomAccessFile randomAccessWriter = null;
         try {
             randomAccessWriter = new RandomAccessFile(filePath, "rw");
-            Log.d("writeIntArray", "File created");
 
             FileChannel outChannel = randomAccessWriter.getChannel();
             if (shouldAppend) {
@@ -99,7 +94,6 @@ public class SignalConverter {
             outChannel.write(buf);
 
             outChannel.close();
-            Log.d("writeIntArray", "File written");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -186,7 +180,6 @@ public class SignalConverter {
         String filepath = context.getFilesDir()+ "/detection.wav";
         try {
             randomAccessWriter = new RandomAccessFile(filepath, "rw");
-            Log.d("writeWAVHeaderToFile", filepath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -214,20 +207,11 @@ public class SignalConverter {
             randomAccessWriter.writeBytes("PEAK");
             randomAccessWriter.writeInt(Integer.reverseBytes(16));
             randomAccessWriter.writeInt(Integer.reverseBytes(1));
-            //Log.d("SignalConverter", String.valueOf((int) Math.floor((float)System.currentTimeMillis()/1000)));
             randomAccessWriter.writeInt(Integer.reverseBytes((int) Math.floor((float)System.currentTimeMillis()/1000))); //current timestamp in seconds
-            //randomAccessWriter.writeInt(Integer.reverseBytes(1024434463));
             randomAccessWriter.writeInt(Integer.reverseBytes(Float.floatToIntBits(rawFloat[maxValueIndex])));
             randomAccessWriter.writeInt(Integer.reverseBytes(maxValueIndex));//index of max value of float array
             randomAccessWriter.writeBytes("data");
             randomAccessWriter.writeInt(Integer.reverseBytes(payloadSize));
-
-            /*
-            for(int i = 0; i< rawFloat.length;i++){
-                randomAccessWriter.writeInt(Integer.reverseBytes(Float.floatToIntBits(rawFloat[i])));
-            }
-            */
-            //randomAccessWriter.write(rawdata, 0, payloadSize);
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 Log.e("SignalConverter", e.getMessage());
@@ -247,6 +231,5 @@ public class SignalConverter {
             intArray[i] = Integer.reverseBytes(Float.floatToIntBits(rawFloat[i]));
         }
         writeIntArray(intArray, filepath, true);
-        Log.d("writeWAVHeaderToFile", "Done writing audio");
     }
 }

@@ -33,14 +33,13 @@ public class Scan {
         public void onDetection(Technology technology, float[] stereoRawData);//, int maxValueIndex);
         public void onDetectorInitialized();
     }
-    //private List<DetectionListener> detectionListeners = new ArrayList<>();
+
     private DetectionListener mainDetectionListener = null;
 
     private static Scan instance;
     private JSONManager jsonMan;
 
     Context applicationContext;
-    //MainActivity main;
     Location locFinder;
     Spoofer spoof = null;
 
@@ -69,23 +68,15 @@ public class Scan {
 
     public void init(MainActivity main){
         this.applicationContext = main.getApplicationContext();
-        //TODO: Remove references to main
-        //this.main = main; //initialize the Scan with a main object
         System.loadLibrary("Superpowered");
     }
 
-/*    public void addDetectionListener(DetectionListener listener) {
-        this.detectionListeners.add(listener);
-    }*/
     public void setDetectionListener(DetectionListener listener) {
         this.mainDetectionListener = listener;
     }
 
     public void notifyDetectionListeners(Technology technology, float[] bufferHistory) {//, int maxValueIndex) {
         if (technology != null) {
-            /*for(DetectionListener listener: detectionListeners) {
-                listener.onDetection(lastDetectedTechnology);
-            }*/
             mainDetectionListener.onDetection(technology, bufferHistory); //, maxValueIndex);
         }
         else {
@@ -99,10 +90,7 @@ public class Scan {
      * @param technology String corresponding to a Technology Enum value
      * @param bufferHistory raw buffer captured via Superpowered
      */
-    public void detectedSignal(String technology, float[] bufferHistory) { //}, int maxValueIndex) {
-        //float[] bufferHistoryFloatArrayMono = bufferHistory;
-        //SignalConverter.writeToCSV(bufferHistoryFloatArrayMono, main.getApplicationContext());
-
+    public void detectedSignal(String technology, float[] bufferHistory) {
         try {
             lastDetectedTechnology = Technology.fromString(technology);
         }
@@ -158,11 +146,9 @@ public class Scan {
         ed.apply();
 
         if (paused && consistentState) {
-            //Log.d(TAG, "Resume scanning");
             resume();
         }
         else { // Most probably only the first call
-            //Log.d(TAG, "startScanning");
             MainActivity.threadPool.execute(scanRun);
         }
         consistentState = true; // Handles wrong termination of the app

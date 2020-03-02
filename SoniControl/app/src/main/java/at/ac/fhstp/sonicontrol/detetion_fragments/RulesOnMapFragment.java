@@ -70,24 +70,17 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
         map.setTileSource(tileSource);
         map.setUseDataConnection(true);
         map.setVerticalMapRepetitionEnabled(false);
-        //map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
-
-        //NominatimPOIProvider poiProvider = new NominatimPOIProvider("OSMBonusPackTutoUserAgent");
 
         IMapController mapController = map.getController();
         mapController.setZoom(10);
         GeoPoint startPoint = null;
         int status = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-        Log.d("RulesOnMap-status",String.valueOf(status));
         if(status == 0) {
             if (locationData == null) {
                 locationData = new GPSTracker(getActivity());
-                //locationData.initGPSTracker(getActivity());
             }
-            Log.d("RulesOnMap-Lat",String.valueOf(locationData.getLatitude()));
-            Log.d("RulesOnMap-Lon",String.valueOf(locationData.getLongitude()));
             startPoint = new GeoPoint(locationData.getLatitude(), locationData.getLongitude());
         }else{
             startPoint = new GeoPoint(48.212602, 15.6352079); //Default BIZ St. Pölten
@@ -151,45 +144,6 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
         ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
 
         for(final String[] sArray : locationData){
-            /*Polygon circle = new Polygon(map);
-            circle.setPoints(Polygon.pointsAsCircle(new GeoPoint(Double.valueOf(sArray[1]),Double.valueOf(sArray[0])), 20.0));
-            switch (sArray[4]){
-                case "0":
-                    circle.setFillColor(0x3300FF00);
-                    circle.setStrokeColor(Color.GREEN);
-                    break;
-                case "1":
-                    circle.setFillColor(0x33FF0000);
-                    circle.setStrokeColor(Color.RED);
-                    break;
-                case "2":
-                    circle.setFillColor(0x3300FF00);
-                    circle.setStrokeColor(Color.GREEN);
-                    break;
-                case "3":
-                    circle.setFillColor(0x33FF0000);
-                    circle.setStrokeColor(Color.RED);
-                    break;
-                case "4":
-                    circle.setFillColor(0x33FF6D00);
-                    circle.setStrokeColor(0xFFFF6D00);
-                    break;
-                default:
-                    circle.setFillColor(0x33FF6D00);
-                    circle.setStrokeColor(0xFFFF6D00);
-                    break;
-            }
-            circle.setStrokeWidth(7);
-            circle.setInfoWindow(new BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map));
-            circle.setTitle(sArray[2]);
-            circle.setSubDescription("Last Detection: " +sArray[3]);*/
-
-            //detectionMarkers.add(circle);
-            //map.getOverlays().add(circle);
-
-            /*switch(Integer.valueOf(sArray[2])){
-                case 1:
-            }*/
             Marker marker = new Marker(map);
             marker.setPosition(new GeoPoint(Double.valueOf(sArray[1]),Double.valueOf(sArray[0])));
             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
@@ -254,9 +208,6 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
                     }
                     circle.setStrokeWidth(7);
                     circle.setInfoWindow(null);
-                    //circle.setInfoWindow(new BasicInfoWindow(org.osmdroid.bonuspack.R.layout.bonuspack_bubble, map));
-                    //circle.setTitle(marker.getTitle());
-                    //circle.setSubDescription(marker.getSubDescription());
                     if(lastCircle!=null) {
                         circleMarker.remove(lastCircle);
                         map.invalidate();
@@ -268,37 +219,8 @@ public class RulesOnMapFragment extends Fragment implements MapEventsReceiver {
                     return true;
                 }
             });
-            //items.add(new OverlayItem(sArray[2] + "-" + sArray[3], sArray[5], new GeoPoint(Double.valueOf(sArray[1]),Double.valueOf(sArray[0])))); // Lat/Lon decimal degrees
             detectionMarkers.add(marker);
-            //map.getOverlays().add(marker);
         }
-
-
-
-
-
-        /*for(String[] sArray : locationData){
-                items.add(new OverlayItem(sArray[2] + "-" + sArray[3], sArray[5], new GeoPoint(Double.valueOf(sArray[1]),Double.valueOf(sArray[0])))); // Lat/Lon decimal degrees
-        }*/
-
-
-        //the overlay
-        /*ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,
-                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-                    @Override
-                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                        Log.d("RulesOnMap", "onItemSignelTapUp");
-                        return true;
-                    }
-                    @Override
-                    public boolean onItemLongPress(final int index, final OverlayItem item) {
-                        Log.d("RulesOnMap", "onItemLongPress");
-                        return false;
-                    }
-                }, getContext());
-        mOverlay.setFocusItemsOnTap(true);
-
-        map.getOverlays().add(mOverlay);*/
     }
 
     public void onResume(){

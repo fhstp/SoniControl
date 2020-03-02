@@ -42,7 +42,6 @@ import java.util.Date;
 
 public class JSONManager {
 
-    //MainActivity main;
     private Scan detector;
     private Location locationFinder;
     private static final Object ioLock = new Object();
@@ -72,11 +71,6 @@ public class JSONManager {
     private JSONManager(){
     }
 
-    /*public JSONManager(MainActivity main){
-        this.main = main;
-        this.fileDir = main.getFilesDir();
-    }*/
-
     public static JSONManager getInstanceJSONManager() {
         JSONManager jsonM = instanceJSONManager;
         if(jsonM == null) {
@@ -92,7 +86,6 @@ public class JSONManager {
     }
 
     public void init(Context context){
-        //this.main = main;
         this.fileDir = context.getFilesDir();
     }
 
@@ -185,7 +178,6 @@ public class JSONManager {
                 } else {
                     return 0;
                 }
-                //return (int) (newDate2.getTime() - newDate1.getTime());
             }
         });
         return sortData;
@@ -196,8 +188,6 @@ public class JSONManager {
             ArrayList<String[]> data = new ArrayList<String[]>();
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-
-            //Log.d("Text Data", byteArrayOutputStream.toString());
 
             JSONObject jObject = null; //new json-object with the outputstream
             JSONArray jArray = null;
@@ -221,7 +211,6 @@ public class JSONManager {
                 String amplitude = "";
                 String addressstate = "";
 
-                //boolean needsUpdate = false;
                 for (int i = 0; i < jArray.length(); i++) { //go through the array
                     try {
                         lon = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_LONGITUDE);
@@ -235,7 +224,6 @@ public class JSONManager {
                         spoof = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_SPOOFING_STATUS);
                         if (jArray.getJSONObject(i).optString(JSON_ARRAY_SIGNAL_ADDRESS).equals("")) {
                             address = "Unknown";
-                            //needsUpdate = true;
                         } else {
                             address = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_ADDRESS);
                         }
@@ -243,7 +231,6 @@ public class JSONManager {
                         if (jArray.getJSONObject(i).optString(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID).equals("")) {
                             int techId = Technology.fromString(tech).getId();
                             technologyid = String.valueOf(techId);
-                            //needsUpdate = true;
                             Log.d("JSONManager", technologyid);
                         } else {
                             technologyid = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_TECHNOLOGY_ID);
@@ -268,18 +255,7 @@ public class JSONManager {
                             }
                         } else {
                             addressstate = jArray.getJSONObject(i).getString(JSON_ARRAY_SIGNAL_ADDRESS_STATUS);
-                        }/*else{
-                        if(){
-                            addressstate = String.valueOf(DetectionAddressStateEnum.NOT_AVAILABLE.getId());
-                        }else if(address.equals("Unknown address") || address.equals("Unbekannte Adresse") || address.equals("Unknown")){
-                            addressstate = String.valueOf(DetectionAddressStateEnum.UNKNOWN.getId());
-                        }else {
-                            addressstate = String.valueOf(DetectionAddressStateEnum.RESOLVED.getId());
                         }
-                    }*/
-                        //Log.d("Longitude", lon);
-                        //Log.d("Latitude", lat);
-                        //Log.d("Technology", tech);
                         data.add(new String[]{lon, lat, tech, lastDet, spoof, address, url, technologyid, detectioncounter, amplitude, addressstate}); //add every data of one array-index in the data-list
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -331,14 +307,11 @@ public class JSONManager {
                         technology = Technology.GOOGLE_NEARBY.toString();
                     }
                     if (distance < locationFinder.locationRadius && tech.equals(technology)) {
-                        Log.d("JSONManager", "" + position[0] + " " + positionDBEntry[0] + " " + position[1] + " " + positionDBEntry[1]);
-                        Log.d("JSONManager", "entryUpdated");
                         jArray.getJSONObject(i).put(JSON_ARRAY_SIGNAL_DETECTIONCOUNTER, (Integer.valueOf(detectionCounter) + 1));
                     }
                 }
                 try {
                     FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //write the newly created json-object into the new json file
-                    //Log.d("TryJsonSave", "I am saved");
                     file.write(jObject.toString());
                     file.flush();
                     file.close();
@@ -372,7 +345,6 @@ public class JSONManager {
                     }
                 } else if (spoof == ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME || spoof == ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME) {
                     jArray = jObjectResult.getJSONArray(JSON_ARRAY_DISMISSED_SIGNALS);
-                    //spoof=0;
                 } else {
                     jArray = jObjectResult.getJSONArray(JSON_ARRAY_SIGNALS); //get the jsonarray with the signals
                 }
@@ -400,15 +372,8 @@ public class JSONManager {
                 }
                 jHistoryArray.put(addArray);
 
-                /*SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
-                boolean shouldBeShared = sp.getBoolean(ConfigConstants.LAST_DECISION_ON_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
-                if (shouldBeShared) {
-                    main.sendDetection(position[0], position[1], Technology.fromString(technology).getId(), technology, returnDateString(), spoof, amplitude);
-                }*/
-
                 try {
                     FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //get the json file
-                    //Log.d("TryJsonSave", "I am saved");
                     file.write(jObject.toString()); //write the new entry into the file
                     file.flush();
                     file.close();
@@ -432,26 +397,11 @@ public class JSONManager {
                         byteArrayOutputStream.toString()); //new json-object with the outputstream
                 JSONObject jObjectResult = jObject.getJSONObject(JSON_LIST_NAME); //get the jsonobject "items"
                 JSONArray jArray;
-            /*if(position[0]==0&&position[1]==0) {
-                jArray = jObjectResult.getJSONArray(JSON_ARRAY_UNKNOWN_SIGNALS);
-                if(spoof==ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){
-                    spoof=ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME;
-                }else if(spoof==ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){
-                    spoof=ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME;
-                }
-            }else if(spoof==ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME || spoof==ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME){
-                jArray = jObjectResult.getJSONArray(JSON_ARRAY_DISMISSED_SIGNALS);
-                //spoof=0;
-            }else{
-                jArray = jObjectResult.getJSONArray(JSON_ARRAY_SIGNALS); //get the jsonarray with the signals
-            }*/
                 JSONArray array = jObjectResult.optJSONArray(JSON_ARRAY_IMPORT_SIGNALS);
                 if (array == null) {
-                    //JSONObject jsonObject = jObjectResult.getJSONObject(JSON_LIST_NAME);
                     JSONArray jImportArray = new JSONArray();
                     jObjectResult.put(JSON_ARRAY_IMPORT_SIGNALS, jImportArray);
                     jArray = jObjectResult.getJSONArray(JSON_ARRAY_IMPORT_SIGNALS);
-                    // do stuff with the array
                 } else {
                     jArray = jObjectResult.getJSONArray(JSON_ARRAY_IMPORT_SIGNALS);
                 }
@@ -475,7 +425,6 @@ public class JSONManager {
 
                 try {
                     FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //get the json file
-                    //Log.d("TryJsonSave", "I am saved");
                     file.write(jObject.toString()); //write the new entry into the file
                     file.flush();
                     file.close();
@@ -498,7 +447,6 @@ public class JSONManager {
         synchronized(ioLock) {
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-            //Log.d("Text Data", byteArrayOutputStream.toString());
             try {
                 JSONObject jObject = new JSONObject(
                         byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -515,7 +463,6 @@ public class JSONManager {
                     double[] positionDBEntry = new double[2];
                     positionDBEntry[0] = Double.valueOf(lon);
                     positionDBEntry[1] = Double.valueOf(lat);
-                    Log.d("JSONManager", "" + position[0] + " " + positionDBEntry[0] + " " + position[1] + " " + positionDBEntry[1] + " " + spoof);
                     locationFinder = Location.getInstanceLoc();
                     double distance = locationFinder.getDistanceInMetres(positionDBEntry, position);
                     SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
@@ -524,18 +471,15 @@ public class JSONManager {
                         technology = Technology.GOOGLE_NEARBY.toString();
                     }
                     if (distance < locationFinder.locationRadius && tech.equals(technology)) {
-                        //if (position[0] == positionDBEntry[0] && position[1] == positionDBEntry[1] && tech.equals(technology)) { //if in the location and the right technologytype
                         if (spoof == ConfigConstants.DETECTION_TYPE_BLOCKED_THIS_TIME || spoof == ConfigConstants.DETECTION_TYPE_DISMISSED_THIS_TIME) {
                             jArray.getJSONObject(i).put(JSON_ARRAY_SIGNAL_SPOOFING_STATUS, ConfigConstants.DETECTION_TYPE_ASK_AGAIN); //change latest detection date
                         } else {
                             jArray.getJSONObject(i).put(JSON_ARRAY_SIGNAL_SPOOFING_STATUS, spoof); //change latest detection date
                         }
-                        Log.d("JSONManager", "entryMatches");
                     }
                 }
                 try {
                     FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //write the newly created json-object into the new json file
-                    //Log.d("TryJsonSave", "I am saved");
                     file.write(jObject.toString());
                     file.flush();
                     file.close();
@@ -670,10 +614,8 @@ public class JSONManager {
         synchronized(ioLock) {
             File file = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //"make" a new file where the file normally should be
             if (file.exists()) { //if it exists
-                //Log.d("Filecheck","The file is here");
                 return true;
             } else {
-                // Log.d("Filecheck","here is no file");
                 return false;
             }
         }
@@ -699,7 +641,6 @@ public class JSONManager {
 
     public static String returnDateString(){
         Long currentTime = Calendar.getInstance().getTimeInMillis(); //get the current time in milliseconds
-        //SimpleDateFormat rightFormat = new SimpleDateFormat("HH:mm:ss.SSS"); //get the time formatted old with milliseconds
         SimpleDateFormat rightFormat = new SimpleDateFormat("HH:mm:ss"); //get the time formatted
         SimpleDateFormat leftFormat = new SimpleDateFormat("yyyy-MM-dd"); //get the date formatted
         String dateLeft = String.valueOf(leftFormat.format(currentTime));
@@ -728,7 +669,6 @@ public class JSONManager {
             locationFinder = Location.getInstanceLoc();
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
-            //Log.d("Text Data", byteArrayOutputStream.toString());
             try {
                 JSONObject jObject = new JSONObject(
                         byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -749,15 +689,11 @@ public class JSONManager {
                     SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                     locationFinder.locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //save the radius of the location in metres
                     if (distance < locationFinder.locationRadius && tech.equals(signalType.toString())) { //if in the location and the right technologytype
-                        Log.d("JSONManager", "" + position[0] + " " + positionDBEntry[0] + " " + position[1] + " " + positionDBEntry[1]);
-                        //if (position[0] == positionDBEntry[0] && position[1] == positionDBEntry[1] && tech.equals(signalType.toString())) {
-                        Log.d("JSONManager", "entryMatches");
                         jArray.getJSONObject(i).put(JSON_ARRAY_SIGNAL_LAST_DETECTION, returnDateString()); //change latest detection date
                     }
                 }
                 try {
                     FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //write the newly created json-object into the new json file
-                    //Log.d("TryJsonSave", "I am saved");
                     file.write(jObject.toString());
                     file.flush();
                     file.close();
@@ -774,17 +710,9 @@ public class JSONManager {
     public void setShouldBeSpoofed(double[] position, String signalType, int spoofStatus, String jsonArrayName){
         synchronized(ioLock) {
             int shouldBeSpoofed = spoofStatus;
-        /*if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if spoofStatus is 1 change it to 0
-            shouldBeSpoofed = ConfigConstants.DETECTION_TYPE_ASK_AGAIN;
-        }else if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ASK_AGAIN){ //if spoofStatus is 1 change it to 0
-            shouldBeSpoofed = ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE;
-        }else if(shouldBeSpoofed == ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){ //if spoofStatus is 0 change it to 1
-            shouldBeSpoofed = ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE;
-        }*/
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json-file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
-            //Log.d("Text Data", byteArrayOutputStream.toString());
             try {
                 JSONObject jObject = new JSONObject(
                         byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -812,7 +740,6 @@ public class JSONManager {
                 }
                 try {
                     FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //write the json-object into the new json file
-                    //Log.d("TryJsonSave", "I am saved");
                     file.write(jObject.toString());
                     file.flush();
                     file.close();
@@ -843,7 +770,6 @@ public class JSONManager {
             File jsonFile = new File(this.fileDir, ConfigConstants.JSON_FILENAME); //get json-file from external storage
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStreamWithJsonData(jsonFile);
 
-            //Log.d("Text Data", byteArrayOutputStream.toString());
             try {
                 JSONObject jObject = new JSONObject(
                         byteArrayOutputStream.toString()); //new json-object with the outputstream
@@ -876,7 +802,6 @@ public class JSONManager {
                     jObjectResult.remove(jsonArrayName); //remove the whole old json-array
                     jObjectResult.put(jsonArrayName, jArrayWithoutDeletedEntry); //put in the new json-array
                     FileWriter file = new FileWriter(new File(this.fileDir, ConfigConstants.JSON_FILENAME)); //write the json-object into the new json file
-                    //Log.d("TryJsonSave", "I am deleted");
                     file.write(jObject.toString());
                     file.flush();
                     file.close();

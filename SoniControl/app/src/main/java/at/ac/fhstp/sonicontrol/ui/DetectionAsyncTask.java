@@ -80,7 +80,6 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
     // This is run in a background thread
     @Override
     protected Boolean doInBackground(Context... params) {
-        Log.d("DetectionTask", "doInBackground");
         // get the float[] from params, which is an array
         Context context = params[0];
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
@@ -90,14 +89,11 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
             return false;
         }
         else {
-            Log.d("DetectionTask", "Start readingBufferHistory");
             float[] bufferHistory = SignalConverter.readFloatArray(context.getFilesDir() + File.separator + ConfigConstants.BUFFER_HISTORY_FILENAME, bufferHistoryLength);
 
             if (bufferHistory != null) {
                 // Compute the spectrum
-                Log.d("DetectionTask", "Start computing spectrogram");
                 float[][] spectrum = computeSpectrum(bufferHistory, context); // TODO: Call onSpectrum on return !!!
-                Log.d("DetectionTask", "Done computing spectrogram, will show it in the alert if still open");
                 // Update spectrum
                 //onSpectrum(); This is already called in setSpectrum
 
@@ -123,15 +119,6 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
             }
         }
     }
-
-/*
-    // This is called from background thread but runs in UI
-    @Override
-    protected void onProgressUpdate(Integer... values) {
-        super.onProgressUpdate(values);
-
-        // Do things like update the progress bar
-    }*/
 
     // This runs in UI when background thread finishes
     @Override
@@ -164,20 +151,9 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
             }
         }
     }
-/*
-    public void onSpectrum() {
-        alert.onSpectrum();
-    }
-*/
+
     private float[][] computeSpectrum(float[] bufferHistory, Context context) {
         float[] bufferHistoryMono = bufferHistory;
-        /*
-        // Convert from stereo to mono
-        float[] bufferHistoryMono = new float[bufferHistory.length / 2];
-        for (int i = 0, counter = 0; i < bufferHistory.length; i += 2, counter++) {
-            bufferHistoryMono[counter] = (bufferHistory[i] + bufferHistory[i+1]) / 2;
-        }
-        */
 
         // Spectrogram / Recognition parameters
         //float winLenForSpectrogram = 46.44; //ms
@@ -210,9 +186,7 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         }
         HammingWindow hammWin = new HammingWindow(winLenForSpectrogramInSamples);
         DoubleFFT_1D mFFT = new DoubleFFT_1D(winLenForSpectrogramInSamples);
-        /*int normalizedSpectrogramSize = upperCutoffFrequencyIdx - lowerCutoffFrequencyIdx; // No +1 as we start with index 0
-        double[][] historyBufferDoubleAbsolute = new double[nbWinLenForSpectrogram][normalizedSpectrogramSize];
-        float[][] historyBufferFloatNormalized = new float[nbWinLenForSpectrogram][normalizedSpectrogramSize];*/
+
         double[][] historyBufferDoubleAbsolute = new double[nbWinLenForSpectrogram][winLenForSpectrogramInSamples / 2];
         float[][] historyBufferFloatNormalized = new float[nbWinLenForSpectrogram][historyBufferDoubleAbsolute[0].length];
 
@@ -226,19 +200,13 @@ public class DetectionAsyncTask extends AsyncTask<Context, Integer, Boolean> {
         double maxValue = Double.MIN_VALUE;
         int helpCounter;
         for(int j = 0; j<historyBufferDoubleAbsolute.length;j++ ) {
-            //Log.d("computeSpectrum", "Iteration : " + j);
             // n is even [DONE on winLenForSpectrogramInSamples]
-            //Log.d("computeSpectrum", "Applying Hamming window");
             hammWin.applyWindow(historyBufferDouble[j]);
 
-            //Log.d("computeSpectrum", "Applying FFT");
             mFFT.realForward(historyBufferDouble[j]);
 
             // Get absolute value of the complex FFT result (only upper frequencies)
             helpCounter = 0;
-            //highPassFftSum = 0;
-            //Log.d("computeSpectrum", "Compute absolute and sum, lowerCutoffFrequencyIdx " + lowerCutoffFrequencyIdx + " upperCutoffFrequencyIdx " + upperCutoffFrequencyIdx);
-            //for (int l = 2 * lowerCutoffFrequencyIdx; l < 2 * upperCutoffFrequencyIdx; l += 2) {
             for (int l = 0; l < historyBufferDouble[0].length; l += 2) {
                 // Start at 2 times lowerCutoffFrequencyIdx to skip values (real and complex) under the ultrasound threshold
                 // Increment by 2 to always get the real value

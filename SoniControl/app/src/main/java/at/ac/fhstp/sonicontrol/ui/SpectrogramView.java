@@ -200,8 +200,6 @@ public class SpectrogramView extends View {
         }
         if (minBuffer < 0)
             minBuffer = 0;
-        Log.d("stretchContrastTo01", "minBuffer: " + minBuffer);
-        Log.d("stretchContrastTo01", "maxBuffer: " + maxBuffer);
     }
 
     /**
@@ -232,12 +230,7 @@ public class SpectrogramView extends View {
         int strokeWidth;
         strokeWidth = rWidth / historyBufferLength;
         Log.d("onDraw", "strokeWidth " + strokeWidth);
-        /*if (onlyShowUpperFrequencies) {
-            strokeWidth = 4; // 4 for an overlapFactor of 8.
-        }
-        else {
-            strokeWidth = 1; // With no overlap : 1 for the whole range of frequencies, 10 or 20 for the upper frequencies
-        }*/
+
         paint.setStrokeWidth(strokeWidth);
 
         // Get scale preferences
@@ -256,7 +249,6 @@ public class SpectrogramView extends View {
                 if (onlyShowUpperFrequencies) {
                     // Displays only upper frequencies
                     j = getValueFromRelativePosition((float) (height - i) / height, cutoffFrequencyViz, upperCutoffFrequencyViz, logFrequency);
-                    //Log.d("draw: ", "j:" + j + " . i:" + i + " . height:" + height + " . cutoffFrequency:" + cutoffFrequency + " . upperCutoffFrequency:" + upperCutoffFrequency);
                 }
                 else {
                     // Version that displays the whole range of frquencies
@@ -266,21 +258,19 @@ public class SpectrogramView extends View {
                 j /= samplingRate / 2;
                 // Currently requires the whole array
 
-                //Log.d("draw", "j:" + j + " . magnitudes.length:" + magnitudes.length);
                 float mag = magnitudes[(int) (j * magnitudes.length)];
                 float db = (float) Math.max(0, -20 * Math.log10(mag));
                 float valueToVisualize = db * 0.009f;
 
                 // Improve contrast by stretching values to fill the [0;1] range
                 /*float contrastImprovedValue = stretchContrastTo01(valueToVisualize, minBuffer, maxBuffer);
-                */
+                 */
                 int c = getInterpolatedColor(colors, valueToVisualize);//contrastImprovedValue);
                 paint.setColor(c);
                 int x = pos % rWidth;
                 int y = i;
                 this.canvas.drawPoint(x, y, paint);
                 this.canvas.drawPoint(x, y, paint); // make color brighter
-                //this.canvas.drawPoint(pos%rWidth, height-i, paint); // make color even brighter
             }
 
             // Draw bitmap
@@ -330,7 +320,6 @@ public class SpectrogramView extends View {
             if (onlyShowUpperFrequencies) {
                 //To get a scale only for upper frequencies
                 for (int i=cutoffFrequencyViz + frequencyOffsetForSpectrogram; i < upperCutoffFrequencyViz - 500; i+=500) {
-                    //canvas.drawText(" "+i/1000.0f, rWidth + wColor, height*(1f-(float) (i-cutoffFrequency)/((samplingRate/2)-cutoffFrequency)), paint);
                     canvas.drawText("" + i / 1000.0f, rWidth + wColor, height * (1f - getRelativePosition(i, cutoffFrequencyViz, upperCutoffFrequencyViz, logFrequency)), paint);
                 }
             }
@@ -349,9 +338,8 @@ public class SpectrogramView extends View {
         int newMax = 1;
         int newMin = 0;
 
-        //Log.d("stretchContrastTo01", "old: " + value);
         float newValue = (value-min) * ((newMax-newMin) / (max-min)) + newMin;
-        //Log.d("stretchContrastTo01", "new: " + newValue);
+
         return newValue;
     }
 

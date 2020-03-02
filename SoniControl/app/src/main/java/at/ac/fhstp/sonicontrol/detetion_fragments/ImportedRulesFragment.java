@@ -119,21 +119,15 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
     Long timeFrom;
     Long timeTo;
     DatePicker datePicker;
-    //TimePicker timePicker;
     AutoCompleteTextView actPosition;
 
     private Handler textChangedHandler;
     Runnable textChangedRun;
     private Runnable inputFinishChecker;
-    long delay = 100; // 1 seconds after user stops typing
-    //TODO: AtomicLong
-    //long lastTextEdit = 0;
+    long delay = 100;
     AtomicLong lastTextEdit = new AtomicLong(0);
 
     LocationSuggestion locationSuggestion;
-
-    //int AUTOCOMPLETE_REQUEST_CODE = 1;
-    //List<Place.Field> fields;
 
     ImportedRulesFragment localContext;
 
@@ -141,23 +135,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.imported_rules_fragment, null);
-        Log.d("MyRulesFragment", "onCreateView");
-        //super.onCreateView(savedInstanceState);
-        //setContentView(R.layout.stored_locations);
-
-        //loadFragment(new DetectionHistoryFragment());
-
-        //String apiKey = getString(R.string.api_key);
-        /**
-         * Initialize Places. For simplicity, the API key is hard-coded. In a production
-         * environment we recommend using a secure mechanism to manage API keys.
-         */
-
-        //if (!Places.isInitialized()) {
-        //    Places.initialize(getActivity(), apiKey);
-        //}
-        // Create a new Places client instance.
-        //PlacesClient placesClient = Places.createClient(getActivity());
 
         nextMain = main.getMainIsMain();
         jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
@@ -171,10 +148,8 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
         fabImportDetections.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: show Alert with filter decisions
-                Log.d("StoredDetections", "Click");
                 filterDialog.show();
-                //getDetections(14.810007, 48.1328671, 0, "2019-06-17T10:09:34Z", "2019-06-17T19:09:34Z");
+
             }
         });
 
@@ -201,23 +176,14 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                         double[] positionSignal = new double[2];
                         positionSignal[0] = Double.valueOf(singleArrayItem[0]);
                         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
-                        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
-                        //data = jsonMan.getImportJsonData();
+                        jsonMan = JSONManager.getInstanceJSONManager();
                         if(data.size()==0){
                             txtNothingDiscovered.setVisibility(View.VISIBLE);
                         }else {
                             txtNothingDiscovered.setVisibility(View.INVISIBLE);
                         }
-                        /*lv.setAdapter(null);
-                        stored_adapter = new Stored_Adapter(listContext, data);
-                        lv.setAdapter(stored_adapter);*/
-                        //for(String[] listitem : data){
-                        //    if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1]) && singleArrayItem[2].equals(listitem[2])){
                         data.remove(positionLongClick);
                         jsonMan.deleteImportEntry(positionSignal,singleArrayItem[2]);
-                        //        break;
-                        //    }
-                        //}
                         stored_adapter.notifyDataSetChanged();
                     }
                 })
@@ -234,17 +200,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                 new AdapterView.OnItemClickListener(){
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        /*String[] singleArrayItem = (String[]) parent.getItemAtPosition(position);
-                        double[] positionSignal = new double[2];
-                        positionSignal[0] = Double.valueOf(singleArrayItem[0]);
-                        positionSignal[1] = Double.valueOf(singleArrayItem[1]);
-                        jsonMan.setShouldBeSpoofedInImportedLoc(positionSignal,singleArrayItem[2], Integer.valueOf(singleArrayItem[4]));
-                        jsonMan = new JSONManager(nextMain);
-                        data = jsonMan.getImportJsonData();
-                        lv.setAdapter(null);
-                        stored_adapter = new Stored_Adapter(listContext, data);
-                        lv.setAdapter(stored_adapter);*/
-
                     }
                 }
         );
@@ -274,18 +229,15 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
         actPosition.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //Log.d("ImportedRulesFragment", "beforeTextChanged");
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //Log.d("ImportedRulesFragment", "onTextChanged");
                 textChangedHandler.removeCallbacks(inputFinishChecker);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                Log.d("ImportedRulesFragment", "afterTextChanged");
                 if (s.length() > 0) { //TODO Asynctask
                     lastTextEdit.set(System.currentTimeMillis());
                     textChangedHandler.postDelayed(inputFinishChecker, delay);
@@ -299,34 +251,13 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                 if(locationSuggestion != null){
                     locationSuggestion.cancel(true);
                 }
-                Log.d("ImportedRulesFragment", "inputFinishChecker");
                 locationSuggestion = new LocationSuggestion(lastTextEdit, actPosition, getContext());
                 locationSuggestion.execute();
-                /*
-                if (System.currentTimeMillis() > (lastTextEdit.get())) {
-                    Log.d("ImportedRulesFragment", "if currentTimeMil > lasttextedit");
-                    //String[] countries = {"Vie,tnam","Eng, land","Can , ada", "Fra,nce","Australia"};
-                    Location location = Location.getInstanceLoc();
-                    Log.d("ImportedRulesFragment", "instLoc");
-                    GPSTracker gpsTracker = location.getGPSTracker();
-                    Log.d("ImportedRulesFragment", "getgps");
-                    String[] addresses = gpsTracker.getAddressListOfName(actPosition.getText().toString(), getContext());
-                    if(addresses!=null) {
-                        Log.d("ImportedRulesFragment", "if addresses notNull " + addresses[0]);
-                        System.out.println(Arrays.toString(addresses));
-                        actPosition.setAdapter(null);
-                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, addresses);
-                        actPosition.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
-
-                    }
-                }*/
             }
         };
 
         txtTimestampFrom = (TextView) view.findViewById(R.id.txtTimestampFrom);
         txtTimestampTo = (TextView) view.findViewById(R.id.txtTimestampTo);
-        //edtLocation = (EditText) view.findViewById(R.id.edtLocation);
         edtRange = (EditText) view.findViewById(R.id.edtRange);
 
         txtPlace = (TextView) view.findViewById(R.id.txtPlace);
@@ -335,13 +266,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
         btnFindPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
-
-                // Start the autocomplete intent.
-                Intent intent = new Autocomplete.IntentBuilder(
-                        AutocompleteActivityMode.OVERLAY, fields)
-                        .build(getActivity());
-                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);*/
             }
         });
 
@@ -393,7 +317,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                 GPSTracker gpsTracker = location.getGPSTracker();
                 if(!txtPlace.getText().toString().matches("")){
                     position = gpsTracker.getLocationFromAddress(txtPlace.getText().toString(), getActivity());
-                    Log.d("StoredDetections", (position[0]/1000000) + " " + (position[1]/1000000));
                 }else{
                     position[0] = ConfigConstants.NO_VALUES_ENTERED;
                     position[1] = ConfigConstants.NO_VALUES_ENTERED;
@@ -403,7 +326,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                 }else{
                     range = ConfigConstants.NO_VALUES_ENTERED;
                 }
-                //technology = spnTechnology.getSelectedItemPosition();
                 if(spnTechnology.getSelectedItem().toString().equals("All")){
                     technology = ConfigConstants.ALL_TECHNOLOGIES;
                 }else{
@@ -411,11 +333,9 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                 }
 
                 if(jsonMan.returnDateStringFromAlert(timeFrom) != null){
-                    Log.d("returnDataStringFrom", jsonMan.returnDateStringFromAlert(timeFrom));
                     timestampFrom = jsonMan.returnDateStringFromAlert(timeFrom);
                 }
                 if(jsonMan.returnDateStringFromAlert(timeTo) != null){
-                    Log.d("returnDataStringTo", jsonMan.returnDateStringFromAlert(timeTo));
                     timestampTo = jsonMan.returnDateStringFromAlert(timeTo);
                 }
                 if(!txtPlace.getText().toString().matches("")) {
@@ -423,7 +343,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                 }else{
                     getNumberOfDetections(position[0], position[1], range, technology, timestampFrom, timestampTo, openLoadingDialogImport());
                 }
-                //getDetections(14.810007, 48.1328671, 0, "2019-06-17T10:09:34Z", "2019-06-17T19:09:34Z");
                 filterDialog.cancel();
             }
         });
@@ -440,7 +359,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
         String[] numberOfFrequencyElements = new String[] {
                 "All", Technology.UNKNOWN.toString(), Technology.GOOGLE_NEARBY.toString(), Technology.PRONTOLY.toString(), Technology.SONARAX.toString(), Technology.SIGNAL360.toString(),
                     Technology.SHOPKICK.toString(), Technology.SILVERPUSH.toString(), Technology.LISNR.toString(), Technology.SONITALK.toString()
-                //"Unknown", "Google Nearby", "Prontoly", "Sonarax", "Signal 360", "Shopkick", "Silverpush", "Lisnr", "SoniTalk"
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, numberOfFrequencyElements);
@@ -453,24 +371,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
         //if it is DashboardFragment it should have R.layout.fragment_dashboard
         return rootView;
     }
-
-    /*@Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                System.out.println(place);
-                Log.i("ImportedRulesFragment", "Place: " + place.getName() + ", " + place.getId());
-                txtPlace.setText(place.getName());
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i("ImportedRulesFragment", status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        }
-    }*/
-
 
     public AlertDialog openLoadingDialogImport(){
         final AlertDialog.Builder loadingImport = new AlertDialog.Builder(getActivity());
@@ -495,14 +395,8 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                 restService.importDetections(longitude, latitude, range, technologyid, timestampfrom, timestampto).enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        //TODO Cancel Loading dialog
                         String detailsString = getStringFromRetrofitResponse(response.body());
-                        Log.d("StoredDetections", detailsString);
-                        //detailsString = detailsString.substring(1, detailsString.length()-1);
-                        //Log.d("StoredDetections", detailsString);
                         try {
-                            //JSONObject jsonObject = new JSONObject(detailsString);
-                            //Log.d("StoredDetections", String.valueOf(jsonObject/*.getJSONObject("detection")*/));
                             jArray = new JSONArray(detailsString);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -518,7 +412,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                         Location location = Location.getInstanceLoc();
                         GPSTracker gpsTracker = location.getGPSTracker();
 
-                        Log.d("StoreDetections", ""+data.size());
                         for (int i = 0; i < jArray.length(); i++) {
                             try {
                                 position[0] = jArray.getJSONObject(i).getJSONObject("detection").getJSONObject("location").getJSONArray("coordinates").getDouble(0);
@@ -533,11 +426,9 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                                 e.printStackTrace();
                             }
                             if(position[0]!=0 && position[1]!=0 && spoof!=-1 && address!=null && timestamp!=null){
-                                Log.d("StoreDetections", "one detection importaed");
                                 jsonMan.addImportedJsonObject(position, technology, spoof, address, timestamp, technologyid, amplitude);
                             }
                         }
-                        Log.d("StoreDetections", ""+data.size());
                         jArray = null;
                         data = jsonMan.getImportJsonData();
                         if(data.size()==0){
@@ -550,14 +441,10 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
                         lv.setAdapter(stored_adapter);
                         loadingDialog.cancel();
 
-                    /*if(response.isSuccessful()) {
-                        Log.i("StoredDetections", "post submitted to API." + response.body().toString());
-                    }*/
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        //TODO Cancel Loading dialog
                         loadingDialog.cancel();
                         Log.e("StoredDetections", "Unable to submit post to API." + t);
                         Snackbar importSnackbar = Snackbar.make(rootView, R.string.import_filtered_detections_failure_snackbar,
@@ -594,7 +481,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
 
                         numberOfFiles = Integer.valueOf(detailsString);
                         openImportDialogWithCount(numberOfFiles, longitude, latitude, range, technologyid, timestampfrom, timestampto);
-                        Log.d("StoredDetections", String.valueOf(numberOfFiles));
                     }
 
                     @Override
@@ -650,8 +536,6 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
         btnDateTimeSet = (Button) viewDateTime.findViewById(R.id.btnDateTimeSet);
         btnDateTimeCancel = (Button) viewDateTime.findViewById(R.id.btnDateTimeCancel);
         datePicker = (DatePicker) viewDateTime.findViewById(R.id.date_picker);
-        //timePicker = (TimePicker) viewDateTime.findViewById(R.id.time_picker);
-        //timePicker.setIs24HourView(true);
     }
 
     public void openDateTimePickerFrom() {
@@ -660,15 +544,9 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
             @Override
             public void onClick(View view) {
 
-                //DatePicker datePicker = (DatePicker) dateTimeDialog.findViewById(R.id.date_picker);
-                //TimePicker timePicker = (TimePicker) dateTimeDialog.findViewById(R.id.time_picker);
-                //timePicker.setIs24HourView(true);
-
                 Calendar calendar = new GregorianCalendar(datePicker.getYear(),
                         datePicker.getMonth(),
                         datePicker.getDayOfMonth()
-                        //timePicker.getCurrentHour(),
-                        //timePicker.getCurrentMinute()
                         );
 
                 timeFrom = calendar.getTimeInMillis();
@@ -694,15 +572,9 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
             @Override
             public void onClick(View view) {
 
-                //DatePicker datePicker = (DatePicker) dateTimeDialog.findViewById(R.id.date_picker);
-                //TimePicker timePicker = (TimePicker) dateTimeDialog.findViewById(R.id.time_picker);
-                //timePicker.setIs24HourView(true);
-
                 Calendar calendar = new GregorianCalendar(datePicker.getYear(),
                         datePicker.getMonth(),
                         datePicker.getDayOfMonth()
-                        //timePicker.getCurrentHour(),
-                        //timePicker.getCurrentMinute()
                 );
 
                 timeTo = calendar.getTimeInMillis();
@@ -736,19 +608,16 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
 
     @Override
     public void onAllowedClick(String[] singleArrayItem, int spoofingStatus) {
-        Log.d("ImportedRulesFragment", "onAllowedClick");
         changeRuleItem(singleArrayItem, spoofingStatus);
     }
 
     @Override
     public void onBlockedClick(String[] singleArrayItem, int spoofingStatus) {
-        Log.d("ImportedRulesFragment", "onBlockedClick");
         changeRuleItem(singleArrayItem, spoofingStatus);
     }
 
     @Override
     public void onAskAgainClick(String[] singleArrayItem, int spoofingStatus) {
-        Log.d("ImportedRulesFragment", "onAskAgainClick");
         changeRuleItem(singleArrayItem, spoofingStatus);
     }
 
@@ -756,12 +625,10 @@ public class ImportedRulesFragment extends Fragment implements Stored_Adapter.On
         double[] positionSignal = new double[2];
         positionSignal[0] = Double.valueOf(singleArrayItem[0]);
         positionSignal[1] = Double.valueOf(singleArrayItem[1]);
-        Log.d("ImportedRulesFragment", "changeRuleItem "+ spoofingStatus);
         jsonMan.setShouldBeSpoofedInImportedLoc(positionSignal,singleArrayItem[2], spoofingStatus);
         jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
         for(String[] listitem : data){
             if(positionSignal[0] == Double.valueOf(listitem[0]) && positionSignal[1] == Double.valueOf(listitem[1]) && singleArrayItem[2].equals(listitem[2])){
-                Log.d("ImportedRulesFragment", "found listitem");
                 listitem[4] = String.valueOf(spoofingStatus);
             }
         }

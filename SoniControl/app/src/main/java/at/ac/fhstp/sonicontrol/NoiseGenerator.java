@@ -35,9 +35,6 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 
 public class NoiseGenerator {
 
-    /***
-     * test
-     */
     private Technology lastSignalTechDetected;
     private String techForFile;
 
@@ -63,16 +60,12 @@ public class NoiseGenerator {
 
     private double bandWidth; //the bandwith for every specified frequencyband
 
-    public NoiseGenerator(/*MainActivity main*/){
-        //this.main = main;
+    public NoiseGenerator(){
     }
 
     public void generateWhitenoise(final Technology signalType, MainActivity main){
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
         lastSignalTechDetected = signalType;
-        //If Clauses only for Debug
-         //Log.d("Generator", "I generated a whitenoisesignal to spoof " + signalType.toString());
-
         generatedWhitenoisePlayer = generateWhitenoisePlayer(signalType, main); //get the generated whitenoise for spoofing
     }
 
@@ -151,8 +144,6 @@ public class NoiseGenerator {
         double[] helpNoise = normalizeWhitenoiseSignal(signalType, main);
         int fadeAmount = 10;
         int fadeSamples = Math.round(helpNoise.length/fadeAmount);
-        //int fadeSamples = Math.round(helpNoise.length / 10); //value for the length of the fade in/fade out
-        //int fadeSamples = 500;
         for (int i = 0; i < fadeSamples; i++) { //fade in
             helpNoise[i] = (helpNoise[i] * ((double) i / (double) fadeSamples));
         }
@@ -168,7 +159,6 @@ public class NoiseGenerator {
         double[] helpNoise = makeFadeInAndFadeOut(signalType, main);
         if(whiteNoiseVolume == 0){whiteNoiseVolume = 1;}
         for (int i = 0; i < winLenSamples; i++) {
-            //helpNoise[i] = (helpNoise[i]*(1+(whiteNoiseVolume/100))); //multiplay every value of the array with numbers between 1.0 to 3.0 (depending on the whiteNoiseValue = Slidervalue)
             if(helpNoise[i] > 1){ //if new value higher than 1
                 helpNoise[i] = 1; //change it to 1
             }
@@ -176,24 +166,10 @@ public class NoiseGenerator {
                 helpNoise[i] = -1; //chang it to -1
             }
         }
-/*
-        double[] noClickNoise = new double[(winLenSamples+(winLenSamples/65))]; //create new array with the length of windowSamples + buffer for zeroes => Fade out help
 
-        for(int i = 0; i<(winLenSamples+(winLenSamples/65)); i++){
-            if(i<winLenSamples) {
-                noClickNoise[i] = helpNoise[i]; //for the length of winLenSamples the old values
-            }else{
-                noClickNoise[i] = 0; //for everything above 0 as new value
-            }
-        }
-*/
         playertime = (winLen/*+((winLenSamples/65)*1000/fs)*/); //time for the pulsing spoofer => windowLength + Length of the added 0-buffer
 
         whiteNoise = new short[winLenSamples/*+(winLenSamples/65)*/]; //short array for the whitenoise
-
-        /*for (int i = 0; i < winLenSamples; i++) {
-            whiteNoise[i] = (short) (helpNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
-        }*/
 
         for (int i = 0; i < winLenSamples; i++) {
             whiteNoise[i] = (short) (helpNoise[i] * 32760); //scale the double values up to short by multiplying with 32760
@@ -245,15 +221,6 @@ public class NoiseGenerator {
                     complexSignal[(int)l] = 0.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0 mirrored to the doubled winLenSamples size
                 }
             }
-            /*for (int k = 0; k < whiteNoiseBands.length-2; k++) {
-                for (double l = cutoffFreqDownIdx[k]; l <= cutoffFreqUpIdx[k]; l++) {
-                    complexSignal[(int)l] = 10000.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0
-                }
-                int helpSamples = winLenSamples * 2;
-                for (double l = helpSamples-cutoffFreqUpIdx[k]; l <= helpSamples-cutoffFreqDownIdx[k]; l++) {
-                    complexSignal[(int)l] = 10000.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0 mirrored to the doubled winLenSamples size
-                }
-            }*/
 
             for (int k = 0; k < whiteNoiseBands.length; k++) {
                 for (double l = cutoffFreqDownIdx[k]; l <= cutoffFreqUpIdx[k]; l++) {
@@ -267,12 +234,6 @@ public class NoiseGenerator {
             }
         }
 
-        /*for (int i = 0; i < complexSignal.length - 1; i++) {
-            complexSignal[i] = complexSignal[i] * (-1); //invert all algebraic signs
-        }
-
-        mFFT.complexForward(complexSignal); //make the fft on the inverted signal
-*/
         mFFT.complexInverse(complexSignal,false);
         return complexSignal; //return the signal with the complex values
 
@@ -351,8 +312,6 @@ public class NoiseGenerator {
 
     private AudioTrack generateWhitenoisePlayer(Technology signalType, MainActivity main){
         short[] whiteNoise = transformDoubleArrayIntoShortArray(signalType, main);
-        //AudioTrack generatedNoisePlayer;
-        //generatedNoisePlayer = generatePlayer(whiteNoise); //create the audiotrack player
         noiseGenerated = true; //after creation of the noise, set the flag to true
         winLenSamples = winLen*fs/1000; //calculating the windowLengthSamples
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,fs, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,(winLenSamples/*+(winLenSamples/65)*/)*2,AudioTrack.MODE_STATIC); //creating the audiotrack player with winLenSamples*2 as the buffersize because the constructor wants bytes
@@ -368,10 +327,6 @@ public class NoiseGenerator {
         if(generatedWhitenoisePlayer!=null){
             generatedWhitenoisePlayer.release();
         } //release the player resources
-        /*if(audioTrack!=null){
-            audioTrack.release();
-        } //release the player resources
-        */
         generatedWhitenoisePlayer = null; //set the player to null
         audioTrack = null; //set the player to null
     }

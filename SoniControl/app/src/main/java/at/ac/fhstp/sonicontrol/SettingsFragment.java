@@ -58,7 +58,6 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.settings_container);
         addPreferencesFromResource(R.xml.settings_release); //set the settings.xml as the preferences
 
         settingsFragment = this;
@@ -141,8 +140,6 @@ public class SettingsFragment extends PreferenceFragment {
                 }
                 String prefLocRadStr = String.format(getString(R.string.settings_location_radius_title), String.valueOf(newValue));
                 prefLocRad.setTitle(prefLocRadStr);
-                //Log.d("MyApp", "Pref " + preference.getKey() + " " + newValue.toString());
-                //Log.d("testfortest",String.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)));
                 return true;
             }
         });
@@ -199,7 +196,6 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
-        //Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, "30"))
     }
 
     private void resetSettings() {

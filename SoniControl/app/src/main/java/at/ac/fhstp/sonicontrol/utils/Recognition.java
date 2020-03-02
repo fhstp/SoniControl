@@ -82,8 +82,6 @@ public class Recognition {
 
         // Recognition is hierarchical:
         // First check if the signal is a nearby message with the autocorrelation detector:
-        //Log.d(TAG, "Compute score Nearby");
-        //double scoreNearbyAC = detectNearby(historySignalFFT, nearbyCenterFrequencies, ConfigConstants.SCAN_SAMPLE_RATE, nSamplesHistory);
         double scoreNearby = 0.0;
         double scoreLisnr = 0.0;
         double scoreProntoly = 0.0;
@@ -92,10 +90,7 @@ public class Recognition {
         double scoreSoniTalk = 0.0;
         double scoreSignal360 = 0.0;
         double scoreSonarax = 0.0;
-        /*if (scoreNearbyAC > ConfigConstants.DECISION_THRESHOLD_NEARBY_AC) {
-            recogResult = Technology.GOOGLE_NEARBY;
-        }
-        else { *///Second: try out all other technologies
+
         for (int i = 0; i < historySignalFFT.length; i++) {
             historySignalFFT[i] = historySignalFFT[i] / fftMax; // divide by the maximum, so that the theoretical max value of the resulting score can be 1 (minimum = 0)
         }
@@ -157,7 +152,6 @@ public class Recognition {
                     bandEnergy[i] = fftSpectrum[j];
                 }
             }
-            //Log.d(TAG, "bandEnergy[" + i + "] Idx in ["+bandStartFreqIdx+":"+bandEndFreqIdx+"]: " + String.format("%.12f", bandEnergy[i]));
         }
 
         double[] offBandEnergy = new double[nOffBands];

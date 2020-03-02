@@ -54,23 +54,14 @@ import at.ac.fhstp.sonicontrol.detetion_fragments.RulesOnMapFragment;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
-public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageChangeListener*/BottomNavigationView.OnNavigationItemSelectedListener{
+public class StoredLocations extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     BottomNavigationView navView;
     ViewPager viewPager;
 
-    private static final String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET/*, Manifest.permission.WRITE_EXTERNAL_STORAGE*/, Manifest.permission.ACCESS_NETWORK_STATE};
-    //private static final String[] PERMISSION_LOCATION = {Manifest.permission.ACCESS_FINE_LOCATION};
-    //private static final String[] PERMISSION_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static final String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE};
     private static final int REQUEST_MAP_PERMISSIONS = 72;
 
     public Handler uiHandler = new Handler(Looper.getMainLooper());
-    /*private static final String JSON_ARRAY_SIGNAL_LONGITUDE = "long";
-    private static final String JSON_ARRAY_SIGNAL_LATITUDE = "lat";
-    private static final String JSON_ARRAY_SIGNAL_TECHNOLOGY = "technology";
-    private static final String JSON_ARRAY_SIGNAL_LAST_DETECTION = "last_detection";
-    private static final String JSON_ARRAY_SIGNAL_SPOOFING_STATUS = "spoof";
-    private static final String JSON_ARRAY_SIGNAL_ADDRESS = "address";
-    private static final String JSON_ARRAY_SIGNAL_URL = "URL";*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,11 +70,6 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
         navView = findViewById(R.id.nav_view);
         navView.setOnNavigationItemSelectedListener(this);
         loadFragment(new DetectionHistoryFragment());
-
-        /*viewPager = findViewById(R.id.viewpager); //Init Viewpager
-        setupFragments(getSupportFragmentManager(), viewPager); //Setup Fragment
-        viewPager.setCurrentItem(0); //Set Currrent Item When Activity Start
-        viewPager.setOnPageChangeListener(this);*/
     }
 
     @Override
@@ -93,17 +79,6 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
         setActiveSettingsInfoMenuItem(false);
         return true;
     }
-
-    /*public static void setupFragments(FragmentManager fragmentManager, ViewPager viewPager){
-        FragmentAdapter Adapter = new FragmentAdapter(fragmentManager);
-        //Add All Fragment To List
-        Adapter.add(new MyRulesFragment(), "My Rules");
-        Adapter.add(new ImportedRulesFragment(), "Imported Rules");
-        Adapter.add(new DetectionHistoryFragment(), "Detection History");
-        Adapter.add(new RulesOnMapFragment(), "Rules on Map");
-        viewPager.setAdapter(Adapter);
-    }*/
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -126,40 +101,6 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
         return loadFragment(fragment);
     }
 
-    /*private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment fragment = null;
-            switch (item.getItemId()) {
-                case R.id.navigation_my_rules:
-                    //viewPager.setCurrentItem(0);
-                    fragment = new MyRulesFragment();
-                    break;
-                    //return true;
-                case R.id.navigation_imported_rules:
-                    //viewPager.setCurrentItem(1);
-                    fragment = new ImportedRulesFragment();
-                    break;
-                    //return true;
-                case R.id.navigation_detection_history:
-                    //viewPager.setCurrentItem(2);
-                    fragment = new DetectionHistoryFragment();
-                    break;
-                    //return true;
-                case R.id.navigation_rules_map:
-                    requestPermissions();
-                    //viewPager.setCurrentItem(3);
-                    fragment = new RulesOnMapFragment();
-                    break;
-                    //return true;
-            }
-            return loadFragment(fragment);
-            //return false;
-        }
-    };*/
-
     private boolean loadFragment(Fragment fragment) {
         //switching fragment
         if (fragment != null) {
@@ -173,35 +114,6 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
         return false;
     }
 
-    /*@Override
-    public void onPageScrolled(int i, float v, int i1) {
-
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        switch (position) {
-            case 0:
-                navView.setSelectedItemId(R.id.navigation_my_rules);
-                break;
-            case 1:
-                navView.setSelectedItemId(R.id.navigation_imported_rules);
-                break;
-            case 2:
-                navView.setSelectedItemId(R.id.navigation_detection_history);
-                break;
-            case 3:
-                requestPermissions();
-                //navView.setSelectedItemId(R.id.navigation_rules_map);
-                break;
-        }
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int i) {
-
-    }*/
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -209,103 +121,20 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
                 if (grantResults.length == 0) {
                     //we will show an explanation next time the user click on start
                     showRequestPermissionExplanation();
-                    //viewPager.setCurrentItem(3);
-                    //navView.setSelectedItemId(R.id.navigation_rules_map);
                 } else {
                     for (int i = 0; i < permissions.length; i++) {
                         if (Manifest.permission.ACCESS_FINE_LOCATION.equals(permissions[i])) {
                             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                                /*if (locationFinder.validateMicAvailability()) {
-                                    startService();
-                                    checkForActivatedLocation();
-                                    startDetection();
-                                } else {
-                                    activateNoMicrophoneAccessAlertDialog();
-                                }*/
-                                //viewPager.setCurrentItem(3);
-                                //navView.setSelectedItemId(R.id.navigation_rules_map);
+
                             } else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                                 showRequestPermissionExplanation();
                                 break;
-                                //viewPager.setCurrentItem(3);
-                                //navView.setSelectedItemId(R.id.navigation_rules_map);
-                            }
-                        }/*else if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[i])) {
-                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                            } else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                                showRequestPermissionExplanation();
-                                break;
-                            }
-                        }*/
-                    }
-                }
-            }
-            /*case ConfigConstants.REQUEST_GPS_PERMISSION: {
-                if (grantResults.length == 0) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(StoredLocations.this, R.string.toastLocationAccessDenied, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    showRequestPermissionExplanation();
-                    //viewPager.setCurrentItem(3);
-                    //navView.setSelectedItemId(R.id.navigation_rules_map);
-                } else {
-                    for (int i = 0; i < permissions.length; i++) {
-                        if (Manifest.permission.ACCESS_FINE_LOCATION.equals(permissions[i])) {
-                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                                //locationFinder.requestGPSUpdates();
-                                //viewPager.setCurrentItem(3);
-                                //navView.setSelectedItemId(R.id.navigation_rules_map);
-                            } else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(StoredLocations.this, R.string.toastLocationAccessDenied, Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                                showRequestPermissionExplanation();
-                                //viewPager.setCurrentItem(3);
-                                //navView.setSelectedItemId(R.id.navigation_rules_map);
+
                             }
                         }
                     }
                 }
             }
-            case ConfigConstants.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION: {
-                if (grantResults.length == 0) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(StoredLocations.this, R.string.toastWritingAccessDenied, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                    showRequestPermissionExplanation();
-                    //viewPager.setCurrentItem(3);
-                    //navView.setSelectedItemId(R.id.navigation_rules_map);
-                } else {
-                    for (int i = 0; i < permissions.length; i++) {
-                        if (Manifest.permission.WRITE_EXTERNAL_STORAGE.equals(permissions[i])) {
-                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                                //locationFinder.requestGPSUpdates();
-                                //viewPager.setCurrentItem(3);
-                                //navView.setSelectedItemId(R.id.navigation_rules_map);
-                            } else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(StoredLocations.this, R.string.toastWritingAccessDenied, Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                                showRequestPermissionExplanation();
-                                //viewPager.setCurrentItem(3);
-                                //navView.setSelectedItemId(R.id.navigation_rules_map);
-                            }
-                        }
-                    }
-                }
-            }*/
         }
     }
 
@@ -322,23 +151,7 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
 
     public void requestPermissions(){
         if(!hasPermissions(StoredLocations.this, PERMISSIONS)){
-            // If an explanation is needed
-            /*if (ActivityCompat.shouldShowRequestPermissionRationale(StoredLocations.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                Log.d("requestPermissions", "WRITE_EXTERNAL_STORAGE");
-                Snackbar permissionSnackbar = Snackbar.make(findViewById(android.R.id.content).getRootView(), R.string.permissionMapRequestExplanation,
-                        Snackbar.LENGTH_INDEFINITE)
-                        .setAction("OK", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                ActivityCompat.requestPermissions(StoredLocations.this, PERMISSIONS, REQUEST_MAP_PERMISSIONS);
-                            }
-                        });
-                View permissionSnackbarView = permissionSnackbar.getView();
-                TextView permissionSnackbarTextView = (TextView) permissionSnackbarView.findViewById(android.support.design.R.id.snackbar_text);
-                permissionSnackbarTextView.setMaxLines(6);
-                permissionSnackbar.show();
-            } else */if (ActivityCompat.shouldShowRequestPermissionRationale(StoredLocations.this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(StoredLocations.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Log.d("requestPermissions", "ACCESS_FINE_LOCATION");
 
@@ -354,25 +167,13 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
                 TextView permissionSnackbarTextView = (TextView) permissionSnackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
                 permissionSnackbarTextView.setMaxLines(4);
                 permissionSnackbar.show();
-
-                /*Toast toast = Toast.makeText(StoredLocations.this, R.string.permissionRequestExplanation, Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER,0,0);
-                toast.show();*/
-                //showRequestPermissionExplanation();
-
-                /*uiHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ActivityCompat.requestPermissions(StoredLocations.this, PERMISSIONS, REQUEST_MAP_PERMISSIONS);
-                    }
-                }, 2000);*/
             } else {
                 Log.d("requestPermissions", "PERMISSIONS");
                 // First time, no explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(StoredLocations.this, PERMISSIONS, REQUEST_MAP_PERMISSIONS);
             }
         }else{
-            //viewPager.setCurrentItem(3);
+
         }
     }
 
@@ -393,19 +194,4 @@ public class StoredLocations extends BaseActivity implements /*ViewPager.OnPageC
         builder.setNegativeButton(getString(R.string.permission_explanation_map_button_negative), null);
         builder.show();
     }
-
-    /*private void setupViewPager(ViewPager viewPager)
-    {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        Fragment detectionHistoryFragment = new DetectionHistoryFragment();
-        Fragment myRulesFragment = new MyRulesFragment();
-        Fragment importedRulesFragment = new ImportedRulesFragment();
-        Fragment rulesOnMapFragment = new RulesOnMapFragment();
-        adapter.addFragment(myRulesFragment);
-        adapter.addFragment(importedRulesFragment);
-        adapter.addFragment(detectionHistoryFragment);
-        adapter.addFragment(rulesOnMapFragment);
-        viewPager.setAdapter(adapter);
-    }*/
-
 }

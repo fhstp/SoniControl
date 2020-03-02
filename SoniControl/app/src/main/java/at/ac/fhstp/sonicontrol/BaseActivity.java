@@ -49,7 +49,6 @@ public class BaseActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         this.menu = menu;
-        Log.d("BaseActivity", "onCrateOptionsMenu");
         menu.findItem(R.id.show_rules_info).setVisible(false);
         return true;
     }
@@ -57,11 +56,9 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // action with ID action_refresh was selected
             case R.id.open_help:
                 openHelp();
                 break;
-            // action with ID action_settings was selected
             case R.id.open_about_us:
                 openAboutUs();
                 break;
@@ -122,7 +119,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void openHelp(){
-        //TODO: add data type to give the users the choice of the viewer they want to use
         Uri uri = Uri.parse("https://docs.google.com/gview?embedded=true&url=https://sonicontrol.fhstp.ac.at/wp-content/uploads/2017/07/sonicontrol_user_doc.pdf"); // missing 'http://' will cause crash
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
@@ -142,10 +138,10 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void setActiveRuleInfoMenuItem(boolean activate){
-        if(menu!=null) menu.findItem(R.id.show_rules_info).setVisible(activate);//.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        if(menu!=null) menu.findItem(R.id.show_rules_info).setVisible(activate);
     }
 
     public void setActiveSettingsInfoMenuItem(boolean activate){
-        if(menu!=null) menu.findItem(R.id.show_settings_info).setVisible(activate);//.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        if(menu!=null) menu.findItem(R.id.show_settings_info).setVisible(activate);
     }
 }

@@ -41,7 +41,6 @@ public class DetectionHistoryFragment extends Fragment {
     int positionLongClick;
 
     TextView txtNothingDiscovered;
-    //FloatingActionButton fabImportDetections;
 
     AlertDialog filterDialog;
 
@@ -53,20 +52,9 @@ public class DetectionHistoryFragment extends Fragment {
         nextMain = main.getMainIsMain();
         jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
 
-        //data = jsonMan.getAllJsonData();
         data = jsonMan.getHistoryJsonData();
 
         txtNothingDiscovered = (TextView) rootView.findViewById(R.id.txtNoDetectionsYet);
-        /*fabImportDetections = (FloatingActionButton) rootView.findViewById(R.id.fabImportDetections);
-        fabImportDetections.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO: show Alert with filter decisions
-                Log.d("StoredDetections", "Click");
-                filterDialog.show();
-                //getDetections(14.810007, 48.1328671, 0, "2019-06-17T10:09:34Z", "2019-06-17T19:09:34Z");
-            }
-        });*/
 
         if(data.size()==0){
             txtNothingDiscovered.setVisibility(View.VISIBLE);
