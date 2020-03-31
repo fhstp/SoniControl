@@ -224,4 +224,6 @@
     <string name="rules_item_button_allowed">Allowed</string>
     <string name="rules_item_button_ask_again">Ask Again</string>
     <string name="rules_location_not_available">Location not available</string>
+    <string name="alert_sharing_info">If checked, the user agrees with sending the anonymised detection to the server. This option can be also changed on every alert.</string>
+    <string name="alert_save_firewall_info">If activated, every detection will be saved in a local JSON file to collect rules and show history entries.</string>
 </resources>

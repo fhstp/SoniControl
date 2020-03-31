@@ -219,4 +219,6 @@
     <string name="rules_item_button_allowed">Zugelassen</string>
     <string name="rules_item_button_ask_again">Nachfragen</string>
     <string name="rules_location_not_available">Ort nicht verfügbar</string>
+    <string name="alert_sharing_info">Wenn ausgewählt, stimmt der Nutzer zu die anonymisierte Erkennung zum Server zu senden. Diese Option kann auch direkt beim Popup geändert werden.</string>
+    <string name="alert_save_firewall_info">Wenn aktiviert, wird jede Erkennung in einer lokalen JSON-Datei gesammelt und als Regeln und Verlaufseinträge angzeigt.</string>
 </resources>

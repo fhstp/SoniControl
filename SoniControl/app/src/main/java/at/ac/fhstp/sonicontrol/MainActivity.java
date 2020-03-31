@@ -144,6 +144,9 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
     private long lastClickTime = 0;
     private static final long MIN_CLICK_INTERVAL=400;
 
+    public AlertDialog alertSharingInfo = null;
+    public AlertDialog alertRuleInfo = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1216,6 +1219,36 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
                 .findViewById(android.R.id.content)).getChildAt(0),
                 dialog.getContext().getString(R.string.onAllowPauseFirewallHint),
                 ON_ALLOW_SNACKBAR_DURATION).show();
+    }
+
+    @Override
+    public void onAlertSharingInfo(DialogFragment dialog){
+        final AlertDialog.Builder alertSharingInfoDialog = new AlertDialog.Builder(this);
+        alertSharingInfoDialog
+                .setTitle(dialog.getContext().getString(R.string.alert_share_your_detection))
+                .setMessage(dialog.getContext().getString(R.string.alert_sharing_info))
+                .setCancelable(true)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertSharingInfo.cancel();
+                    }
+                });
+        alertSharingInfo = alertSharingInfoDialog.show();
+    }
+
+    @Override
+    public void onAlertRuleInfo(DialogFragment dialog){
+        final AlertDialog.Builder alertRuleInfoDialog = new AlertDialog.Builder(this);
+        alertRuleInfoDialog
+                .setTitle(dialog.getContext().getString(R.string.alert_save_as_firewall_rule))
+                .setMessage(dialog.getContext().getString(R.string.alert_save_firewall_info))
+                .setCancelable(true)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        alertRuleInfo.cancel();
+                    }
+                });
+        alertRuleInfo = alertRuleInfoDialog.show();
     }
 
     // END DetectionDialogListener methods ----------

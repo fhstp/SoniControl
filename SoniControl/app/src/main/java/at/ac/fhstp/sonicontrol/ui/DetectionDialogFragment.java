@@ -65,6 +65,8 @@ public class DetectionDialogFragment extends DialogFragment {
         public void onAlertBlockAlways(DialogFragment dialog);
         public void onAlertBlockThisTime(DialogFragment dialog);
         public void onAlertPlayDetectedSignal(DialogFragment dialog);
+        public void onAlertSharingInfo(DialogFragment dialog);
+        public void onAlertRuleInfo(DialogFragment dialog);
     }
 
     float[][] lastDetectedSpectrum = null;
@@ -76,6 +78,8 @@ public class DetectionDialogFragment extends DialogFragment {
     public Button btnAlertDismissThisTime;
     //public Button btnAlertDismissAlways;
     public Button btnAlertBlockThisTime;
+    public Button btnSharingInfo;
+    public Button btnRuleInfo;
 
     public TextView txtSignalType;
     public TextView txtAlertDate;
@@ -132,6 +136,9 @@ public class DetectionDialogFragment extends DialogFragment {
         btnAlertDismissThisTime = (Button) view.findViewById(R.id.btnDismissThisTime); //button of the alert for only dismiss the found signal this time
         btnAlertBlockThisTime = (Button) view.findViewById(R.id.btnBlockThisTime);
         btnAlertReplay = (Button) view.findViewById(R.id.btnReplay); //button of the alert for playing the found signal with fs/3
+
+        btnSharingInfo = (Button) view.findViewById(R.id.btnSharingInfo);
+        btnRuleInfo = (Button) view.findViewById(R.id.btnRuleInfo);
 
         cbSharing = (CheckBox) view.findViewById(R.id.cbSharing);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -191,6 +198,18 @@ public class DetectionDialogFragment extends DialogFragment {
         btnAlertReplay.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 listener.onAlertPlayDetectedSignal(DetectionDialogFragment.this);
+            }
+        });
+
+        btnSharingInfo.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                listener.onAlertSharingInfo(DetectionDialogFragment.this);
+            }
+        });
+
+        btnRuleInfo.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                listener.onAlertRuleInfo(DetectionDialogFragment.this);
             }
         });
 

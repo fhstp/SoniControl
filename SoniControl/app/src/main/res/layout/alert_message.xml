@@ -134,10 +134,8 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
             android:text="@string/alert_share_your_detection"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnSharingInfo"
             app:layout_constraintStart_toStartOf="@+id/txtAlertLocation"
             app:layout_constraintTop_toBottomOf="@+id/btnReplay" />
 
@@ -162,6 +160,7 @@
             android:layout_height="wrap_content"
             android:text="@string/alert_save_as_firewall_rule"
             app:layout_constraintEnd_toEndOf="@+id/cbSharing"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@id/cbSharing"
             app:layout_constraintTop_toBottomOf="@+id/txtNoInternet" />
 
@@ -216,6 +215,32 @@
             app:layout_constraintTop_toTopOf="@id/btnDismissThisTime"
             app:strokeColor="@color/colorRuleItemBlocked"
             app:strokeWidth="2dp" />
+
+        <Button
+            android:id="@+id/btnSharingInfo"
+            android:layout_width="34dp"
+            android:layout_height="32dp"
+            android:layout_gravity="start"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:drawableLeft="@drawable/baseline_info_black_36"
+            android:padding="0dp"
+            android:text="Button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cbSharing" />
+
+        <Button
+            android:id="@+id/btnRuleInfo"
+            android:layout_width="34dp"
+            android:layout_height="32dp"
+            android:layout_gravity="start"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:drawableLeft="@drawable/baseline_info_black_36"
+            android:padding="0dp"
+            android:text="Button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cbSaveAsFirewallRule" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
