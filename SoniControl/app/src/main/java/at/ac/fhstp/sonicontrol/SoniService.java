@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -19,19 +19,13 @@
 
 package at.ac.fhstp.sonicontrol;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.util.Log;
-import android.widget.ImageButton;
-import android.widget.Toast;
+import androidx.annotation.Nullable;
+//import android.support.annotation.Nullable;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -55,7 +49,6 @@ public class SoniService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        //Log.i(LOG_TAG, "Task removed!!!");
     }
 
     @Override
@@ -67,36 +60,16 @@ public class SoniService extends Service {
 
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             SharedPreferences.Editor ed = sp.edit();
-            ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.ON_HOLD.toString());
+            ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.STOPPED.toString());
             ed.apply();
 
             SoniService.IS_SERVICE_RUNNING = false;
             stopForeground(true);
             stopSelf();
         }else if (ServiceConstants.ACTION.STARTFOREGROUND_ACTION.equals(intent.getAction())) {
-            //Log.i(LOG_TAG, "Received Start Foreground Intent ");
             showNotification();
             SoniService.IS_SERVICE_RUNNING = true;
-            //Toast.makeText(this, "Service Started!", Toast.LENGTH_SHORT).show();
-/*
-            threadPool.execute(new Runnable() {
-                @Override
-                public void run() {
-                    boolean interrupted = false;
-                    while (keepPrintingAliveness && !interrupted) {
-                        Log.d(LOG_TAG, "background thread in Foreground Service alive.");
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            interrupted = true;
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-*/
         } else if (ServiceConstants.ACTION.STOPFOREGROUND_ACTION.equals(intent.getAction())) {
-            //Log.i(LOG_TAG, "Received Stop Foreground Intent");
             SoniService.IS_SERVICE_RUNNING = false;
             stopForeground(true);
             stopSelf();
@@ -113,8 +86,6 @@ public class SoniService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Log.i(LOG_TAG, "In onDestroy");
-        //Toast.makeText(this, "Service Destroyed!", Toast.LENGTH_SHORT).show();
         keepPrintingAliveness = false;
     }
 

@@ -2,7 +2,7 @@
 
 
 <!--
-  ~ Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+  ~ Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
   ~
   ~ This file is part of SoniControl app.
   ~
@@ -24,9 +24,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/show_rules_info"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_info_outline_white_48dp"
+        android:title="@string/menuitem_rules_info"/>
+    <item
+        android:id="@+id/show_settings_info"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_info_outline_white_48dp"
+        android:title="@string/menuitem_settings_info"/>
+    <item
         android:id="@+id/open_help"
         android:orderInCategory="100"
-        app:showAsAction="always"
         android:icon="@drawable/ic_help_outline_white_48dp"
         android:title="@string/help_menuItem"/>
     <item

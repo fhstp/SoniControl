@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.Calendar;
@@ -54,7 +55,7 @@ public class Spoofer {
     private long startTime;
     private long stopTime;
 
-    private Technology signalType;
+    //private Technology signalType;
 
     private boolean stopped = false;
 
@@ -68,19 +69,16 @@ public class Spoofer {
         return instance;
     }
 
-    public void init(MainActivity main, boolean playingGlobal, boolean playingHandler, Technology sigType){  //initialize the Scan with a main object
-        this.main = main;
-
+    public void init(boolean playingGlobal, boolean playingHandler){  //initialize the Scan with a main object
         // TODO: init() could be called only once. We create a new NoiseGenerator object every time we want to spoof.
-
-        this.genNoise = new NoiseGenerator(main);
+        this.genNoise = new NoiseGenerator();
         this.playingGlobal = playingGlobal;
         this.playingHandler = playingHandler;
-        this.signalType = sigType;
     }
 
-    public void startSpoofing(){
-        onPulsing(); //start the onPulsing method
+    public void startSpoofing(MainActivity main){
+        this.main = main;
+        onPulsing(main); //start the onPulsing method
     }
 
 
@@ -100,7 +98,7 @@ public class Spoofer {
         }
     }
 
-    public void onPulsing() {
+    public void onPulsing(MainActivity main) {
         MainActivity.threadPool.schedule(spoofRun, playtime, TimeUnit.MILLISECONDS);
     }
 
@@ -110,19 +108,30 @@ public class Spoofer {
                 // TODO: Do we need to reinitialize something ?
             }
             else {
+                Context context = main.getApplicationContext();
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
                 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
-                AudioManager audioManager = (AudioManager) main.getSystemService(Context.AUDIO_SERVICE);
+                AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
                 // not used ? int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
-                //Log.d("Spoofer", "Streamtype: " + String.valueOf(AudioManager.STREAM_MUSIC));
                 audioManager.setStreamVolume(3, (int) Math.round((audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * 0.70D)), 0);
 
                 if (playingHandler) {
                     playtime = genNoise.getPlayertime(); //get the playertime depending on the generated whitenoise
                 } else {
-                    playtime = Integer.valueOf(main.getSettingsObject().getString(ConfigConstants.SETTING_PAUSE_DURATION, ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT)); //get the pause value from the settings
+                    playtime = Integer.valueOf(sp.getString(ConfigConstants.SETTING_PAUSE_DURATION, ConfigConstants.SETTING_PAUSE_DURATION_DEFAULT)); //get the pause value from the settings
                 }
                 if (!noiseGenerated) { //if no whitenoise is available generate a new one
-                    genNoise.generateWhitenoise(signalType); //generate noise
+                    String technologyName = sp.getString(ConfigConstants.LAST_DETECTED_TECHNOLOGY_SHARED_PREF,Technology.UNKNOWN.toString());
+                    Technology detectedTechnology = null;
+                    try {
+                        detectedTechnology = Technology.fromString(technologyName);
+                    }
+                    catch (IllegalArgumentException e) {
+                        Log.d("Spoofer", "spoofRun - technology string stored not recognized: " + e.getMessage());
+                        detectedTechnology = Technology.UNKNOWN;
+                    }
+                    genNoise.generateWhitenoise(detectedTechnology, main); //generate noise
                     audioTrack = genNoise.getGeneratedPlayer(); //get the generated player
                     noiseGenerated = true; //noise and player are generated so its true
                     startTime = Calendar.getInstance().getTimeInMillis(); //get the starttime
@@ -131,25 +140,21 @@ public class Spoofer {
                     startStop(playingHandler); //starting it depending on the playingHandler boolean
                     playingHandler = !playingHandler; //change the variable for the next run
                     isFirstPlay = false; //set the first play to false
-                    onPulsing(); //execute the method again
+                    onPulsing(main); //execute the method again
                 } else {
                     if (playingGlobal) {
                         startStop(playingHandler); //starting it depending on the playingHandler boolean
                         playingHandler = !playingHandler; //change the variable for the next run
-                        //Log.d("Spoofer", "I spoof now!");
                         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
                         locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the location radius in metres
                         int spoofingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
                         stopTime = Calendar.getInstance().getTimeInMillis(); //get the stoptime
-                        //Log.d("StartTime", String.valueOf(startTime));
-                        //Log.d("StopTime", String.valueOf(stopTime));
                         Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
                         String logTime = String.valueOf(logLong);
-                        //Log.d("HowLongSpoofed", logTime);
                         if (logLong > (spoofingTime * 60)) { //check if its over the spoofing time from the settings
-                            executeRoutineAfterExpiredTime();
+                            executeRoutineAfterExpiredTime(main);
                         } else {
-                            onPulsing(); //start the pulsing again
+                            onPulsing(main); //start the pulsing again
                         }
                     } else {
                     }
@@ -185,10 +190,7 @@ public class Spoofer {
             setInstanceNull(); //set the instance of the spoofer null
         }
         if(audioTrack != null){ //if there is an audioplayer
-
-            if (audioTrack.getState() == AudioTrack.STATE_INITIALIZED) {
-                audioTrack.stop(); //stop playing
-            }
+            audioTrack.stop(); //stop playing
             audioTrack.release(); //release the player resources
             audioTrack = null; //set the player to null
             // TODO: shouldnt we keep it in case we can reuse it ?
@@ -197,7 +199,7 @@ public class Spoofer {
         }
     }
 
-    private void executeRoutineAfterExpiredTime(){
+    private void executeRoutineAfterExpiredTime(MainActivity main){
         stopped = true;
         startStop(false); //stop the spoofer
         playingGlobal = false; //set to false because its not playing anymore
@@ -208,39 +210,34 @@ public class Spoofer {
         if(locationTrackGps||locationTrackNet){
             locationTrack = true;
         }
-        if(/*locationTrack||*/(locFinder.getDetectedDBEntry()[0]!=0&&locFinder.getDetectedDBEntry()[1]!=0)) {
-            positionLatest = locFinder.getLocation(); //get the latest position
+        if((locFinder.getDetectedDBEntry()[0]!=0&&locFinder.getDetectedDBEntry()[1]!=0)) {
+            positionLatest = locFinder.getLocation(main); //get the latest position
             positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
             distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
-            /*Log.d("Distance", Double.toString(distance));
-            Log.d("LatestPosition", Double.toString(positionLatest[0]));
-            Log.d("LatestPosition", Double.toString(positionLatest[1]));
-            Log.d("OldPosition", Double.toString(positionOld[0]));
-            Log.d("OldPosition", Double.toString(positionOld[1]));*/
             if (distance < locationRadius) { //if we are still in the locationRadius
-                setSpoofingNoiseToNullAndTryGettingMicAccessAgain();
+                setSpoofingNoiseToNullAndTryGettingMicAccessAgain(main);
             } else {
-                startScanningAgain();
+                startScanningAgain(main);
             }
         }else {
-            startScanningAgain();
+            startScanningAgain(main);
         }
     }
 
-    private void startScanningAgain(){
+    private void startScanningAgain(MainActivity main){
         setInstanceNull(); //set the NoiseGenerator instance to null
         NotificationHelper.activateScanningStatusNotification(main.getApplicationContext()); //activate the scanning status notification
         detector.getTheOldSpoofer(Spoofer.this); //update the spoofer object in the detector
-        detector.startScanning(); //start scanning again
+        detector.startScanning(main); //start scanning again
     }
 
-    private void setSpoofingNoiseToNullAndTryGettingMicAccessAgain(){
+    private void setSpoofingNoiseToNullAndTryGettingMicAccessAgain(MainActivity main){
         // TODO: Keep the generated noise in case of reuse ?
         genNoise.setGeneratedPlayerToNull(); //set the noiseplayer to null
         audioTrack.release(); //release the player resources
         audioTrack = null; //set the player to null
         genNoise = null; //set the the noisegenerator object to null
         setInstanceNull(); //set the NoiseGenerator instance to null
-        locFinder.blockMicOrSpoof(); //try again to get access to the microphone and then choose the spoofing method
+        locFinder.blockMicOrSpoof(main); //try again to get access to the microphone and then choose the spoofing method
     }
 }

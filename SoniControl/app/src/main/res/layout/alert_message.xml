@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+  ~ Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
   ~
   ~ This file is part of SoniControl app.
   ~
@@ -18,115 +18,229 @@
   ~     along with SoniControl app.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/rectimage"
-            android:layout_width="340dp"
-            android:layout_height="400dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="12dp"
-            android:src="@drawable/rectangle"></ImageView>
-
-        <Button
-            android:id="@+id/btnPlay"
-            android:layout_width="308dp"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/rectimage"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="104dp"
-            android:text="@string/alertDialog_option_play"
-            android:visibility="invisible" />
-
-        <Button
-            android:id="@+id/btnBlockThisTime"
-            android:layout_width="309dp"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/btnPlay"
-            android:layout_alignStart="@+id/btnPlay"
-            android:layout_below="@+id/btnPlay"
-            android:text="@string/alertDialog_option_jam_this_time"/>
-
-        <Button
-            android:id="@+id/btnSpoof"
-            android:layout_width="308dp"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/btnBlockThisTime"
-            android:layout_alignStart="@+id/btnBlockThisTime"
-            android:layout_below="@+id/btnBlockThisTime"
-            android:text="@string/alertDialog_option_jam_always_here" />
-
-        <Button
-            android:id="@+id/btnDismissThisTime"
-            android:layout_width="308dp"
-            android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/btnBlockThisTime"
-            android:layout_alignRight="@+id/btnBlockThisTime"
-            android:layout_below="@+id/btnSpoof"
-            android:text="@string/alertDialog_option_dismiss_this_time" />
-
-        <Button
-            android:id="@+id/btnDismissAlwaysHere"
-            android:layout_width="308dp"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/btnBlockThisTime"
-            android:layout_alignStart="@+id/btnBlockThisTime"
-            android:layout_below="@+id/btnDismissThisTime"
-            android:text="@string/alertDialog_option_dismiss_always_here" />
-
         <TextView
-            android:id="@+id/txtSignalType"
-            android:layout_width="wrap_content"
+            android:id="@+id/txtAlertLocation"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/btnPlay"
-            android:layout_alignEnd="@+id/btnPlay"
-            android:layout_alignLeft="@+id/btnPlay"
-            android:layout_alignRight="@+id/btnPlay"
-            android:layout_alignStart="@+id/btnPlay"
-            android:layout_alignTop="@+id/rectimage"
-            android:layout_marginTop="24dp"
-            android:textAlignment="center"
-            android:textSize="36sp" />
-
-        <TextView
-            android:id="@+id/txtDiscovered"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/btnPlay"
-            android:layout_alignEnd="@+id/btnPlay"
-            android:layout_alignLeft="@+id/txtSignalType"
-            android:layout_alignRight="@+id/btnPlay"
-            android:layout_alignStart="@+id/txtSignalType"
-            android:layout_alignTop="@+id/txtSignalType"
-            android:text="@string/alertDialog_text_ultrasonic_signal_detected"
-            android:textAlignment="center"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"/>
-
-        <TextView
-            android:id="@+id/txtNoLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnDismissAlwaysHere"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="17dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"/>
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@id/txtAlertDate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Location_placeholder" />
 
         <TextView
             android:id="@+id/txtAlertDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txtNoLocation"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="17dp" />
+            android:textAlignment="center"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/txtAlertLocation"
+            app:layout_constraintTop_toBottomOf="@id/txtAlertLocation"
+            app:layout_constraintBottom_toTopOf="@id/txtSignalType"
+            android:text="Date_placeholder" />
 
-    </RelativeLayout>
-</LinearLayout>
+        <TextView
+            android:id="@+id/txtSignalType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/txtAlertDate"
+            app:layout_constraintTop_toBottomOf="@id/txtAlertDate"
+            app:layout_constraintBottom_toTopOf="@+id/txtSpectrogramTitle"
+            android:text="@string/gui_technology" />
+
+        <TextView
+            android:id="@+id/txtSpectrogramTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            app:layout_constraintStart_toStartOf="@id/txtSignalType"
+            app:layout_constraintTop_toBottomOf="@id/txtSignalType"
+            android:text="@string/alert_spectrogram_title" />
+
+        <ImageView
+            android:id="@+id/placeholderSpectrogram"
+            android:layout_width="wrap_content"
+            android:layout_height="204dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtSpectrogramTitle"
+            app:srcCompat="@drawable/spectrum_landscape"
+            android:visibility="gone"/>
+
+        <at.ac.fhstp.sonicontrol.ui.SpectrogramView
+            android:id="@+id/spectrogram_view"
+            android:layout_width="match_parent"
+            android:layout_height="204dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/placeholderSpectrogram"
+            />
+
+        <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.ProgressBar.Small.Inverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:layout_constraintBottom_toBottomOf="@id/spectrogram_view"
+            app:layout_constraintEnd_toEndOf="@id/spectrogram_view"
+            app:layout_constraintStart_toStartOf="@id/spectrogram_view"
+            app:layout_constraintTop_toTopOf="@id/spectrogram_view"
+            tools:visibility="invisible" />
+
+        <Button
+            android:id="@+id/btnReplay"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="start"
+            android:background="@android:color/black"
+            android:drawableStart="@drawable/baseline_play_arrow_white_36"
+            android:drawableLeft="@drawable/baseline_play_arrow_white_36"
+            android:text="@string/alertDialog_option_play"
+            android:textAlignment="textStart"
+            android:textColor="@android:color/white"
+            app:layout_constraintStart_toStartOf="@id/spectrogram_view"
+            app:layout_constraintEnd_toEndOf="@id/spectrogram_view"
+            app:layout_constraintTop_toBottomOf="@id/spectrogram_view" />
+
+        <CheckBox
+            android:id="@+id/cbSharing"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="32dp"
+            android:text="@string/alert_share_your_detection"
+            app:layout_constraintEnd_toStartOf="@+id/btnSharingInfo"
+            app:layout_constraintStart_toStartOf="@+id/txtAlertLocation"
+            app:layout_constraintTop_toBottomOf="@+id/btnReplay" />
+
+        <TextView
+            android:id="@+id/txtNoInternet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:text="@string/on_alert_network_not_enabled"
+            android:textColor="@android:color/holo_orange_dark"
+            android:visibility="visible"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toTopOf="@id/cbSaveAsFirewallRule"
+            app:layout_constraintEnd_toEndOf="@+id/cbSharing"
+            app:layout_constraintStart_toStartOf="@id/cbSharing"
+            app:layout_constraintTop_toBottomOf="@id/cbSharing" />
+
+        <CheckBox
+            android:id="@+id/cbSaveAsFirewallRule"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/alert_save_as_firewall_rule"
+            app:layout_constraintEnd_toEndOf="@+id/cbSharing"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@id/cbSharing"
+            app:layout_constraintTop_toBottomOf="@+id/txtNoInternet" />
+
+        <TextView
+            android:id="@+id/txtNoLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:text="@string/on_alert_no_location_message"
+            android:textColor="@android:color/holo_orange_dark"
+            android:visibility="visible"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="@+id/cbSaveAsFirewallRule"
+            app:layout_constraintStart_toStartOf="@id/cbSaveAsFirewallRule"
+            app:layout_constraintTop_toBottomOf="@id/cbSaveAsFirewallRule" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDismissThisTime"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/alertDialog_option_dismiss_this_time"
+            android:textColor="@color/colorRuleItemAllowed"
+            android:theme="@style/Theme.MaterialComponents"
+            app:icon="@drawable/baseline_check_circle_outline_black_18"
+            app:iconGravity="start"
+            app:iconTint="@color/colorRuleItemAllowed"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnBlockThisTime"
+            app:layout_constraintTop_toBottomOf="@id/txtNoLocation"
+            app:strokeColor="@color/colorRuleItemAllowed"
+            app:strokeWidth="2dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBlockThisTime"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@string/alertDialog_option_jam_this_time"
+            android:textColor="@color/colorRuleItemBlocked"
+            android:theme="@style/Theme.MaterialComponents"
+            app:icon="@drawable/baseline_block_black_18"
+            app:iconGravity="start"
+            app:iconTint="@color/colorRuleItemBlocked"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnDismissThisTime"
+            app:strokeColor="@color/colorRuleItemBlocked"
+            app:strokeWidth="2dp" />
+
+        <Button
+            android:id="@+id/btnSharingInfo"
+            android:layout_width="34dp"
+            android:layout_height="32dp"
+            android:layout_gravity="start"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:drawableLeft="@drawable/baseline_info_black_36"
+            android:padding="0dp"
+            android:text="Button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cbSharing" />
+
+        <Button
+            android:id="@+id/btnRuleInfo"
+            android:layout_width="34dp"
+            android:layout_height="32dp"
+            android:layout_gravity="start"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:drawableLeft="@drawable/baseline_info_black_36"
+            android:padding="0dp"
+            android:text="Button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cbSaveAsFirewallRule" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
