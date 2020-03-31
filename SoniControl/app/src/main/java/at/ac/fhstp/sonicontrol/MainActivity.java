@@ -85,6 +85,7 @@ import uk.me.berndporr.iirj.Butterworth;
 
 import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 import static at.ac.fhstp.sonicontrol.ConfigConstants.ON_ALLOW_SNACKBAR_DURATION;
+import static at.ac.fhstp.sonicontrol.ConfigConstants.WAKEUP_COUNTER_DEFAULT;
 import static at.ac.fhstp.sonicontrol.utils.Recognition.computeRecognition;
 
 
@@ -233,6 +234,10 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         }
         getUpdatedSettings(); //get the settings
 
+        SharedPreferences sp = getSettingsObject();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putInt(ConfigConstants.WAKEUP_COUNTER, ConfigConstants.WAKEUP_COUNTER_DEFAULT);
+        ed.apply();
     }
 
     private void onBtnExitClick(View v) {
@@ -1136,7 +1141,7 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         boolean shouldBeShared = sp.getBoolean(ConfigConstants.LAST_DECISION_ON_SHARING, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
         if (shouldBeShared) {
-            sendDetection(position[0], position[1], Technology.fromString(technology).getId(), technology, JSONManager.returnDateString(), spoof, amplitude);
+            wakeupServer(position[0], position[1], Technology.fromString(technology).getId(), technology, JSONManager.returnDateString(), spoof, amplitude);
         }
     }
 
@@ -1392,6 +1397,49 @@ public class MainActivity extends BaseActivity implements Scan.DetectionListener
             locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
             return !TextUtils.isEmpty(locationProviders);
         }
+    }
+
+    public void wakeupServer(final double longitude, final double latitude, final int technologyid, final String technology, final String timestamp, final int spoofDecision, final float amplitude) {
+
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                final SoniControlAPI restService = RESTController.getRetrofitInstance().create(SoniControlAPI.class);
+
+                restService.wakeupServer().enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.isSuccessful()) {
+                            Log.i(TAG, "post submitted to API. wakeup" + response.body().toString());
+                            sendDetection(longitude, latitude, Technology.fromString(technology).getId(), technology, JSONManager.returnDateString(), spoofDecision, amplitude);
+                            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                            SharedPreferences.Editor ed = sp.edit();
+                            ed.putInt(ConfigConstants.WAKEUP_COUNTER, WAKEUP_COUNTER_DEFAULT);
+                            ed.apply();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                        int wakeupCounter = sp.getInt(ConfigConstants.WAKEUP_COUNTER, WAKEUP_COUNTER_DEFAULT);
+                        Log.e(TAG, wakeupCounter + "Unable to submit post to API. wakeup" + t);
+                        if(wakeupCounter >= 0){
+                            wakeupServer(longitude, latitude, Technology.fromString(technology).getId(), technology, JSONManager.returnDateString(), spoofDecision, amplitude);
+                            SharedPreferences.Editor ed = sp.edit();
+                            ed.putInt(ConfigConstants.WAKEUP_COUNTER, wakeupCounter - 1);
+                            ed.apply();
+                            Log.e(TAG, "wakeupCounter >= 0");
+                        }else{
+                            Log.e(TAG, "else SharedPreferences.Editor ed = sp.edit();");
+                            SharedPreferences.Editor ed = sp.edit();
+                            ed.putInt(ConfigConstants.WAKEUP_COUNTER, WAKEUP_COUNTER_DEFAULT);
+                            ed.apply();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     public void sendDetection(final double longitude, final double latitude, final int technologyid, final String technology, final String timestamp, final int spoofDecision, final float amplitude) {

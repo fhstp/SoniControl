@@ -11,6 +11,8 @@ The project website of the SoniControl project with all published results and re
 
 * The folder "SoniControl_Octave" contains the prototypes developed during the SoniControl project using GNU Octave.
 
+* The folder "SoniControl_Server" contains the code for the server application of SoniControl.
+
 ### Documentation
 
 * User documentation available on our website: [sonicontrol_user_doc.pdf](https://sonicontrol.fhstp.ac.at/wp-content/uploads/2017/07/sonicontrol_user_doc.pdf)
@@ -37,10 +39,7 @@ Please feel free to open Issues, submit Pull Requests, or just send us feedback 
 
 ### Open topics / Features to add
 
-* Recognition of the detected signal
-* Record the signal and play it back in the audible range
-* Visualize the detected signal
-
+* Add new technologies to the recognition algorithm
 
 ## Authors
 

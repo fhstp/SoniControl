@@ -67,4 +67,7 @@ public interface SoniControlAPI {
                                          @Query("technologyid") int technologyid,
                                          @Query("timestampfrom") String timestampfrom,
                                          @Query("timestampto") String timestampto);
+
+    @GET("/wakeup")
+    Call<ResponseBody>  wakeupServer();
 }

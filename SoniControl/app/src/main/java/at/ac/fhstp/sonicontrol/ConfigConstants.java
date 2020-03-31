@@ -129,4 +129,7 @@ public final class ConfigConstants {
     public static int NO_VALUES_ENTERED = -10000;
     public static int ALL_TECHNOLOGIES = -10;
 
+    //Server
+    public static String WAKEUP_COUNTER = "wakeupServerCounter";
+    public static int WAKEUP_COUNTER_DEFAULT = 2;
 }
