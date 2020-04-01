@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -19,26 +19,27 @@
 
 package at.ac.fhstp.sonicontrol;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * This class makes the link with the native scanner/detector based on Superpowered library.
+ */
 public class Scan {
     private static final String TAG = "Scan";
     public interface DetectionListener {
-        public void onDetection(Technology technology);
+        public void onDetection(Technology technology, float[] stereoRawData);//, int maxValueIndex);
+        public void onDetectorInitialized();
     }
-    //private List<DetectionListener> detectionListeners = new ArrayList<>();
+
     private DetectionListener mainDetectionListener = null;
 
     private static Scan instance;
     private JSONManager jsonMan;
 
-    MainActivity main;
+    Context applicationContext;
     Location locFinder;
     Spoofer spoof = null;
 
@@ -51,6 +52,7 @@ public class Scan {
 
     private boolean paused = false; // Is the Scan paused ?
     private Technology lastDetectedTechnology = null;
+    private int extendedDiagnostics;
 
     private boolean consistentState = true; // Allows to detect wrong termination of the app
 
@@ -65,35 +67,30 @@ public class Scan {
     }
 
     public void init(MainActivity main){
-        this.main = main; //initialize the Scan with a main object
+        this.applicationContext = main.getApplicationContext();
         System.loadLibrary("Superpowered");
     }
 
-/*    public void addDetectionListener(DetectionListener listener) {
-        this.detectionListeners.add(listener);
-    }*/
     public void setDetectionListener(DetectionListener listener) {
         this.mainDetectionListener = listener;
     }
 
-    public void notifyDetectionListeners() {
-        if (lastDetectedTechnology != null) {
-            /*for(DetectionListener listener: detectionListeners) {
-                listener.onDetection(lastDetectedTechnology);
-            }*/
-            mainDetectionListener.onDetection(lastDetectedTechnology);
+    public void notifyDetectionListeners(Technology technology, float[] bufferHistory) {//, int maxValueIndex) {
+        if (technology != null) {
+            mainDetectionListener.onDetection(technology, bufferHistory); //, maxValueIndex);
         }
         else {
             //Log.d(TAG, "notifyDetectionListeners: lastDetectedTechnology is null");
         }
     }
 
-    /***
-     * Translates the String received from CPP to a Technology value and notifies the listeners of the detection.
+    /**
+     * Notify listeners after translating the String received from CPP to a Technology value.
      * Note: This is called from the native code every time there is a detection
      * @param technology String corresponding to a Technology Enum value
+     * @param bufferHistory raw buffer captured via Superpowered
      */
-    public void detectedSignal(String technology) {
+    public void detectedSignal(String technology, float[] bufferHistory) {
         try {
             lastDetectedTechnology = Technology.fromString(technology);
         }
@@ -102,7 +99,20 @@ public class Scan {
             lastDetectedTechnology = Technology.UNKNOWN;
         }
         paused = true;
-        notifyDetectionListeners();
+        notifyDetectionListeners(lastDetectedTechnology, bufferHistory); //, maxValueIndex);
+    }
+
+    /**
+     * Notify listeners once the detector is initiliazed (background model buffer is full).
+     * Note: This is called from the native code once after each start/resume of the detector.
+     */
+    public void onDetectorInitialized() {
+        // Update initialized state, and then callback the main activity for GUI update
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, true);
+        ed.apply();
+        mainDetectionListener.onDetectorInitialized();
     }
 
     private Runnable scanRun = new Runnable() {
@@ -110,11 +120,11 @@ public class Scan {
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
 
-            FrequencyDomain(ConfigConstants.SCAN_SAMPLE_RATE, ConfigConstants.SCAN_BUFFER_SIZE);
+            FrequencyDomain(ConfigConstants.SCAN_SAMPLE_RATE, ConfigConstants.SCAN_BUFFER_SIZE, extendedDiagnostics);
         }
     };
 
-    public void startScanning() {
+    public void startScanning(MainActivity main) {
         if(spoof != null) { //if there is an existing spoofer
             if (spoof.isNoiseGenerated()) { //if a spoofer is already generated
                 spoof.setNoiseGeneratedFalse(); //set the boolean for the generation to false
@@ -123,26 +133,30 @@ public class Scan {
             }
         }
 
-        savedFileUrl = main.getFilesDir() + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
+        this.extendedDiagnostics = PreferenceManager.getDefaultSharedPreferences(this.applicationContext).getBoolean(ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS, ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS_DEFAULT) ? 1 : 0;
+
+        savedFileUrl = applicationContext.getFilesDir() + "/detected-files/hooked_on.mp3"; //unfinished variable for the url of the saved file because there is no dynamically created file yet
 
         locFinder = Location.getInstanceLoc(); //get an instance of location
-        jsonMan = new JSONManager(main);
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(main);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
+        ed.apply();
 
         if (paused && consistentState) {
-            //Log.d(TAG, "Resume scanning");
             resume();
         }
         else { // Most probably only the first call
-            //Log.d(TAG, "startScanning");
             MainActivity.threadPool.execute(scanRun);
         }
         consistentState = true; // Handles wrong termination of the app
 
         // Stores the app state : SCANNING
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main);
-        SharedPreferences.Editor ed = sp.edit();
         ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.SCANNING.toString());
         ed.apply();
+        main.updateStateText();
     }
 
     public void getTheOldSpoofer(Spoofer spoofing){
@@ -165,23 +179,29 @@ public class Scan {
 
     public void resume() {
         paused = false;
-        Resume();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean(ConfigConstants.PREFERENCES_SCANNER_INITIALIZED, false);
+        ed.apply();
+        Resume(extendedDiagnostics);
     }
 
     /**
      * Will delete the audioIO object, thus releasing audio resources
      */
     public void stopIO() {
+        paused = false; // False, it is actually stopped. Should not be resumed but restarted.
         StopIO();
     }
 
     // ------
     // Native functions to find in jni/FrequencyDomain.cpp
-    private native void FrequencyDomain(int samplerate, int buffersize);
+    private native void FrequencyDomain(int samplerate, int buffersize, int extendedDiagnostics);
     private native float GetAndroidOut1();
     private native int GetAndroidOut2();
     private native boolean GetBackgroundModelUpdating();
     private native int Pause();
-    private native void Resume();
+    private native void Resume(int extendedDiagnostics);
     private native void StopIO();
+    //private  native void setExtendedDiagnostics(int extendedDiagnostics);
 }

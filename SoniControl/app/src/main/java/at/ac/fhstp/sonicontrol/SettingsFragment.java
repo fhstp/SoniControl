@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -20,7 +20,6 @@
 package at.ac.fhstp.sonicontrol;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceFragment;
@@ -34,8 +33,9 @@ public class SettingsFragment extends PreferenceFragment {
 
     //TODO: remove references to Fragment and Activity
     static SettingsFragment settingsFragment;
-    Context context;
+    MainActivity main = new MainActivity();
     JSONManager jsonMan;
+    MainActivity nextMain;
     AlertDialog alertDelete = null;
     AlertDialog alertReset = null;
 
@@ -46,24 +46,24 @@ public class SettingsFragment extends PreferenceFragment {
     private CheckBoxPreference cbSaveJson;
     private CheckBoxPreference cbPreventiveSpoofing;
     private CheckBoxPreference cbAlertLocationDontAsk;
+    private CheckBoxPreference cbExtendedDiagnostics;
     private EditTextPreference etLocationRadius;
     private EditTextPreference etPulseDuration;
     private EditTextPreference etPauseDuration;
     private EditTextPreference etBandwidth;
     private EditTextPreference etBlockingDuration;
+    private CheckBoxPreference cbSharing;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.settings_container);
         addPreferencesFromResource(R.xml.settings_release); //set the settings.xml as the preferences
 
         settingsFragment = this;
 
-        context = getActivity().getApplicationContext();
-
-        jsonMan = new JSONManager(context);
+        nextMain = main.getMainIsMain();
+        jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(nextMain);
 
         cbContinuousSpoofing = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_CONTINOUS_SPOOFING);
         cbGPSUse = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_GPS);
@@ -72,11 +72,13 @@ public class SettingsFragment extends PreferenceFragment {
         cbSaveJson = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE);
         cbPreventiveSpoofing = (CheckBoxPreference) findPreference(ConfigConstants.SETTING_PREVENTIVE_SPOOFING);
         cbAlertLocationDontAsk = (CheckBoxPreference) findPreference(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN);
+        cbExtendedDiagnostics = (CheckBoxPreference) findPreference(ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS);
         etLocationRadius = (EditTextPreference) findPreference(ConfigConstants.SETTING_LOCATION_RADIUS);
         etPulseDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_PULSE_DURATION);
         etPauseDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_PAUSE_DURATION);
         etBandwidth = (EditTextPreference) findPreference(ConfigConstants.SETTING_BANDWIDTH);
         etBlockingDuration = (EditTextPreference) findPreference(ConfigConstants.SETTING_BLOCKING_DURATION);
+        cbSharing = (CheckBoxPreference) findPreference(ConfigConstants.SETTINGS_SHARING_DEFAULT);
 
         // Initialize the preferences with the last values saved or the default ones
         setPreferenceValues();
@@ -138,8 +140,6 @@ public class SettingsFragment extends PreferenceFragment {
                 }
                 String prefLocRadStr = String.format(getString(R.string.settings_location_radius_title), String.valueOf(newValue));
                 prefLocRad.setTitle(prefLocRadStr);
-                //Log.d("MyApp", "Pref " + preference.getKey() + " " + newValue.toString());
-                //Log.d("testfortest",String.valueOf(prefLocRad.getSharedPreferences().getString(prefLocRad.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)));
                 return true;
             }
         });
@@ -186,35 +186,21 @@ public class SettingsFragment extends PreferenceFragment {
                 if(newValue.toString().trim().equals("")){
                     return false;
                 }
-                else {
-                    NumberFormat nf = NumberFormat.getInstance();
-                    nf.setParseIntegerOnly(true);
-                    String prefBlockingDurationTitle = null;
-                    try {
-                        Number blockingDuration = nf.parse(newValue.toString());
-
-                        if (blockingDuration.intValue() == 1) {
-                            prefBlockingDurationTitle = String.format(getString(R.string.settings_blocking_duration_singular), String.valueOf(blockingDuration));
-                        } else {
-                            prefBlockingDurationTitle = String.format(getString(R.string.settings_blocking_duration_plural), String.valueOf(blockingDuration));
-                        }
-                    } catch (ParseException e) {
-                        prefBlockingDurationTitle = String.format(getString(R.string.settings_blocking_duration_plural), newValue);
-                        Log.d("SettingsFragment", "ParseException: " + e.getMessage());
-                    } finally {
-                        prefBlockingDuration.setTitle(prefBlockingDurationTitle);
-                    }
+                if(Integer.valueOf((String)newValue)==1) {
+                    String prefBlockingDurationStr = String.format(getString(R.string.settings_blocking_duration_singular), String.valueOf(newValue));
+                    prefBlockingDuration.setTitle(prefBlockingDurationStr);
+                }else{
+                    String prefBlockingDurationStr = String.format(getString(R.string.settings_blocking_duration_plural), String.valueOf(newValue));
+                    prefBlockingDuration.setTitle(prefBlockingDurationStr);
                 }
-
                 return true;
             }
         });
-        //Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, "30"))
     }
 
     private void resetSettings() {
         // Reinitialize SharedPreferences values
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(nextMain.getApplicationContext());
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(ConfigConstants.SETTING_CONTINOUS_SPOOFING, ConfigConstants.SETTING_CONTINOUS_SPOOFING_DEFAULT);
         editor.putBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
@@ -228,8 +214,9 @@ public class SettingsFragment extends PreferenceFragment {
         editor.putString(ConfigConstants.SETTING_BANDWIDTH,ConfigConstants.SETTING_BANDWIDTH_DEFAULT);
         editor.putString(ConfigConstants.SETTING_BLOCKING_DURATION,ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT);
         editor.putBoolean(ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN,ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT);
+        editor.putBoolean(ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS, ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS_DEFAULT);
+        editor.putBoolean(ConfigConstants.SETTINGS_SHARING_DEFAULT, ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE);
         editor.apply();
-        editor.commit();
 
         // Re-set the view content
         setPreferenceValues();
@@ -285,6 +272,8 @@ public class SettingsFragment extends PreferenceFragment {
         cbSaveJson.setChecked(sp.getBoolean(cbSaveJson.getKey(), ConfigConstants.SETTING_SAVE_DATA_TO_JSON_FILE_DEFAULT));
         cbPreventiveSpoofing.setChecked(sp.getBoolean(cbPreventiveSpoofing.getKey(), ConfigConstants.SETTING_PREVENTIVE_SPOOFING_DEFAULT));
         cbAlertLocationDontAsk.setChecked(sp.getBoolean(cbAlertLocationDontAsk.getKey(), ConfigConstants.SETTINGS_ALERT_LOCATION_IS_OFF_DONT_ASK_AGAIN_DEFAULT));
+        cbExtendedDiagnostics.setChecked(sp.getBoolean(cbExtendedDiagnostics.getKey(), ConfigConstants.SETTINGS_EXTENDED_DIAGNOSTICS_DEFAULT));
+        cbSharing.setChecked(sp.getBoolean(cbSharing.getKey(), ConfigConstants.SETTINGS_SHARING_DEFAULT_VALUE));
 
         String locationRadius = sp.getString(etLocationRadius.getKey(), ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT);
         String prefLocRadTitle = String.format(getString(R.string.settings_location_radius_title), locationRadius);

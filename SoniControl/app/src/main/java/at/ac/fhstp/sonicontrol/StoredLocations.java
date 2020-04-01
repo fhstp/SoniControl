@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -19,127 +19,179 @@
 
 package at.ac.fhstp.sonicontrol;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+//import android.support.annotation.NonNull;
+//import android.support.design.widget.BottomNavigationView;
 import android.os.Bundle;
+import com.google.android.material.snackbar.Snackbar;
+//import android.support.design.widget.Snackbar;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+//import androidx.core.app.Fragment;
+//import androidx.core.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
+import at.ac.fhstp.sonicontrol.detetion_fragments.DetectionHistoryFragment;
+import at.ac.fhstp.sonicontrol.detetion_fragments.ImportedRulesFragment;
+import at.ac.fhstp.sonicontrol.detetion_fragments.MyRulesFragment;
+import at.ac.fhstp.sonicontrol.detetion_fragments.RulesOnMapFragment;
 
-public class StoredLocations extends BaseActivity {
+import static android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS;
 
-    MainActivity main = new MainActivity();
-    private static StoredLocations instanceStoredLoc;
-    JSONManager jsonMan;
-    ArrayList<String[]> data;
-    ListAdapter stored_adapter;
-    ListView lv;
-    MainActivity nextMain;
-    AlertDialog alertDelete = null;
+public class StoredLocations extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+    BottomNavigationView navView;
+    ViewPager viewPager;
 
-    AdapterView<?> parentLongClick;
-    int positionLongClick;
+    private static final String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE};
+    private static final int REQUEST_MAP_PERMISSIONS = 72;
 
-    TextView txtNothingDiscovered;
+    public Handler uiHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stored_locations);
+        navView = findViewById(R.id.nav_view);
+        navView.setOnNavigationItemSelectedListener(this);
+        loadFragment(new DetectionHistoryFragment());
+    }
 
-        nextMain = main.getMainIsMain();
-        jsonMan = new JSONManager(nextMain);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        setActiveRuleInfoMenuItem(true);
+        setActiveSettingsInfoMenuItem(false);
+        return true;
+    }
 
-        data = jsonMan.getJsonData();
-
-        txtNothingDiscovered = (TextView) findViewById(R.id.txtNoDetectionsYet);
-
-        if(data.size()==0){
-            txtNothingDiscovered.setVisibility(View.VISIBLE);
-        }else {
-            txtNothingDiscovered.setVisibility(View.INVISIBLE);
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Fragment fragment = null;
+        switch (menuItem.getItemId()) {
+            case R.id.navigation_my_rules:
+                fragment = new MyRulesFragment();
+                break;
+            case R.id.navigation_imported_rules:
+                fragment = new ImportedRulesFragment();
+                break;
+            case R.id.navigation_detection_history:
+                fragment = new DetectionHistoryFragment();
+                break;
+            case R.id.navigation_rules_map:
+                requestPermissions();
+                fragment = new RulesOnMapFragment();
+                break;
         }
+        return loadFragment(fragment);
+    }
 
-        lv = (ListView) findViewById(R.id.storedListView);
-        lv.setAdapter(null);
-        final Context listContext = this;
-        stored_adapter = new Stored_Adapter(this, data);
+    private boolean loadFragment(Fragment fragment) {
+        //switching fragment
+        if (fragment != null) {
+            Log.d("StoredLocations", "loadsFragment");
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .commit();
+            return true;
+        }
+        return false;
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_MAP_PERMISSIONS: {
+                if (grantResults.length == 0) {
+                    //we will show an explanation next time the user click on start
+                    showRequestPermissionExplanation();
+                } else {
+                    for (int i = 0; i < permissions.length; i++) {
+                        if (Manifest.permission.ACCESS_FINE_LOCATION.equals(permissions[i])) {
+                            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
 
-        final AlertDialog.Builder deleteJsonDialog = new AlertDialog.Builder(StoredLocations.this);
-        deleteJsonDialog.setTitle(R.string.DeleteJsonAlertTitle)
-                .setMessage(R.string.DeleteJsonAlertMessage)
-                .setCancelable(false)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        String[] singleArrayItem = (String[]) parentLongClick.getItemAtPosition(positionLongClick);
-                        double[] positionSignal = new double[2];
-                        positionSignal[0] = Double.valueOf(singleArrayItem[0]);
-                        positionSignal[1] = Double.valueOf(singleArrayItem[1]);
-                        jsonMan.deleteEntryInStoredLoc(positionSignal,singleArrayItem[2]);
-                        jsonMan = new JSONManager(nextMain);
-                        data = jsonMan.getJsonData();
-                        if(data.size()==0){
-                            txtNothingDiscovered.setVisibility(View.VISIBLE);
-                        }else {
-                            txtNothingDiscovered.setVisibility(View.INVISIBLE);
+                            } else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                                showRequestPermissionExplanation();
+                                break;
+
+                            }
                         }
-                        lv.setAdapter(null);
-                        stored_adapter = new Stored_Adapter(listContext, data);
-                        lv.setAdapter(stored_adapter);
                     }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                }
+            }
+        }
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void requestPermissions(){
+        if(!hasPermissions(StoredLocations.this, PERMISSIONS)){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(StoredLocations.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Log.d("requestPermissions", "ACCESS_FINE_LOCATION");
+
+                Snackbar permissionSnackbar = Snackbar.make(findViewById(android.R.id.content).getRootView(), R.string.permissionMapRequestExplanation,
+                        Snackbar.LENGTH_INDEFINITE)
+                        .setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ActivityCompat.requestPermissions(StoredLocations.this, PERMISSIONS, REQUEST_MAP_PERMISSIONS);
+                            }
+                        });
+                View permissionSnackbarView = permissionSnackbar.getView();
+                TextView permissionSnackbarTextView = (TextView) permissionSnackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+                permissionSnackbarTextView.setMaxLines(4);
+                permissionSnackbar.show();
+            } else {
+                Log.d("requestPermissions", "PERMISSIONS");
+                // First time, no explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(StoredLocations.this, PERMISSIONS, REQUEST_MAP_PERMISSIONS);
+            }
+        }else{
+
+        }
+    }
+
+    private void showRequestPermissionExplanation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(StoredLocations.this);
+        builder.setMessage(R.string.permissionMapRequestExplanation);
+        builder.setPositiveButton(getString(R.string.permission_explanation_map_button_positive),new DialogInterface.OnClickListener() {
+
                     public void onClick(DialogInterface dialog, int which) {
-                        alertDelete.cancel();
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert);
-
-        lv.setAdapter(stored_adapter);
-
-        lv.setOnItemClickListener(
-                new AdapterView.OnItemClickListener(){
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String[] singleArrayItem = (String[]) parent.getItemAtPosition(position);
-                        double[] positionSignal = new double[2];
-                        positionSignal[0] = Double.valueOf(singleArrayItem[0]);
-                        positionSignal[1] = Double.valueOf(singleArrayItem[1]);
-                        jsonMan.setShouldBeSpoofedInStoredLoc(positionSignal,singleArrayItem[2], Integer.valueOf(singleArrayItem[4]));
-                        jsonMan = new JSONManager(nextMain);
-                        data = jsonMan.getJsonData();
-                        lv.setAdapter(null);
-                        stored_adapter = new Stored_Adapter(listContext, data);
-                        lv.setAdapter(stored_adapter);
-
+                        Intent intent = new Intent();
+                        intent.setAction(ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
                     }
                 }
         );
-
-        lv.setOnItemLongClickListener(
-                new AdapterView.OnItemLongClickListener(){
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                        parentLongClick = parent;
-                        positionLongClick = position;
-                        alertDelete = deleteJsonDialog.show();
-                        return true;
-                    }
-                }
-        );
-
-
-
+        builder.setNegativeButton(getString(R.string.permission_explanation_map_button_negative), null);
+        builder.show();
     }
 }

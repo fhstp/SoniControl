@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -21,6 +21,7 @@ package at.ac.fhstp.sonicontrol;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -32,8 +33,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
+import android.os.Looper;
+import android.preference.PreferenceManager;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.content.SharedPreferences;
 import android.widget.Toast;
@@ -46,7 +48,6 @@ import java.util.Locale;
 public class GPSTracker extends Service implements LocationListener {
 
     private static String TAG = GPSTracker.class.getName();
-    private final MainActivity main;
 
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
@@ -68,16 +69,16 @@ public class GPSTracker extends Service implements LocationListener {
     private String provider_info_gps = "";
     private String provider_info_network = "";
 
-    public GPSTracker(MainActivity main) {
-        this.main = main;
-        initGPSTracker();
+    Geocoder geocoder = null;
+
+    public GPSTracker(Activity activity) {
+        initGPSTracker(activity);
     }
 
 
-    public void initGPSTracker() {
+    public void initGPSTracker(Activity activity) {
         try {
-            //main.displayToast("I am in initGPS", Toast.LENGTH_LONG);
-            locationManager = (LocationManager) main.getApplicationContext().getSystemService(LOCATION_SERVICE);
+            locationManager = (LocationManager) activity.getApplicationContext().getSystemService(LOCATION_SERVICE);
 
             Location locationNetwork = null;
             Location locationGPS = null;
@@ -86,31 +87,24 @@ public class GPSTracker extends Service implements LocationListener {
 
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity); //get the settings
             boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
             boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
 
             if (isGPSEnabled && locationTrackGps) {
                 this.isGPSTrackingEnabled = true;
-                //Log.d(TAG, "Application use GPS Service");
                 provider_info_gps = LocationManager.GPS_PROVIDER;
             }
             if (isNetworkEnabled && locationTrackNet) {
-                //this.isGPSTrackingEnabled = true;
                 this.isNetworkEnabled = true;
-                //Log.d(TAG, "Application use Network State to get GPS coordinates");
                 provider_info_network = LocationManager.NETWORK_PROVIDER;
             }
 
             int status = 0;
             if (!provider_info_network.isEmpty() || !provider_info_gps.isEmpty()) {
-                status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
+                status = ActivityCompat.checkSelfPermission(activity.getApplicationContext(),
                         Manifest.permission.ACCESS_FINE_LOCATION);
                 if (status != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(
-                            main,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            ConfigConstants.REQUEST_GPS_PERMISSION);
                 }
                 else {
                     if (!provider_info_network.isEmpty()) {
@@ -119,11 +113,10 @@ public class GPSTracker extends Service implements LocationListener {
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES,
                                 this,
-                                main.uiHandler.getLooper()
+                                Looper.getMainLooper()
                         );
                         if (locationManager != null) {
                             locationNetwork = locationManager.getLastKnownLocation(provider_info_network);
-                            //updateGPSCoordinates();
                         }
                     }
 
@@ -133,26 +126,20 @@ public class GPSTracker extends Service implements LocationListener {
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES,
                                 this,
-                                main.uiHandler.getLooper()
+                                Looper.getMainLooper()
                         );
                         if (locationManager != null) {
                             locationGPS = locationManager.getLastKnownLocation(provider_info_gps);
-                            //updateGPSCoordinates();
                         }
                     }
 
-                    //Log.d("NetworkLoc", String.valueOf(locationNetwork));
-                    //Log.d("GPSLoc", String.valueOf(locationGPS));
                     if(locationNetwork==null){
-                        //Log.d("GPS", "Yes");
                         location = locationGPS;
                         updateGPSCoordinates();
                     }else if(locationGPS==null){
-                        //Log.d("Network", "Yes");
                         location = locationNetwork;
                         updateGPSCoordinates();
                     }else{
-                        //Log.d("Will test", "Yes");
                         if(isBetterLocation(locationNetwork,locationGPS)){
                             location = locationNetwork;
                             updateGPSCoordinates();
@@ -161,23 +148,6 @@ public class GPSTracker extends Service implements LocationListener {
                             updateGPSCoordinates();
                         }
                     }
-
-                    /*
-                    if(locationManager != null){
-                        if(locationGPS == null) {
-                            location = locationNetwork;
-                            updateGPSCoordinates();
-                        }else if(locationNetwork == null) {
-                            location = locationGPS;
-                            updateGPSCoordinates();
-                        }else if(locationNetwork.getAccuracy() < locationGPS.getAccuracy()){
-                            location = locationNetwork;
-                            updateGPSCoordinates();
-                        }else if(locationGPS.getAccuracy() < locationNetwork.getAccuracy()){
-                            location = locationGPS;
-                            updateGPSCoordinates();
-                        }
-                    }*/
                 }
             }
         }
@@ -185,7 +155,7 @@ public class GPSTracker extends Service implements LocationListener {
         {
             e.printStackTrace();
             Log.e(TAG, "Impossible to connect to LocationManager", e);
-            main.displayToast(getResources().getString(R.string.toastMessageNoGeocoderConnection), Toast.LENGTH_LONG);
+            Toast.makeText(activity, getResources().getString(R.string.toastMessageNoGeocoderConnection), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -226,15 +196,12 @@ public class GPSTracker extends Service implements LocationListener {
     public List<Address> getGeocoderAddress(Context context) {
         if (location != null) {
 
-            Geocoder geocoder = new Geocoder(context, Locale.ENGLISH);
-
             try {
-                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, this.geocoderMaxResults);
+                List<Address> addresses = getGeocoder(context, Locale.getDefault()).getFromLocation(latitude, longitude, this.geocoderMaxResults);
 
                 return addresses;
             } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(TAG, "Impossible to connect to Geocoder", e);
+                Log.w(TAG, "Impossible to connect to Geocoder", e);
             }
         }
 
@@ -248,11 +215,33 @@ public class GPSTracker extends Service implements LocationListener {
         if (addresses != null && !addresses.isEmpty()) {
             Address address = addresses.get(0);
             String addressLine = address.getAddressLine(0);
-
             return addressLine;
         } else {
-            return main.getApplicationContext().getString(R.string.json_detections_unknown_address);
+            if(latitude==0 && longitude==0){
+                return DetectionAddressStateEnum.NOT_AVAILABLE.toString();
+            }else {
+                return DetectionAddressStateEnum.UNKNOWN.toString();
+            }
         }
+    }
+
+    public String getAddressFromPoint(double latitude, double longitude, Activity activity){
+        try {
+            List<Address> addresses = getGeocoder(activity, Locale.getDefault()).getFromLocation(latitude, longitude, this.geocoderMaxResults);
+
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                String addressLine = address.getAddressLine(0);
+
+                return addressLine;
+            } else {
+                return activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Impossible to connect to Geocoder", e);
+        }
+        return activity.getApplicationContext().getString(R.string.json_detections_unknown_address);
     }
 
 
@@ -299,34 +288,9 @@ public class GPSTracker extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        /*Location locationNetwork = null;
-        Location locationGPS = null;
-        int status = 0;
-        if (!provider_info_network.isEmpty() || !provider_info_gps.isEmpty()) {
-            status = ActivityCompat.checkSelfPermission(main.getApplicationContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION);
-            if (status != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                        main,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        ConfigConstants.REQUEST_GPS_PERMISSION);
-            } else {
-                if(locationManager != null) {
-                    if (!provider_info_network.isEmpty()) {
-                        locationGPS = locationManager.getLastKnownLocation(provider_info_gps);
-                        updateGPSCoordinates();
-                    }
-                    if (!provider_info_network.isEmpty()) {
-                        locationNetwork = locationManager.getLastKnownLocation(provider_info_network);
-                        updateGPSCoordinates();
-                    }
-                }*/
-                if(isBetterLocation(location,this.location)){
-                    this.location = location;
-                   //updateGPSCoordinates();
-                }
-            /*}
-        }*/
+        if(isBetterLocation(location,this.location)){
+            this.location = location;
+        }
     }
 
     @Override
@@ -358,7 +322,7 @@ public class GPSTracker extends Service implements LocationListener {
                     MIN_TIME_BW_UPDATES,
                     MIN_DISTANCE_CHANGE_FOR_UPDATES,
                     this,
-                    main.uiHandler.getLooper()
+                    Looper.getMainLooper()
             );
         }
         if(!provider_info_network.isEmpty()) {
@@ -367,7 +331,7 @@ public class GPSTracker extends Service implements LocationListener {
                     MIN_TIME_BW_UPDATES,
                     MIN_DISTANCE_CHANGE_FOR_UPDATES,
                     this,
-                    main.uiHandler.getLooper()
+                    Looper.getMainLooper()
             );
         }
     }
@@ -382,7 +346,6 @@ public class GPSTracker extends Service implements LocationListener {
             // A new location is always better than no location
             return true;
         }
-        //Log.d("Locationchange", String.valueOf(location));
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - currentBestLocation.getTime();
         boolean isSignificantlyNewer = timeDelta > MIN_TIME_BW_UPDATES;
@@ -433,7 +396,6 @@ public class GPSTracker extends Service implements LocationListener {
 
     public double[] getDetectedLocation(){
         double[] savedLocation = new double[2];
-        //Log.d("DetectedLocation", String.valueOf(savedLocationOnDetection));
         if(savedLocationOnDetection == null){
             savedLocation[0] = 0.0;
             savedLocation[1] = 0.0;
@@ -444,5 +406,58 @@ public class GPSTracker extends Service implements LocationListener {
         }
 
         return savedLocation;
+    }
+
+    public double[] getLocationFromAddress(String strAddress, Context context){
+        List<Address> address = null;
+        double[] position = new double[2];
+        try {
+            address = getGeocoder(context, Locale.getDefault()).getFromLocationName(strAddress,5);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (address==null || address.isEmpty()) {
+            position[1]= (double) ConfigConstants.NO_VALUES_ENTERED;
+            position[0]= (double)  ConfigConstants.NO_VALUES_ENTERED;
+            return position;
+        }
+        Address location=address.get(0);
+        location.getLatitude();
+        location.getLongitude();
+
+        position[1]= (double) (location.getLatitude() * 1E6);
+        position[0]= (double) (location.getLongitude() * 1E6);
+
+        return position;
+    }
+
+    public String[] getAddressListOfName(String strAddress, Context context){
+        List<Address> address = null;
+        int numberOfElements = 5;
+        try {
+            address = getGeocoder(context, Locale.getDefault()).getFromLocationName(strAddress,numberOfElements);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(address);
+        if (address!=null && !address.isEmpty()) {
+            String[] addressList = new String[address.size()];
+            for(int i = 0; i<address.size(); i++){
+                if(address.get(i).getAddressLine(0)!=null) {
+                    addressList[i] = address.get(i).getAddressLine(0);
+                }else{
+                    addressList[i] = "-";
+                }
+            }
+            return addressList;
+        }
+        return null;
+    }
+
+    private Geocoder getGeocoder(Context context, Locale locale){
+        if(geocoder == null) {
+            geocoder = new Geocoder(context, locale);
+        }
+        return geocoder;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -20,12 +20,14 @@
 package at.ac.fhstp.sonicontrol;
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -35,12 +37,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 
 
 public class Location {
     private static final String TAG = "Location";
 
-    MainActivity main;
     private Scan detector;
 
     private double longitude;
@@ -56,12 +58,12 @@ public class Location {
     private double[] positionLatest = new double[2];
     private String addressLine;
     ArrayList<String[]> data = new ArrayList<String[]>();
+    ArrayList<String[]> importedData = new ArrayList<String[]>();
 
     private String fileUrl;
 
     private Technology signalTech;
 
-    byte[] noiseByteArray;
 
     int locationRadius;
     boolean micBlockPref;
@@ -78,10 +80,13 @@ public class Location {
     }
 
     public void init(MainActivity main){
-        this.main = main;
+        //this.main = main;
+        if (locationData == null) {
+            locationData = new GPSTracker(main); //get a gpstracker for the location finding
+        }
     }
 
-    public double[] getLocation(){
+    public double[] getLocation(MainActivity main){
         if (locationData == null) {
             locationData = new GPSTracker(main); //get a gpstracker for the location finding
         }
@@ -100,15 +105,19 @@ public class Location {
     }
 
 
-    public void checkExistingLocationDB(double[] position, Technology signalType){
+    public boolean checkExistingLocationDB(double[] position, Technology signalType, MainActivity main){
         signalTech = signalType;
         boolean isNewSignal = true;
         double[] positionDBEntry = new double[2];
         boolean shouldBeSpoofed = false;
 
-        JSONManager jsonMan = new JSONManager(main);
+        final JSONManager jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(main);
+
         data = jsonMan.getJsonData(); //get the Json data saved in "data"
-        jsonMan = null;
+        importedData = jsonMan.getImportJsonData();
+        data.addAll(importedData);
+
+        int spoofStatus = -1;
         for (String[] array : data){ //iterate through the list
             positionDBEntry[0] = Double.valueOf(array[0]); //save the longitude in the positionDBEntry array
             positionDBEntry[1] = Double.valueOf(array[1]); //save the latitude in the positionDBEntry array
@@ -119,22 +128,35 @@ public class Location {
             locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //save the radius of the location in metres
             if(distance<locationRadius && array[2].equals(signalType.toString())){ //if in the location and the technologie is the same
                 isNewSignal = false; //no new signal
-                //Log.d(TAG, "Longitude: " + array[0]);
-                //Log.d(TAG, "Latitude : " + array[1]);
-                //Log.d(TAG, "Technology : " + array[2]);
-                //Log.d(TAG, "ShouldSpoof : " + array[4]);
 
                 fileUrl = array[6]; //get file from json and save in fileUrl variable
 
-                if(Integer.valueOf(array[4]) == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
-                    shouldBeSpoofed = true;
-                }else{
-                    shouldBeSpoofed = false;
+                spoofStatus = Integer.valueOf(array[4]);
+                for (String[] importedArray : importedData) {
+                    double[] importedPositionDBEntry = new double[2];
+                    importedPositionDBEntry[0] = Double.valueOf(importedArray[0]);
+                    importedPositionDBEntry[1] = Double.valueOf(importedArray[1]);
+                    double importedDistance = getDistanceInMetres(positionDBEntry, importedPositionDBEntry);
+                    if(importedDistance<locationRadius && importedArray[2].equals(signalType.toString()) && spoofStatus != Integer.valueOf(importedArray[4])) {
+                        spoofStatus = ConfigConstants.DETECTION_TYPE_ASK_AGAIN;
+                        break;
+                    }
                 }
+                break;
             }
         }
-
-        decideIfNewSignalOrNot(isNewSignal, positionDBEntry, shouldBeSpoofed, position);
+        if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_BLOCKED_HERE){ //if the spoofed parameter from the json file is 1 then it should be spoofed and if its 0 it shouldnt be spoofed
+            shouldBeSpoofed = true;
+            return decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus, main);
+        }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ALWAYS_DISMISSED_HERE){
+            shouldBeSpoofed = false;
+            return decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus, main);
+        }else if(spoofStatus == ConfigConstants.DETECTION_TYPE_ASK_AGAIN){
+            openAlertToAskAgain(position, main);
+            return false;
+        }else {
+            return decideIfNewSignalOrNot(isNewSignal, shouldBeSpoofed, position, positionDBEntry, signalType, spoofStatus, main);
+        }
     }
 
     public double[] getDetectedDBEntry(){
@@ -157,71 +179,78 @@ public class Location {
         detectedSignalPosition = positionLatest; //set the latest position to the detected position if the continuous spoofing setting is active
     }
 
-    private void shouldDBEntrySpoofed(boolean shouldBeSpoofed, double[]position){
-        JSONManager jsonMan = new JSONManager(main);
-        jsonMan.setLatestDate(position, signalTech); //update the date in the json-file at the detected position
-        if(shouldBeSpoofed){ //if it should be spoofed
-            //Log.d("Location", "I should be spoofed");
-            /*if (!main.getBackgroundStatus()) { //if the app is not in the background
-                main.cancelDetectionNotification(); //cancel the detection notification
-            }*/
-            //main.cancelScanningStatusNotification(); //cancel the scanning status notification
-            NotificationHelper.activateSpoofingStatusNotification(main.getApplicationContext()); //activate the spoofing status notification
+    private void shouldDBEntrySpoofed(boolean shouldBeSpoofed, final double[] position, final double[] positionDBEntry, final Technology signalType, final int spoofStatus, MainActivity main){
+        final JSONManager jsonMan = JSONManager.getInstanceJSONManager();//new JSONManager(main);
 
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(main.getApplicationContext());
+        final float amplitude = sp.getFloat(ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF, ConfigConstants.BUFFER_HISTORY_AMPLITUDE_SHARED_PREF_DEFAULT);
+        final String address = getDetectedDBEntryAddres();
+
+        jsonMan.updateSignalAndImportedDetectionCounter(position, signalType.toString(), main);
+        jsonMan.setLatestDate(positionDBEntry, signalType, main); //update the date in the json-file at the detected position
+        jsonMan.addJsonObject(position, signalType.toString(), spoofStatus, address, true, amplitude, getAddressStatus(address));
+
+
+        if(shouldBeSpoofed){ //if it should be spoofed
+            NotificationHelper.activateSpoofingStatusNotification(main.getApplicationContext()); //activate the spoofing status notification
             boolean locationTrack = main.checkJsonAndLocationPermissions()[1];
             boolean saveJsonFile = main.checkJsonAndLocationPermissions()[0];
-
-            blockMicOrSpoof(); //try get the microphone access for choosing the blocking method
-        }else { //if it should not be spoofed
-            //Log.d("Location", "I shouldn't be spoofed");
-            /*if (!main.getBackgroundStatus()) { //if the app is not in the background
-                main.cancelDetectionNotification(); //cancel the detection notification
-            }*/
+            blockMicOrSpoof(main); //try get the microphone access for choosing the blocking method
+        }else {
             detector = Scan.getInstance(); //get an instance of the Scan
-            detector.startScanning(); //start scanning again
+            detector.startScanning(main); //start scanning again
+        }
+    }
+    public int getAddressStatus(String address){
+        if(DetectionAddressStateEnum.UNKNOWN.toString().equals(address)){
+            return DetectionAddressStateEnum.UNKNOWN.getId();
+        }else if(DetectionAddressStateEnum.NOT_AVAILABLE.toString().equals(address)){
+            return DetectionAddressStateEnum.NOT_AVAILABLE.getId();
+        }else{
+            return DetectionAddressStateEnum.RESOLVED.getId();
         }
     }
 
     public double getDistanceInMetres(double[] positionOld, double[] positionNew){
         double distance = distance(positionOld[1],positionOld[0],positionNew[1],positionNew[0]); //calculate the distance between two distances
-        //main.updateDistance(distance); //can be deleted only for debugging
         return (distance*1000);
     }
 
-    private void blockBySpoofing() {
+    private void blockBySpoofing(MainActivity main) {
         boolean playingGlobal = true; //the global play status is now true after the start
         boolean playingHandler = true; //helpboolean for switching the playstatus in the puslinghandler
         spoof = Spoofer.getInstance(); //get an instance of the spoofer
-        spoof.init(main, playingGlobal, playingHandler, signalType); //initialize the spoofer
-        spoof.startSpoofing(); //start spoofing
+        spoof.init(playingGlobal, playingHandler); //initialize the spoofer
+        spoof.startSpoofing(main); //start spoofing
     }
 
-    private void blockMicrophone() {
+    private void blockMicrophone(MainActivity main) {
         micCap = MicCapture.getInstance(); //get an instance of the microphone capture
         micCap.init(main);
         micCap.startCapturing(); //start capturing
     }
 
-    public String blockMicOrSpoof(){
+    public String blockMicOrSpoof(MainActivity main){
         String usedBlockingMethod = null;
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
         micBlockPref = sharedPref.getBoolean(ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING, ConfigConstants.SETTING_MICROPHONE_FOR_BLOCKING_DEFAULT); //save the radius of the location in metres
         if(micBlockPref) {
             if (!validateMicAvailability()) { //if we don't have access to the microphone
-                blockBySpoofing();
+                blockBySpoofing(main);
                 usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_SPOOFER;
             } else {
                 usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_MICROPHONE;
-                blockMicrophone();
+                blockMicrophone(main);
             }
         }else{
-            blockBySpoofing();
+            blockBySpoofing(main);
             usedBlockingMethod = ConfigConstants.USED_BLOCKING_METHOD_SPOOFER;
         }
         // Stores the app state : JAMMING
         SharedPreferences.Editor ed = sharedPref.edit();
         ed.putString(ConfigConstants.PREFERENCES_APP_STATE, StateEnum.JAMMING.toString());
         ed.apply();
+        main.updateStateText();
 
         return usedBlockingMethod;
     }
@@ -245,9 +274,7 @@ public class Location {
                 available = false;
             }
         } finally{
-            if (recorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-                recorder.stop(); //stop the recorder
-            }
+            recorder.stop(); //stop the recorder
             recorder.release(); //release the recorder resources
         }
 
@@ -275,63 +302,31 @@ public class Location {
         return (rad * 180.0 / Math.PI);
     }
 
-
-
-    public AudioTrack generatePlayer(){
-        //TODO: Will be solved after we get the correct links, now it would have to be restructured for getting it from the ressources
-        File file = new File("/storage/emulated/0/DCIM/lisnr_test4.wav"); //get the audio file //not working dynamically now because no dynamic links
-        noiseByteArray = new byte[(int) file.length()]; //size & length of the file
-        InputStream is = null;
-        try{
-            is = new FileInputStream(file);
-        }
-        catch(IOException ex){
-            ex.printStackTrace();
-        }
-        BufferedInputStream bis = new BufferedInputStream(is, 44100);
-        DataInputStream dis = new DataInputStream(bis);
-
-        int i = 0;
-        try {
-            while (dis.available() > 0) {
-                noiseByteArray[i] = dis.readByte(); //read every entry of the data input stream into the new byte array
-                i++;
-            }
-
-            dis.close();
-        }
-        catch (IOException ex){
-            ex.printStackTrace();
-        }
-        AudioTrack sigPlayer = new AudioTrack(AudioManager.STREAM_MUSIC,14700, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,noiseByteArray.length,AudioTrack.MODE_STATIC); //create a new player with the byte array
-        sigPlayer.write(noiseByteArray, 0, noiseByteArray.length); //write the byte array into the player
-        return sigPlayer;
-    }
-
     public void saveSignalTypeForLater(Technology sigType){
         this.signalType = sigType;
     }
 
-    public void decideIfNewSignalOrNot(boolean isNewSignal, double[] positionDBEntry, boolean shouldBeSpoofed, double[] position){
+    public void openAlertToAskAgain(double[] position, MainActivity main){
+        detectedSignalPosition = position; //save the new signal as the detected Position
+        NotificationHelper.activateDetectionAlertStatusNotification(main.getApplicationContext(), signalType);
+
+        main.activateAlertOnAskAgain(signalType);
+    }
+
+    public boolean decideIfNewSignalOrNot(boolean isNewSignal, boolean shouldBeSpoofed, double[] position, double[] positionDBEntry, Technology signalType, int spoofStatus, MainActivity main){
         if(isNewSignal){ //if its a new signal
-            //Log.d("Location", "I am a new Signal");
             detectedSignalPosition = position; //save the new signal as the detected Position
-            //main.cancelScanningStatusNotification();
             NotificationHelper.activateDetectionAlertStatusNotification(main.getApplicationContext(), signalType);
-            /*if(main.getBackgroundStatus()) { //if the app is in the background
-                main.activateDetectionNotification(); //activate the detection notification
-            }*/
             main.activateAlert(signalType); //open the alert dialog with the found technology
-
+            return false;
         }else{
-            //Log.d("Location", "I am not a new Signal");
-            detectedSignalPosition = positionDBEntry; //save the position from the json-file
-            shouldDBEntrySpoofed(shouldBeSpoofed,positionDBEntry); //check the spoofed status from the json-file
-
+            detectedSignalPosition = positionDBEntry; //save the new signal as the detected Position
+            shouldDBEntrySpoofed(shouldBeSpoofed,position, positionDBEntry, signalType, spoofStatus, main); //check the spoofed status from the json-file
+            return true;
         }
     }
 
-    public void requestGPSUpdates() {
+    public void requestGPSUpdates(MainActivity main) {
         if (locationData == null) {
             // Will call requestLocationUpdates
             locationData = new GPSTracker(main);
@@ -349,5 +344,9 @@ public class Location {
 
     public void saveLocationGPSTrackerObject(){
         locationData.saveDetectedLocation();
+    }
+
+    public GPSTracker getGPSTracker(){
+        return locationData;
     }
 }

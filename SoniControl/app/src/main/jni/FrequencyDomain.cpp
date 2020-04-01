@@ -15,12 +15,6 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with SoniControl app.  If not, see <http://www.gnu.org/licenses/>.
- *
- *     Additional permission under GNU GPL version 3 section 7
- *     If you modify SoniControl app, or any covered work, by linking or combining it
- *     with Superpowered (or a modified version of that library), containing parts
- *     covered by the terms of Superpowered's license, the licensors of SoniControl app
- *     grant you additional permission to convey the resulting work.
  */
 
 #include <jni.h>
@@ -56,6 +50,7 @@ static float *magnitudeLeft, *magnitudeRight, *phaseLeft, *phaseRight, *inputBuf
 //ANDROID OUTPUTS
 static float androidOut1;
 static float androidOut2;
+static int maxValueIndex; // Maximum amplitude in the bufferHistory (needed to create a wav)
 
 //HIGHPASS FILTERING
 static float binSizeinHz; //{IS SET} what range of HZ does one Bin occupy
@@ -91,11 +86,12 @@ static int medianBufferSizeItems; // {IS SET} the length of the ideque medianBuf
 //SONICONTROL DETECTION PARAMETERS
 static float bufferSizeInMs; //the size of one sampleSet in MS. About 46.44ms for a 2048 samples buffer.
 static int backgroundModelBufferSizeInSec = 10; //is int equivalent to {specs.detector.backgroundBufferSize}
-static float medianBufferSizeInSec = 1.5f; // in seconds, this is the "size" in ms of the float* bufferHistory and the ideque medianBuffer
+static float medianBufferSizeInSec = 2.5f; // in seconds, this is the "size" in ms of the float* bufferHistory and the ideque medianBuffer
 static float cutoffFrequency=16800.0f; //fq above this treshold will be used in detection
 static float decisionThreshold=0.5f; // defines how many values in the ideque medianBuffer have to be 1 so that that a detection is registered
 static float decisionThresholdNearby = 3.5; //the decision threshold for nearby signals. If the RMS Energy in the Nearby band is N-times higher than in the neighboring bands above and beneath, then declare a nearby detection.
 static float decisionThresholdNearbyAC = 0.05; //the recognition threshold for nearby based on autocorrelation
+static int percentSilenceAfterDetection = 10;
 
 // Detector control variables
 static bool detection = false; //becomes one, if the current frame is above the decision threshold
@@ -105,10 +101,13 @@ static float scoreNearby = 0; //holds the detection score for nearby messages
 static float recogResult = 0; //holds the recognition result
 static float scoreNearbyAC = 0; //holds the autocorrelation score for nearby recognition
 
+static int extendedDiagnostics = 0;
+
 //SONICONTROL VARIOUS
 static bool backgroundModelUpdating = true; //{IS SET} indicates if the background Model should continue to update itself
 #define FFT_LOG_SIZE 11 // 2^11 = 2048 - minimum viable size, should stay here
 static int counter = 0; //increments in every loop (without exception), helps to find out when backgroundBuffer is full and detection can be started
+static bool initialized = false; // Indicates if the background model is initialized (detection can start)
 
 // Needed to call Java functions
 static JavaVM* jvm = 0;
@@ -139,11 +138,11 @@ static float Median(It begin, It end)
     return data[size / 2];
 }
 
-static void saveSampleToBufferHistory(float *samples, int numberOfSamples)
+static void saveSampleToBufferHistory(float *samples, int numberOfSamplesStereo)
 {
     //Copy the data from the samples pointer (which is n entries big, and n*sizeof(float) bytes )
     //into the lastSamples Array after the last entry
-    memcpy(bufferHistory+(bufferHistoryIndex*numberOfSamples), samples, numberOfSamples * sizeof(float));
+    memcpy(bufferHistory+(bufferHistoryIndex*numberOfSamplesStereo), samples, numberOfSamplesStereo * sizeof(float));
 
     advanceSampleArray();
 }
@@ -226,10 +225,39 @@ static void addDetectionToMedianBuffer(bool detected)
     medianBuffer.push_back(erg);
 }
 
+/**
+ * Returns true if a signal is detected. A signal is detected if at least half of the medianBuffer
+ * values are detections, AND, if extendedDiagnostics is true, if some (percentage of) silence is
+ * following the detection (we want to capture the whole message to display it later).
+ * @return If a signal was detected
+ */
 static bool isSignalDetected()
 {
-    int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
-    return sum > (int) ceil(medianBufferSizeItems / 2);
+    if (extendedDiagnostics) {
+        bool messageIsOver = false;
+        int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
+        if (sum > (int) ceil(medianBufferSizeItems / 2)) {
+            int postMessageSum = 0;
+            int postMessageNbItems = (int) medianBufferSizeItems * percentSilenceAfterDetection / 100.0;
+            if (postMessageNbItems > 0 && postMessageNbItems != medianBufferSizeItems) {
+                for (int i = medianBuffer.size() - 1; i > medianBuffer.size() - postMessageNbItems; i--) {
+                    postMessageSum += medianBuffer[i];
+                }
+                // If at least 75% of the post message time is non detection
+                if (postMessageSum < (int) ceil(postMessageNbItems / 4)) {
+                    messageIsOver = true;
+                }
+            }
+            else { // Either percentSilenceAfterDetection is zero, or it is 100%
+                messageIsOver = true;
+            }
+        }
+        return messageIsOver;
+    }
+    else {
+        int sum = std::accumulate(medianBuffer.begin(), medianBuffer.end(), 0);
+        return sum > (int) ceil(medianBufferSizeItems / 2);
+    }
 }
 
 /***
@@ -239,9 +267,80 @@ static void resetMedianBuffer() {
     std::fill(medianBuffer.begin(), medianBuffer.end(), 0);
 }
 
+
+static jfloatArray getJavaReorderedBufferHistoryStereo(JNIEnv *jniEnv, int numberOfSamplesStereo) {
+    int numberOfBufferHistoryItems = medianBufferSizeItems * numberOfSamplesStereo;
+    int bufferHistorySize = numberOfBufferHistoryItems * sizeof(bufferHistory);
+    float *container = (float*)malloc(bufferHistorySize);
+    if(bufferHistoryIndex==0){
+        memcpy(container, bufferHistory, bufferHistorySize);
+    }else{
+        memcpy(container, bufferHistory+bufferHistoryIndex*numberOfSamplesStereo, bufferHistorySize-bufferHistoryIndex*numberOfSamplesStereo*sizeof(bufferHistory));
+        memcpy(container+numberOfBufferHistoryItems-bufferHistoryIndex*numberOfSamplesStereo, bufferHistory, bufferHistoryIndex*numberOfSamplesStereo*sizeof(bufferHistory));
+    }
+
+    jfloatArray bufferHistoryArray = jniEnv->NewFloatArray(numberOfBufferHistoryItems);
+    jniEnv->SetFloatArrayRegion(bufferHistoryArray, 0, numberOfBufferHistoryItems, container);
+    free(container);
+
+    /*
+    float *containerMono = (float*)malloc(bufferHistorySize/2);
+    maxValueIndex = 0;
+    for (int i = 0, counter = 0; i < numberOfBufferHistoryItems; i += 2, counter++) {
+        // Is there an overflow risk ? (cast sum to double and back to float after dividing?)
+        *(containerMono + counter) =(*(container + i) + *(container + i + 1)) / 2;
+        if(*(containerMono + maxValueIndex) < *(containerMono + counter)) {
+            maxValueIndex=counter;
+        }
+
+        //Calculate amplitude of the signal ? (avg)
+    }
+    free(container);
+    
+    jfloatArray bufferHistoryArray = jniEnv->NewFloatArray(numberOfBufferHistoryItems/2);
+    jniEnv->SetFloatArrayRegion(bufferHistoryArray, 0, numberOfBufferHistoryItems/2, containerMono);
+
+    free(containerMono);
+     */
+
+    return bufferHistoryArray;
+}
+
+static bool onDetectorInitialized() {
+    // Source: https://stackoverflow.com/a/12901159
+    JNIEnv * jniEnv;
+    // double check if it's all ok
+    int getEnvStat = jvm->GetEnv((void **)&jniEnv, JNI_VERSION_1_6);
+    if (getEnvStat == JNI_EDETACHED) {
+        //LOGD("GetEnv: not attached");
+        if (jvm->AttachCurrentThread(&jniEnv, NULL) != 0) {
+            LOGD("Failed to attach");
+        }
+        //LOGD("Attached thread from audio callback");
+    } else if (getEnvStat == JNI_OK) {
+        //LOGD("Audio callback thread already attached ");
+    } else if (getEnvStat == JNI_EVERSION) {
+        LOGD("GetEnv: version not supported");
+    }
+
+    // First get the class that contains the method you need to call
+    jclass scanClass = jniEnv->GetObjectClass(jniScan);
+    // Get the method that you want to call
+    jmethodID onDetectorInitializedMethod = jniEnv->GetMethodID(scanClass, "onDetectorInitialized", "()V");
+    // Call the method on the object
+    jniEnv->CallVoidMethod(jniScan, onDetectorInitializedMethod);
+
+    if (jniEnv->ExceptionCheck()) {
+        jniEnv->ExceptionDescribe();
+    }
+
+    jvm->DetachCurrentThread();
+    return true;
+}
+
 // This is called periodically by the media server.
-static bool audioProcessing(void * __unused clientdata, short int *audioInputOutput, int numberOfSamples, int __unused samplerate) {
-    SuperpoweredShortIntToFloat(audioInputOutput, inputBufferFloat, (unsigned int)numberOfSamples); // Converting the 16-bit integer samples to 32-bit floating point.
+static bool audioProcessing(void * __unused clientdata, short int *audioInputOutput, int numberOfSamplesPerChannel, int __unused samplerate) {
+    SuperpoweredShortIntToFloat(audioInputOutput, inputBufferFloat, (unsigned int)numberOfSamplesPerChannel); // Converting the 16-bit integer samples to 32-bit floating point.
     counter++; // Increment in every iteration (will start at 1)
 
     //IMPORTANT: this portion of code is called more frequently per second than the frequency domain
@@ -249,7 +348,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
     //in reality when we call this code 100 times, the code in the while/fq domain is called ~87 times (tested on huawei mate)
     //there is no way to get the actual number of calls (except for runtime calculations)
 
-    frequencyDomain->addInput(inputBufferFloat, numberOfSamples); // Input goes to the frequency domain.
+    frequencyDomain->addInput(inputBufferFloat, numberOfSamplesPerChannel); // Input goes to the frequency domain.
 
     // In the frequency domain we are working with 1024 magnitudes and phases for every channel (left, right), if the fft size is 2048.
     while (frequencyDomain->timeDomainToFrequencyDomain(magnitudeLeft, magnitudeRight, phaseLeft, phaseRight)) {
@@ -276,8 +375,12 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
         //if the background model is full, start with detection, i.e. start with filling the median buffer
         if(counter > backgroundModelBufferSizeItems) {
+            if (!initialized) {
+                onDetectorInitialized();
+                initialized = true;
+            }
             //Save the raw input buffer samples to our history
-            saveSampleToBufferHistory(inputBufferFloat, numberOfSamples);
+            saveSampleToBufferHistory(inputBufferFloat, numberOfSamplesPerChannel*2); //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
 
             createCurrentBackgroundModel(); // this computes the median of the background model buffer
             backgroundDist = getKullbackLeiblerDivergence();
@@ -297,6 +400,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
             // if backgroundBuffer and medianBuffer are full, start with the actual detection:
             if(counter > backgroundModelBufferSizeItems + medianBufferSizeItems) {
                  //Are there more detections than non-detection in the buffer, then declare a detection (--> median over the past medianBufferSizeItems buffer-based detections)
+                 //See function documentation, now also require the detection to be over if extendedDiagnostics is activated.
                 if(isSignalDetected()) {
                     detectionAfterMedian = 1;
                     pauseIO();
@@ -354,6 +458,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
              * */
 
 
+
             /* 2. make an FFT over the entire buffer.
              * 3. Perform recognition of the individual technologies
              * ??? Is there a 4. ???
@@ -386,12 +491,22 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
             // Construct a String
             jstring technologyString = jniEnv->NewStringUTF("Unknown");
+
+
+            //maxValueIndex = -1;
+            // This also updates the global maxValueIndex
+            jfloatArray bufferHistoryArray = (getJavaReorderedBufferHistoryStereo(jniEnv,
+                                                                                   numberOfSamplesPerChannel *
+                                                                                   2)); //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
             // First get the class that contains the method you need to call
             jclass scanClass = jniEnv->GetObjectClass(jniScan);
             // Get the method that you want to call
-            jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;)V");
+            jmethodID detectedSignalMethod = jniEnv->GetMethodID(scanClass, "detectedSignal", "(Ljava/lang/String;[F)V");
             // Call the method on the object
-            jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString);
+            jniEnv->CallVoidMethod(jniScan, detectedSignalMethod, technologyString, bufferHistoryArray);//, maxValueIndex);
+            //TODO: Are we suppose to delete references on our side or is detaching enough ? (not needed if the function ends soon)
+            //jniEnv->DeleteLocalRef(bufferHistoryArray);
+            //jniEnv->DeleteLocalRef(technologyString);
 
             if (jniEnv->ExceptionCheck()) {
                 jniEnv->ExceptionDescribe();
@@ -399,7 +514,7 @@ static bool audioProcessing(void * __unused clientdata, short int *audioInputOut
 
             jvm->DetachCurrentThread();
         }
-        frequencyDomain->advance(numberOfSamples);
+        frequencyDomain->advance(numberOfSamplesPerChannel);
     };
 
     return true;
@@ -420,10 +535,10 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     phaseLeft = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
     phaseRight = (float *)malloc(frequencyDomain->fftSize * sizeof(float));
 
-    inputBufferFloat = (float *)malloc(bufferSizeSmplJava * sizeof(float) * 2 + 128); // TODO: why  +128 ???
+    inputBufferFloat = (float *)malloc(2 * bufferSizeSmpl * sizeof(float) /* + 128*/); // why  +128 ???  //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
 
-    bufferPerSeconds = (float) sampleRateJava / (float) bufferSizeSmplJava; //how many sampleSets of size bufferSizeSmplJava per Second
-    bufferSizeInMs = 1000.0f / ((float) sampleRateJava / bufferSizeSmplJava); //the size of one sampleSet in MS
+    bufferPerSeconds = (float) sampleRateJava / (float) bufferSizeSmpl; //how many sampleSets of size bufferSizeSmpl per Second
+    bufferSizeInMs = 1000.0f / ((float) sampleRateJava / bufferSizeSmpl); //the size of one sampleSet in MS
     binSizeinHz = sampleRateJava/ powf(2.0,(float)FFT_LOG_SIZE);
     cutoffFrequencyIdx = roundf(cutoffFrequency / binSizeinHz); // No +1 compared to Octave
 
@@ -431,7 +546,8 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     medianBuffer.resize(medianBufferSizeItems);
 
     bufferHistoryIndex = 0;
-    bufferHistory = (float*)malloc(medianBufferSizeItems * bufferSizeSmplJava * sizeof(bufferHistory)); //fits upto x ms of samples - Match with Octave
+    int bufferHistorySizeItems = 2 * medianBufferSizeItems * bufferSizeSmpl * sizeof(bufferHistory); //we need to record both channels (in the audio processing callback number of samples correspond to one channel)
+    bufferHistory = (float*)malloc(bufferHistorySizeItems); //fits upto x ms of samples - Match with Octave
 
     normalizedSpectrogramSize = (int)(powf(2.0,(float)FFT_LOG_SIZE-1) - cutoffFrequencyIdx); //Removed +1 to match Octave
     backgroundModelBufferSizeItems = (int) round(backgroundModelBufferSizeInSec*1000/bufferSizeInMs); // Match with Octave
@@ -442,7 +558,7 @@ static void initFrequencyDomain(jint sampleRateJava, jint bufferSizeSmplJava) {
     SuperpoweredCPU::setSustainedPerformanceMode(false);
 }
 
-static int pauseIO() {
+int pauseIO() {
     // Check if the app got in an inconsistent state
     if (audioIO != NULL) {
         // onBackground only sets internals->foreground = false;
@@ -457,24 +573,38 @@ static int pauseIO() {
 }
 
 static void resumeIO() {
+    initialized = false;
     if (audioIO != NULL) { // Safety check to avoid a crash, but should never be needed
         audioIO->onForeground(); // Starts the queues again
     }
 }
 
-static void stopIO() {
-    delete(audioIO);
+void stopIO() {
+    if (audioIO != NULL) { // Safety check to avoid a crash, should not be needed
+        delete audioIO;
+        audioIO = NULL;
+
+        free(magnitudeLeft);
+        free(magnitudeRight);
+        free(phaseLeft);
+        free(phaseRight);
+        free(inputBufferFloat);
+        free(bufferHistory);
+    }
 }
 
 static void startIO() {
+    initialized = false;
     audioIO = new SuperpoweredAndroidAudioIO(sampleRate, bufferSizeSmpl, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
 
-extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava) {
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_FrequencyDomain(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint sampleRateJava, jint bufferSizeSmplJava, jint extendedDiagnosticsJava) {
     // Source: https://stackoverflow.com/a/26534926
     javaEnvironment->GetJavaVM(&jvm); // Keep a global reference to the jvm
     jniScan = javaEnvironment->NewGlobalRef(obj); // Keep a global reference to the Scan activity
 
+    extendedDiagnostics = extendedDiagnosticsJava;
+    initialized = false;
     initFrequencyDomain(sampleRateJava, bufferSizeSmplJava);
     audioIO = new SuperpoweredAndroidAudioIO(sampleRateJava, bufferSizeSmplJava, true, false, audioProcessing, NULL, -1, SL_ANDROID_STREAM_MEDIA); // Start audio input/output.
 }
@@ -506,11 +636,11 @@ static void createNewDetectionsDequeAndSamplesBuffer()
     medianBuffer.resize(medianBufferSizeItems);
 }
 
-extern "C" JNIEXPORT float Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut1(JNIEnv *__unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT jfloat JNICALL Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut1(JNIEnv *__unused javaEnvironment, jobject __unused obj){
     return androidOut1;
 }
 
-extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut2(JNIEnv * __unused javaEnvironment, jobject __unused obj){
+extern "C" JNIEXPORT jint JNICALL Java_at_ac_fhstp_sonicontrol_Scan_GetAndroidOut2(JNIEnv * __unused javaEnvironment, jobject __unused obj){
     return  androidOut2;
 }
 
@@ -518,14 +648,19 @@ extern "C" JNIEXPORT jboolean Java_at_ac_fhstp_sonicontrol_Scan_GetBackgroundMod
     return backgroundModelUpdating;
 }
 
-extern "C" JNIEXPORT int Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+extern "C" JNIEXPORT jint JNICALL Java_at_ac_fhstp_sonicontrol_Scan_Pause(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
     return pauseIO();
 }
 
-extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_Resume(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint extendedDiagnosticsJava) {
+    extendedDiagnostics = extendedDiagnosticsJava;
     resumeIO();
 }
 
 extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_StopIO(JNIEnv * __unused javaEnvironment, jobject __unused obj) {
     stopIO();
 }
+/*
+extern "C" JNIEXPORT void Java_at_ac_fhstp_sonicontrol_Scan_setExtendedDiagnostics(JNIEnv * __unused javaEnvironment, jobject __unused obj, jint extendedDiagnosticsJava) {
+    extendedDiagnostics = extendedDiagnosticsJava;
+}*/
