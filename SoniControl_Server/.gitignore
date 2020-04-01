@@ -1,0 +1,10 @@
+node_modules/
+.idea/
+.env
+dist/
+\.DS_Store
+
+database\.sqlite
+
+
+src/www/public/uploads

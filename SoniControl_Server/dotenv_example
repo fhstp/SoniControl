@@ -1,0 +1,9 @@
+#Change Environmentvariables and Rename File to .env
+NODE_PATH = C:/repo/src/www
+PORT = 8100
+DATABASE_URL = mongodb+srv://user:password@mongodbaddress
+
+ROOT = /app
+FILESERVER_HOSTNAME = hostname@domain.com
+FILESERVER_USER = user
+FILESERVER_PASSWORD = 1234
