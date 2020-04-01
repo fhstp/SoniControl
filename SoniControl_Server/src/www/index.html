@@ -1,0 +1,448 @@
+<!doctype html>
+<!--
+    Copyright (c) 2020. Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+
+    This file is part of SoniControl server.
+
+    SoniControl server is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    SoniControl server is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with SoniControl server.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
+    <style>
+        html, body, #map, #infoscreen {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+        }
+
+        .infoscreen {
+            background-color: #000000B5;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: 1500;
+        }
+
+        .infobtnScreen {
+            right: 25px;
+            top: 25px;
+            cursor: pointer;
+            color: white;
+            background: transparent;
+            border: none;
+            font-size: 40px;
+            position: absolute;
+        }
+
+        .InfotextBox {
+            margin-left: 25%;
+            margin-right: 25%;
+            margin-top: 5%;
+        }
+
+        .Infotext {
+            font-size: 25px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .Infotext a{
+            color: #B6B6E3;
+        }
+    
+        .ol-popup {
+            position: absolute;
+            background-color: white;
+            -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #cccccc;
+            bottom: 12px;
+            left: -50px;
+            min-width: 320px;
+        }
+        .ol-popup:after, .ol-popup:before {
+            top: 100%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        .ol-popup:after {
+            border-top-color: white;
+            border-width: 10px;
+            left: 48px;
+            margin-left: -10px;
+        }
+        .ol-popup:before {
+            border-top-color: #cccccc;
+            border-width: 11px;
+            left: 48px;
+            margin-left: -11px;
+        }
+        .ol-popup-closer {
+            text-decoration: none;
+            position: absolute;
+            top: 2px;
+            right: 8px;
+        }
+        .ol-popup-closer:after {
+            content: "✖";
+        }
+    
+        .sidepanel {
+            height: 100vh;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden; 
+            transition: 0.5s; 
+            z-index: 1100;
+        }
+
+        .sidepanel a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidepanel a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidepanel .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        .sidepanelFilter {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            background-color: rgb(0, 1, 66);
+            overflow-x: hidden; 
+            transition: 0.5s; 
+            z-index: 1100;
+        }
+
+        .sidepanelFilter a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidepanelFilter a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidepanelFilter .closebtnFilter {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        .sidepanelLegend {
+            height: 0;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            bottom: 0;
+            right: 0.45%;
+            background-color: rgb(255, 255, 255);
+            color: black;
+            overflow-x: hidden;
+            transition: 0.5s; 
+            z-index: 1100;
+        }
+
+        .sidepanelLegend a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #515151;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidepanelLegend a:hover {
+            color: #717171;
+        }
+
+        .sidepanelLegend .closebtnLegend {
+            position: absolute;
+            color: black;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        .openbtn {
+            height: 45px;
+            width: 45px;
+            position: absolute;
+            font-size: 25px;
+            cursor: pointer;
+            background-color: #111;
+            color: white;
+            padding: 0px, 10px, 10px, 10px;
+            border: none;
+            z-index: 1000;
+            margin-top: 10px;
+            transition: 0.5s;
+        }
+
+        .openbtnFilterOn {
+            height: 45px;
+            width: 45px;
+            cursor: pointer;
+            background-color: rgb(0, 1, 66);
+            color: white;
+            padding: 5px 5px;
+            border: none;
+            z-index: 1000;
+            margin-top: 10px;
+            transition: 0.5s;
+        }
+
+        .openbtnFilterOff {
+            height: 45px;
+            width: 45px;
+            cursor: pointer;
+            font-size: 25px;
+            background-color: rgb(0, 1, 66);
+            color: white;
+            padding: 0px, 10px, 10px, 10px;
+            border: none;
+            z-index: 1000;
+            margin-top: 10px;
+            transition: 0.5s;
+        }
+        
+        .infobtn{
+            height: 45px;
+            width: 45px;
+            position: absolute;
+            font-size: 25px;
+            cursor: pointer;
+            background-color: #111;
+            color: white;
+            padding: 0px, 10px, 10px, 10px;
+            border: none;
+            z-index: 1000;
+            margin-top: 10px;
+            transition: 0.5s;
+        }
+
+        .infobtnOn {
+            height: 45px;
+            width: 45px;
+            position: absolute;
+            cursor: pointer;
+            background-color: #111;
+            color: white;
+            padding: 5px 5px;
+            border: none;
+            z-index: 1000;
+            margin-top: 10px;
+            transition: 0.5s;
+        }
+
+        .infobtnOff {
+            height: 45px;
+            width: 45px;
+            position: absolute;
+            cursor: pointer;
+            font-size: 25px;
+            background-color: #111;
+            color: white;
+            padding: 0px, 10px, 10px, 10px;
+            border: none;
+            z-index: 1000;
+            margin-top: 10px;
+            transition: 0.5s;
+        }
+
+        .openbtnLegend {
+            font-size: 1em;
+            cursor: pointer;
+            background-color: rgb(255, 255, 255);
+            color: black;
+            padding: 2px 2px;
+            border: none;
+            z-index: 1000;
+            transition: 0.5s;
+        }
+
+        .openbtn:hover {
+            background-color: #444;
+        } 
+
+        .openbtnFilter:hover {
+            background-color: #444;
+        } 
+
+        .openbtnLegend:hover {
+            background-color: #888;
+            color: white;
+        } 
+
+        .detectionEntry{
+            color: white;
+            padding: 3% 5% 3% 5%;
+        }
+
+        .detectionEntry:hover{
+            color: lightgrey;
+            padding: 3% 5% 3% 5%;
+        }
+        .filterForm{
+            margin-left: 10%;
+        }
+        .filterForm p{
+            color: white;
+        }
+
+        .filterForm div{
+            color: white;
+        }
+    </style>
+
+
+    <title>SoniControl Server</title>
+</head>
+
+<body>
+    <div id="sidepanel" class="sidepanel">
+    </div>
+    
+    <div id="openbtn" style="transition: 0.5s; margin-left: 50px">
+        <button id="openbtnOn" class="openbtn" onclick="openNav()">&#9776;</button>
+        <button id="openbtnOff" class="openbtn" onclick="closeNav()" style="display:none">✖</button>
+    </div>
+
+    <div id="infobtn" style="transition: 0.5s; margin-left: 110px">
+        <button id="infobtnOn" class="infobtnOn" onclick="openInfo()"><img src="./assets/icons/info_white.png" height="35px" width="35px"></button>
+    </div>
+
+    <div id="openbtnLegend" style="transition: 0.5s; margin-bottom: 22.5px; position:absolute; bottom: 0px; right: 0px; z-index: 1100;">
+        <button id="openbtnLegendOn" class="openbtnLegend" onclick="openLegend()">SoniMap - Legend &uArr;</button>
+        <button id="openbtnLegendOff" class="openbtnLegend" onclick="closeLegend()" style="display:none">SoniMap - Legend &dArr;</button>
+    </div>
+
+    <div id="openbtnFilter" style="transition: 0.5s; margin-right: 20px; position:absolute; right: 0px; top: 0px; z-index: 1100;">
+            <button id="openbtnFilterOn" class="openbtnFilterOn" onclick="openFilter()"><img src="./assets/icons/filter_list_white.png" height="35px" width="35px"></button>
+            <button id="openbtnFilterOff" class="openbtnFilterOff" onclick="closeFilter()" style="display:none">✖</button>
+        </div>
+
+    <div id="sidepanelLegend" class="sidepanelLegend">
+        <div style="padding-bottom: 10px; padding-left: 5px; padding-top: 10px">The marker size represents the signal strength.</div>
+        <div style="padding-bottom: 10px; padding-left: 5px">The value inside the marker stands for the number of detections at that place for that technology.</div>
+        <div style="padding-bottom: 10px; padding-left: 5px">The big blue (<span style="background-color: rgba(51, 153, 204, 1.0); padding: 5px 10px; margin: 0px 5px"></span>) marker represents clusters, where several detection spots grouped. On zooming in and out, the clusters are changing.</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(51, 153, 204, 1.0); padding: 5px 10px; margin: 0px 5px"></span> several technologies grouped</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(0, 0, 0, 0.70); padding: 5px 10px; margin: 0px 5px"></span> Unknown</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(214, 188, 40, 0.7); padding: 5px 10px; margin: 0px 5px"></span> Google Nearby</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(0, 0, 255, 0.70); padding: 5px 10px; margin: 0px 5px"></span> Prontoly</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(128, 136, 255, 0.70); padding: 5px 10px; margin: 0px 5px"></span> Sonarax</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(255, 255, 0, 0.70); padding: 5px 10px; margin: 0px 5px"></span> Signal 360</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(255, 0, 255, 0.70); padding: 5px 10px; margin: 0px 5px"></span> Shopkick</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(104, 33, 255, 0.70); padding: 5px 10px; margin: 0px 5px"></span> Silverpush</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(0, 255, 255, 0.70); padding: 5px 10px; margin: 0px 5px"></span> Lisnr</div>
+        <div style="padding-bottom: 10px"><span style="background-color: rgba(255, 128, 0, 0.70); padding: 5px 10px; margin: 0px 5px"></span> SoniTalk</div>
+    </div>
+
+    <div id="sidepanelFilter" class="sidepanelFilter">
+        <div id="filterForm" class="filterForm">
+                <p>Location:</p>
+                <input type="text" name="location" id="location"><br>
+                <span style="color: white">(Default: the whole map)</span>
+                <br>
+                <p>Range in Meter:</p>
+                <input type="number" name="range" id="range"><br>
+                <span style="color: white">(Default: the whole map)</span>
+                <br>
+                <br>
+                <p>Technology:</p>
+                <div id="technologycontainer">
+                </div>
+                <span id="errornotechnologiesselected" style="color: white"></span>
+                <br>
+                <p>Date from:</p>
+                <input type="date" name="datefrom" id="datefrom" value="2019-01-01"><br>
+                <p>Time from:</p>
+                <input type="time" name="timefrom" id="timefrom" value="00:00"><br>
+                <br>
+                <p>Date to:</p>
+                <input type="date" name="dateto" id="dateto"><br>
+                <p>Time to:</p>
+                <input type="time" name="timeto" id="timeto"><br>
+                <br>
+                <br>
+                <button onclick="filterMap()">Filter</button>
+                <br>
+                <br>
+                <br>
+                <br>
+        </div>
+    </div>
+
+    <div id="map" class="map"></div>
+    <div id="popup" class="ol-popup">
+        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+        <div id="popup-content"></div>
+    </div>
+
+    <div id="infoscreen" class="infoscreen" style="display: none">
+            <button class="infobtnScreen" onclick="closeInfo()">✖</button>
+            <div class="InfotextBox">
+                <div class="Infotext">This is a map of ultrasonic signals shared by users of SoniControl app (<a target="_blank" href="https://play.google.com/store/apps/details?id=at.ac.fhstp.sonicontrol">Google Play Store</a>, <a href="https://sonicontrol.fhstp.ac.at/wp-content/uploads/apks/SoniControl.apk">Direct Download</a>)</div>
+                <div class="Infotext">You can see all detections users uploaded represented by circles. Those circles have different colors to show different detected technologies. Additionaly, you can see all detections in a list in the left sidebar and you can filter the detections with the sidebar on the right.</div>
+                <div class="Infotext">Ultrasonic communication is a novel technologie using inaudible sounds to exchange information. More and more of our devices communicate via this inaudible communication channel. Ultrasonic communication enables to pair devices, exchange information but also to track users and their behavior across several devices similar to cookies in the web. Every device with a microphone and a speaker is able to send and receive ultrasonic information. The user is usually not aware of this inaudible and hidden data transfer. To overcome this gap, within the project SoniControl we created an ultrasonic firewall to detect and block ultrasonic sounds. Further, we want to raise awareness for this unknown communication channel.</div>
+                <div class="Infotext">This Project was developed by Matthias Zeppelzauer, Alexis Ringot and Florian Taurer at the University of Applied Sciences St. Pölten, for more information see: <a href="https://sonicontrol.fhstp.ac.at/">SoniControl Website</a></div>
+                <div class="Infotext"><a target="_blank" href="https://github.com/fhstp/SoniControl">Github</a></div>
+                <div class="Infotext"><a target="_blank" href="https://github.com/fhstp/SoniControl#credits">Credits</a><span>    </span><a target="_blank" href="http://sonicontrol.fhstp.ac.at/legal-notice">Impressum</a></div>
+            </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+    <script language="javascript" type="text/javascript" src="js/map.js"></script>
+</body>
+
+</html>

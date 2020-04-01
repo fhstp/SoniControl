@@ -1,0 +1,19 @@
+{ 
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "sourceMap": true,
+    "outDir": "dist"
+  },
+  "files": [
+    //"./node_modules/@types/node/index.d.ts"
+    "./node_modules/@types/express/index.d.ts"
+  ],
+  "include": [
+    //"src/**/*"
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
