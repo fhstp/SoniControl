@@ -18,29 +18,33 @@
   -->
 
 <resources>
-    <string name="app_name">SoniControl</string>
+    <string name="app_name">SoniControl Firewall</string>
     <string name="spoofOnEachLoc">An jedem Ort blockieren</string>
     <string name="addressData">Nicht verfügbar</string>
     <string name="deleteJsonAlertTitle">Alle erkannten Signale löschen</string>
     <string name="deleteJsonAlertMessage">Sind sie sicher, dass sie die JSON-Datei löschen wollen?<!--and the detected audio files?--></string>
     <string name="StatusNotificationSpoofingTitle">SoniControl</string>
-    <string name="StatusNotificationSpoofingMesssage">Blockiere Ultraschallkommunikation</string>
+    <string name="StatusNotificationSpoofingMesssage">Blockiere Ultraschallkommunikation...</string>
     <string name="StatusNotificationDetectionAlertTitle">SoniControl</string>
     <string name="StatusNotificationDetectionAlertMessage">Ultraschallsignal erkannt!</string>
     <string name="StatusNotificationOnHoldTitle">SoniControl</string>
-    <string name="StatusNotificationOnHoldMessage">Pausiert</string>
+    <string name="StatusNotificationOnHoldMessage">Pausiert.</string>
     <string name="StatusNotificationScanningTitle">SoniControl</string>
-    <string name="StatusNotificationScanningMessage">Suche nach Ultraschallsignalen</string>
+    <string name="StatusNotificationScanningMessage">Scanne nach Ultraschallsignalen...</string>
     <string name="NotificationDetectionTitle">SoniControl</string>
     <string name="NotificationDetectionMessage">Ultraschallsignal erkannt!</string>
-    <string name="ButtonStopSignal">Stopp</string>
-    <string name="ButtonPlaySignal">Start</string>
+    <string name="ButtonStopSignal">Stoppen</string>
+    <string name="ButtonPlaySignal">Abspielen</string>
     <string name="DeleteJsonAlertTitle">Erkannten Signaleintrag löschen</string>
     <string name="DeleteJsonAlertMessage">Sind sie sich sicher, dass sie den erkannten Signaleintrag löschen wollen?</string>
     <string name="noAddressForJsonFile">Nicht verfügbar</string>
-    <string name="NoSignalDiscoveredAndSavedYet">Sie haben noch keine Ultraschallsignale gefunden!</string>
+    <string name="noSignalDiscoveredYet">Sie haben noch keine Ultraschallsignale gefunden.</string>
+    <string name="noFirewallRuleYet">Sie haben noch keine Regel gespeichert.
+        \n\nRegeln können gespeichert werden, indem man beim Erkennen eines Signals \"Immer an dieser Stelle\" wählt.</string>
     <string name="permissionRequestExplanation">Die App braucht für die Nutzung die Berechtigung des Mikrofons. Ohne dieser kann die App keine Ultraschallsignale erkennen.</string>
+    <string name="permissionMapRequestExplanation">Um die Karte auf den aktuellen Standort zu zentrieren wir die "Standort"-Berechtigung benötigt. Diese App-Berechtigung ist optional.</string>
     <string name="toastLocationAccessDenied">Keine Berechtigung für Standortzugriff</string>
+    <string name="toastWritingAccessDenied">eine Berechtigung für das lokale Speichern der Karte.</string>
     <string name="aboutUsProject">Neuartige Technologien wie Silverpush bauen auf Ultraschalltönen auf, um Informationen auszutauschen. Immer mehr unserer Geräte kommunizieren über diesen unhörbaren Kommunikationskanal. Die Ultraschallkommunikation ermöglicht es, Geräte zu koppeln, Informationen auszutauschen, aber auch BenutzerInnen und deren Verhalten über mehrere Geräte hinweg zu verfolgen, ähnlich wie bei Cookies im Web. Jedes Gerät mit einem Mikrofon und einem Lautsprecher ist in der Lage, Ultraschallinformationen zu senden und zu empfangen. Dieser unhörbare und versteckte Datentransfer ist den AnwenderInnen in der Regel nicht bekannt.
 \n\nSoniControl ist die erste Firewall, die Ultraschallaktivitäten erkennt, Sie umgehend benachrichtigt und die Informationen bei Bedarf blockiert und so hilft, Ihre Privatsphäre zu schützen.
 \n\nDas Projekt SoniControl wurde finanziell unterstützt von der Internet Privatstiftung Netidee (https://www.netidee.at) und wurde im Rahmen eines Forschungsprojekts im Institut für Creative\Media/Technologies an der Fachhochschule St. Pölten entwickelt (https://sonicontrol.fhstp.ac.at). Das Projekt ist Open Source unter GNU Lizenz.
@@ -48,28 +52,39 @@
 \n\nBei Fragen, Bugs, Ideen, kontaktieren Sie uns bitte direkt unter https://sonicontrol.fhstp.ac.at/#contact oder der Email-Adresse sonicontrol@fhstp.ac.at.</string>
     <string name="toastMessageNoGeocoderConnection">Der Standort konnte nicht ermittelt werden</string>
     <string name="alertDialog_option_jam_always_here">Hier immer blockieren</string>
-    <string name="alertDialog_option_dismiss_this_time">Dieses Mal ignorieren</string>
+    <string name="alertDialog_option_dismiss_this_time">Zulassen</string>
     <string name="alertDialog_option_dismiss_always_here">Hier immer ignorieren</string>
-    <string name="alertDialog_option_jam_this_time">Dieses Mal blockieren</string>
-    <string name="alertDialog_text_ultrasonic_signal_detected">Ein Ultraschallsignal wurde erkannt. \nWählen Sie eine der Optionen um fortzufahren.</string>
-    <string name="alertDialog_option_play">Abspielen</string>
-    <string name="storedLocationActivityTitle">Erkannte Signale</string>
+    <string name="alertDialog_option_jam_this_time">Blockieren</string>
+    <string name="alertDialog_text_ultrasonic_signal_detected">Ultraschallsignal erkannt</string>
+    <string name="alertDialog_option_play">Mach es hörbar!</string>
+    <string name="storedLocationActivityTitle">Regeln &amp; Erkennungen</string>
     <string name="SettingsActivityTitle">Einstellungen</string>
-    <string name="AboutUsActivityTitle">Über Uns</string>
+    <string name="AboutUsActivityTitle">Über uns</string>
     <string name="creditsText">Credits \n\n Audio by Superpowered (https://www.superpowered.com/)\n\nMaterial-Icons wurden verwendet. Diese stehen unter der Lizenz "Apache License Version 2.0"(https://www.apache.org/licenses/LICENSE-2.0.txt )</string>
     <string name="privacy_policy_menuItem">Datenschutzerklärung</string>
-    <string name="about_us_menuItem">Über Uns</string>
+    <string name="about_us_menuItem">Über uns</string>
     <string name="instructions_menuItem">Anleitung</string>
     <string name="help_menuItem">Hilfe</string>
     <string name="privacy_policy_text">Datenerhebung und Datenverarbeitung:\n\n
-- Wir verwenden das Mikrofon um Geräusche aufzunehmen, aber verarbeiten nur den Ultraschallbereich, wir verwerfen alle Daten unter 17kHz.\n\n
-- Geräusche werden in Echtzeit auf dem Smartphone verarbeitet. Die Daten werden nicht über das Web geschickt und auch nicht am Smartphone gespeichert.\n\n
-- Erkannte Signale werden lokal in einer JSON Datei gespeichert. Gespeichert werden Zeit und Ort (wenn vom Nutzer erlaubt). Der Nutzer kann diese Datei jederzeit über die Einstellungen löschen.\n\n
-- Wenn vom Nutzer erlaubt, überprüfen wir die Position des Nutzers in bestimmten Zeitabständen und teilen ihm mit, ob er einen Bereich betritt, wo er schon einmal eine Ultraschallnachricht entdeckt hat.
+- Wir verwenden das Mikrofon, um Geräusche aufzunehmen, verarbeiten aber nur den Frequenzbereich über 17kHz. Wir verwerfen alle Daten unter 17kHz.\n\n
+- Geräusche werden in Echtzeit auf dem Smartphone verarbeitet.\n\n
+- Die Erkennungen werden lokal in einer JSON-Datei gespeichert einschließlich der Zeit, der Art der von unserem Algorithmus erkannten Technologie, der Entscheidung, ob die Schallquelle in Zukunft blockiert werden soll oder nicht und dem Ort der Erkennung (wenn die Nutzer*in den Standortzugriff gestattet). Die Nutzer*in kann diese Datei über die Einstellungen jederzeit löschen.\n\n
+- Wenn die Nutzer*in es erlaubt hat, überprüfen wir regelmäßig den aktuellen Standort. Sobald ein von einer Firewall-Regel abgedeckter Bereich betreten wird (z.B. an Orten an denen bereits zuvor Ultraschallkommunikation erkannt wurde und sich die Nutzer*in entschieden hat diese in Zukunft zu blockieren), wird mit dem Blockieren begonnen.\n\n
+- Die Internetberechtigung ist erforderlich, um den Kartenhintergrund anzuzeigen und die Erkennungen mit der Community zu teilen. Diese Berechtigung wird von Google/Android als unkritisch (protection_normal) eingestuft. Daher wird sie in der Berechtigungsübersicht der App nicht angezeigt. Es werden keine Daten hochgeladen, ohne Einverständnis der Nutzer*in. Das Teilen von Erkennungen erfolgt bei Bedarf, wenn die Benutzer*in "Teile die Erkennung" aktiviert, oder automatisch, wenn eine "hier immer"-Firewallregel erfüllt ist und die Benutzer*in sich standardmäßig für das Teilen von Erkennungen entschieden hat (in den Einstellungen). Wenn die Nutzer*innen ihre Erkennungen teilen, werden die Zeit, die Technologie welche erkannt wurde, die Blockierungsentscheidung, die Standortinformationen (falls von der Benutzer*in erlaubt) und eine kurze Audiodatei der Erkennung (alles unter 17kHz wird verworfen) auf den SoniControl-Server hochgeladen. Es wird keine Benutzerkennung gespeichert, dadurch bleiben die Daten anonym. Die hochgeladenen akustischen Daten werden genutzt, um Fascherkennungen der Firewall zu identifizieren.\n\n
+- Wenn von der Nutzer*in erlaubt, wird der Standort dazu verwendet, die Karte auf den aktuellen Ort zu zentrieren.
     </string>
     <string name="privacy_policy_label">Datenschutzerklärung</string>
     <string name="sonicontrolLink">https://sonicontrol.fhstp.ac.at</string>
-    <string name="instructionsText">Willkommen zur SoniControl Firewall.\n\nSonicontrol scannt nach Ultraschallnachrichten von anderen Smarphones oder Audiobeacons in der Umgebung und benachrichtigt Sie wenn eine Nachricht erkannt wurde. Sie können dann auswählen, ob diese Nachricht blockiert werden soll (auch zukünftig an diesem Ort) oder ob sie durchgelassen werden soll. \n\nSoniControl braucht die Mikrofonberechtigung, um ordnungsgemäß arbeiten zu können und braucht weiters die Standortfreigabe (optional), um den Ort zu einer erkannten Nachricht speichern zu können. \n\nWir versenden keine Daten von Ihrem Smartphone und speichern auch keine privaten, sensiblen Daten.\n\nUm den Scanvorgang zu starten, müssen Sie den Startbutton antippen.</string>
+    <string name="instructionsText">&lt;big>Willkommen zur SoniControl Firewall&lt;/big>
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Quick-Start&lt;/b>&lt;br>
+        Tippen Sie den Startbutton an, um den Scanvorgang zu starten.&lt;/p>
+
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Beschreibung&lt;/b>&lt;br>
+        Sonicontrol scannt nach Ultraschallnachrichten von anderen Smarphones oder Audiobeacons in der Umgebung und benachrichtigt Sie wenn eine Nachricht erkannt wurde. Sie können dann auswählen, ob diese Nachricht blockiert werden soll (auch zukünftig an diesem Ort) oder ob sie durchgelassen werden soll.&lt;/p>
+
+        \n\n&lt;p dir=\"rtl | ltr\">&lt;b>Berechtigungen&lt;/b>&lt;br>
+        SoniControl braucht die Mikrofonberechtigung, um ordnungsgemäß arbeiten zu können und braucht weiters die Standortfreigabe (optional), um den Ort zu einer erkannten Nachricht speichern zu können. \n\nWir versenden keine Daten von Ihrem Smartphone und speichern auch keine privaten, sensiblen Daten.&lt;/p>
+    </string>
     <string name="instructionsTitle">Anleitung</string>
     <string name="alert_no_json_file_message">Um erkannte Ultraschallsignale zu speichern/anzuzeigen, müssen Sie die Einstellung \'In JSON Datei speichern\' ankreuzen.</string>
     <string name="alert_no_json_file_title">Keine JSON Datei</string>
@@ -86,7 +101,7 @@
     <string name="alert_detection_date">Erkannt um:</string>
     <string name="toast_no_location_text">Standort wurde nicht gefunden. Daher konnte das letzte erkannte Signal nicht gespeichert werden.</string>
     <string name="json_detections_unknown_address">Unbekannte Adresse</string>
-    <string name="alert_microphone_already_used_title">Das Mikrofon wird bereits von einer anderen Anwendung verwendet</string>
+    <string name="alert_microphone_already_used_title">Das Mikrofon wird bereits verwendet</string>
     <string name="alert_microphone_already_used_message">Wir konnten die Erkennung nicht starten, da das Mikrofon schon von einer anderen App verwendet wird.</string>
     <string name="on_alert_no_location_message">Bitte aktivieren Sie die Standortfreigabe, um erkannte Ultraschallsignale verortet zu speichern.</string>
     <string name="action_reset_settings_message">Wollen Sie alle Einstellungen zurücksetzen?</string>
@@ -98,17 +113,17 @@
     <string name="settings_blocking_duration_singular">Blockierdauer (%s Minute)</string>
     <string name="settings_blocking_duration_plural">Blockierdauer (%s Minuten)</string>
     <string name="stored_detections_will_be_blocked">wird blockiert</string>
-    <string name="stored_detections_will_be_ignored">wird ignoriert</string>
+    <string name="stored_detections_will_be_allowed">wird zugelassen</string>
     <string name="settings_category_jammer">Experteneinstellungen - Blockiervorgang</string>
-    <string name="settings_category">Einstellungen</string>
-    <string name="settings_category_expert">Zurücksetzen</string>
+    <string name="settings_category_blocking">Blockieren</string>
+    <string name="settings_category_expert">Experteneinstellungen - Zurücksetzen</string>
     <string name="settings_title_json_save">Signale in JSON Datei speichern</string>
     <string name="settings_title_clear_detections">Alle Signale in der JSON Datei löschen</string>
-    <string name="settings_title_dont_ask">Nicht nach Standortfreigabe fragen</string>
-    <string name="settings_title_microphone_for_blocking">Mikrofon zum Blockieren verwenden</string>
+    <string name="settings_summary_dont_ask">Nicht nach Standortfreigabe fragen</string>
+    <string name="settings_title_microphone_for_blocking">Mikrofon zum Blockieren</string>
     <string name="settings_title_preventive_blocking">Präventiv blockieren</string>
-    <string name="settings_title_network_location">Netzwerk zur Standortermittlung verwenden</string>
-    <string name="settings_title_gps_location">GPS zur Standortermittlung verwenden</string>
+    <string name="settings_title_network_location">Netzwerk</string>
+    <string name="settings_title_gps_location">GPS</string>
     <string name="settings_title_pulse_duration">Pulsdauer (ms)</string>
     <string name="settings_title_pause_duration">Stoppdauer (ms)</string>
     <string name="settings_title_bandwidth">Bandbreite</string>
@@ -116,4 +131,94 @@
     <string name="settings_title_location_radius">Blockierradius (Meter)</string>
     <string name="statusChannelName">App-Status Kanal</string>
     <string name="detectionChannelName">Signalerkennung Kanal</string>
+    <string name="gui_technology">Potenzieller Typ:</string>
+    <string name="NoSignalImportedAndSavedYet">Sie haben noch keine Firewall-Regel importiert.
+    \n\nFirewall-Regeln, die von anderen BenutzerInnen geteilt wurden, können durch Anklicken der + Taste unten importiert werden.</string>
+    <string name="how_to_proceed">Wählen Sie eine der Optionen um fortzufahren.</string>
+    <string name="stored_detections_ask_again">nochmal fragen</string>
+    <string name="extendedDiagnosticsSummary">Auf Signalende warten</string>
+    <string name="rules_info_text">Signal sind in vier Bereiche eingeteilt: \"Meine Regeln\", \"Importierte Regeln\", \"Verlauf\" und eine Kartenvisualisierung.
+        \n\n- Die ersten beiden verhalten sich wie Firewall-Regeln. Die Farbe zeigt ob die Regel Signale blockiert (rot), ignoriert (grün) oder bei der nächsten Erkennung nochmal fragt (orange).
+        \nMan kann diesen Status durch mehrmaliges tippen verändern. Bei einem längeren Tippvorgang, kann die Regel gelöscht werden.
+        \n\n- Die Chronik zeigt alle bisherigen erkannten Signale.
+        \n\n- Die Karte zeigt alle Firewall-Regeln an ihren geographischen Positionen.</string>
+    <string name="settings_share_detections">Erkennungen teilen</string>
+    <string name="map_legend">Die Farbe der Markierungen steht für die Firewall-Regel:\n- Rote Markierungen werden immer geblockt\n- Grüne Markierungen werden immer ignoriert \n- Orange Markierungen wird bei der nächsten Erkennung wieder nachgefragt\n\nBeim Tippen auf eine Markierung wird ein farbiger Kreis angezeigt, dessen Größe die Signalstärke repräsentiert. Die Größe zeigt jedoch NICHT die Distanz zur Signalquelle.</string>
+    <string name="import_timeto_title">Zeit von</string>
+    <string name="import_timeto_button">Wähle ein Datum</string>
+    <string name="import_location">Position</string>
+    <string name="import_range">Umkreis (in Meter)</string>
+    <string name="import_filter_info">Bitte stellen Sie einen Filter ein um zu importieren!</string>
+    <string name="import_button">Importieren</string>
+    <string name="import_timefrom_title">Zeit bis</string>
+    <string name="import_location_hint">Bitte geben Sie eine Adresse ein!</string>
+    <string name="import_range_hint">Bitte geben Sie einen Umkreis ein!</string>
+    <string name="import_timefrom_button">Wähle ein Datum</string>
+    <string name="navigation_title_my_rules">Meine Regeln</string>
+    <string name="navigation_title_imported_rules">Importierte Regeln</string>
+    <string name="navigation_title_detection_history">Verlauf</string>
+    <string name="navigation_title_rules_on_map">Karte</string>
+    <string name="button_date_time_picker_set">Ok</string>
+    <string name="toast_on_failure_detection_upload">Der Server ist nicht erreichbar. Ihr erkanntes Signal konnte nicht geteilt werden.</string>
+    <string name="toast_on_success_detection_upload">Das erkannte Signal konnte erfolgreich hochgeladen werden.</string>
+    <string name="map_marker_description_last_detection">Letzte Erkennung:</string>
+    <string name="permission_explanation_map_button_negative">Zurück zur Karte</string>
+    <string name="permission_explanation_map_button_positive">Das Berechtigungsmenü öffnen</string>
+    <string name="import_filtered_detections_failure_snackbar">Der Server ist momentan nicht erreichbar. Bitte versuchen Sie es später nochmal!</string>
+    <string name="map_dialog_legend_title">Legende</string>
+    <string name="alert_share_your_detection">Halte die Erkennung für andere fest</string>
+    <string name="filter_import_dialog_title">Möchten sie die Firewall-Regeln importieren?</string>
+    <string name="filter_import_dialog_message">Das Filtern ergibt %s Firewall-Regeln.</string>
+    <string name="stored_adapter_detection_counter_title">Erkennungen:</string>
+    <string name="stored_adapter_unknown_address">Unbekannte Adresse</string>
+    <string name="rules_info_title">Firewall-Regeln</string>
+    <string name="filter_dialog_reset_date">zurück-\nsetzen</string>
+    <string name="loading_dialog_import_detections">Importiere Erkennungen</string>
+    <string name="settings_info_title">Einstellungen</string>
+    <string name="settings_info_text">
+        "Erweiterte Diagnose" - Eine Erkennung wird erst angzeigt, sobald das komplette Signal durch ist. Dies könnte das komplette Signal erfassen für Analyse- und Diagnosezwecke.
+        \n
+        \n"An jedem Ort blockieren" - Jede Erkennung wird automatisch blockiert und kein Popup wird angezeigt.
+        \n
+        \n"Präventiv blockieren" - Die Zeitspanne zwischen Erkennung und Auswahl im Popup wird automatisch blockiert.\n
+        \n
+        \n"Erkennungen teilen" - Wenn ausgewählt, stimmt der Nutzer zu die anonymisierte Erkennung zum Server zu senden. Diese Option kann auch direkt beim Popup geändert werden. Wenn das Popup nicht angezeigt wird z.B. bei "An jedem Ort blockieren", dann zählt diese Auswahl.
+        \n
+        \n"Signale in JSON Datei speichern" - Wenn aktiviert, wird jede Erkennung in einer lokalen JSON-Datei gesammelt und als Regeln und Verlaufseinträge angzeigt.
+        \n
+        \n"Alle Signale in der JSON Datei löschen" - Dies löscht die lokale JSON-Datei und entfernt alle Regeln und den Verlauf.
+    </string>
+    <string name="extendedDiganosticsTitle">Erweiterte Erkennung</string>
+    <string name="settings_category_permissions">Berechtigungen</string>
+    <string name="settings_category_data_storage">Datenspeicher</string>
+    <string name="settings_category_advanced_detection">Experteneinstellungen - Erkennung</string>
+    <string name="settings_summary_gps_location">Zur Standortermittlung verwenden</string>
+    <string name="settings_summary_network_location">Zur Standortermittlung verwenden</string>
+    <string name="settings_summary_preventive_blocking">Zeitspanne zwischen Erkennung und Auswahl blockieren</string>
+    <string name="spoofOnEachLoc_summary">Alle Erkennungen blockieren</string>
+    <string name="settings_summary_microphone_for_blocking">Mikrofon als präferierten Wahl für das Blockieren verwenden</string>
+    <string name="settings_share_detections_summary">Erkennungen mit der Community teilen</string>
+    <string name="settings_title_dont_ask">Standortfreigabedialog</string>
+    <string name="textviewStatusInitializing">Initialisierung</string>
+    <string name="button_pause_firewall">Firewall pausieren</string>
+    <string name="button_start_firewall">Firewall starten</string>
+    <string name="button_stop_firewall">Firewall stoppen</string>
+    <string name="button_detection_list">Regeln &amp; \nErkennungen</string>
+    <string name="button_settings">Einstellungen</string>
+    <string name="textviewStatusStopped">Gestoppt.</string>
+    <string name="onAllowPauseFirewallHint">Zugelassen. Wenn Sie Ultraschall verwenden möchten, sollten Sie die Firewall pausieren.</string>
+    <string name="alert_spectrogram_title">Fingerabdruck des Signals</string>
+    <string name="on_alert_network_not_enabled">Keine Internetverbindung.</string>
+    <string name="alert_save_as_firewall_rule">Meine Entscheidung als Firewall-Regel speichern</string>
+    <string name="alert_unknown_date">Unbekanntes Datum</string>
+    <string name="menuitem_rules_info">Firewallregelinformatinoen</string>
+    <string name="menuitem_settings_info">Einstellungsinformationen</string>
+    <string name="toast_on_success_audiodata_upload">Die Audiodaten des erkannten Signals konnten erfolgreich hochgeladen werden.</string>
+    <string name="toast_on_failure_audiodata_upload">Der Server ist nicht erreichbar. Ihre Audiodaten des erkannten Signals konnten nicht geteilt werden.</string>
+    <string name="rules_item_button_blocked">Blockiert</string>
+    <string name="rules_item_button_allowed">Zugelassen</string>
+    <string name="rules_item_button_ask_again">Nachfragen</string>
+    <string name="rules_location_not_available">Ort nicht verfügbar</string>
+    <string name="alert_sharing_info">Wenn ausgewählt, stimmt der Nutzer zu die anonymisierte Erkennung zum Server zu senden. Diese Option kann auch direkt beim Popup geändert werden.</string>
+    <string name="alert_save_firewall_info">Wenn aktiviert, wird jede Erkennung in einer lokalen JSON-Datei gesammelt und als Regeln und Verlaufseinträge angzeigt.</string>
 </resources>

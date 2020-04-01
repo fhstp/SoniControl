@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -77,9 +77,7 @@ public class MicCapture {
             instance = null; //set instance to null so that there is no miccapture anymore
         }
         if(recorder != null){
-            if (recorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-                recorder.stop(); //stop the recorder
-            }
+            recorder.stop(); //stop the recorder
             recorder.release(); //release the recorder resources
             // Now handled with the stopped variable ? captHandler.removeCallbacks(captRun); //reset the handler
             stopped = true;
@@ -88,7 +86,6 @@ public class MicCapture {
 
     private Runnable captRun = new Runnable() {
         public void run() {
-            //Log.d("MicCapture", "captRun stopped : " + String.valueOf(stopped));
             if (stopped) {
                 // Reinitialize everything, could be in a function.
                 startTime = 0;
@@ -116,7 +113,6 @@ public class MicCapture {
                 stopTime = Calendar.getInstance().getTimeInMillis();
                 Long logLong = (stopTime - startTime) / 1000; //get the difference of the start- and stoptime
                 String logTime = String.valueOf(logLong);
-                //Log.d("HowLongBlocked",logTime);
                 int blockingTime = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BLOCKING_DURATION, ConfigConstants.SETTING_BLOCKING_DURATION_DEFAULT)); //get the spoofingtime in minutes
 
 
@@ -125,15 +121,14 @@ public class MicCapture {
                 }
                 // TODO: Should this else redirect to some controller ? (MainActivity ?)
                 else {
-                    executeRoutineAfterExpiredTime();
+                    executeRoutineAfterExpiredTime(main);
                 }
             }
         }
     };
 
-    public void executeRoutineAfterExpiredTime(){
+    public void executeRoutineAfterExpiredTime(MainActivity main){
         SharedPreferences sharedPref = main.getSettingsObject();
-        //Log.d("Capture", "I captured the microphonesignal!");
         startTime = 0;
         recorder.stop(); //stop the recording
         recorder.release(); //release the recorder resources
@@ -141,36 +136,27 @@ public class MicCapture {
         waitTime = 0; //set the waittime for the next capture to 0
         i = 0;
         boolean locationTrack = false;
-        // boolean locationTrack = sharedPref.getBoolean("cbprefLocationTracking", true);
         boolean locationTrackGps = sharedPref.getBoolean(ConfigConstants.SETTING_GPS, ConfigConstants.SETTING_GPS_DEFAULT);
         boolean locationTrackNet = sharedPref.getBoolean(ConfigConstants.SETTING_NETWORK_USE, ConfigConstants.SETTING_NETWORK_USE_DEFAULT);
                     if (locationTrackGps || locationTrackNet) {
             locationTrack = true;
         }
         if(/*locationTrack||*/(locFinder.getDetectedDBEntry()[0]!=0&&locFinder.getDetectedDBEntry()[1]!=0)) {
-            positionLatest = locFinder.getLocation(); //get the latest position
+            positionLatest = locFinder.getLocation(main); //get the latest position
             positionOld = locFinder.getDetectedDBEntry(); //get the position saved in the json-file
             distance = locFinder.getDistanceInMetres(positionOld, positionLatest); //calculate the distance
-            //SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
             locationRadius = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_LOCATION_RADIUS, ConfigConstants.SETTING_LOCATION_RADIUS_DEFAULT)); //get the settings for the locationdistance
-            /*Log.d("Distance", Double.toString(distance));
-            Log.d("LatestPosition", Double.toString(positionLatest[0]));
-            Log.d("LatestPosition", Double.toString(positionLatest[1]));
-            Log.d("OldPosition", Double.toString(positionOld[0]));
-            Log.d("OldPosition", Double.toString(positionOld[1]));*/
-            // TODO: Check if we are thread safe. Are we sure that a spoofer / scan is not already on ?
+
             if (distance < locationRadius) { //if in distance
-                locFinder.blockMicOrSpoof(); //start the blocking again with trying to get microphone access
+                locFinder.blockMicOrSpoof(main); //start the blocking again with trying to get microphone access
             } else {
                 // Note: It is okay to update notification from a worker thread, see : https://stackoverflow.com/a/15803726/5232306
-                //main.cancelSpoofingStatusNotification();
                 NotificationHelper.activateScanningStatusNotification(main.getApplicationContext());
-                detector.startScanning(); //start scanning again
+                detector.startScanning(main); //start scanning again
             }
         } else {
-            //main.cancelSpoofingStatusNotification();
             NotificationHelper.activateScanningStatusNotification(main.getApplicationContext());
-            detector.startScanning(); //start scanning again
+            detector.startScanning(main); //start scanning again
         }
     }
 }

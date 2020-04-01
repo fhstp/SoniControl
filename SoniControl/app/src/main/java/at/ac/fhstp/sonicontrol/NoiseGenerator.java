@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.audiofx.LoudnessEnhancer;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -30,11 +31,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Random;
 
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
+
 public class NoiseGenerator {
 
-    /***
-     * test
-     */
     private Technology lastSignalTechDetected;
     private String techForFile;
 
@@ -49,34 +49,30 @@ public class NoiseGenerator {
 
     private short[] whiteNoise;
 
-    private Random randomGen = new Random();
+    private Random randomGen = new Random(42);
 
     private int whiteNoiseVolume;
     private int playertime;
     private boolean noiseGenerated = false;
     private AudioTrack audioTrack = null;
-    private MainActivity main;
+    //private MainActivity main;
     private AudioTrack generatedWhitenoisePlayer;
 
     private double bandWidth; //the bandwith for every specified frequencyband
 
-    public NoiseGenerator(MainActivity main){
-        this.main = main;
+    public NoiseGenerator(){
     }
 
-    public void generateWhitenoise(final Technology signalType){
+    public void generateWhitenoise(final Technology signalType, MainActivity main){
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); //set the handler thread to background
         lastSignalTechDetected = signalType;
-        //If Clauses only for Debug
-         //Log.d("Generator", "I generated a whitenoisesignal to spoof " + signalType.toString());
-
-        generatedWhitenoisePlayer = generateWhitenoisePlayer(signalType); //get the generated whitenoise for spoofing
+        generatedWhitenoisePlayer = generateWhitenoisePlayer(signalType, main); //get the generated whitenoise for spoofing
     }
 
-    public double[] produceWhiteNoise(Technology signalType){
+    public double[] produceWhiteNoise(Technology signalType, MainActivity main){
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
         winLen = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_PULSE_DURATION, ConfigConstants.SETTING_PULSE_DURATION_DEFAULT)); //read the windowLength from the settings - NOTE: This setting will not be updated dynamically once the signal is created. Next update when new Signal is created.
-        whiteNoiseBands = importSpecificSignal(signalType); //import the frequencies /has to be changed to the detected technology
+        whiteNoiseBands = importSpecificSignal(signalType, main); //import the frequencies /has to be changed to the detected technology
 
         if (winLen==0){winLen= 80;} //if the windowLength is still 0 after the start, set to 80
         winLenSamples = winLen*fs/1000; //windowSamples according to the windowLength
@@ -114,6 +110,7 @@ public class NoiseGenerator {
 
         double[] signal = new double[winLenSamples]; //initializing the double array for the signal
 
+        randomGen = new Random(42);
         for (int j = 0; j < winLenSamples; j++) {
             signal[j] = randomGen.nextDouble(); //generate random double values and store it in the signal array
         }
@@ -123,8 +120,8 @@ public class NoiseGenerator {
         return complexWhiteNoise;
     }
 
-    private double[] normalizeWhitenoiseSignal(Technology signalType){
-        double[] complexWhiteNoise = produceWhiteNoise(signalType);
+    private double[] normalizeWhitenoiseSignal(Technology signalType, MainActivity main){
+        double[] complexWhiteNoise = produceWhiteNoise(signalType, main);
         for (int i = 0; i < (winLenSamples * 2); i++) {
             if (Math.abs(complexWhiteNoise[i]) > max) {
                 max = Math.abs(complexWhiteNoise[i]); //searching for the maximum value of the whitenoisesignal
@@ -143,10 +140,10 @@ public class NoiseGenerator {
         return helpNoise;
     }
 
-    private double[] makeFadeInAndFadeOut(Technology signalType){
-        double[] helpNoise = normalizeWhitenoiseSignal(signalType);
-        int fadeSamples = Math.round(helpNoise.length / 10); //value for the length of the fade in/fade out
-        //int fadeSamples = 500;
+    private double[] makeFadeInAndFadeOut(Technology signalType, MainActivity main){
+        double[] helpNoise = normalizeWhitenoiseSignal(signalType, main);
+        int fadeAmount = 10;
+        int fadeSamples = Math.round(helpNoise.length/fadeAmount);
         for (int i = 0; i < fadeSamples; i++) { //fade in
             helpNoise[i] = (helpNoise[i] * ((double) i / (double) fadeSamples));
         }
@@ -158,11 +155,10 @@ public class NoiseGenerator {
         return helpNoise;
     }
 
-    private short[] transformDoubleArrayIntoShortArray(Technology signalType){
-        double[] helpNoise = makeFadeInAndFadeOut(signalType);
+    private short[] transformDoubleArrayIntoShortArray(Technology signalType, MainActivity main){
+        double[] helpNoise = makeFadeInAndFadeOut(signalType, main);
         if(whiteNoiseVolume == 0){whiteNoiseVolume = 1;}
         for (int i = 0; i < winLenSamples; i++) {
-            helpNoise[i] = (helpNoise[i]*(1+(whiteNoiseVolume/100))); //multiplay every value of the array with numbers between 1.0 to 3.0 (depending on the whiteNoiseValue = Slidervalue)
             if(helpNoise[i] > 1){ //if new value higher than 1
                 helpNoise[i] = 1; //change it to 1
             }
@@ -170,23 +166,19 @@ public class NoiseGenerator {
                 helpNoise[i] = -1; //chang it to -1
             }
         }
-/*
-        double[] noClickNoise = new double[(winLenSamples+(winLenSamples/65))]; //create new array with the length of windowSamples + buffer for zeroes => Fade out help
 
-        for(int i = 0; i<(winLenSamples+(winLenSamples/65)); i++){
-            if(i<winLenSamples) {
-                noClickNoise[i] = helpNoise[i]; //for the length of winLenSamples the old values
-            }else{
-                noClickNoise[i] = 0; //for everything above 0 as new value
-            }
-        }
-*/
         playertime = (winLen/*+((winLenSamples/65)*1000/fs)*/); //time for the pulsing spoofer => windowLength + Length of the added 0-buffer
 
         whiteNoise = new short[winLenSamples/*+(winLenSamples/65)*/]; //short array for the whitenoise
 
-        for (int i = 0; i < winLenSamples/*+(winLenSamples/65)*/; i++) {
-            whiteNoise[i] = (short) (helpNoise[i] * 32767); //scale the double values up to short by multiplying with 32767
+        for (int i = 0; i < winLenSamples; i++) {
+            whiteNoise[i] = (short) (helpNoise[i] * 32760); //scale the double values up to short by multiplying with 32760
+            if(whiteNoise[i] > 32760){ //if new value higher than 1
+                whiteNoise[i] = 32760; //change it to 1
+            }
+            if(whiteNoise[i] < -32760){ //if new value lower than -1
+                whiteNoise[i] = -32760; //chang it to -1
+            }
         }
 
         return whiteNoise;
@@ -229,23 +221,19 @@ public class NoiseGenerator {
                     complexSignal[(int)l] = 0.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0 mirrored to the doubled winLenSamples size
                 }
             }
-            for (int k = 0; k < whiteNoiseBands.length-2; k++) {
+
+            for (int k = 0; k < whiteNoiseBands.length; k++) {
                 for (double l = cutoffFreqDownIdx[k]; l <= cutoffFreqUpIdx[k]; l++) {
-                    complexSignal[(int)l] = 10000.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0
+                    complexSignal[(int)l] = 1000;
                 }
                 int helpSamples = winLenSamples * 2;
+
                 for (double l = helpSamples-cutoffFreqUpIdx[k]; l <= helpSamples-cutoffFreqDownIdx[k]; l++) {
-                    complexSignal[(int)l] = 10000.0f; //set all frequencies between the higher frequency of one band to the lower frequency of the next band to 0 mirrored to the doubled winLenSamples size
+                    complexSignal[(int)l] = 1000;
                 }
             }
         }
 
-        /*for (int i = 0; i < complexSignal.length - 1; i++) {
-            complexSignal[i] = complexSignal[i] * (-1); //invert all algebraic signs
-        }
-
-        mFFT.complexForward(complexSignal); //make the fft on the inverted signal
-*/
         mFFT.complexInverse(complexSignal,false);
         return complexSignal; //return the signal with the complex values
 
@@ -256,11 +244,11 @@ public class NoiseGenerator {
      * @param signalTechnology
      * @return
      */
-    private double[][] importSpecificSignal(Technology signalTechnology) {
+    private double[][] importSpecificSignal(Technology signalTechnology, MainActivity main) {
 
         double[][] test; //helparray for storing the frequencybands of the technologies
         SharedPreferences sharedPref = main.getSettingsObject(); //get the settings
-        bandWidth = Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BANDWIDTH, ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
+        bandWidth = 1;//Integer.valueOf(sharedPref.getString(ConfigConstants.SETTING_BANDWIDTH, ConfigConstants.SETTING_BANDWIDTH_DEFAULT));
 
         BufferedReader reader = null;
         try {
@@ -281,12 +269,18 @@ public class NoiseGenerator {
                 case SHOPKICK:
                     reader = new BufferedReader(new InputStreamReader(main.getAssets().open("shopkick-frequencies.txt"), "UTF-8"));
                     break;
+                case SONITALK:
+                    reader = new BufferedReader(new InputStreamReader(main.getAssets().open("sonitalk-frequencies.txt"), "UTF-8"));
+                    break;
                 case SILVERPUSH:
                     reader = new BufferedReader(new InputStreamReader(main.getAssets().open("silverpush-frequencies.txt"), "UTF-8"));
                     break;
+                case SONARAX:
+                    reader = new BufferedReader(new InputStreamReader(main.getAssets().open("sonarax-frequencies.txt"), "UTF-8"));
+                    break;
                 case UNKNOWN:
                     reader = new BufferedReader(new InputStreamReader(main.getAssets().open("unknown-frequencies.txt"), "UTF-8"));
-                    bandWidth = 1500;
+                    bandWidth = 4000;
                     break;
             }
 
@@ -316,10 +310,8 @@ public class NoiseGenerator {
 
     }
 
-    private AudioTrack generateWhitenoisePlayer(Technology signalType){
-        short[] whiteNoise = transformDoubleArrayIntoShortArray(signalType);
-        //AudioTrack generatedNoisePlayer;
-        //generatedNoisePlayer = generatePlayer(whiteNoise); //create the audiotrack player
+    private AudioTrack generateWhitenoisePlayer(Technology signalType, MainActivity main){
+        short[] whiteNoise = transformDoubleArrayIntoShortArray(signalType, main);
         noiseGenerated = true; //after creation of the noise, set the flag to true
         winLenSamples = winLen*fs/1000; //calculating the windowLengthSamples
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,fs, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT,(winLenSamples/*+(winLenSamples/65)*/)*2,AudioTrack.MODE_STATIC); //creating the audiotrack player with winLenSamples*2 as the buffersize because the constructor wants bytes
@@ -335,10 +327,6 @@ public class NoiseGenerator {
         if(generatedWhitenoisePlayer!=null){
             generatedWhitenoisePlayer.release();
         } //release the player resources
-        /*if(audioTrack!=null){
-            audioTrack.release();
-        } //release the player resources
-        */
         generatedWhitenoisePlayer = null; //set the player to null
         audioTrack = null; //set the player to null
     }

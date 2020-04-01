@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -30,7 +30,8 @@ public enum StateEnum {
      */
     ON_HOLD("On hold"),
     SCANNING("Scanning"),
-    JAMMING("Jamming");
+    JAMMING("Jamming"),
+    STOPPED("Stopped");
 
     private String stringValue;
 

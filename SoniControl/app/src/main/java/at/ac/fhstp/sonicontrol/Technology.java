@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+ * Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
  *
  * This file is part of SoniControl app.
  *
@@ -25,18 +25,26 @@ public enum Technology {
      * WARNING: Changing the String values would make the app incompatible with previous version.
      * (The Strings are used to persist values in SharedPreferences)
      */
-    PRONTOLY("Prontoly"),
-    GOOGLE_NEARBY("Google_Nearby"),
-    LISNR("Lisnr"),
-    SIGNAL360("Signal360"),
-    SHOPKICK("Shopkick"),
-    UNKNOWN("Unknown"),
-    SILVERPUSH("Silverpush");
+    PRONTOLY("Prontoly", 2),
+    GOOGLE_NEARBY("Google_Nearby", 1),
+    LISNR("Lisnr", 7),
+    SIGNAL360("Signal360", 4),
+    SHOPKICK("Shopkick", 5),
+    UNKNOWN("Unknown", 0),
+    SILVERPUSH("Silverpush", 6),
+    SONARAX("Sonarax", 3),
+    SONITALK("SoniTalk", 8);
 
     private String stringValue;
+    private int idValue;
 
-    private Technology(String toString){
+    private Technology(String toString, int id){
         stringValue = toString;
+        idValue = id;
+    }
+
+    public int getId(){
+        return idValue;
     }
 
     public String toString(){
@@ -50,5 +58,14 @@ public enum Technology {
             }
         }
         throw new IllegalArgumentException("No Technology with text " + text + " found");
+    }
+
+    public static Technology fromId(int id) throws IllegalArgumentException {
+        for (Technology t : Technology.values()) {
+            if (t.getId() == id) {
+                return t;
+            }
+        }
+        throw new IllegalArgumentException("No Technology with text " + id + " found");
     }
 }

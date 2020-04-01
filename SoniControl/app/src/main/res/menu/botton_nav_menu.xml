@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+  ~
+  ~ This file is part of SoniControl app.
+  ~
+  ~     SoniControl app is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     SoniControl app is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with SoniControl app.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_detection_history"
+        android:icon="@drawable/ic_view_list_white_48dp"
+        android:title="@string/navigation_title_detection_history" />
+
+    <item
+        android:id="@+id/navigation_my_rules"
+        android:icon="@drawable/ic_view_list_white_48dp"
+        android:title="@string/navigation_title_my_rules" />
+
+    <item
+        android:id="@+id/navigation_imported_rules"
+        android:icon="@drawable/ic_view_list_white_48dp"
+        android:title="@string/navigation_title_imported_rules" />
+
+    <item
+        android:id="@+id/navigation_rules_map"
+        android:icon="@drawable/baseline_map_black_48"
+        android:title="@string/navigation_title_rules_on_map" />
+
+
+</menu>

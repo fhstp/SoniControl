@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2018, 2019. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
+  ~ Copyright (c) 2018, 2019, 2020. Peter Kopciak, Kevin Pirner, Alexis Ringot, Florian Taurer, Matthias Zeppelzauer.
   ~
   ~ This file is part of SoniControl app.
   ~
@@ -19,39 +19,46 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/settings_category">
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="cbprefContinuousSpoof"
-            android:title="@string/spoofOnEachLoc" />
-        <EditTextPreference
-            android:defaultValue="30"
-            android:key="etprefLocationRadius"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:inputType="number"
-            android:title="@string/settings_title_location_radius" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="cbprefGpsUse"
-            android:title="@string/settings_title_gps_location" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="cbprefNetworkUse"
-            android:title="@string/settings_title_network_location" />
+    <PreferenceCategory android:title="@string/settings_category_blocking">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbprefPreventiveSpoofing"
-            android:title="@string/settings_title_preventive_blocking" />
+            android:title="@string/settings_title_preventive_blocking"
+            android:summary="@string/settings_summary_preventive_blocking" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="cbprefContinuousSpoof"
+            android:title="@string/spoofOnEachLoc"
+            android:summary="@string/spoofOnEachLoc_summary"  />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefMicBlock"
-            android:title="@string/settings_title_microphone_for_blocking" />
+            android:title="@string/settings_title_microphone_for_blocking"
+            android:summary="@string/settings_summary_microphone_for_blocking"  />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_permissions">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="cbSharing"
+            android:title="@string/settings_share_detections"
+            android:summary="@string/settings_share_detections_summary"  />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbprefGpsUse"
+            android:title="@string/settings_title_gps_location"
+            android:summary="@string/settings_summary_gps_location" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="cbprefNetworkUse"
+            android:title="@string/settings_title_network_location"
+            android:summary="@string/settings_summary_network_location" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cbAlertLocationDontAskAgain"
-            android:title="@string/settings_title_dont_ask" />
+            android:title="@string/settings_title_dont_ask"
+            android:summary="@string/settings_summary_dont_ask"  />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_data_storage">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cbprefJsonSave"
@@ -59,6 +66,20 @@
         <Preference
             android:key="deleteJson"
             android:title="@string/settings_title_clear_detections"></Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_advanced_detection">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="cbprefExtendedDiagnostics"
+            android:title="@string/extendedDiganosticsTitle"
+            android:summary="@string/extendedDiagnosticsSummary" />
+        <EditTextPreference
+            android:defaultValue="30"
+            android:key="etprefLocationRadius"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:inputType="number"
+            android:title="@string/settings_title_location_radius" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/settings_category_jammer">
     <EditTextPreference
