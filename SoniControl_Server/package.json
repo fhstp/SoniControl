@@ -35,7 +35,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "^1.9.0",
+    "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^5.16.0",
     "nodemon": "^1.19.0",
     "tslint": "^5.16.0"
